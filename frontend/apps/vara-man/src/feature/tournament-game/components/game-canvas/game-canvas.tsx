@@ -10,7 +10,7 @@ type GameInfoCanvasProps = {
   isRegistration: boolean;
   isFinished: boolean;
   gameOver: boolean;
-  setGameOver: (value: boolean) => void;
+  isCanceledModal: boolean;
   score: number | undefined | null;
 };
 
@@ -19,7 +19,7 @@ export const GameInfoCanvas = ({
   isRegistration,
   isFinished,
   gameOver,
-  setGameOver,
+  isCanceledModal,
   score,
 }: GameInfoCanvasProps) => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
@@ -38,13 +38,9 @@ export const GameInfoCanvas = ({
               {score}
             </div>
           </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
-            <Icons.exit />
-            Exit
-          </div>
         </div>
       )}
-      <GameLayout isPause={isRegistration || isFinished || !isStarted} />
+      <GameLayout isPause={isRegistration || isFinished || !isStarted} isCanceledModal={isCanceledModal} />
       {!isMobile && (
         <div className="flex gap-5 my-3">
           <div className="flex gap-3 items-center">

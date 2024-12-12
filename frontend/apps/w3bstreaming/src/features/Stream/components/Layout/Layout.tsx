@@ -74,7 +74,7 @@ function Layout({
                   styles['card-top-speaker-photo'],
                   isStreamGoing ? styles['card-top-speaker-photo-on-air'] : '',
                 )}
-                src={broadcasterInfo?.imgLink || speakerPhoto}
+                src={broadcasterInfo?.img_link || speakerPhoto}
                 alt="speaker"
               />
               {isStreamGoing && <div className={cx(styles['card-top-speaker-photo-caption-on-air'])}>on air</div>}

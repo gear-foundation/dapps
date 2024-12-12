@@ -1,10 +1,9 @@
 import { useApp } from '@/app/context/ctx-app';
-import { useGameMessage } from '@/app/hooks/use-game';
+import { useRegisterForTournamentMessage } from '@/app/utils';
 import { Modal } from '@/components/ui/modal/modal2';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Button } from '@gear-js/vara-ui';
 import { hasLength, useForm } from '@mantine/form';
@@ -32,17 +31,12 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
     validate,
     validateInputOnChange: true,
   });
-  const { getInputProps, errors, reset } = form;
+  const { getInputProps } = form;
 
   const { api } = useApi();
   const { isPending, setIsPending } = useApp();
-  const handleMessage = useGameMessage();
-  const { gasless, signless } = useEzTransactions();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
-  const gasLimit = 120000000000;
+  const { registerForTournamentMessage } = useRegisterForTournamentMessage();
+  const { gasless } = useEzTransactions();
 
   const onSuccess = () => {
     setIsPending(false);
@@ -52,27 +46,16 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
   };
 
   const [decimals] = api?.registry.chainDecimals ?? [12];
-  const bid = parseFloat(String(findGame?.bid).replace(/,/g, '') || '0') / 10 ** decimals;
+  const bid = Number(findGame?.bid || 0) / 10 ** decimals;
 
   const handleSubmit = form.onSubmit((values) => {
     setIsPending(true);
 
     if (!gasless.isLoading) {
-      checkBalance(gasLimit, () =>
-        handleMessage({
-          payload: {
-            RegisterForTournament: {
-              admin_id: findGame.admin,
-              name: values.username,
-            },
-          },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          value: (bid * 10 ** decimals).toString() || '0',
-          onSuccess,
-          onError,
-        }),
-      );
+      registerForTournamentMessage(BigInt(bid * 10 ** decimals), findGame.admin, values.username, {
+        onSuccess,
+        onError,
+      });
     }
   });
 

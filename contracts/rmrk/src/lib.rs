@@ -1,9 +1,9 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use equippable::Assets;
 use gstd::{
     collections::{BTreeMap, HashMap, HashSet},
-    exec, msg,
+    debug, exec, msg,
     prelude::*,
     ActorId, MessageId,
 };
@@ -176,6 +176,7 @@ extern fn init() {
 
 #[no_mangle]
 extern fn handle() {
+    debug!("HERE");
     let action: RMRKAction = msg::load().expect("Could not load msg");
     let rmrk = unsafe { RMRK.as_mut().expect("The contract is not initialized") };
 

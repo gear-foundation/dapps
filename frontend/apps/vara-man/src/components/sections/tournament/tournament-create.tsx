@@ -1,15 +1,14 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { hasLength, useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Select, Button } from '@gear-js/vara-ui';
 
 import { useApp } from '@/app/context/ctx-app';
-import { useGameMessage } from '@/app/hooks/use-game';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useCreateNewTournamentMessage } from '@/app/utils';
+import { Level } from '@/app/utils';
 
 const initialValues = {
   bid: 0,
@@ -43,20 +42,15 @@ export const TournamentCreate = () => {
   const navigate = useNavigate();
   const { isPending, setIsPending } = useApp();
 
-  const handleMessage = useGameMessage();
-  const { gasless, signless } = useEzTransactions();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
-  const gasLimit = 120000000000;
+  const { createNewTournamentMessage } = useCreateNewTournamentMessage();
+  const { gasless } = useEzTransactions();
 
   const form = useForm({
     initialValues: initialValues,
     validate,
     validateInputOnChange: true,
   });
-  const { getInputProps, errors, reset } = form;
+  const { getInputProps, reset } = form;
 
   const onSuccess = () => {
     setIsPending(false);
@@ -68,26 +62,17 @@ export const TournamentCreate = () => {
   };
 
   const handleSubmit = form.onSubmit((values) => {
-    setIsPending(true);
     const [decimals] = api?.registry.chainDecimals ?? [12];
 
     if (!gasless.isLoading) {
-      checkBalance(gasLimit, () =>
-        handleMessage({
-          payload: {
-            CreateNewTournament: {
-              tournament_name: values.tournamentName,
-              name: values.username,
-              level: values.level,
-              duration_ms: values.duration * 60000,
-            },
-          },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          value: (values.bid * 10 ** decimals).toString() || '0',
-          onSuccess,
-          onError,
-        }),
+      setIsPending(true);
+      createNewTournamentMessage(
+        BigInt((values.bid || 0) * 10 ** decimals),
+        values.tournamentName,
+        values.username,
+        values.level as Level,
+        values.duration * 60000,
+        { onError, onSuccess },
       );
     }
   });
@@ -141,7 +126,6 @@ export const TournamentCreate = () => {
             <Select
               label="Tournament  duration"
               options={optionsDuration}
-              defaultValue={optionsDuration[0].value}
               className="w-full"
               {...getInputProps('duration')}
               required

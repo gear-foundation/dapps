@@ -1,17 +1,22 @@
-import React from 'react';
 import { useGame } from '@/app/context/ctx-game';
-import { cn, copyToClipboard, prettifyText } from '@/app/utils';
+import {
+  TournamentState,
+  cn,
+  copyToClipboard,
+  prettifyText,
+  useCancelTournamentMessage,
+  useStartTournamentMessage,
+} from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
-import { ITournamentGameInstance } from '@/app/types/game';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
+import { useCancelRegisterMessage } from '@/app/utils/sails/messages/use-cancel-register-message';
 
 type Props = {
-  tournamentGame: ITournamentGameInstance;
+  tournamentGame: TournamentState;
   setPlayGame?: (value: boolean) => void;
 };
 
@@ -21,93 +26,68 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
   const { account } = useAccount();
   const { setPreviousGame, setTournamentGame } = useGame();
   const { isPending, setIsPending } = useApp();
+  const { startTournamentMessage } = useStartTournamentMessage();
+  const { deletePlayerMessage } = useDeletePlayerMessage();
+  const { cancelRegisterMessage } = useCancelRegisterMessage();
+  const { cancelTournamentMessage } = useCancelTournamentMessage();
 
-  const handleMessage = useGameMessage();
-  const { gasless, signless } = useEzTransactions();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
-  const gasLimit = 120000000000;
-
+  const { gasless } = useEzTransactions();
+  const onError = () => {
+    setIsPending(false);
+  };
   const onSuccess = () => {
     setIsPending(false);
   };
 
-  const isAdmin = tournamentGame?.[0].admin === account?.decodedAddress;
+  const isAdmin = tournamentGame?.admin === account?.decodedAddress;
 
-  const onRemovePlayer = (player: string) => {
-    setIsPending(true);
-
+  const onRemovePlayer = async (player: string) => {
     if (!gasless.isLoading) {
-      checkBalance(gasLimit, () =>
-        handleMessage({
-          payload: { DeletePlayer: { player } },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          onSuccess,
-          onError: onSuccess,
-        }),
-      );
+      setIsPending(true);
+      await deletePlayerMessage(player, { onError, onSuccess });
     }
   };
 
-  const onStartGame = () => {
-    setIsPending(true);
-
+  const onStartGame = async () => {
     if (!gasless.isLoading) {
-      checkBalance(gasLimit, () =>
-        handleMessage({
-          payload: { StartTournament: {} },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          onSuccess,
-          onError: onSuccess,
-        }),
-      );
-      setPlayGame && setPlayGame(true);
+      setIsPending(true);
+      await startTournamentMessage({
+        onError,
+        onSuccess: () => {
+          setIsPending(false);
+          setPlayGame && setPlayGame(true);
+          onSuccess();
+        },
+      });
     }
   };
 
-  const onCancelGame = () => {
-    setIsPending(true);
-
+  const onCancelGame = async () => {
     if (!gasless.isLoading) {
+      setIsPending(true);
       if (isAdmin) {
-        checkBalance(gasLimit, () =>
-          handleMessage({
-            payload: { CancelTournament: {} },
-            voucherId: gasless.voucherId,
-            gasLimit,
-            onSuccess,
-            onError: onSuccess,
-          }),
-        );
+        await cancelTournamentMessage({ onError, onSuccess });
       } else {
-        checkBalance(gasLimit, () =>
-          handleMessage({
-            payload: { CancelRegister: {} },
-            voucherId: gasless.voucherId,
-            gasLimit,
-            onSuccess,
-            onError: onSuccess,
-          }),
-        );
-
-        setPreviousGame(null);
-        setTournamentGame(undefined);
+        await cancelRegisterMessage({
+          onError,
+          onSuccess: () => {
+            setPreviousGame(null);
+            setTournamentGame(undefined);
+            onSuccess();
+          },
+        });
       }
     }
   };
 
   const [decimals] = api?.registry.chainDecimals ?? [12];
-  const bid = parseFloat(String(tournamentGame?.[0].bid).replace(/,/g, '') || '0') / 10 ** decimals;
+  const bid = parseFloat(String(tournamentGame?.bid).replace(/,/g, '') || '0') / 10 ** decimals;
 
   return (
     <div className="flex flex-col gap-4 items-center w-full">
-      <h3 className="text-2xl font-bold">{tournamentGame?.[0].stage}</h3>
+      <h3 className="text-2xl font-bold">Registration</h3>
       <p className="text-[#555756]">
-        Players ({tournamentGame?.[0].participants.length}/10). Waiting for other players...{' '}
+        Players ({tournamentGame?.participants.length}/10). Waiting for other players...{' '}
       </p>
       {isAdmin && (
         <div className="flex gap-2 font-medium">
@@ -121,7 +101,7 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
         </div>
       )}
       <div className="flex flex-col gap-3 w-full">
-        {tournamentGame?.[0].participants.map((player, index) => {
+        {tournamentGame?.participants.map((player, index) => {
           const isActivePlayer = account?.decodedAddress === player[0];
           const { name, points, time } = player[1];
 

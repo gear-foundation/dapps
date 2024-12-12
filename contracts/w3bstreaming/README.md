@@ -1,12 +1,17 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=w3bstreaming/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/w3bstreaming_io)
+# Sails W3bstreaming
 
-# W3bstreaming
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Infra/w3bstreaming).
 
-W3bstreaming is an example of a decentrilized streaming application based on the WebRTC protocol.
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
 ```sh
-cargo b -p "w3bstreaming*"
+cargo b -r -p "w3bstreaming"
+```
+
+### ✅ Testing
+
+```sh
+cargo t -r -p "w3bstreaming"
 ```

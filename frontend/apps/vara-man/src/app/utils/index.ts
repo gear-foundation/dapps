@@ -3,6 +3,8 @@ import { twMerge } from 'tailwind-merge';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { isHex } from '@polkadot/util';
 
+export * from './sails';
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

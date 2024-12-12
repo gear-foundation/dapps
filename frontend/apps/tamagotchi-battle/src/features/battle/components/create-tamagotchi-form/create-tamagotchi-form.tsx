@@ -7,7 +7,7 @@ import { HexString } from '@polkadot/util/types';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
 import { useApi } from '@gear-js/react-hooks';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { useGaslessTransactions } from 'gear-ez-transactions';
 import { GAS_LIMIT } from 'app/consts';
 
 const createTamagotchiInitial = {

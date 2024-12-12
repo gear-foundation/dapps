@@ -1,5 +1,5 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
+import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { useProgram } from '@/app/utils/sails';
 
 export const useJoinGameMessage = () => {
@@ -11,11 +11,12 @@ export const useJoinGameMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const joinGameMessage = async (game_id: string, name: string) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+  const joinGameMessage = async (game_id: string, name: string, value: bigint) => {
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams(true);
     const { transaction } = await prepareTransactionAsync({
       args: [game_id, name, sessionForAccount],
       ...params,
+      value,
     });
     return transaction;
   };

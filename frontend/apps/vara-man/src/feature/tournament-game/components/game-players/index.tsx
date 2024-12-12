@@ -4,14 +4,12 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 
 import { useGame } from '@/app/context/ctx-game';
-import { cn } from '@/app/utils';
+import { cn, useCancelTournamentMessage } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useApp } from '@/app/context/ctx-app';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { GAME_OVER, PRIZE_POOL } from '@/feature/game/consts';
 import { ConfirmCancelModal } from '../modals/confirm-cancel';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
 
 export const GamePlayers = () => {
   const { api } = useApi();
@@ -20,62 +18,58 @@ export const GamePlayers = () => {
   const { isPending, setIsPending } = useApp();
   const [prizePool, setPrizePool] = useAtom(PRIZE_POOL);
 
-  const handleMessage = useGameMessage();
-  const { gasless, signless } = useEzTransactions();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
-  const gasLimit = 120000000000;
+  const { cancelTournamentMessage } = useCancelTournamentMessage();
+  const { gasless } = useEzTransactions();
 
   const setGameOver = useSetAtom(GAME_OVER);
   const [sortedParticipants, setSortedParticipants] = useState<any>([]);
   const [isOpenCancelModal, setIsOpenCancelModal] = useState(false);
 
-  const startTime = parseInt(tournamentGame?.[0].stage.Started.replace(/,/g, '') || '0', 10);
-  const durationMs = parseInt(tournamentGame?.[0].durationMs.replace(/,/g, '') || '0', 10);
+  const startTime = (tournamentGame && 'started' in tournamentGame.stage && Number(tournamentGame.stage.started)) || 0;
+  const durationMs = tournamentGame?.duration_ms || 0;
   const endTime = startTime + durationMs;
 
-  const [timeLeft, setTimeLeft] = useState(endTime - Date.now());
+  const [timeLeft, setTimeLeft] = useState(Math.max(endTime - Date.now(), 0));
 
-  const onSuccess = () => setIsPending(false);
-
-  const isAdmin = tournamentGame?.[0].admin === account?.decodedAddress;
+  const isAdmin = tournamentGame?.admin === account?.decodedAddress;
 
   const onCancelGame = () => {
-    setIsPending(true);
-
     if (!gasless.isLoading) {
-      checkBalance(gasLimit, () =>
-        handleMessage({
-          payload: { CancelTournament: {} },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          onSuccess,
-          onError: onSuccess,
-        }),
-      );
+      setIsPending(true);
+      cancelTournamentMessage({
+        onSuccess: () => {
+          setIsPending(false);
+          setTimeLeft(0);
+          setGameOver(false);
+        },
+        onError: () => {
+          setIsPending(false);
+          setTimeLeft(0);
+        },
+      });
     }
   };
 
   const [decimals] = api?.registry.chainDecimals ?? [12];
-  const bid = parseFloat(String(tournamentGame?.[0].bid).replace(/,/g, '') || '0') / 10 ** decimals;
+  const bid = parseFloat(String(tournamentGame?.bid).replace(/,/g, '') || '0') / 10 ** decimals;
 
   useEffect(() => {
     const updateTimer = () => {
       const now = Date.now();
       const timeLeft = endTime - now;
-      setTimeLeft(Math.max(timeLeft, 0));
-
-      if (timeLeft <= 0) {
+      if (timeLeft <= 0 && tournamentGame && 'started' in tournamentGame.stage) {
         setGameOver(true);
+      } else if (timeLeft <= 0) {
+        setTimeLeft(0);
+      } else {
+        setTimeLeft(Math.max(timeLeft, 0));
       }
     };
 
     const timerId = setInterval(updateTimer, 1000);
 
     return () => clearInterval(timerId);
-  }, [endTime]);
+  }, [endTime, tournamentGame]);
 
   const minutes = Math.floor(timeLeft / 60000);
   const seconds = Math.floor((timeLeft % 60000) / 1000);
@@ -84,21 +78,21 @@ export const GamePlayers = () => {
 
   useEffect(() => {
     if (tournamentGame) {
-      const pool = bid * tournamentGame?.[0].participants.length;
+      const pool = bid * tournamentGame?.participants.length;
 
       setPrizePool(pool);
     }
   }, []);
 
   useEffect(() => {
-    if (!tournamentGame?.[0]?.participants) {
+    if (!tournamentGame?.participants) {
       return;
     }
 
-    const sortedParticipants = tournamentGame[0].participants
+    const sortedParticipants = tournamentGame.participants
       .map((participant) => {
-        const timeInMs = parseInt(participant[1].time.replace(/,/g, ''), 10);
-        const points = parseInt(participant[1].points.replace(/,/g, ''), 10);
+        const timeInMs = Number(participant[1].time);
+        const points = Number(participant[1].points);
         return {
           address: participant[0],
           name: participant[1].name,
@@ -120,7 +114,7 @@ export const GamePlayers = () => {
         <ConfirmCancelModal setIsOpenCancelModal={setIsOpenCancelModal} onCancelGame={onCancelGame} />
       )}
 
-      <h3 className="text-2xl font-bold">{tournamentGame?.[0].tournamentName}</h3>
+      <h3 className="text-2xl font-bold">{tournamentGame?.tournament_name}</h3>
       <div className="flex gap-10 justify-between">
         <div className="flex gap-3">
           <p className="text-[#555756]">Prize pool:</p>
@@ -171,9 +165,9 @@ export const GamePlayers = () => {
                   {(index === 1 || index === 2) && <SpriteIcon name="medal-line" height={24} width={24} />}
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="font-semibold">{participant.name}</p>
+                  <p className="font-semibold w-10 lg:w-20 text-ellipsis overflow-hidden">{participant.name}</p>
                 </div>
-                <div className="flex items-center justify-end gap-1 w-full mr-20">
+                <div className="flex items-center justify-end gap-1 lg:w-full lg:mr-20">
                   <SpriteIcon name="game-time" height={16} width={16} />
                   <p className="font-semibold">{timeFormatted}</p>
                 </div>

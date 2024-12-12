@@ -10,7 +10,7 @@ import { Player } from '../Player';
 import { Loader } from '@/components';
 import { RTC_CONFIG } from '../../config';
 import { Button } from '@/ui';
-import { useProgramState } from '@/hooks';
+import { useGetStateQuery } from '@/app/utils';
 
 function Watch({ socket, streamId }: WatchProps) {
   const navigate = useNavigate();
@@ -20,9 +20,8 @@ function Watch({ socket, streamId }: WatchProps) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
-  const {
-    state: { streamTeasers },
-  } = useProgramState();
+  const { streams } = useGetStateQuery();
+
   const [streamStatus, setStreamStatus] = useState<StreamState>('ready-to-play');
 
   const handleGetPublicKey = async () => {
@@ -230,10 +229,10 @@ function Watch({ socket, streamId }: WatchProps) {
       )}
       {streamStatus === 'ready-to-play' && (
         <div className={cx(styles['broadcast-not-available'])}>
-          {streamTeasers?.[streamId].imgLink && (
+          {streams?.[streamId].img_link && (
             <>
               <img
-                src={streamTeasers?.[streamId].imgLink}
+                src={streams?.[streamId].img_link}
                 alt="stream background"
                 className={cx(styles['stream-background'])}
               />

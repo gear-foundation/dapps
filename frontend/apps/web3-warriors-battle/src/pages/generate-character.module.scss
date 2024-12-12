@@ -1,0 +1,50 @@
+.character {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 295px;
+}
+
+.card {
+  position: absolute;
+  top: 158px;
+  width: 668px;
+
+  height: 472px;
+
+  &Filled {
+    top: 56px;
+    width: 881px;
+
+    & > :first-child {
+      gap: 24px;
+      padding-top: 32px;
+      padding-bottom: 0;
+      gap: 0px;
+    }
+  }
+}
+
+.container {
+  position: absolute;
+  top: 556px;
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  & > div {
+    flex: 1;
+  }
+}
+
+.generate {
+  width: 306px;
+}

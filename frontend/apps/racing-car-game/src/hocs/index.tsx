@@ -11,12 +11,12 @@ import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from 'gear-ez-transactions';
 import { ADDRESS } from 'consts';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { Alert, alertStyles } from '@/ui';
-import metaTxt from '@/assets/meta/meta.txt';
-import { createSignatureType } from '@/utils';
+import { useProgram } from '@/app/utils';
 
 function DnsProvider({ children }: ProviderProps) {
   return (
@@ -44,6 +44,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+
   return (
     <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={6}>
       {children}
@@ -53,11 +54,9 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+  const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider
-      programId={programId}
-      metadataSource={metaTxt}
-      createSignatureType={createSignatureType}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -68,6 +67,7 @@ const providers = [
   AlertProvider,
   ApiProvider,
   DnsProvider,
+  QueryProvider,
   AccountProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
