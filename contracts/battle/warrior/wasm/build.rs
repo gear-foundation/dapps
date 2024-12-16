@@ -1,4 +1,3 @@
-use sails_idl_gen;
 use std::{
     env,
     fs::File,
