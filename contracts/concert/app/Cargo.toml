@@ -13,5 +13,4 @@ extended-vmt-client.workspace = true
 gclient.workspace = true
 concert = { path = "../wasm" }
 tokio = "1"
-extended-vmt = { git = "https://github.com/gear-foundation/standards/"}
-
+extended-vmt.workspace = true
