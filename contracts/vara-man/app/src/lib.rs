@@ -6,10 +6,10 @@ use sails_rs::prelude::*;
 mod services;
 use crate::services::game::utils::Config;
 use services::{game::Service, session::SessionService};
-pub struct Program(());
+pub struct VaraManProgram(());
 
 #[program]
-impl Program {
+impl VaraManProgram {
     pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         Service::init(config, dns_id_and_name).await;
         SessionService::init();
