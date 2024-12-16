@@ -1,6 +1,5 @@
-use crate::services::galactic_express::utils;
 use crate::services::galactic_express::{
-    Event, Game, GameError, HaltReason, Participant, Random, Results, Stage, Storage, Turn,
+    utils, Event, Game, GameError, HaltReason, Participant, Random, Results, Stage, Storage, Turn,
     Weather, MAX_FUEL, MAX_PARTICIPANTS, MAX_PAYLOAD, PENALTY_LEVEL, REWARD, TURNS, TURN_ALTITUDE,
 };
 use sails_rs::{collections::HashMap, gstd::msg, prelude::*};

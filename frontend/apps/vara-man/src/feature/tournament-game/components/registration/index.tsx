@@ -11,7 +11,7 @@ import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useApp } from '@/app/context/ctx-app';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
 import { useCancelRegisterMessage } from '@/app/utils/sails/messages/use-cancel-register-message';
 

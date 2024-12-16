@@ -6,7 +6,7 @@ import { TextField } from '@/components/layout/text-field';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { GameDetails } from '@/components/layout/game-details';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePending } from '@/features/game/hooks';
 import styles from './GameFoundModal.module.scss';

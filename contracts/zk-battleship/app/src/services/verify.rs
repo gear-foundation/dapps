@@ -1,10 +1,12 @@
 use core::ops::AddAssign;
-use gbuiltin_bls381::ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
-use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr};
-use gbuiltin_bls381::ark_ff::PrimeField;
-use gbuiltin_bls381::ark_scale;
-use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use gbuiltin_bls381::{Request, Response};
+use gbuiltin_bls381::{
+    ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine},
+    ark_ec::{pairing::Pairing, AffineRepr},
+    ark_ff::PrimeField,
+    ark_scale,
+    ark_serialize::{CanonicalDeserialize, CanonicalSerialize},
+    Request, Response,
+};
 use gstd::{ext, msg, prelude::*, ActorId, Encode};
 
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
