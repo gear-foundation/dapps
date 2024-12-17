@@ -943,24 +943,35 @@ dependencies = [
 name = "car-races"
 version = "1.1.0"
 dependencies = [
+ "car-races",
  "car-races-app",
- "gear-wasm-builder",
- "sails-client-gen",
+ "car-races-client",
+ "gtest",
  "sails-idl-gen",
  "sails-rs",
+ "tokio",
 ]
 
 [[package]]
 name = "car-races-app"
-version = "1.1.0"
+version = "0.1.0"
 dependencies = [
  "gstd",
- "gtest",
  "parity-scale-codec",
- "sails-client-gen",
  "sails-rs",
  "scale-info",
  "session-service",
+]
+
+[[package]]
+name = "car-races-client"
+version = "0.1.0"
+dependencies = [
+ "car-races-app",
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
 ]
 
 [[package]]
@@ -1177,24 +1188,34 @@ checksum = "2382f75942f4b3be3690fe4f86365e9c853c1587d6ee58212cebf6e2a9ccd101"
 name = "concert"
 version = "1.1.0"
 dependencies = [
+ "concert",
  "concert-app",
- "gear-wasm-builder",
- "sails-client-gen",
+ "concert-client",
+ "extended-vmt",
+ "extended-vmt-client",
  "sails-idl-gen",
  "sails-rs",
+ "tokio",
 ]
 
 [[package]]
 name = "concert-app"
-version = "1.1.0"
+version = "0.1.0"
 dependencies = [
- "concert",
- "extended-vmt",
  "extended-vmt-client",
- "gclient",
  "gstd",
  "sails-rs",
- "tokio",
+]
+
+[[package]]
+name = "concert-client"
+version = "0.1.0"
+dependencies = [
+ "concert-app",
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
 ]
 
 [[package]]
@@ -2580,25 +2601,33 @@ dependencies = [
 name = "galactic-express"
 version = "1.1.0"
 dependencies = [
+ "galactic-express",
  "galactic-express-app",
- "gear-wasm-builder",
- "sails-client-gen",
+ "galactic-express-client",
+ "gstd",
  "sails-idl-gen",
  "sails-rs",
+ "tokio",
 ]
 
 [[package]]
 name = "galactic-express-app"
-version = "1.1.0"
+version = "0.1.0"
 dependencies = [
- "galactic-express",
- "gclient",
- "gear-core",
  "gstd",
- "gtest",
  "num-traits",
  "sails-rs",
- "tokio",
+]
+
+[[package]]
+name = "galactic-express-client"
+version = "0.1.0"
+dependencies = [
+ "galactic-express-app",
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
 ]
 
 [[package]]
@@ -8024,23 +8053,32 @@ dependencies = [
 name = "tic-tac-toe"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
- "sails-client-gen",
  "sails-idl-gen",
  "sails-rs",
+ "tic-tac-toe",
  "tic-tac-toe-app",
+ "tic-tac-toe-client",
+ "tokio",
 ]
 
 [[package]]
 name = "tic-tac-toe-app"
-version = "1.1.0"
+version = "0.1.0"
 dependencies = [
- "gclient",
  "gstd",
  "sails-rs",
  "schnorrkel 0.10.2",
- "tic-tac-toe",
- "tokio",
+]
+
+[[package]]
+name = "tic-tac-toe-client"
+version = "0.1.0"
+dependencies = [
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "tic-tac-toe-app",
 ]
 
 [[package]]
@@ -8535,7 +8573,31 @@ checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 name = "vara-man"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
+ "extended-vft-client",
+ "gtest",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+ "vara-man",
+ "vara-man-app",
+ "vara-man-client",
+]
+
+[[package]]
+name = "vara-man-app"
+version = "0.1.0"
+dependencies = [
+ "extended-vft-client",
+ "gstd",
+ "sails-rs",
+ "schnorrkel 0.10.2",
+]
+
+[[package]]
+name = "vara-man-client"
+version = "0.1.0"
+dependencies = [
+ "mockall",
  "sails-client-gen",
  "sails-idl-gen",
  "sails-rs",
@@ -8543,40 +8605,35 @@ dependencies = [
 ]
 
 [[package]]
-name = "vara-man-app"
-version = "1.1.0"
-dependencies = [
- "extended-vft",
- "extended-vft-client",
- "gclient",
- "gstd",
- "gtest",
- "sails-rs",
- "schnorrkel 0.10.2",
- "tokio",
- "vara-man",
-]
-
-[[package]]
 name = "varatube"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
  "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+ "varatube",
  "varatube-app",
+ "varatube-client",
 ]
 
 [[package]]
 name = "varatube-app"
-version = "1.1.0"
+version = "0.1.0"
 dependencies = [
  "extended-vft-client",
- "gclient",
- "gear-core",
  "gstd",
- "gtest",
  "sails-rs",
- "tokio",
+]
+
+[[package]]
+name = "varatube-client"
+version = "0.1.0"
+dependencies = [
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "varatube-app",
 ]
 
 [[package]]
@@ -8724,20 +8781,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "warrior-app"
-version = "0.1.0"
-dependencies = [
- "sails-rs",
-]
-
-[[package]]
-name = "warrior-wasm"
+name = "warrior"
 version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "sails-idl-gen",
  "sails-rs",
  "warrior-app",
+]
+
+[[package]]
+name = "warrior-app"
+version = "0.1.0"
+dependencies = [
+ "sails-rs",
 ]
 
 [[package]]
