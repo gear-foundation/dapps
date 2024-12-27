@@ -1,0 +1,24 @@
+[package]
+name = "dex"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+dex-app = { path = "app" }
+
+[build-dependencies]
+dex-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+extended-vft-client.workspace = true
+
+[dev-dependencies]
+dex = { path = ".", features = ["wasm-binary"] }
+dex-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+extended-vft-client.workspace = true
+
+[features]
+wasm-binary = []
