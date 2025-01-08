@@ -1,25 +1,21 @@
 [package]
 name = "oracle"
-version.workspace = true
-edition.workspace = true
-publish.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
-gstd.workspace = true
-async-trait.workspace = true
-oracle-io.workspace = true
-
-[dev-dependencies]
-gstd.workspace = true
-gtest.workspace = true
-gclient.workspace = true
-tokio.workspace = true
-oracle-randomness-io.workspace = true
-
-# External binaries
-
-oracle-randomness.workspace = true
+oracle-app = { path = "app" }
 
 [build-dependencies]
-oracle-io.workspace = true
-gear-wasm-builder.workspace = true
+oracle-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+oracle = { path = ".", features = ["wasm-binary"] }
+oracle-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { version = "1.41", features = ["rt", "macros"] }
+
+[features]
+wasm-binary = []
