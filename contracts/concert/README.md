@@ -9,5 +9,5 @@ cargo b -r -p "concert"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "concert-app"
+cargo t -r -p "concert"
 ```

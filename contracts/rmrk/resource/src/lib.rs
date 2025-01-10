@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use rmrk_catalog_io::{CatalogAction, CatalogReply};
 use rmrk_resource_io::*;

@@ -1,5 +1,7 @@
-use crate::services::game::utils::Config;
-use crate::services::session::{Event, SessionData, SessionError, SessionMap, SignatureData};
+use crate::services::{
+    game::utils::Config,
+    session::{Event, SessionData, SessionError, SessionMap, SignatureData},
+};
 use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 
