@@ -2,9 +2,11 @@ use super::{
     utils::{Result, Status, *},
     Event,
 };
-use crate::admin::storage::configuration::Configuration;
-use crate::services::verify::{VerificationResult, VerificationVariables};
-use crate::single::Entity;
+use crate::{
+    admin::storage::configuration::Configuration,
+    services::verify::{VerificationResult, VerificationVariables},
+    single::Entity,
+};
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 
 /// Creates a new multiplayer game and schedules its potential deletion.

@@ -13,5 +13,5 @@ cargo b -r -p "vara-man"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "vara-man-app"
+cargo t -r -p "vara-man"
 ```

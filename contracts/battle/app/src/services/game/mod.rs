@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::new_without_default)]
+#![allow(static_mut_refs)]
 use crate::services;
 use sails_rs::{
     collections::{HashMap, HashSet},
@@ -8,8 +9,7 @@ use sails_rs::{
 };
 mod funcs;
 pub mod utils;
-use utils::Config;
-use utils::*;
+use utils::{Config, *};
 
 #[derive(Debug, Default, Clone)]
 struct Storage {

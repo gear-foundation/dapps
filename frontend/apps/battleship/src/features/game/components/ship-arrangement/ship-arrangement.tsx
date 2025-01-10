@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';

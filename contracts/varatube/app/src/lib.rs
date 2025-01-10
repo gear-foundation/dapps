@@ -1,6 +1,6 @@
 #![no_std]
 #![allow(clippy::new_without_default)]
-
+#![allow(static_mut_refs)]
 use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 pub mod funcs;
@@ -207,10 +207,10 @@ impl Service {
     }
 }
 
-pub struct Program(());
+pub struct VaratubeProgram(());
 
 #[program]
-impl Program {
+impl VaratubeProgram {
     pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         Service::init(config, dns_id_and_name).await;
         Self(())

@@ -4,7 +4,7 @@ import isEqual from 'lodash.isequal';
 import { useAccount } from '@gear-js/react-hooks';
 
 import { Container, Footer } from '@dapps-frontend/ui';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import styles from './Layout.module.scss';
 import { cx } from '@/utils';
 import { Heading } from '../Heading';
