@@ -73,7 +73,7 @@ async fn test_add_liquidity() {
 
     // Deploy the DEX contract
     let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, None)
+        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -86,45 +86,45 @@ async fn test_add_liquidity() {
         program_space.system(),
         USER_ID,
         dex_id,
-        300.into(),
+        30_000.into(),
     );
     approve_ft(
         &vft_program_b,
         program_space.system(),
         USER_ID,
         dex_id,
-        300.into(),
+        30_000.into(),
     );
 
     // Add initial liquidity to the DEX pool
     client
-        .add_liquidity(100.into(), 100.into())
+        .add_liquidity(10_000.into(), 10_000.into())
         .send_recv(dex_id)
         .await
         .unwrap();
 
     // Verify the state after adding liquidity
     let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(total_liquidity, 100.into(), "Total liquidity should match initial addition");
+    assert_eq!(total_liquidity, 9_000.into(), "Total liquidity should match initial addition");
     let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_a, 100.into(), "Reserve A should match initial addition");
+    assert_eq!(reserve_a, 10_000.into(), "Reserve A should match initial addition");
     let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_b, 100.into(), "Reserve B should match initial addition");
+    assert_eq!(reserve_b, 10_000.into(), "Reserve B should match initial addition");
 
     // Add more liquidity to the DEX pool
     client
-        .add_liquidity(200.into(), 200.into())
+        .add_liquidity(20_000.into(), 20_000.into())
         .send_recv(dex_id)
         .await
         .unwrap();
 
     // Verify the updated state
     let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(total_liquidity, 300.into(), "Total liquidity should match after second addition");
+    assert_eq!(total_liquidity, 27_000.into(), "Total liquidity should match after second addition");
     let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_a, 300.into(), "Reserve A should match after second addition");
+    assert_eq!(reserve_a, 30_000.into(), "Reserve A should match after second addition");
     let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_b, 300.into(), "Reserve B should match after second addition");
+    assert_eq!(reserve_b, 30_000.into(), "Reserve B should match after second addition");
 }
 
 /// Test for the `swap` functionality
@@ -141,11 +141,11 @@ async fn test_swap() {
     let dex_factory = Factory::new(program_space.clone());
     let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
     let (vft_id_b, vft_program_b) = init_fungible_token(program_space.system());
-    mint(program_space.system(), &vft_program_a, 500.into());
-    mint(program_space.system(), &vft_program_b, 600.into());
+    mint(program_space.system(), &vft_program_a, 5_000.into());
+    mint(program_space.system(), &vft_program_b, 6_000.into());
 
     let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, None)
+        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -158,19 +158,19 @@ async fn test_swap() {
         program_space.system(),
         USER_ID,
         dex_id,
-        500.into(),
+        5_000.into(),
     );
     approve_ft(
         &vft_program_b,
         program_space.system(),
         USER_ID,
         dex_id,
-        600.into(),
+        6_000.into(),
     );
 
     // Add liquidity to the pool
     client
-        .add_liquidity(500.into(), 500.into())
+        .add_liquidity(5_000.into(), 5_000.into())
         .send_recv(dex_id)
         .await
         .unwrap();
@@ -183,15 +183,16 @@ async fn test_swap() {
     );
     // Perform a swap
     client
-        .swap(100.into(), true) // Swap 100 token B for token A
+        .swap(1_000.into(), true) // Swap 1_000 token B for token A
         .send_recv(dex_id)
         .await
         .unwrap();
 
     // Calculate expected reserves after the swap
-    let reserve_a_before = U256::from(500);
-    let reserve_b_before = U256::from(500);
-    let in_amount = U256::from(100);
+    let reserve_a_before = U256::from(5_000);
+    let reserve_b_before = U256::from(5_000);
+
+    let in_amount = U256::from(1_000);
 
     // Expected calculations
     let out_amount = (in_amount * reserve_a_before) / (reserve_b_before + in_amount);
@@ -233,11 +234,11 @@ async fn test_remove_liquidity() {
     let dex_factory = Factory::new(program_space.clone());
     let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
     let (vft_id_b, vft_program_b) = init_fungible_token(program_space.system());
-    mint(program_space.system(), &vft_program_a, 500.into());
-    mint(program_space.system(), &vft_program_b, 500.into());
+    mint(program_space.system(), &vft_program_a, 10_000.into());
+    mint(program_space.system(), &vft_program_b, 10_000.into());
 
     let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, None)
+        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -249,19 +250,19 @@ async fn test_remove_liquidity() {
         program_space.system(),
         USER_ID,
         dex_id,
-        1_000.into(),
+        10_000.into(),
     );
     approve_ft(
         &vft_program_b,
         program_space.system(),
         USER_ID,
         dex_id,
-        1_000.into(),
+        10_000.into(),
     );
 
     // Add liquidity to the pool
     client
-        .add_liquidity(500.into(), 500.into())
+        .add_liquidity(5_000.into(), 5_000.into())
         .send_recv(dex_id)
         .await
         .unwrap();
@@ -278,11 +279,11 @@ async fn test_remove_liquidity() {
     let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
 
     assert!(
-        reserve_a < 500.into(),
+        reserve_a < 5_000.into(),
         "Reserve A should decrease after removing liquidity"
     );
     assert!(
-        reserve_b < 500.into(),
+        reserve_b < 5_000.into(),
         "Reserve B should decrease after removing liquidity"
     );
 
