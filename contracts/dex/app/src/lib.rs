@@ -131,9 +131,6 @@ impl DexService {
         if amount_a.is_zero() || amount_b.is_zero() {
             panic!("Amounts must be greater than zero");
         }
-
-        check_approve(&storage.token_a, &sender, &program_id, amount_a).await;
-        check_approve(&storage.token_b, &sender, &program_id, amount_b).await;
     
         if storage.reserve_a.is_zero() && storage.reserve_b.is_zero() {
             // Initial liquidity
@@ -300,7 +297,6 @@ impl DexService {
             panic!("Insufficient output reserves");
         }
 
-        check_approve(&in_token, &sender, &program_id, in_amount).await;
         storage.swap_status = SwapStatus::Paused;
 
         // Transfer the input tokens to the contract
@@ -478,19 +474,6 @@ impl DexService {
         self.get().liquidity_action_gas
     }
     
-}
-
-async fn check_approve(program_id: &ActorId, owner: &ActorId, spender: &ActorId, expected_allowance: U256) {
-    let request = vft_io::Allowance::encode_call(*owner, *spender);
-    let bytes_reply =
-        msg::send_bytes_for_reply(*program_id, request.clone(), 0, 0)
-            .expect("Error in async message to vft contract")
-            .await
-            .expect("Error getting answer from the vft contract");
-    let allowance = vft_io::Allowance::decode_reply(bytes_reply).unwrap();
-    if allowance < expected_allowance {
-        panic!("The number of approved tokens is lower than expected")
-    }
 }
 
 fn handle_reply_hook_for_output_tokens(out_token: ActorId, to: ActorId, in_amount: U256, out_amount: U256, out_is_a: bool) {
