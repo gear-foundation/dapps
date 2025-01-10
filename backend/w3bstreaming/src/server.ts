@@ -15,6 +15,7 @@ import {
   IStopWatchingMsg,
   GetInfoForUserMsg,
 } from '../types';
+import { HexString } from '@gear-js/api';
 
 const app = express();
 app.use(cors());
@@ -79,7 +80,7 @@ io.on('connection', socket => {
 
   socket.on(
     'watch',
-    async (userId: string, { encodedId, signedMsg, streamId }: IWatchMsg) => {
+    async (userId: HexString, { encodedId, signedMsg, streamId }: IWatchMsg) => {
       if (!isValidSig(encodedId, signedMsg)) {
         return socket.emit('error', { message: `Signature isn't valid` }); //check if sign is valid
       }

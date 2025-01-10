@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use codec::{Decode, Encode};
 use gstd::{exec, msg, prelude::*, ActorId};
 use tamagotchi_io::*;

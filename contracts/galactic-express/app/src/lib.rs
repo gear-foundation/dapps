@@ -4,10 +4,10 @@
 use sails_rs::prelude::*;
 mod services;
 use services::galactic_express::GameService;
-pub struct Program(());
+pub struct GalacticExpressProgram(());
 
 #[program]
-impl Program {
+impl GalacticExpressProgram {
     pub async fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         GameService::init(dns_id_and_name).await;
         Self(())

@@ -7,7 +7,7 @@
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.39.0",
-    "@gear-js/react-hooks": "0.14.0",
+    "@gear-js/react-hooks": "0.14.1",
     "@gear-js/ui": "0.5.26",
     "@mantine/form": "4.2.12",
     "@polkadot/api": "14.3.1",

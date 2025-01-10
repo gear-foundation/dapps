@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use gstd::{async_main, msg, prelude::*, ActorId};
 use oracle_randomness_io::{
     state::{self, RandomnessOracle},

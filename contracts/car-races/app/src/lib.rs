@@ -10,10 +10,10 @@ use services::{
 use session_service::*;
 
 #[derive(Default)]
-pub struct Program;
+pub struct CarRacesProgram;
 
 #[program]
-impl Program {
+impl CarRacesProgram {
     pub async fn new(
         init_config: InitConfig,
         session_config: Config,
