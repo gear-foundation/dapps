@@ -1,4 +1,4 @@
-import { EzGaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/consts';
 import styles from './Header.module.scss';

@@ -7,7 +7,7 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { Illustration } from '@/features/game/components';
 import { useGameMode } from '@/features/game/hooks';

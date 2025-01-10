@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{TmgAction, TmgReply};

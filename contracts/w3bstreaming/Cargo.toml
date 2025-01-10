@@ -2,16 +2,21 @@
 name = "w3bstreaming"
 version.workspace = true
 edition.workspace = true
-publish.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd.workspace = true
-w3bstreaming-io.workspace = true
+w3bstreaming-app = { path = "app" }
 
 [build-dependencies]
-w3bstreaming-io.workspace = true
-gear-wasm-builder.workspace = true
+w3bstreaming-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
-gtest.workspace = true
+w3bstreaming = { path = ".", features = ["wasm-binary"] }
+w3bstreaming-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+
+[features]
+wasm-binary = []

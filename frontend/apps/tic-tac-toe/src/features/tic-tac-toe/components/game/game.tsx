@@ -9,7 +9,7 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { GameInstance } from '@/app/utils';
 

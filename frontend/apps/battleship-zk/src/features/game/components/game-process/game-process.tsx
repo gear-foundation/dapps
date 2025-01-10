@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';

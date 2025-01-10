@@ -6,7 +6,7 @@ import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
-import { useGaslessTransactions, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { useGaslessTransactions, useSignlessTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 

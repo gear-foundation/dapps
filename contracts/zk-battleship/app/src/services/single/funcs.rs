@@ -2,8 +2,10 @@ use super::{
     utils::{Result, *},
     Event,
 };
-use crate::admin::storage::configuration::Configuration;
-use crate::services::verify::{PublicMoveInput, VerificationResult};
+use crate::{
+    admin::storage::configuration::Configuration,
+    services::verify::{PublicMoveInput, VerificationResult},
+};
 use gstd::{exec, msg, prelude::*, ActorId};
 
 static mut SEED: u8 = 0;

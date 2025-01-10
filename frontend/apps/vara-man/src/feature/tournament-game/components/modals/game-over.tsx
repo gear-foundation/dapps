@@ -9,7 +9,7 @@ import { useApp } from '@/app/context/ctx-app';
 import { GAME_OVER, COINS, PRIZE_POOL } from '@/feature/game/consts';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { Modal } from '@/components/ui/modal/modal2';
 import { Player, TournamentState, useCancelTournamentMessage, useLeaveGameMessage } from '@/app/utils';
 

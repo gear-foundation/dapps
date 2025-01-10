@@ -4,7 +4,7 @@ import { HeaderAdmin } from '@/components/layout/header/header-admin';
 import { Icons } from '@/components/ui/icons';
 
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import { EzGaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
 
 import styles from './Header.module.scss';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';

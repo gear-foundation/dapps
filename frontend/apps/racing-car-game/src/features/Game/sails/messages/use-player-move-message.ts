@@ -1,5 +1,5 @@
 import { useSendProgramTransaction } from '@gear-js/react-hooks';
-import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
+import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { StrategyAction, useProgram } from '@/app/utils';
 
 type Options = {

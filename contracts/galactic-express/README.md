@@ -17,7 +17,7 @@ cargo b -r -p "galactic-express"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "galactic-express-app"
+cargo t -r -p "galactic-express"
 ```
 
 ## Stages
