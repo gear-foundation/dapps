@@ -1,13 +1,11 @@
-use crate::admin::storage::{
-    builtin_bls381::BuiltinStorage, verification_key::VerificationKeyStorage,
+use crate::{
+    admin::storage::{builtin_bls381::BuiltinStorage, verification_key::VerificationKeyStorage},
+    services,
+    services::session::{funcs::get_player, storage::SessionsStorage, ActionsForSession},
 };
-use crate::services;
-use crate::services::session::storage::SessionsStorage;
-use crate::services::session::{funcs::get_player, ActionsForSession};
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::gstd::service;
-use sails_rs::{format, Box};
+use sails_rs::{format, gstd::service, Box};
 
 pub use utils::*;
 

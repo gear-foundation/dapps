@@ -12,5 +12,5 @@ cargo b -r -p "varatube"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "varatube-app"
+cargo t -r -p "varatube"
 ```

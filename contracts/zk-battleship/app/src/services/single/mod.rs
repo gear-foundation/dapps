@@ -1,14 +1,15 @@
 use self::storage::SingleGamesStorage;
-use crate::admin::storage::{
-    builtin_bls381::BuiltinStorage, configuration::ConfigurationStorage,
-    verification_key::VerificationKeyStorage,
+use crate::{
+    admin::storage::{
+        builtin_bls381::BuiltinStorage, configuration::ConfigurationStorage,
+        verification_key::VerificationKeyStorage,
+    },
+    services,
+    services::session::storage::SessionsStorage,
 };
-use crate::services;
-use crate::services::session::storage::SessionsStorage;
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::gstd::service;
-use sails_rs::{format, Box};
+use sails_rs::{format, gstd::service, Box};
 
 pub use utils::*;
 

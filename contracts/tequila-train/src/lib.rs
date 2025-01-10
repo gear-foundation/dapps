@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use tequila_train_io::*;
 

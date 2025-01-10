@@ -1,33 +1,15 @@
-import { AnyJson } from '@polkadot/types/types';
-import { HexString } from '@polkadot/util/types';
-import { User } from '../Account/types';
+import { Profile, Stream } from '@/app/utils';
 
-export type StreamProps = Stream;
-
-export interface Stream {
-  broadcaster: HexString;
-  startTime: string;
-  endTime: string;
-  title: string;
-  imgLink?: string;
-  description?: string;
-  broadcasterInfo?: User;
-  watchers: [];
-  timeCreation: string;
+export interface StreamWithInfo extends Stream {
+  broadcasterInfo?: Profile;
 }
+
+export type StreamProps = StreamWithInfo;
 
 export interface Streams {
   [key: string]: Stream;
 }
 
-export interface FormattedTeaser {
+export interface FormattedTeaser extends Stream {
   id: string;
-  broadcaster: HexString;
-  startTime: string;
-  endTime: string;
-  title: string;
-  description?: string;
-  imgLink?: string;
-  watchers: [];
-  timeCreation: string;
 }

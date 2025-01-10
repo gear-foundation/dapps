@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { Button } from '@/ui';
 import { START } from '@/App.routes';
 import { Welcome } from '@/features/Main/components';

@@ -1,8 +1,10 @@
-use crate::services::game::{
-    Config, Event, GameError, GameStorage, Level, Player, Stage, Status, Tournament,
-    MAX_PARTICIPANTS,
+use crate::services::{
+    game::{
+        Config, Event, GameError, GameStorage, Level, Player, Stage, Status, Tournament,
+        MAX_PARTICIPANTS,
+    },
+    session::utils::{ActionsForSession, SessionData},
 };
-use crate::services::session::utils::{ActionsForSession, SessionData};
 use extended_vft_client::vft::io as vft_io;
 use sails_rs::{
     collections::HashMap,

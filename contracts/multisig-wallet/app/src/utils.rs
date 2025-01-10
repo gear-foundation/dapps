@@ -1,6 +1,8 @@
-use sails_rs::collections::{HashMap, HashSet};
-use sails_rs::gstd::{exec, msg};
-use sails_rs::prelude::*;
+use sails_rs::{
+    collections::{HashMap, HashSet},
+    gstd::{exec, msg},
+    prelude::*,
+};
 
 pub type TransactionId = U256;
 const MAX_OWNERS_COUNT: u32 = 50;
