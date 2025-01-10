@@ -13,5 +13,5 @@ cargo b -r -p "tic-tac-toe"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "tic-tac-toe-app"
+cargo t -r -p "tic-tac-toe"
 ```

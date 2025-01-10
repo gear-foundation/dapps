@@ -1,3 +1,5 @@
+#![allow(static_mut_refs)]
+
 use crate::services;
 use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, gstd::service, prelude::*};

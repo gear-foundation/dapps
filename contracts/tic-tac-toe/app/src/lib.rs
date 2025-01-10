@@ -4,12 +4,11 @@
 use sails_rs::prelude::*;
 mod services;
 use crate::services::game::utils::Config;
-use services::game::GameService;
-use services::session::SessionService;
-pub struct Program(());
+use services::{game::GameService, session::SessionService};
+pub struct TicTacToeProgram(());
 
 #[program]
-impl Program {
+impl TicTacToeProgram {
     pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         GameService::init(config, dns_id_and_name).await;
         SessionService::init();

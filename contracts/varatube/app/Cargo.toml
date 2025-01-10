@@ -1,16 +1,9 @@
 [package]
 name = "varatube-app"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
 sails-rs.workspace = true
+gstd = { workspace = true, features = ["debug"] }
 extended-vft-client.workspace = true
-
-[dev-dependencies]
-gtest.workspace = true
-gear-core.workspace = true
-gclient.workspace = true
-tokio = "1"

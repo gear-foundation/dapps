@@ -7,7 +7,7 @@ function Select({ label, size, placeholder, options, ...props }: SelectProps) {
   return (
     <div className={styles.select}>
       <select className={styles['select-text']} required {...props}>
-        <option value="" disabled selected />
+        <option value="" disabled />
         {options.map((option) => (
           <option value={option.value} key={`${option.label}-${option.value}`}>
             {option.label}

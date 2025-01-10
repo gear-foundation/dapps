@@ -9,7 +9,7 @@ import { COINS, GAME_OVER, MS_TIME_GAME_OVER } from '../game/consts';
 import { useGame } from '@/app/context/ctx-game';
 
 import { GamePlayAgainModal } from './components/modals/game-play-again';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import useOnScreen from '@/hooks/use-on-screen';
 import { GameCanvas } from '../game/components/game-canvas/game-canvas';
 import { useRecordTournamentResultMessage } from '@/app/utils';

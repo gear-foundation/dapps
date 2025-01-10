@@ -3,7 +3,7 @@ import { TableRow } from '@/ui/Table/Table.interfaces';
 export interface SubscriptionsData extends TableRow {
   id: string;
   Streamer: string;
-  img: string;
+  img: string | null;
   'Date of next write-off': string;
   'Subscription Date': string;
 }
