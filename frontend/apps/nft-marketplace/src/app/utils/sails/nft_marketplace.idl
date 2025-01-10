@@ -1,0 +1,62 @@
+type MarketState = struct {
+  admin_id: actor_id,
+  items: vec struct { struct { actor_id, u256 }, ItemState },
+  approved_nft_contracts: vec actor_id,
+  approved_ft_contracts: vec actor_id,
+};
+
+type ItemState = struct {
+  frozen: bool,
+  token_id: u256,
+  owner: actor_id,
+  ft_contract_id: opt actor_id,
+  price: opt u128,
+  auction: opt Auction,
+  offers: vec struct { struct { opt actor_id, u128 }, actor_id },
+};
+
+type Auction = struct {
+  started_at: u64,
+  ended_at: u64,
+  current_price: u128,
+  current_winner: actor_id,
+};
+
+constructor {
+  New : (admin_id: actor_id);
+};
+
+service NftMarketplace {
+  AcceptOffer : (nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, price: u128) -> null;
+  AddBid : (nft_contract_id: actor_id, token_id: u256, price: u128) -> null;
+  AddFtContract : (ft_contract_id: actor_id) -> null;
+  AddMarketData : (nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, price: opt u128) -> null;
+  AddNftContract : (nft_contract_id: actor_id) -> null;
+  AddOffer : (nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, price: u128) -> null;
+  BuyItem : (nft_contract_id: actor_id, token_id: u256) -> null;
+  CreateAuction : (nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, min_price: u128, duration: u64) -> null;
+  RemoveMarketData : (nft_contract_id: actor_id, token_id: u256) -> null;
+  SettleAuction : (nft_contract_id: actor_id, token_id: u256) -> null;
+  Withdraw : (nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, price: u128) -> null;
+  query GetMarket : () -> MarketState;
+
+  events {
+    NftContractAdded: actor_id;
+    FtContractAdded: actor_id;
+    MarketDataAdded: struct { nft_contract_id: actor_id, token_id: u256, price: opt u128 };
+    MarketDataRemoved: struct { owner: actor_id, nft_contract_id: actor_id, token_id: u256 };
+    ItemSold: struct { owner: actor_id, nft_contract_id: actor_id, token_id: u256 };
+    BidAdded: struct { nft_contract_id: actor_id, token_id: u256, price: u128 };
+    AuctionCreated: struct { nft_contract_id: actor_id, token_id: u256, price: u128 };
+    AuctionSettled: struct { nft_contract_id: actor_id, token_id: u256, price: u128 };
+    AuctionCancelled: struct { nft_contract_id: actor_id, token_id: u256 };
+    NFTListed: struct { nft_contract_id: actor_id, owner: actor_id, token_id: u256, price: opt u128 };
+    OfferAdded: struct { nft_contract_id: actor_id, ft_contract_id: opt actor_id, token_id: u256, price: u128 };
+    OfferAccepted: struct { nft_contract_id: actor_id, token_id: u256, new_owner: actor_id, price: u128 };
+    Withdraw: struct { nft_contract_id: actor_id, token_id: u256, price: u128 };
+    TransactionFailed;
+    RerunTransaction;
+    TransferValue;
+  }
+};
+

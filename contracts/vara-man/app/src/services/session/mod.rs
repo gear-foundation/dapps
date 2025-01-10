@@ -1,3 +1,4 @@
+#![allow(static_mut_refs)]
 use super::game::GameStorage;
 use crate::services;
 use sails_rs::{collections::HashMap, gstd::service, prelude::*};

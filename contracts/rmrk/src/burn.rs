@@ -1,5 +1,4 @@
-use crate::utils::get_rmrk_owner;
-use crate::*;
+use crate::{utils::get_rmrk_owner, *};
 use gstd::msg;
 
 impl RMRKToken {

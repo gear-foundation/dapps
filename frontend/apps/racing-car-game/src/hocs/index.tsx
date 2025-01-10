@@ -11,7 +11,7 @@ import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from 'gear-ez-transactions';
 import { ADDRESS } from 'consts';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
