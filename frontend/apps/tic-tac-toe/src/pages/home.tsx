@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { Game, Welcome } from '@/features/tic-tac-toe';
 import { Wallet } from '@dapps-frontend/ui';

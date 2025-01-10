@@ -13,7 +13,7 @@ import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from 'gear-ez-transactions';
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';

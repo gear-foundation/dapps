@@ -1,42 +1,29 @@
 import { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
 import moment from 'moment-timezone';
-import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import styles from './ProfileInfo.module.scss';
 import { FormValues } from './ProfileInfo.interfaces';
-import { cx, logger } from '@/utils';
+import { cx } from '@/utils';
 import { Button, TextField } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
 import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
-import { useEditProfileMessage } from '../../hooks';
-import { User } from '../../types';
-import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
-import { ADDRESS } from '@/consts';
-import { IS_CREATING_ACCOUNT_ATOM } from '../../atoms';
 import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
 import picImage from '@/assets/icons/picture.png';
 import { Select } from '@/ui/Select';
+import { Profile, useEditProfileMessage, useGetStateQuery } from '@/app/utils';
+import { usePending } from '@/app/hooks';
 
 function ProfileInfo() {
   const { account } = useAccount();
-  const alert = useAlert();
-  const { meta } = useGetStreamMetadata();
-  const { programId } = useDnsProgramIds();
-  const {
-    state: { users },
-    updateUsers,
-  } = useProgramState();
-  const sendMessage = useEditProfileMessage();
-  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const { users, refetch } = useGetStateQuery();
+
+  const { editProfileMessage } = useEditProfileMessage();
+  const [userInfo, setUserInfo] = useState<Profile | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
-  const [isCreatingAccount, setIsCreatingAccount] = useAtom(IS_CREATING_ACCOUNT_ATOM);
-  const calculateGas = useHandleCalculateGas(programId, meta);
-  const { checkBalance } = useCheckBalance();
+  const { pending } = usePending();
 
   const validateName = (value: string, name: string) => {
     if (value.length > 16) {
@@ -54,13 +41,13 @@ function ProfileInfo() {
     initialValues: {
       name: userInfo?.name || '',
       surname: userInfo?.surname || '',
-      imgLink: userInfo?.imgLink || '',
-      timezone: userInfo?.timeZone || '',
+      img_link: userInfo?.img_link || '',
+      time_zone: userInfo?.time_zone || '',
     },
     validate: {
       name: (val) => validateName(val, 'Name'),
       surname: (val) => validateName(val, 'Surname'),
-      timezone: isNotEmpty('You must select your timezone'),
+      time_zone: isNotEmpty('You must select your timezone'),
     },
   });
 
@@ -71,8 +58,8 @@ function ProfileInfo() {
 
     setFieldValue('name', userInfo?.name || '');
     setFieldValue('surname', userInfo?.surname || '');
-    setFieldValue('imgLink', userInfo?.imgLink || '');
-    setFieldValue('timezone', userInfo?.timeZone || '');
+    setFieldValue('img_link', userInfo?.img_link || '');
+    setFieldValue('time_zone', userInfo?.time_zone || '');
   };
 
   const handleCancelEditing = () => {
@@ -80,82 +67,28 @@ function ProfileInfo() {
   };
 
   const handleDropImg = (prev: string[]) => {
-    setFieldValue('imgLink', prev[0]);
+    setFieldValue('img_link', prev[0]);
   };
 
-  const handleSubmit = ({ name, surname, imgLink, timezone }: FormValues) => {
-    setIsCreatingAccount(true);
-    const payload = {
-      EditProfile: {
-        name,
-        surname,
-        imgLink,
-        timeZone: timezone,
+  const handleSubmit = ({ name, surname, img_link, time_zone }: FormValues) => {
+    console.log('submit');
+    editProfileMessage(
+      { name, surname, img_link, time_zone },
+      {
+        onSuccess: () => {
+          setIsEditingProfile(false);
+          setUserInfo((prev) => (prev ? { ...prev, name, surname, img_link, time_zone } : prev));
+          reset();
+          refetch();
+        },
       },
-    };
-
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const minLimit = withoutCommas(min_limit as string);
-        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-        logger(`Calculating gas:`);
-        logger(`MIN_LIMIT ${min_limit}`);
-        logger(`LIMIT ${gasLimit}`);
-        logger(`Calculated gas SUCCESS`);
-        logger(`Sending message`);
-
-        checkBalance(
-          gasLimit,
-          () =>
-            sendMessage({
-              payload,
-              gasLimit,
-              onError: () => {
-                logger(`Errror send message`);
-                setIsCreatingAccount(false);
-              },
-              onSuccess: (messageId) => {
-                logger(`sucess on ID: ${messageId}`);
-                if (isEditingProfile) {
-                  setIsEditingProfile(false);
-                }
-                setUserInfo((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        name,
-                        surname,
-                        imgLink,
-                        timezone,
-                      }
-                    : prev,
-                );
-                reset();
-                updateUsers();
-                setIsCreatingAccount(false);
-              },
-              onInBlock: (messageId) => {
-                logger('messageInBlock');
-                logger(`messageID: ${messageId}`);
-              },
-            }),
-          () => {
-            logger(`Errror check balance`);
-            setIsCreatingAccount(false);
-          },
-        );
-      })
-      .catch((error) => {
-        setIsCreatingAccount(false);
-        logger(error);
-        alert.error('Gas calculation error');
-      });
+    );
   };
 
   useEffect(() => {
-    if (users && account?.decodedAddress && users[account.decodedAddress]) {
-      setUserInfo(users[account.decodedAddress]);
+    const user = users && account?.decodedAddress && users[account.decodedAddress];
+    if (user) {
+      setUserInfo(user);
     } else {
       setUserInfo(null);
     }
@@ -192,7 +125,7 @@ function ProfileInfo() {
     <div className={cx(styles['profile-info'])}>
       {!!userInfo && !isEditingProfile ? (
         <>
-          <img src={userInfo?.imgLink || defaultUserImg} alt="profile" className={cx(styles['profile-info-image'])} />
+          <img src={userInfo?.img_link || defaultUserImg} alt="profile" className={cx(styles['profile-info-image'])} />
           <p className={cx(styles['profile-info-name'])}>
             {userInfo?.name} {userInfo?.surname}
           </p>
@@ -202,7 +135,7 @@ function ProfileInfo() {
           <div className={cx(styles['dropzone-wrapper'])}>
             <PictureDropzone
               onDropFile={handleDropImg}
-              previewLinks={getInputProps('imgLink').value ? [getInputProps('imgLink').value] : undefined}
+              previewLinks={getInputProps('img_link').value ? [getInputProps('img_link').value] : undefined}
               content={
                 <div className={cx(styles.label)}>
                   <img src={picImage} alt="upload" />
@@ -213,21 +146,21 @@ function ProfileInfo() {
           </div>
           <div className={cx(styles['profile-info-form-fields'])}>
             <div className={cx(styles['form-item'])}>
-              <TextField label="Enter name" disabled={isCreatingAccount} {...getInputProps('name')} />
+              <TextField label="Enter name" disabled={pending} {...getInputProps('name')} />
               <span className={cx(styles['field-error'])}>{errors.name}</span>
             </div>
             <div className={cx(styles['form-item'])}>
-              <TextField label="Enter surname" disabled={isCreatingAccount} {...getInputProps('surname')} />
+              <TextField label="Enter surname" disabled={pending} {...getInputProps('surname')} />
               <span className={cx(styles['field-error'])}>{errors.surname}</span>
             </div>
             <div className={cx(styles['form-item'])}>
               <Select
                 label="Timezone"
-                disabled={isCreatingAccount}
+                disabled={pending}
                 options={handleGetTimezones()}
-                {...getInputProps('timezone')}
+                {...getInputProps('time_zone')}
               />
-              <span className={cx(styles['field-error'])}>{errors.timezone}</span>
+              <span className={cx(styles['field-error'])}>{errors.time_zone}</span>
             </div>
           </div>
           <div className={cx(styles.controls)}>
@@ -237,7 +170,7 @@ function ProfileInfo() {
               label="Save"
               icon={SuccessIcon}
               type="submit"
-              isLoading={isCreatingAccount}
+              isLoading={pending}
               className={cx(styles['save-button'])}
             />
             {!!isEditingProfile && (
@@ -248,7 +181,7 @@ function ProfileInfo() {
                 icon={CrossIcon}
                 onClick={handleCancelEditing}
                 className={cx(styles['save-button'])}
-                disabled={isCreatingAccount}
+                disabled={pending}
               />
             )}
           </div>
@@ -260,13 +193,15 @@ function ProfileInfo() {
             <span className={cx(styles['profile-info-subs-value'])}>{userInfo.subscribers.length} </span>
             <span className={cx(styles['profile-info-subs-caption'])}>subscribers</span>
           </p>
-          <p className={cx(styles['profile-info-role'])}>{userInfo?.role}</p>
-          <span className={cx(styles['profile-info-timezone'])}>
-            {userInfo.timeZone.replace('/', ', ')}{' '}
-            <span className={cx(styles.abbr)}>
-              ({moment.tz(userInfo.timeZone).zoneAbbr()} {moment.tz(userInfo.timeZone).format('Z')})
+          <p className={cx(styles['profile-info-role'])}>Speaker</p>
+          {userInfo.time_zone && (
+            <span className={cx(styles['profile-info-timezone'])}>
+              {userInfo.time_zone.replace('/', ', ')}{' '}
+              <span className={cx(styles.abbr)}>
+                ({moment.tz(userInfo.time_zone).zoneAbbr()} {moment.tz(userInfo.time_zone).format('Z')})
+              </span>
             </span>
-          </span>
+          )}
           <Button
             variant="outline"
             size="large"
