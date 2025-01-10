@@ -15,7 +15,7 @@ const USER_3: u64 = 102;
 fn init_warrior(system: &System, user: u64) -> ActorId {
     let warrior = Program::from_file(
         system,
-        "../target/wasm32-unknown-unknown/release/warrior_wasm.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/warrior.opt.wasm",
     );
     let request = ["New".encode(), ("link".to_string()).encode()].concat();
 

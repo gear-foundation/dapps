@@ -207,10 +207,10 @@ impl Service {
     }
 }
 
-pub struct Program(());
+pub struct VaratubeProgram(());
 
 #[program]
-impl Program {
+impl VaratubeProgram {
     pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         Service::init(config, dns_id_and_name).await;
         Self(())
