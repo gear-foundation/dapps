@@ -1,15 +1,9 @@
 [package]
 name = "tic-tac-toe-app"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
 gstd = { workspace = true, features = ["debug"] }
-sails-rs = { workspace = true, features = ["gtest"] }
+sails-rs.workspace = true
 schnorrkel.workspace = true
-
-[dev-dependencies]
-gclient.workspace = true
-tic-tac-toe = { path = "../wasm" }
-tokio = "1"
