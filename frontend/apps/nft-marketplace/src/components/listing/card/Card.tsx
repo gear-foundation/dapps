@@ -10,9 +10,9 @@ type Props = {
 
 function Card({ heading, text, children }: Props) {
   const isDescription = heading === 'Description';
-  const isOwner = heading === 'Owner';
+  const isEllipsis = heading === 'Owner' || heading === 'Current Winner';
 
-  const className = clsx(isDescription ? styles.description : styles.text, isOwner && styles.owner);
+  const className = clsx(isDescription ? styles.description : styles.text, isEllipsis && styles.ellipsis);
 
   return (
     <div className={styles.card}>

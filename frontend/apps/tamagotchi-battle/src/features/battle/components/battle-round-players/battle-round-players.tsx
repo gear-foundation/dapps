@@ -7,7 +7,7 @@ import { cn, gasLimitToNumber, toNumber } from 'app/utils';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useGaslessTransactions } from '@dapps-frontend/ez-transactions';
+import { useGaslessTransactions } from 'gear-ez-transactions';
 import { GAS_LIMIT } from 'app/consts';
 
 export const BattleRoundPlayers = () => {

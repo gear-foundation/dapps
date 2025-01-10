@@ -1,0 +1,58 @@
+type ProgramState = struct {
+  streams: vec struct { str, Stream },
+  users: vec struct { actor_id, Profile },
+  admins: vec actor_id,
+  dns_info: opt struct { actor_id, str },
+};
+
+type Stream = struct {
+  broadcaster: actor_id,
+  start_time: u64,
+  end_time: u64,
+  title: str,
+  img_link: str,
+  description: opt str,
+};
+
+type Profile = struct {
+  name: opt str,
+  surname: opt str,
+  img_link: opt str,
+  time_zone: opt str,
+  stream_ids: vec str,
+  subscribers: vec actor_id,
+  subscriptions: vec Subscription,
+};
+
+type Subscription = struct {
+  account_id: actor_id,
+  sub_date: u64,
+};
+
+constructor {
+  New : (dns_id_and_name: opt struct { actor_id, str });
+};
+
+service W3Bstreaming {
+  AddAdmin : (new_admin_id: actor_id) -> null;
+  DeleteStream : (stream_id: str) -> null;
+  EditProfile : (name: opt str, surname: opt str, img_link: opt str, time_zone: opt str) -> null;
+  EditStream : (stream_id: str, start_time: opt u64, end_time: opt u64, title: opt str, img_link: opt str, description: opt str) -> null;
+  Kill : (inheritor: actor_id) -> null;
+  NewStream : (title: str, description: opt str, start_time: u64, end_time: u64, img_link: str) -> null;
+  Subscribe : (account_id: actor_id) -> null;
+  Unsubscribe : (account_id: actor_id) -> null;
+  query GetState : () -> ProgramState;
+
+  events {
+    StreamIsScheduled: struct { id: str };
+    StreamDeleted: struct { id: str };
+    StreamEdited;
+    Subscribed;
+    Unsubscribed;
+    ProfileEdited;
+    AdminAdded: struct { new_admin_id: actor_id };
+    Killed: struct { inheritor: actor_id };
+  }
+};
+

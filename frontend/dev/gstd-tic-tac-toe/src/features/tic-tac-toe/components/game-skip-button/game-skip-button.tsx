@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 type Props = {
