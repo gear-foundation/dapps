@@ -119,7 +119,7 @@ impl DexService {
     /// Adds liquidity to the pool.
     /// Transfers token amounts `amount_a` and `amount_b` from the user to the DEX contract.
     /// Updates the user's liquidity balance and reserves.
-    pub async fn add_liquidity(&mut self, amount_a: U256, amount_b: U256) {
+    pub async fn add_liquidity(&mut self, amount_a: U256, amount_b: U256) -> bool {
         let storage = self.get_mut();
 
         if storage.swap_status != SwapStatus::Ready {
@@ -168,43 +168,63 @@ impl DexService {
 
         // Transfer tokens to contract
         let request_a = vft_io::TransferFrom::encode_call(sender, program_id, amount_a);
-        msg::send_bytes_with_gas_for_reply(storage.token_a, request_a, 5_000_000_000, 0, 0)
+        msg::send_bytes_with_gas_for_reply(storage.token_a, request_a, 5_000_000_000, 0, 5_000_000_000)
             .expect("Error in async message to vft contract")
+            .up_to(Some(5))
+            .expect("Reply timeout")
+            .handle_reply(|| {
+                let reply_bytes = msg::load_bytes().expect("Unable to load bytes");
+                let result = vft_io::TransferFrom::decode_reply(reply_bytes);
+                if result.is_err() {
+                    let storage = unsafe { STORAGE.as_mut().expect("Dex is not initialized") };
+                    storage.swap_status = SwapStatus::Ready;
+                }
+            })
+            .expect("Reply hook error")
             .await
             .expect("Error getting answer from the vft contract");
     
         let request_b = vft_io::TransferFrom::encode_call(sender, program_id, amount_b);
-        msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
+        if let Err(_e) = msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
             .expect("Error in async message to vft contract")
             .await
-            .expect("Error getting answer from the vft contract");
-
-        if first_time {
-            let liquidity_to_mint = liquidity - MINIMUM_LIQUIDITY;
-            storage.reserve_a = amount_a;
-            storage.reserve_b = amount_b;
-            storage.total_liquidity = liquidity_to_mint;
-            storage.liquidity_providers.insert(sender, liquidity_to_mint);
+        {
+            let request = vft_io::Transfer::encode_call(sender, amount_a);
+            msg::send_bytes_with_gas_for_reply(storage.token_a, request, 5_000_000_000, 0, 0)
+                .expect("Error in async message to vft contract")
+                .await
+                .expect("Error getting answer from the vft contract");
+            storage.swap_status = SwapStatus::Ready;
+            false
         } else {
-            storage.reserve_a += amount_a;
-            storage.reserve_b += amount_b;
-            storage.total_liquidity += liquidity;
-            let user_liquidity = storage
-                .liquidity_providers
-                .entry(sender)
-                .or_insert(U256::zero());
-            *user_liquidity += liquidity;
+            if first_time {
+                let liquidity_to_mint = liquidity - MINIMUM_LIQUIDITY;
+                storage.reserve_a = amount_a;
+                storage.reserve_b = amount_b;
+                storage.total_liquidity = liquidity_to_mint;
+                storage.liquidity_providers.insert(sender, liquidity_to_mint);
+            } else {
+                storage.reserve_a += amount_a;
+                storage.reserve_b += amount_b;
+                storage.total_liquidity += liquidity;
+                let user_liquidity = storage
+                    .liquidity_providers
+                    .entry(sender)
+                    .or_insert(U256::zero());
+                *user_liquidity += liquidity;
+            }
+            storage.k_last = storage.reserve_a * storage.reserve_b;
+            storage.swap_status = SwapStatus::Ready; 
+    
+            self.notify_on(Event::AddedLiquidity {
+                sender,
+                amount_a,
+                amount_b,
+                liquidity: storage.total_liquidity,
+            })
+            .expect("Notification Error");
+            true
         }
-        storage.k_last = storage.reserve_a * storage.reserve_b;
-        storage.swap_status = SwapStatus::Ready; 
-
-        self.notify_on(Event::AddedLiquidity {
-            sender,
-            amount_a,
-            amount_b,
-            liquidity: storage.total_liquidity,
-        })
-        .expect("Notification Error");
     }    
 
     /// Removes liquidity from the pool.
@@ -220,7 +240,6 @@ impl DexService {
             panic!("Not enough gas; requires a least: {:?}", storage.liquidity_action_gas);
         }
         let sender = msg::source();
-        let program_id = exec::program_id();
 
         let user_liquidity = storage
             .liquidity_providers
@@ -240,13 +259,13 @@ impl DexService {
         storage.swap_status = SwapStatus::Paused;
 
         // Transfer tokens back to the user
-        let request_a = vft_io::TransferFrom::encode_call(program_id, sender, amount_a);
+        let request_a = vft_io::Transfer::encode_call(sender, amount_a);
         msg::send_bytes_with_gas_for_reply(storage.token_a, request_a, 5_000_000_000, 0, 0)
             .expect("Error in async message to vft contract")
             .await
             .expect("Error getting answer from the vft contract");
 
-        let request_b = vft_io::TransferFrom::encode_call(program_id, sender, amount_b);
+        let request_b = vft_io::Transfer::encode_call(sender, amount_b);
         msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
             .expect("Error in async message to vft contract")
             .await
