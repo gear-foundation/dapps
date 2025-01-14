@@ -121,6 +121,10 @@ impl DexService {
     /// Updates the user's liquidity balance and reserves.
     pub async fn add_liquidity(&mut self, amount_a: U256, amount_b: U256) {
         let storage = self.get_mut();
+
+        if storage.swap_status != SwapStatus::Ready {
+            panic!("Swap status is incorrect");
+        }
         if exec::gas_available() < storage.liquidity_action_gas {
             panic!("Not enough gas; requires a least: {:?}", storage.liquidity_action_gas);
         }
@@ -131,18 +135,15 @@ impl DexService {
         if amount_a.is_zero() || amount_b.is_zero() {
             panic!("Amounts must be greater than zero");
         }
+        let first_time = storage.reserve_a.is_zero() && storage.reserve_b.is_zero();
     
-        if storage.reserve_a.is_zero() && storage.reserve_b.is_zero() {
+        let liquidity = if first_time {
             // Initial liquidity
             let liquidity = (amount_a * amount_b).integer_sqrt();
             if liquidity < MINIMUM_LIQUIDITY.into() {
                 panic!("Liquidity is low");
             }
-            let liquidity_to_mint = liquidity - MINIMUM_LIQUIDITY;
-            storage.reserve_a = amount_a;
-            storage.reserve_b = amount_b;
-            storage.total_liquidity = liquidity_to_mint;
-            storage.liquidity_providers.insert(sender, liquidity_to_mint);
+            liquidity
         } else {
             // Ensure tokens are added in correct proportions
             let expected_b = (amount_a * storage.reserve_b) / storage.reserve_a;
@@ -160,19 +161,10 @@ impl DexService {
             if liquidity.is_zero() {
                 panic!("Insufficient liquidity minted");
             }
-    
-            storage.reserve_a += amount_a;
-            storage.reserve_b += amount_b;
-            storage.total_liquidity += liquidity;
-    
-            let user_liquidity = storage
-                .liquidity_providers
-                .entry(sender)
-                .or_insert(U256::zero());
-            *user_liquidity += liquidity;
-        }
-    
-        storage.k_last = storage.reserve_a * storage.reserve_b;
+            liquidity
+        };
+
+        storage.swap_status = SwapStatus::Paused; 
 
         // Transfer tokens to contract
         let request_a = vft_io::TransferFrom::encode_call(sender, program_id, amount_a);
@@ -186,7 +178,26 @@ impl DexService {
             .expect("Error in async message to vft contract")
             .await
             .expect("Error getting answer from the vft contract");
-    
+
+        if first_time {
+            let liquidity_to_mint = liquidity - MINIMUM_LIQUIDITY;
+            storage.reserve_a = amount_a;
+            storage.reserve_b = amount_b;
+            storage.total_liquidity = liquidity_to_mint;
+            storage.liquidity_providers.insert(sender, liquidity_to_mint);
+        } else {
+            storage.reserve_a += amount_a;
+            storage.reserve_b += amount_b;
+            storage.total_liquidity += liquidity;
+            let user_liquidity = storage
+                .liquidity_providers
+                .entry(sender)
+                .or_insert(U256::zero());
+            *user_liquidity += liquidity;
+        }
+        storage.k_last = storage.reserve_a * storage.reserve_b;
+        storage.swap_status = SwapStatus::Ready; 
+
         self.notify_on(Event::AddedLiquidity {
             sender,
             amount_a,
@@ -200,6 +211,10 @@ impl DexService {
     /// Transfers proportional token amounts back to the user.
     pub async fn remove_liquidity(&mut self, amount: U256) {
         let storage = self.get_mut();
+
+        if storage.swap_status != SwapStatus::Ready {
+            panic!("Swap status is incorrect");
+        }
 
         if exec::gas_available() < storage.liquidity_action_gas {
             panic!("Not enough gas; requires a least: {:?}", storage.liquidity_action_gas);
@@ -222,6 +237,7 @@ impl DexService {
         if storage.reserve_a < amount_a || storage.reserve_b < amount_b {
             panic!("Insufficient contract balance for token transfer");
         }
+        storage.swap_status = SwapStatus::Paused;
 
         // Transfer tokens back to the user
         let request_a = vft_io::TransferFrom::encode_call(program_id, sender, amount_a);
@@ -242,6 +258,7 @@ impl DexService {
         *user_liquidity -= amount;
 
         storage.k_last = storage.reserve_a * storage.reserve_b;
+        storage.swap_status = SwapStatus::Ready;
 
         self.notify_on(Event::RemovedLiquidity {
             sender,
