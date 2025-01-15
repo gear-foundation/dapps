@@ -7582,6 +7582,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
+name = "staking"
+version = "0.1.0"
+dependencies = [
+ "extended-vft-client",
+ "sails-idl-gen",
+ "sails-rs",
+ "staking",
+ "staking-app",
+ "staking-client",
+ "tokio",
+]
+
+[[package]]
+name = "staking-app"
+version = "0.1.0"
+dependencies = [
+ "extended-vft-client",
+ "sails-rs",
+]
+
+[[package]]
+name = "staking-client"
+version = "0.1.0"
+dependencies = [
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "staking-app",
+]
+
+[[package]]
 name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
