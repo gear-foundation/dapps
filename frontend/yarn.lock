@@ -1941,7 +1941,7 @@ __metadata:
   dependencies:
     "@gear-js/ui": "npm:0.5.26"
     "@gear-js/vara-ui": "npm:0.0.11"
-    "@gear-js/wallet-connect": "npm:0.2.1"
+    "@gear-js/wallet-connect": "npm:0.2.3"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@radix-ui/react-scroll-area": "npm:1.0.5"
@@ -2732,11 +2732,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/wallet-connect@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@gear-js/wallet-connect@npm:0.2.1"
+"@gear-js/wallet-connect@npm:0.2.3":
+  version: 0.2.3
+  resolution: "@gear-js/wallet-connect@npm:0.2.3"
   peerDependencies:
-    "@gear-js/react-hooks": ^0.14.1
+    "@gear-js/react-hooks": ^0.14.2
     "@gear-js/ui": ^0.5.28
     "@gear-js/vara-ui": ^0.0.11
   peerDependenciesMeta:
@@ -2744,7 +2744,7 @@ __metadata:
       optional: true
     "@gear-js/vara-ui":
       optional: true
-  checksum: 10c0/7fa8f7acaec382ddf5ea93e1296f1359f10ed708a253f1e9b9b0cb496b284a1a7be9e7f03bf7d1c311c274d850534fb873a90369a79d285487bcc3ecd04d51f7
+  checksum: 10c0/90190da53fb8e1712ec6e2dde854ab502467981b218dcbc3b283142186e593dcdb869f2475bc502f7356f79a1780ad779473a882f3cea24de6a783e5fa311ea8
   languageName: node
   linkType: hard
 
@@ -14745,7 +14745,7 @@ __metadata:
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
     "@gear-js/ui": "npm:0.5.28"
-    "@gear-js/wallet-connect": "npm:0.2.1"
+    "@gear-js/wallet-connect": "npm:0.2.3"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/types": "npm:14.3.1"
@@ -24812,7 +24812,7 @@ __metadata:
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
     "@gear-js/vara-ui": "npm:0.0.10"
-    "@gear-js/wallet-connect": "npm:0.2.1"
+    "@gear-js/wallet-connect": "npm:0.2.3"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/types": "npm:14.3.1"
