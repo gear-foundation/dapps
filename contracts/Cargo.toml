@@ -11,14 +11,13 @@ members = [
     "car-races/car-3",
     "car-races",
     "concert",
+    "dex",
     "dynamic-nft",
     "galactic-express",
     "multisig-wallet",
     "nft-marketplace",
     "oracle",
-    "oracle/state",
     "oracle/randomness",
-    "oracle/randomness/state",
     "ping-pong",
     "proxy-example/counter",
     "proxy-example/proxy",
@@ -55,8 +54,6 @@ publish = false
 # Keep in the lexicographic order!
 
 battleship-bot.path = "battleship/bot"
-oracle.path = "oracle"
-oracle-randomness.path = "oracle/randomness"
 rmrk-catalog.path = "rmrk/catalog"
 syndote-player.path = "syndote/player"
 tamagotchi.path = "tamagotchi"
@@ -77,8 +74,6 @@ rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
 rock-paper-scissors-io.path = "rock-paper-scissors/io"
-oracle-io.path = "oracle/io"
-oracle-randomness-io.path = "oracle/randomness/io"
 syndote-io.path = "syndote/io"
 syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
