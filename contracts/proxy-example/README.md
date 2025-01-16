@@ -1,6 +1,6 @@
-## Proxy example
+## UpgradeProxy example
 
-Proxy programs are a design pattern in blockchain development used to delegate function calls to a separate logic program. This separation of responsibilities allows developers to modify the business logic of a program without changing its state or address. Proxy programs act as intermediaries, forwarding user interactions to a logic program, making the system both modular and upgradeable.
+UpgradeProxy programs are a design pattern in blockchain development used to delegate function calls to a separate logic program. This separation of responsibilities allows developers to modify the business logic of a program without changing its state or address. UpgradeProxy programs act as intermediaries, forwarding user interactions to a logic program, making the system both modular and upgradeable.
 
 To understand how proxy programs function, let’s explore a practical implementation. Below, we detail a proxy program designed to forward calls to a logic program. This proxy program manages two key responsibilities:
 
