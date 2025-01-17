@@ -25,6 +25,7 @@ members = [
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
+    "staking",
     "syndote/wasm",
     "syndote/player/wasm",
     "tamagotchi",
