@@ -92,7 +92,8 @@ pub fn contribute(&mut self, msg_source: Option<ActorId>) -> u128 {
 #### State Migration
 State migration allows the transfer of critical program data from an old program to a new one, enabling smooth upgrades while preserving important state variables. In this example, the migration involves exporting specific fields (`value`, `limit`, and `contributions`) and importing them into a new instance of the program.
 1. Exporting State
-The `export_migration_state` function serializes only the necessary fields from the program's state and encodes them for transfer.
+
+    The `export_migration_state` function serializes only the necessary fields from the program's state and encodes them for transfer.
 ```rust
 /// Exports the essential state for migration.
 /// Only includes `value`, `limit`, and `contributions` fields.
@@ -103,7 +104,8 @@ pub fn export_migration_state(&self) -> Vec<u8> {
 }
 ```
 2. Importing State
-The `import_migration_state` function allows a new program to decode and load the state exported from the old program.
+
+    The `import_migration_state` function allows a new program to decode and load the state exported from the old program.
 ```rust
 /// Imports the state from the previous program.
 /// Decodes and applies `value`, `limit`, and `contributions` fields.
