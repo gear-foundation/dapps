@@ -13,7 +13,7 @@ battle-client = { path = "client" }
 sails-rs = { workspace = true, features = ["gtest"] }
 gtest.workspace = true
 gstd.workspace = true
-tokio = { version = "1.39", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 
 [build-dependencies]
 battle-app = { path = "app" }

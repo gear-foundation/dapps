@@ -16,7 +16,7 @@ sails-idl-gen.workspace = true
 varatube = { path = ".", features = ["wasm-binary"] }
 varatube-client = { path = "client" }
 sails-rs = { workspace = true, features = ["gtest"] }
-tokio = { version = "1.41", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 
 [features]
 wasm-binary = []
