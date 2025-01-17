@@ -17,7 +17,7 @@ extended-vmt.workspace = true
 concert = { path = ".", features = ["wasm-binary"] }
 concert-client = { path = "client" }
 sails-rs = { workspace = true, features = ["gtest"] }
-tokio = { version = "1.41", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 extended-vmt-client.workspace = true
 
 [features]

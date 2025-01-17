@@ -16,7 +16,7 @@ sails-idl-gen.workspace = true
 vara-man = { path = ".", features = ["wasm-binary"] }
 vara-man-client = { path = "client" }
 sails-rs = { workspace = true, features = ["gtest"] }
-tokio = { version = "1.41", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 gtest.workspace = true
 extended-vft-client.workspace = true
 

@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 sails-rs.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-num-traits.workspace = true
+num-traits = { version = "0.2", default-features = false }
