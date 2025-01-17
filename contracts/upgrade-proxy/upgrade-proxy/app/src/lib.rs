@@ -11,9 +11,9 @@ struct State {
     admin: ActorId,
 }
 
-struct ProxyService(());
+struct UpgradeProxyService(());
 
-impl ProxyService {
+impl UpgradeProxyService {
     pub fn init(logic_address: ActorId, admin: ActorId) -> Self {
         unsafe {
             STATE = Some(State {
@@ -32,7 +32,7 @@ impl ProxyService {
 }
 
 #[sails_rs::service]
-impl ProxyService {
+impl UpgradeProxyService {
     pub fn new() -> Self {
         Self(())
     }
@@ -84,18 +84,18 @@ impl ProxyService {
     }
 }
 
-pub struct ProxyProgram(());
+pub struct UpgradeProxyProgram(());
 
 #[sails_rs::program]
-impl ProxyProgram {
+impl UpgradeProxyProgram {
     // Program's constructor
     pub fn new(logic_address: ActorId, admin: ActorId) -> Self {
-        ProxyService::init(logic_address, admin);
+        UpgradeProxyService::init(logic_address, admin);
         Self(())
     }
 
     // Exposed service
-    pub fn proxy(&self) -> ProxyService {
-        ProxyService::new()
+    pub fn proxy(&self) -> UpgradeProxyService {
+        UpgradeProxyService::new()
     }
 }
