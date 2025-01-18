@@ -14,17 +14,11 @@ type Status = 'creating' | 'joining' | null;
 function RequestGame() {
   const { account } = useAccount();
   const [status, setStatus] = useState<Status>(null);
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
 
   const handleSetStatus = (newStatus: Status) => {
     setStatus(newStatus);
   };
-
-  // useEffect(() => {
-  //   setRegistrationStatus('registration');
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   return (
     <div className={styles.container}>
