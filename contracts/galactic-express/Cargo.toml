@@ -16,7 +16,7 @@ sails-idl-gen.workspace = true
 galactic-express = { path = ".", features = ["wasm-binary"] }
 sails-rs = { workspace = true, features = ["gtest"] }
 galactic-express-client = { path = "client" }
-tokio = { version = "1.41", features = ["rt", "macros"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
 gstd.workspace = true
 
 [features]
