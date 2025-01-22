@@ -14,7 +14,7 @@ import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from 'gear-ez-transactions';
 
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';

@@ -1,12 +1,14 @@
 import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
 import { ReactComponent as PlusSVG } from 'assets/images/form/plus.svg';
-import { useIPFS, useNftMessage } from 'hooks';
-import { getMintDetails, getMintPayload } from 'utils';
+
+import { getMintDetails, uploadToIpfs } from 'utils';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { useAlert } from '@gear-js/react-hooks';
 import { Attributes } from './attributes';
+
 import styles from './Create.module.scss';
+import { useMintMessage } from 'app/utils/sails/messages/use-mint-message';
 
 type AttributesValue = { key: string; value: string };
 type Values = { name: string; description: string; attributes: AttributesValue[]; rarity: string };
@@ -23,8 +25,7 @@ function Create() {
   const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
   const { errors } = formState;
 
-  const ipfs = useIPFS();
-  const sendMessage = useNftMessage();
+  const { mintMessage } = useMintMessage();
 
   const [imageFile, setImageFile] = useState<File>();
 
@@ -51,6 +52,7 @@ function Create() {
   }, [isRarity, resetField]);
 
   const resetForm = () => {
+    alert.success('Nft created');
     reset();
     setImageFile(undefined);
     setIsAnyAttribute(false);
@@ -62,14 +64,16 @@ function Create() {
 
     const { name, description, attributes, rarity } = data;
 
-    const details = isAnyAttribute || isRarity ? getMintDetails(isAnyAttribute ? attributes : undefined, rarity) : '';
+    const detailsFile =
+      isAnyAttribute || isRarity ? getMintDetails(isAnyAttribute ? attributes : undefined, rarity) : undefined;
 
-    ipfs
-      .add(imageFile)
-      .then(({ cid }) => cid)
-      .then(async (imageCid) => (details ? { detailsCid: (await ipfs.add(details)).cid, imageCid } : { imageCid }))
-      .then(({ imageCid, detailsCid }) => getMintPayload(name, description, imageCid, detailsCid))
-      .then((payload) => sendMessage({ payload, onSuccess: resetForm }));
+    const files = detailsFile ? [imageFile, detailsFile] : [imageFile];
+
+    uploadToIpfs(files)
+      .then(async ([imageCid, detailsCid]) => {
+        mintMessage({ name, description, media: imageCid, reference: detailsCid || '' }, { onSuccess: resetForm });
+      })
+      .catch((e) => console.error(e));
   };
 
   return (

@@ -1,4 +1,4 @@
-import { withoutCommas } from '@gear-js/react-hooks';
+import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ButtonProps } from '@gear-js/ui';
 import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from 'types';
 import { getIpfsAddress } from 'utils';
@@ -14,18 +14,20 @@ function getButtonText(isOwner: boolean, isAuction: boolean) {
 }
 
 function getNFTProps(nft: NFT, isOwner: boolean) {
-  const { id, auction, price, media, name } = nft;
-
-  const { currentPrice } = auction || {};
+  const { token_id, auction, price, media, name } = nft;
+  const { getFormattedBalance } = useBalanceFormat();
+  const { current_price } = auction || {};
   const isAuction = !!auction;
 
-  const path = `/listing/${id}`;
+  const path = `/listing/${token_id}`;
   const src = getIpfsAddress(media);
-  const text = `#${id}`;
+  const text = `#${token_id}`;
+
+  const actualPrice = price ?? current_price;
 
   const priceProp = {
     heading: isAuction ? 'Top bid' : 'Price',
-    text: String(price ?? currentPrice ?? 'None'),
+    text: actualPrice ? getFormattedBalance(actualPrice).value : 'None',
   };
 
   const buttonProp = {
@@ -41,33 +43,35 @@ function getOffers(offers: MarketNFT['offers'] | undefined) {
 
   const numberRegex = /\d+/;
 
-  return Object.entries(offers).map(([key, bidder]) => {
-    const [price] = key.match(numberRegex) || [''];
+  return offers.map(([key, bidder]) => {
+    const [price] = String(key[1]).match(numberRegex) || [''];
 
     return { price, bidder };
   });
 }
 
 function getListingProps(baseNft: BaseNFT, marketNft: MarketNFT | null | undefined, details: NFTDetails | undefined) {
-  const { id, name, description, ownerId, media } = baseNft;
+  const { name, description, media, token_id, owner } = baseNft;
   const { auction } = marketNft || {};
   const { rarity, attributes } = details || {};
 
-  const heading = `${name} #${id}`;
+  const heading = `${name} #${token_id}`;
   const src = getIpfsAddress(media);
 
-  const price = auction ? auction.currentPrice : marketNft?.price;
+  const price = auction ? auction.current_price : marketNft?.price;
+
+  const currentWinner = auction?.current_winner;
 
   const offers = auction ? undefined : getOffers(marketNft?.offers);
 
-  return { heading, description, owner: ownerId, price, src, rarity, attrs: attributes, offers };
+  return { heading, description, owner, currentWinner, price, src, rarity, attrs: attributes, offers };
 }
 
 function getAuctionDate(auction: Auction) {
-  const { startedAt, endedAt } = auction;
+  const { started_at, ended_at } = auction;
 
-  const formattedStartedAt = +withoutCommas(startedAt);
-  const formattedEndedAt = +withoutCommas(endedAt);
+  const formattedStartedAt = Number(started_at);
+  const formattedEndedAt = Number(ended_at);
 
   const currentTimestamp = new Date().getTime();
   const startDate = new Date(formattedStartedAt).toLocaleString();

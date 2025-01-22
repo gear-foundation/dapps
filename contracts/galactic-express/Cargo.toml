@@ -1,0 +1,23 @@
+[package]
+name = "galactic-express"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+galactic-express-app = { path = "app" }
+
+[build-dependencies]
+galactic-express-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+galactic-express = { path = ".", features = ["wasm-binary"] }
+sails-rs = { workspace = true, features = ["gtest"] }
+galactic-express-client = { path = "client" }
+tokio = { workspace = true, features = ["rt", "macros"] }
+gstd.workspace = true
+
+[features]
+wasm-binary = []

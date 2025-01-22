@@ -1,4 +1,4 @@
-import { EzGaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
 import { Logo } from './logo';
 import styles from './header.module.scss';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';

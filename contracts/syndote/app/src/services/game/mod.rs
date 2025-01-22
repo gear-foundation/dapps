@@ -1,3 +1,4 @@
+#![allow(static_mut_refs)]
 use crate::services::game::game_actions::GameSessionActions;
 use gstd::{exec, msg, ReservationId};
 use sails_rs::{

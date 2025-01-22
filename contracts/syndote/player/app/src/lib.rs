@@ -1,5 +1,4 @@
 #![no_std]
-
 use gstd::ReservationId;
 use sails_rs::collections::BTreeSet;
 use sails_rs::gstd::{exec, msg};

@@ -1,0 +1,26 @@
+[package]
+name = "nft-marketplace"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+nft-marketplace-app = { path = "app" }
+
+[build-dependencies]
+nft-marketplace-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+nft-marketplace = { path = ".", features = ["wasm-binary"] }
+nft-marketplace-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+extended-vft.workspace = true
+extended-vnft.workspace = true
+extended-vnft-client.workspace = true
+extended-vft-client.workspace = true
+
+[features]
+wasm-binary = []

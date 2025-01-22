@@ -10,22 +10,19 @@ import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';
-import { useProgramState } from './hooks';
-import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 import '@gear-js/vara-ui/dist/style.css';
+import { useGetStateQuery } from './app/utils';
 
 function AppComponent() {
   useScrollToTop();
-  useCreateStreamMetadata();
   useAccountAvailableBalanceSync();
 
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
-  const { isStateRead } = useProgramState();
-  const { isMeta } = useGetStreamMetadata();
+  const { isFetched } = useGetStateQuery();
 
-  const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
+  const isAppReady = isApiReady && isAccountReady && isFetched;
 
   return (
     <div className={cx(styles['app-container'])}>

@@ -1,12 +1,12 @@
-import { User } from '@/features/Account/types';
+import { Profile } from '@/app/utils';
 
 export interface LayoutProps {
   isBroadcaster: boolean;
   broadcasterId: string;
   title: string;
-  description?: string;
+  description?: string | null;
   startTime: Date;
-  broadcasterInfo: User;
+  broadcasterInfo: Profile;
   isUserSubscribed: boolean;
   streamId?: string;
 }
