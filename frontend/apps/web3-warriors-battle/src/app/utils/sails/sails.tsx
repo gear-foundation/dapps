@@ -4,6 +4,7 @@ import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 const useProgram = () => {
   const { programId } = useDnsProgramIds();
+  console.log('programId: ', programId);
   const { data: program } = useGearJsProgram({ library: Program, id: programId });
 
   return program;
