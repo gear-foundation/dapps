@@ -17,7 +17,7 @@ pub const USER_3: u64 = 13;
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 10_000_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000_000);
     system.mint_to(USER_1, 100_000_000_000_000);
     system.mint_to(USER_2, 100_000_000_000_000);
     system.mint_to(USER_3, 100_000_000_000_000);
