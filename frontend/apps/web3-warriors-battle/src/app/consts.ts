@@ -23,3 +23,5 @@ export const ROUTES = {
 
   NOTFOUND: '*',
 };
+
+export const ALLOWED_SIGNLESS_ACTIONS = ['createNewBattle', 'registration', 'startBattle', 'makeMove'];
