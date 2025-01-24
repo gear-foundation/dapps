@@ -44,7 +44,8 @@ function DnsProvider({ children }: ProviderProps) {
 }
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
-  const { programId } = useDnsProgramIds();
+  // const { programId } = useDnsProgramIds();
+  const programId = '0x65a336761656a606494e330ec8ca260224909a54eca3884f92fec254701b9f19';
 
   return (
     <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
@@ -54,7 +55,8 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 }
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
-  const { programId } = useDnsProgramIds();
+  // const { programId } = useDnsProgramIds();
+  const programId = '0x65a336761656a606494e330ec8ca260224909a54eca3884f92fec254701b9f19';
   const program = useProgram();
 
   return (
