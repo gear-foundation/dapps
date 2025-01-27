@@ -1,6 +1,8 @@
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, ActorId, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+
+export type ActorId = string;
 
 export interface UtilsConfig {
   health: number;
@@ -33,7 +35,7 @@ export interface Appearance {
   back_color: string;
 }
 
-export type Move = 'attack' | 'reflect' | 'ultimate';
+export type Move = 'Attack' | 'Reflect' | 'Ultimate';
 
 export interface BattleState {
   admin: ActorId;
@@ -92,7 +94,7 @@ export interface SignatureData {
   allowed_actions: Array<ActionsForSession>;
 }
 
-export type ActionsForSession = 'createNewBattle' | 'registration' | 'startBattle' | 'makeMove';
+export type ActionsForSession = 'CreateNewBattle' | 'Registration' | 'StartBattle' | 'MakeMove';
 
 export interface SessionData {
   key: ActorId;
@@ -196,7 +198,7 @@ export class Program {
   }
 
   newCtorFromCode(
-    code: ArrayBuffer | Uint8Array<ArrayBufferLike>,
+    code: ArrayBuffer | Uint8Array,
     config: UtilsConfig,
     session_config: SessionConfig,
   ): TransactionBuilder<null> {

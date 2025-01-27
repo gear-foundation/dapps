@@ -9,7 +9,6 @@ import {
   useVouchers,
 } from '@gear-js/react-hooks';
 import { useMemo, useEffect, useState } from 'react';
-import { ZERO_ADDRESS } from 'sails-js';
 
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 
@@ -33,13 +32,11 @@ function useMetadataSession(programId: HexString, metadata: ProgramMetadata | un
 
 function useSailsSession(program: BaseProgram) {
   const { account } = useAccount();
-
   const { data: responseSession, refetch } = useProgramQuery({
     program,
     serviceName: 'session',
     functionName: 'sessionForTheAccount',
-    args: [account?.decodedAddress || ZERO_ADDRESS],
-    query: { enabled: Boolean(account) },
+    args: [account?.decodedAddress || ''],
   });
 
   useProgramEvent({
@@ -77,9 +74,9 @@ function useLatestVoucher(programId: HexString, address: string | undefined) {
   const decodedAddress = address ? decodeAddress(address) : '';
   const { vouchers } = useVouchers(decodedAddress, programId);
 
-  const latestVoucher = useMemo(() => {
-    const typedEntries = getTypedEntries(vouchers || {});
+  const typedEntries = getTypedEntries(vouchers || {});
 
+  const latestVoucher = useMemo(() => {
     if (!vouchers || !typedEntries?.length) return undefined;
 
     const [[id, voucher]] = typedEntries.sort(([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry);

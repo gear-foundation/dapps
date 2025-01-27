@@ -1,4 +1,3 @@
-import { HexString } from '@gear-js/api';
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
@@ -17,7 +16,7 @@ export const useDeletePlayerMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const { signAndSend } = useSignAndSend();
 
-  const deletePlayerMessage = async (playerId: HexString, options?: Options) => {
+  const deletePlayerMessage = async (playerId: string, options?: Options) => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();
 
     const { transaction } = await prepareTransactionAsync({

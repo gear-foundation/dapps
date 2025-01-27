@@ -1,5 +1,5 @@
 import { TypeRegistry } from '@polkadot/types';
-import { ActorId, TransactionBuilder } from 'sails-js';
+import { TransactionBuilder } from 'sails-js';
 import { IVoucherDetails } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
@@ -38,7 +38,9 @@ type SignlessContext = {
   storageVoucherBalance: number;
 };
 
-type BaseProgramQueryProps = [originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`];
+type ActorId = string;
+
+type BaseProgramQueryProps = [originAddress?: ActorId, value?: number | string | bigint, atBlock?: `0x${string}`];
 
 // TODO: infer type from generic
 /* eslint-disable  @typescript-eslint/no-explicit-any */
