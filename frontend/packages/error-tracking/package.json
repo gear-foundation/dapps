@@ -9,8 +9,7 @@
     "react-router-dom": "6.10.0"
   },
   "devDependencies": {
-    "@types/react-gtm-module": "2.0.3",
-    "typescript": "5.2.2"
+    "@types/react-gtm-module": "2.0.3"
   },
   "dependencies": {
     "@sentry/react": "7.79.0",

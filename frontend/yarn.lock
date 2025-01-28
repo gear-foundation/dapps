@@ -1903,7 +1903,6 @@ __metadata:
     "@sentry/react": "npm:7.79.0"
     "@types/react-gtm-module": "npm:2.0.3"
     react-gtm-module: "npm:2.0.11"
-    typescript: "npm:5.2.2"
   peerDependencies:
     react: 18.2.0
     react-router-dom: 6.10.0
@@ -1913,18 +1912,6 @@ __metadata:
 "@dapps-frontend/hooks@workspace:*, @dapps-frontend/hooks@workspace:packages/hooks":
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
-  dependencies:
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
-    "@typescript-eslint/parser": "npm:6.0.0"
-    "@vitejs/plugin-react": "npm:4.0.3"
-    eslint: "npm:8.45.0"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    eslint-plugin-react-refresh: "npm:0.4.3"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.5"
-    vite-plugin-dts: "npm:3.5.1"
   peerDependencies:
     "@gear-js/api": 0.39.0
     "@gear-js/react-hooks": 0.14.1
@@ -1945,20 +1932,8 @@ __metadata:
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@radix-ui/react-scroll-area": "npm:1.0.5"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
-    "@typescript-eslint/parser": "npm:6.0.0"
-    "@vitejs/plugin-react": "npm:4.0.3"
     clsx: "npm:2.0.0"
-    eslint: "npm:8.45.0"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    eslint-plugin-react-refresh: "npm:0.4.3"
     framer-motion: "npm:10.16.16"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.5"
-    vite-plugin-dts: "npm:3.5.1"
-    vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
     "@gear-js/api": 0.39.0
     "@gear-js/react-hooks": 0.14.1
@@ -2021,13 +1996,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-arm64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/android-arm64@npm:0.18.20"
-  conditions: os=android & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "@esbuild/android-arm64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/android-arm64@npm:0.21.5"
@@ -2038,13 +2006,6 @@ __metadata:
 "@esbuild/android-arm@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/android-arm@npm:0.17.19"
-  conditions: os=android & cpu=arm
-  languageName: node
-  linkType: hard
-
-"@esbuild/android-arm@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/android-arm@npm:0.18.20"
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
@@ -2063,13 +2024,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/android-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/android-x64@npm:0.18.20"
-  conditions: os=android & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/android-x64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/android-x64@npm:0.21.5"
@@ -2080,13 +2034,6 @@ __metadata:
 "@esbuild/darwin-arm64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/darwin-arm64@npm:0.17.19"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@esbuild/darwin-arm64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/darwin-arm64@npm:0.18.20"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -2105,13 +2052,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/darwin-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/darwin-x64@npm:0.18.20"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/darwin-x64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/darwin-x64@npm:0.21.5"
@@ -2122,13 +2062,6 @@ __metadata:
 "@esbuild/freebsd-arm64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/freebsd-arm64@npm:0.17.19"
-  conditions: os=freebsd & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@esbuild/freebsd-arm64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/freebsd-arm64@npm:0.18.20"
   conditions: os=freebsd & cpu=arm64
   languageName: node
   linkType: hard
@@ -2147,13 +2080,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/freebsd-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/freebsd-x64@npm:0.18.20"
-  conditions: os=freebsd & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/freebsd-x64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/freebsd-x64@npm:0.21.5"
@@ -2164,13 +2090,6 @@ __metadata:
 "@esbuild/linux-arm64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/linux-arm64@npm:0.17.19"
-  conditions: os=linux & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@esbuild/linux-arm64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-arm64@npm:0.18.20"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
@@ -2189,13 +2108,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-arm@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-arm@npm:0.18.20"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
 "@esbuild/linux-arm@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/linux-arm@npm:0.21.5"
@@ -2206,13 +2118,6 @@ __metadata:
 "@esbuild/linux-ia32@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/linux-ia32@npm:0.17.19"
-  conditions: os=linux & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"@esbuild/linux-ia32@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-ia32@npm:0.18.20"
   conditions: os=linux & cpu=ia32
   languageName: node
   linkType: hard
@@ -2231,13 +2136,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-loong64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-loong64@npm:0.18.20"
-  conditions: os=linux & cpu=loong64
-  languageName: node
-  linkType: hard
-
 "@esbuild/linux-loong64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/linux-loong64@npm:0.21.5"
@@ -2248,13 +2146,6 @@ __metadata:
 "@esbuild/linux-mips64el@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/linux-mips64el@npm:0.17.19"
-  conditions: os=linux & cpu=mips64el
-  languageName: node
-  linkType: hard
-
-"@esbuild/linux-mips64el@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-mips64el@npm:0.18.20"
   conditions: os=linux & cpu=mips64el
   languageName: node
   linkType: hard
@@ -2273,13 +2164,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-ppc64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-ppc64@npm:0.18.20"
-  conditions: os=linux & cpu=ppc64
-  languageName: node
-  linkType: hard
-
 "@esbuild/linux-ppc64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/linux-ppc64@npm:0.21.5"
@@ -2290,13 +2174,6 @@ __metadata:
 "@esbuild/linux-riscv64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/linux-riscv64@npm:0.17.19"
-  conditions: os=linux & cpu=riscv64
-  languageName: node
-  linkType: hard
-
-"@esbuild/linux-riscv64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-riscv64@npm:0.18.20"
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
@@ -2315,13 +2192,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/linux-s390x@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-s390x@npm:0.18.20"
-  conditions: os=linux & cpu=s390x
-  languageName: node
-  linkType: hard
-
 "@esbuild/linux-s390x@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/linux-s390x@npm:0.21.5"
@@ -2332,13 +2202,6 @@ __metadata:
 "@esbuild/linux-x64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/linux-x64@npm:0.17.19"
-  conditions: os=linux & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@esbuild/linux-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/linux-x64@npm:0.18.20"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
@@ -2357,13 +2220,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/netbsd-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/netbsd-x64@npm:0.18.20"
-  conditions: os=netbsd & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/netbsd-x64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/netbsd-x64@npm:0.21.5"
@@ -2374,13 +2230,6 @@ __metadata:
 "@esbuild/openbsd-x64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/openbsd-x64@npm:0.17.19"
-  conditions: os=openbsd & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@esbuild/openbsd-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/openbsd-x64@npm:0.18.20"
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
@@ -2399,13 +2248,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/sunos-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/sunos-x64@npm:0.18.20"
-  conditions: os=sunos & cpu=x64
-  languageName: node
-  linkType: hard
-
 "@esbuild/sunos-x64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/sunos-x64@npm:0.21.5"
@@ -2416,13 +2258,6 @@ __metadata:
 "@esbuild/win32-arm64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/win32-arm64@npm:0.17.19"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@esbuild/win32-arm64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/win32-arm64@npm:0.18.20"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -2441,13 +2276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@esbuild/win32-ia32@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/win32-ia32@npm:0.18.20"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
 "@esbuild/win32-ia32@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/win32-ia32@npm:0.21.5"
@@ -2458,13 +2286,6 @@ __metadata:
 "@esbuild/win32-x64@npm:0.17.19":
   version: 0.17.19
   resolution: "@esbuild/win32-x64@npm:0.17.19"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@esbuild/win32-x64@npm:0.18.20":
-  version: 0.18.20
-  resolution: "@esbuild/win32-x64@npm:0.18.20"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2518,7 +2339,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^2.0.3, @eslint/eslintrc@npm:^2.1.0, @eslint/eslintrc@npm:^2.1.2, @eslint/eslintrc@npm:^2.1.4":
+"@eslint/eslintrc@npm:^2.0.3, @eslint/eslintrc@npm:^2.1.0, @eslint/eslintrc@npm:^2.1.4":
   version: 2.1.4
   resolution: "@eslint/eslintrc@npm:2.1.4"
   dependencies:
@@ -2546,13 +2367,6 @@ __metadata:
   version: 8.44.0
   resolution: "@eslint/js@npm:8.44.0"
   checksum: 10c0/ce7b966f8804228e4d5725d44d3c8fb7fc427176f077401323a02e082f628d207133a25704330e610ebe3254fdf1acb186f779d1242fd145a758fdcc4486a660
-  languageName: node
-  linkType: hard
-
-"@eslint/js@npm:8.48.0":
-  version: 8.48.0
-  resolution: "@eslint/js@npm:8.48.0"
-  checksum: 10c0/c8ac8952f37cccd41b4adc4399a7a3a6a0b4c52d67bc55b412be5b3ffb476343b3463a4df2c1d7b633dbb6e0d5fb277eeaf3ba0de0dcdf6d0ed97fcdd416ba94
   languageName: node
   linkType: hard
 
@@ -9711,24 +9525,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.4.15":
-  version: 10.4.15
-  resolution: "autoprefixer@npm:10.4.15"
-  dependencies:
-    browserslist: "npm:^4.21.10"
-    caniuse-lite: "npm:^1.0.30001520"
-    fraction.js: "npm:^4.2.0"
-    normalize-range: "npm:^0.1.2"
-    picocolors: "npm:^1.0.0"
-    postcss-value-parser: "npm:^4.2.0"
-  peerDependencies:
-    postcss: ^8.1.0
-  bin:
-    autoprefixer: bin/autoprefixer
-  checksum: 10c0/38f1eddd131c380b49cc664785635ee6505ef3e62140402b921a8d394fe99b74404689f9d0a27026791dc1683b59c08d99339178c48ba54e27d8f994a992b5b2
-  languageName: node
-  linkType: hard
-
 "autoprefixer@npm:^10.4.12, autoprefixer@npm:^10.4.13":
   version: 10.4.20
   resolution: "autoprefixer@npm:10.4.20"
@@ -10042,7 +9838,6 @@ __metadata:
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-dropdown-menu": "npm:2.0.5"
@@ -10050,24 +9845,15 @@ __metadata:
     "@radix-ui/react-select": "npm:1.2.2"
     "@tanstack/react-query": "npm:5.29.0"
     "@tanstack/react-table": "npm:8.9.3"
-    "@types/node": "npm:18.16.19"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
     assert: "npm:2.0.0"
-    autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
-    eslint: "npm:8.43.0"
-    eslint-config-react-app: "npm:7.0.1"
     ffjavascript: "npm:0.3.0"
     framer-motion: "npm:10.12.17"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.2.1"
     lucide-react: "npm:0.259.0"
-    postcss: "npm:8.4.24"
-    prettier: "npm:2.8.8"
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
@@ -10075,15 +9861,6 @@ __metadata:
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwindcss: "npm:3.3.2"
-    typescript: "npm:4.9.5"
-    vite: "npm:4.3.9"
-    vite-plugin-checker: "npm:0.6.4"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-svgr: "npm:3.2.0"
-    vite-plugin-top-level-await: "npm:1.3.1"
-    vite-plugin-wasm: "npm:3.2.2"
   languageName: unknown
   linkType: soft
 
@@ -10101,7 +9878,6 @@ __metadata:
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-dropdown-menu": "npm:2.0.5"
@@ -10109,22 +9885,13 @@ __metadata:
     "@radix-ui/react-select": "npm:1.2.2"
     "@tanstack/react-query": "npm:5.29.0"
     "@tanstack/react-table": "npm:8.9.3"
-    "@types/node": "npm:18.16.19"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
-    autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
-    eslint: "npm:8.43.0"
-    eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.12.17"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.2.1"
     lucide-react: "npm:0.259.0"
-    postcss: "npm:8.4.24"
-    prettier: "npm:2.8.8"
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
@@ -10132,15 +9899,6 @@ __metadata:
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwindcss: "npm:3.3.2"
-    typescript: "npm:4.9.5"
-    vite: "npm:4.3.9"
-    vite-plugin-checker: "npm:0.6.4"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-svgr: "npm:3.2.0"
-    vite-plugin-top-level-await: "npm:1.3.1"
-    vite-plugin-wasm: "npm:3.2.2"
   languageName: unknown
   linkType: soft
 
@@ -10575,7 +10333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001464, caniuse-lite@npm:^1.0.30001520, caniuse-lite@npm:^1.0.30001646":
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001464, caniuse-lite@npm:^1.0.30001646":
   version: 1.0.30001651
   resolution: "caniuse-lite@npm:1.0.30001651"
   checksum: 10c0/7821278952a6dbd17358e5d08083d258f092e2a530f5bc1840657cb140fbbc5ec44293bc888258c44a18a9570cde149ed05819ac8320b9710cf22f699891e6ad
@@ -11661,6 +11419,35 @@ __metadata:
 "dapps-frontend@workspace:.":
   version: 0.0.0-use.local
   resolution: "dapps-frontend@workspace:."
+  dependencies:
+    "@polkadot/types": "npm:14.3.1"
+    "@types/node": "npm:18.16.19"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
+    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
+    "@typescript-eslint/parser": "npm:6.0.0"
+    "@vitejs/plugin-react": "npm:4.0.3"
+    "@vitejs/plugin-react-swc": "npm:3.3.2"
+    autoprefixer: "npm:10.4.14"
+    eslint: "npm:8.43.0"
+    eslint-config-react-app: "npm:7.0.1"
+    eslint-plugin-react-hooks: "npm:4.6.0"
+    eslint-plugin-react-refresh: "npm:0.4.3"
+    postcss: "npm:8.4.24"
+    prettier: "npm:2.8.8"
+    rollup-plugin-visualizer: "npm:5.9.2"
+    sass: "npm:1.62.0"
+    tailwind-merge: "npm:1.13.2"
+    tailwindcss: "npm:3.3.2"
+    typescript: "npm:4.9.5"
+    vite: "npm:4.3.9"
+    vite-plugin-checker: "npm:0.6.4"
+    vite-plugin-dts: "npm:3.5.1"
+    vite-plugin-eslint: "npm:1.8.1"
+    vite-plugin-node-polyfills: "npm:0.17.0"
+    vite-plugin-svgr: "npm:3.2.0"
+    vite-plugin-top-level-await: "npm:1.3.1"
+    vite-plugin-wasm: "npm:3.2.2"
   languageName: unknown
   linkType: soft
 
@@ -12666,83 +12453,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.18.10":
-  version: 0.18.20
-  resolution: "esbuild@npm:0.18.20"
-  dependencies:
-    "@esbuild/android-arm": "npm:0.18.20"
-    "@esbuild/android-arm64": "npm:0.18.20"
-    "@esbuild/android-x64": "npm:0.18.20"
-    "@esbuild/darwin-arm64": "npm:0.18.20"
-    "@esbuild/darwin-x64": "npm:0.18.20"
-    "@esbuild/freebsd-arm64": "npm:0.18.20"
-    "@esbuild/freebsd-x64": "npm:0.18.20"
-    "@esbuild/linux-arm": "npm:0.18.20"
-    "@esbuild/linux-arm64": "npm:0.18.20"
-    "@esbuild/linux-ia32": "npm:0.18.20"
-    "@esbuild/linux-loong64": "npm:0.18.20"
-    "@esbuild/linux-mips64el": "npm:0.18.20"
-    "@esbuild/linux-ppc64": "npm:0.18.20"
-    "@esbuild/linux-riscv64": "npm:0.18.20"
-    "@esbuild/linux-s390x": "npm:0.18.20"
-    "@esbuild/linux-x64": "npm:0.18.20"
-    "@esbuild/netbsd-x64": "npm:0.18.20"
-    "@esbuild/openbsd-x64": "npm:0.18.20"
-    "@esbuild/sunos-x64": "npm:0.18.20"
-    "@esbuild/win32-arm64": "npm:0.18.20"
-    "@esbuild/win32-ia32": "npm:0.18.20"
-    "@esbuild/win32-x64": "npm:0.18.20"
-  dependenciesMeta:
-    "@esbuild/android-arm":
-      optional: true
-    "@esbuild/android-arm64":
-      optional: true
-    "@esbuild/android-x64":
-      optional: true
-    "@esbuild/darwin-arm64":
-      optional: true
-    "@esbuild/darwin-x64":
-      optional: true
-    "@esbuild/freebsd-arm64":
-      optional: true
-    "@esbuild/freebsd-x64":
-      optional: true
-    "@esbuild/linux-arm":
-      optional: true
-    "@esbuild/linux-arm64":
-      optional: true
-    "@esbuild/linux-ia32":
-      optional: true
-    "@esbuild/linux-loong64":
-      optional: true
-    "@esbuild/linux-mips64el":
-      optional: true
-    "@esbuild/linux-ppc64":
-      optional: true
-    "@esbuild/linux-riscv64":
-      optional: true
-    "@esbuild/linux-s390x":
-      optional: true
-    "@esbuild/linux-x64":
-      optional: true
-    "@esbuild/netbsd-x64":
-      optional: true
-    "@esbuild/openbsd-x64":
-      optional: true
-    "@esbuild/sunos-x64":
-      optional: true
-    "@esbuild/win32-arm64":
-      optional: true
-    "@esbuild/win32-ia32":
-      optional: true
-    "@esbuild/win32-x64":
-      optional: true
-  bin:
-    esbuild: bin/esbuild
-  checksum: 10c0/473b1d92842f50a303cf948a11ebd5f69581cd254d599dd9d62f9989858e0533f64e83b723b5e1398a5b488c0f5fd088795b4235f65ecaf4f007d4b79f04bc88
-  languageName: node
-  linkType: hard
-
 "esbuild@npm:^0.21.3":
   version: 0.21.5
   resolution: "esbuild@npm:0.21.5"
@@ -13594,100 +13304,6 @@ __metadata:
   bin:
     eslint: bin/eslint.js
   checksum: 10c0/a31ca4571a67012629936d891141a4a5747d5902fb7f4e10119a5acd632e0976b9ba1b761d8c81cff8a9cc3e796df2c56f86c02535fd977de962a98ce585624a
-  languageName: node
-  linkType: hard
-
-"eslint@npm:8.45.0":
-  version: 8.45.0
-  resolution: "eslint@npm:8.45.0"
-  dependencies:
-    "@eslint-community/eslint-utils": "npm:^4.2.0"
-    "@eslint-community/regexpp": "npm:^4.4.0"
-    "@eslint/eslintrc": "npm:^2.1.0"
-    "@eslint/js": "npm:8.44.0"
-    "@humanwhocodes/config-array": "npm:^0.11.10"
-    "@humanwhocodes/module-importer": "npm:^1.0.1"
-    "@nodelib/fs.walk": "npm:^1.2.8"
-    ajv: "npm:^6.10.0"
-    chalk: "npm:^4.0.0"
-    cross-spawn: "npm:^7.0.2"
-    debug: "npm:^4.3.2"
-    doctrine: "npm:^3.0.0"
-    escape-string-regexp: "npm:^4.0.0"
-    eslint-scope: "npm:^7.2.0"
-    eslint-visitor-keys: "npm:^3.4.1"
-    espree: "npm:^9.6.0"
-    esquery: "npm:^1.4.2"
-    esutils: "npm:^2.0.2"
-    fast-deep-equal: "npm:^3.1.3"
-    file-entry-cache: "npm:^6.0.1"
-    find-up: "npm:^5.0.0"
-    glob-parent: "npm:^6.0.2"
-    globals: "npm:^13.19.0"
-    graphemer: "npm:^1.4.0"
-    ignore: "npm:^5.2.0"
-    imurmurhash: "npm:^0.1.4"
-    is-glob: "npm:^4.0.0"
-    is-path-inside: "npm:^3.0.3"
-    js-yaml: "npm:^4.1.0"
-    json-stable-stringify-without-jsonify: "npm:^1.0.1"
-    levn: "npm:^0.4.1"
-    lodash.merge: "npm:^4.6.2"
-    minimatch: "npm:^3.1.2"
-    natural-compare: "npm:^1.4.0"
-    optionator: "npm:^0.9.3"
-    strip-ansi: "npm:^6.0.1"
-    text-table: "npm:^0.2.0"
-  bin:
-    eslint: bin/eslint.js
-  checksum: 10c0/2a043b8d3b9a5684e2f66bd446c3dc8522cc7afbb0982d0a5be76ea1f578d0e617598a7b289616a861ab8272b57f6056acb2b264bec6302c9b0921a1cfa66fdb
-  languageName: node
-  linkType: hard
-
-"eslint@npm:8.48.0":
-  version: 8.48.0
-  resolution: "eslint@npm:8.48.0"
-  dependencies:
-    "@eslint-community/eslint-utils": "npm:^4.2.0"
-    "@eslint-community/regexpp": "npm:^4.6.1"
-    "@eslint/eslintrc": "npm:^2.1.2"
-    "@eslint/js": "npm:8.48.0"
-    "@humanwhocodes/config-array": "npm:^0.11.10"
-    "@humanwhocodes/module-importer": "npm:^1.0.1"
-    "@nodelib/fs.walk": "npm:^1.2.8"
-    ajv: "npm:^6.12.4"
-    chalk: "npm:^4.0.0"
-    cross-spawn: "npm:^7.0.2"
-    debug: "npm:^4.3.2"
-    doctrine: "npm:^3.0.0"
-    escape-string-regexp: "npm:^4.0.0"
-    eslint-scope: "npm:^7.2.2"
-    eslint-visitor-keys: "npm:^3.4.3"
-    espree: "npm:^9.6.1"
-    esquery: "npm:^1.4.2"
-    esutils: "npm:^2.0.2"
-    fast-deep-equal: "npm:^3.1.3"
-    file-entry-cache: "npm:^6.0.1"
-    find-up: "npm:^5.0.0"
-    glob-parent: "npm:^6.0.2"
-    globals: "npm:^13.19.0"
-    graphemer: "npm:^1.4.0"
-    ignore: "npm:^5.2.0"
-    imurmurhash: "npm:^0.1.4"
-    is-glob: "npm:^4.0.0"
-    is-path-inside: "npm:^3.0.3"
-    js-yaml: "npm:^4.1.0"
-    json-stable-stringify-without-jsonify: "npm:^1.0.1"
-    levn: "npm:^0.4.1"
-    lodash.merge: "npm:^4.6.2"
-    minimatch: "npm:^3.1.2"
-    natural-compare: "npm:^1.4.0"
-    optionator: "npm:^0.9.3"
-    strip-ansi: "npm:^6.0.1"
-    text-table: "npm:^0.2.0"
-  bin:
-    eslint: bin/eslint.js
-  checksum: 10c0/93517576a212282383bb10647a8d9e502e12d0aa8c781f2d2585c6651b570349a6e4a768f32eb1e2cd948cff0e0e1c519651aa99c9d1a0dc70f1a3eba0512ba2
   languageName: node
   linkType: hard
 
@@ -14784,22 +14400,8 @@ __metadata:
     "@gear-js/vara-ui": "npm:0.0.11"
     "@polkadot/keyring": "npm:12.6.2"
     "@polkadot/react-identicon": "npm:3.11.3"
-    "@polkadot/types": "npm:14.3.1"
-    "@types/node": "npm:18.17.15"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
-    "@typescript-eslint/parser": "npm:6.0.0"
-    "@vitejs/plugin-react": "npm:4.0.3"
     clsx: "npm:2.0.0"
-    eslint: "npm:8.45.0"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    eslint-plugin-react-refresh: "npm:0.4.3"
     react-hook-form: "npm:7.52.2"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.5"
-    vite-plugin-dts: "npm:3.5.1"
-    vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
     "@gear-js/api": 0.39.0
     "@gear-js/react-hooks": 0.14.1
@@ -17763,7 +17365,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isequal@npm:4.5.0, lodash.isequal@npm:^4.5.0":
+"lodash.isequal@npm:4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
@@ -20443,17 +20045,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.4.29":
-  version: 8.4.29
-  resolution: "postcss@npm:8.4.29"
-  dependencies:
-    nanoid: "npm:^3.3.6"
-    picocolors: "npm:^1.0.0"
-    source-map-js: "npm:^1.0.2"
-  checksum: 10c0/b50b7ad4ac6c9ba029eda4381863570b7aed2672ffae2566ef109e556bae01823a51180409877ff2cce1fe186025751c7191c301eafc07b0d90c630ab5e0365c
-  languageName: node
-  linkType: hard
-
 "postcss@npm:8.4.38":
   version: 8.4.38
   resolution: "postcss@npm:8.4.38"
@@ -20475,7 +20066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.0.9, postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.26, postcss@npm:^8.4.27, postcss@npm:^8.4.33, postcss@npm:^8.4.4":
+"postcss@npm:^8.0.9, postcss@npm:^8.3.5, postcss@npm:^8.4.23, postcss@npm:^8.4.33, postcss@npm:^8.4.4":
   version: 8.4.41
   resolution: "postcss@npm:8.4.41"
   dependencies:
@@ -20535,15 +20126,6 @@ __metadata:
   bin:
     prettier: bin/prettier.cjs
   checksum: 10c0/7231768b6e0f0f17cbaa83a4f7cdb100df0229ef1910b0b2cf72ce5ed8ee25ae7ec0d30cde20dcd898a002c6d1fcdb8a6ab0f8f5d8fc1275b7c29ea9e56305f2
-  languageName: node
-  linkType: hard
-
-"prettier@npm:3.0.3":
-  version: 3.0.3
-  resolution: "prettier@npm:3.0.3"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10c0/f950887bc03c5b970d8c6dd129364acfbbc61e7b46aec5d5ce17f4adf6404e2ef43072c98b51c4786e0eaca949b307d362a773fd47502862d754b5a328fa2b26
   languageName: node
   linkType: hard
 
@@ -22019,7 +21601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^3.21.0, rollup@npm:^3.25.2, rollup@npm:^3.27.1":
+"rollup@npm:^3.21.0":
   version: 3.29.4
   resolution: "rollup@npm:3.29.4"
   dependencies:
@@ -23537,39 +23119,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:3.3.3":
-  version: 3.3.3
-  resolution: "tailwindcss@npm:3.3.3"
-  dependencies:
-    "@alloc/quick-lru": "npm:^5.2.0"
-    arg: "npm:^5.0.2"
-    chokidar: "npm:^3.5.3"
-    didyoumean: "npm:^1.2.2"
-    dlv: "npm:^1.1.3"
-    fast-glob: "npm:^3.2.12"
-    glob-parent: "npm:^6.0.2"
-    is-glob: "npm:^4.0.3"
-    jiti: "npm:^1.18.2"
-    lilconfig: "npm:^2.1.0"
-    micromatch: "npm:^4.0.5"
-    normalize-path: "npm:^3.0.0"
-    object-hash: "npm:^3.0.0"
-    picocolors: "npm:^1.0.0"
-    postcss: "npm:^8.4.23"
-    postcss-import: "npm:^15.1.0"
-    postcss-js: "npm:^4.0.1"
-    postcss-load-config: "npm:^4.0.1"
-    postcss-nested: "npm:^6.0.1"
-    postcss-selector-parser: "npm:^6.0.11"
-    resolve: "npm:^1.22.2"
-    sucrase: "npm:^3.32.0"
-  bin:
-    tailwind: lib/cli.js
-    tailwindcss: lib/cli.js
-  checksum: 10c0/c2435382cd27522a988aaba7e7d98a5ac20f4b3cb5049deb0c58d128302e4158bcca5e7bffbdc97927b6eedba45f0ca1abe76cbae8041e2c3fb3e1c001fe44d2
-  languageName: node
-  linkType: hard
-
 "tailwindcss@npm:^3.0.2":
   version: 3.4.10
   resolution: "tailwindcss@npm:3.4.10"
@@ -23675,37 +23224,18 @@ __metadata:
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:5.10.0"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-scroll-area": "npm:1.0.3"
     "@tanstack/react-query": "npm:5.29.0"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
-    autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
     dayjs: "npm:1.11.7"
-    eslint: "npm:8.44.0"
-    eslint-config-react-app: "npm:7.0.1"
-    postcss: "npm:8.4.24"
-    prettier: "npm:2.8.8"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwind-merge: "npm:1.13.2"
-    tailwindcss: "npm:3.3.2"
-    typescript: "npm:4.9.5"
-    vite: "npm:4.4.8"
-    vite-plugin-checker: "npm:^0.6.2"
-    vite-plugin-eslint: "npm:1.8.1"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-top-level-await: "npm:1.3.1"
-    vite-plugin-wasm: "npm:3.2.2"
   languageName: unknown
   linkType: soft
 
@@ -23921,44 +23451,24 @@ __metadata:
     "@gear-js/react-hooks": "npm:0.14.1"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-dialog": "npm:1.0.4"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    "@types/lodash.isequal": "npm:4.5.6"
-    "@types/node": "npm:18.16.19"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
     assert: "npm:2.0.0"
-    autoprefixer: "npm:10.4.15"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
-    eslint: "npm:8.48.0"
-    eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.16.2"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.2.1"
-    lodash.isequal: "npm:^4.5.0"
-    postcss: "npm:8.4.29"
-    prettier: "npm:3.0.3"
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
-    rollup-plugin-visualizer: "npm:5.9.2"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwindcss: "npm:3.3.3"
-    typescript: "npm:4.9.5"
-    vite: "npm:4.4.9"
-    vite-plugin-eslint: "npm:1.8.1"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-svgr: "npm:3.2.0"
   languageName: unknown
   linkType: soft
 
@@ -24347,16 +23857,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.2.2":
-  version: 5.2.2
-  resolution: "typescript@npm:5.2.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/91ae3e6193d0ddb8656d4c418a033f0f75dec5e077ebbc2bd6d76439b93f35683936ee1bdc0e9cf94ec76863aa49f27159b5788219b50e1cd0cd6d110aa34b07
-  languageName: node
-  linkType: hard
-
 "typescript@npm:5.4.2":
   version: 5.4.2
   resolution: "typescript@npm:5.4.2"
@@ -24394,16 +23894,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/7889472e5f13d6c6df993f8cc26ac5bd9d27ed5e5e865afc150ceffb5c02d944e27e5e92dfd730232a9180549c6b7d3f622deacd1d96c0457cba72e17ed6901f
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A5.2.2#optional!builtin<compat/typescript>":
-  version: 5.2.2
-  resolution: "typescript@patch:typescript@npm%3A5.2.2#optional!builtin<compat/typescript>::version=5.2.2&hash=f3b441"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/062c1cee1990e6b9419ce8a55162b8dc917eb87f807e4de0327dbc1c2fa4e5f61bc0dd4e034d38ff541d1ed0479b53bcee8e4de3a4075c51a1724eb6216cb6f5
   languageName: node
   linkType: hard
 
@@ -24859,62 +24349,28 @@ __metadata:
     "@mantine/form": "npm:6.0.19"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-dialog": "npm:1.1.1"
     "@radix-ui/react-scroll-area": "npm:1.1.0"
     "@radix-ui/react-tabs": "npm:1.1.0"
     "@tanstack/react-query": "npm:5.29.0"
-    "@testing-library/jest-dom": "npm:5.16.4"
-    "@testing-library/react": "npm:13.2.0"
-    "@testing-library/user-event": "npm:13.5.0"
-    "@types/jest": "npm:27.5.1"
-    "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:5.25.0"
-    "@typescript-eslint/parser": "npm:5.25.0"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
     assert: "npm:2.0.0"
-    autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:1.2.1"
-    eslint: "npm:8.16.0"
-    eslint-config-airbnb: "npm:19.0.4"
-    eslint-config-airbnb-typescript: "npm:17.0.0"
-    eslint-config-prettier: "npm:8.8.0"
-    eslint-config-react-app: "npm:7.0.1"
-    eslint-plugin-import: "npm:2.27.5"
-    eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.34.1"
-    eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:10.12.4"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.7.0"
     lodash: "npm:4.17.21"
     lucide-react: "npm:0.220.0"
-    postcss: "npm:8.4.23"
-    prettier: "npm:2.8.8"
     react: "npm:18.2.0"
-    react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
     react-scripts: "npm:5.0.1"
     react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwind-merge: "npm:1.12.0"
-    tailwindcss: "npm:3.3.1"
     tailwindcss-radix: "npm:2.8.0"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.8"
-    vite-plugin-eslint: "npm:1.8.1"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-top-level-await: "npm:1.3.1"
-    vite-plugin-wasm: "npm:3.2.2"
-    web-vitals: "npm:3.3.1"
   languageName: unknown
   linkType: soft
 
@@ -25081,7 +24537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-checker@npm:0.6.4, vite-plugin-checker@npm:^0.6.2":
+"vite-plugin-checker@npm:0.6.4":
   version: 0.6.4
   resolution: "vite-plugin-checker@npm:0.6.4"
   dependencies:
@@ -25325,126 +24781,6 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10c0/9eb1c99f16992e1b29e3eea76df312983f2e59915c369fede0f1e6716b80827857f88cfc75092aac807d20c73033c65be82a315a14ab312a52d22a9bdad1ca82
-  languageName: node
-  linkType: hard
-
-"vite@npm:4.4.5":
-  version: 4.4.5
-  resolution: "vite@npm:4.4.5"
-  dependencies:
-    esbuild: "npm:^0.18.10"
-    fsevents: "npm:~2.3.2"
-    postcss: "npm:^8.4.26"
-    rollup: "npm:^3.25.2"
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10c0/787052f29394efad5f293988dea2c59478c7c307fc4852b34fcf67eb17f7fa13673c3c230753636d93a72b7391d3130d272c5e287178ce34b4b8182f633f4a10
-  languageName: node
-  linkType: hard
-
-"vite@npm:4.4.8":
-  version: 4.4.8
-  resolution: "vite@npm:4.4.8"
-  dependencies:
-    esbuild: "npm:^0.18.10"
-    fsevents: "npm:~2.3.2"
-    postcss: "npm:^8.4.26"
-    rollup: "npm:^3.25.2"
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10c0/4032fbbd67ae74d2d2f748218bb97c5b0005283ebc6cbb00374e55d418fe8852fdee20e25119cd6e2f1dd90c8c9bdb899a1dcd4fede12011befad2dbde9c0c56
-  languageName: node
-  linkType: hard
-
-"vite@npm:4.4.9":
-  version: 4.4.9
-  resolution: "vite@npm:4.4.9"
-  dependencies:
-    esbuild: "npm:^0.18.10"
-    fsevents: "npm:~2.3.2"
-    postcss: "npm:^8.4.27"
-    rollup: "npm:^3.27.1"
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10c0/80dbc632fd75b5866567c8fd605115c9d5718654dbf173f509cfd55c53f39dfbee24f62660e57fd5b11eb93f469a65abdbe6bae880ec8392bb70a5d0d7b6e6a9
   languageName: node
   linkType: hard
 
@@ -25693,42 +25029,24 @@ __metadata:
     "@gear-js/react-hooks": "npm:0.14.1"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/types": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.6.2"
     "@radix-ui/react-dialog": "npm:1.0.4"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    "@types/node": "npm:18.16.19"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@vitejs/plugin-react-swc": "npm:3.3.2"
     assert: "npm:2.0.0"
-    autoprefixer: "npm:10.4.15"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
-    eslint: "npm:8.48.0"
-    eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.16.2"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.2.1"
-    postcss: "npm:8.4.29"
-    prettier: "npm:3.0.3"
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
-    rollup-plugin-visualizer: "npm:5.9.2"
     sails-js: "npm:0.3.0"
-    sass: "npm:1.62.0"
-    tailwindcss: "npm:3.3.3"
-    typescript: "npm:4.9.5"
-    vite: "npm:4.4.9"
-    vite-plugin-eslint: "npm:1.8.1"
-    vite-plugin-node-polyfills: "npm:0.17.0"
-    vite-plugin-svgr: "npm:3.2.0"
   languageName: unknown
   linkType: soft
 

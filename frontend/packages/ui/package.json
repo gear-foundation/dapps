@@ -22,23 +22,11 @@
     "@headlessui/react": "1.7.17",
     "@polkadot/react-identicon": "3.11.3",
     "@radix-ui/react-scroll-area": "1.0.5",
+    "clsx": "2.0.0",
     "framer-motion": "10.16.16"
   },
   "devDependencies": {
-    "@gear-js/ui": "0.5.26",
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14",
-    "@typescript-eslint/eslint-plugin": "6.0.0",
-    "@typescript-eslint/parser": "6.0.0",
-    "@vitejs/plugin-react": "4.0.3",
-    "clsx": "2.0.0",
-    "eslint": "8.45.0",
-    "eslint-plugin-react-hooks": "4.6.0",
-    "eslint-plugin-react-refresh": "0.4.3",
-    "typescript": "5.0.2",
-    "vite": "4.4.5",
-    "vite-plugin-dts": "3.5.1",
-    "vite-plugin-svgr": "3.2.0"
+    "@gear-js/ui": "0.5.26"
   },
   "files": [
     "dist"
