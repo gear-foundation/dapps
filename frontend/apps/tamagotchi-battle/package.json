@@ -3,9 +3,9 @@
   "version": "1.0.2",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && yarn build:ez-transactions &&  react-app-rewired start",
-    "build": "yarn build:packages && yarn build:ez-transactions &&  react-app-rewired build",
-    "test": "react-app-rewired test",
+    "start": "yarn build:packages && yarn build:ez-transactions &&  npx react-app-rewired start",
+    "build": "yarn build:packages && yarn build:ez-transactions &&  npx react-app-rewired build",
+    "test": "npx react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "dependencies": {

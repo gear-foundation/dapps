@@ -3,8 +3,8 @@
   "version": "1.0.2",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && yarn build:ez-transactions && yarn react-app-rewired start",
-    "build": "yarn build:packages && yarn build:ez-transactions && yarn react-app-rewired build"
+    "start": "yarn build:packages && yarn build:ez-transactions && npx react-app-rewired start",
+    "build": "yarn build:packages && yarn build:ez-transactions && npx react-app-rewired build"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",

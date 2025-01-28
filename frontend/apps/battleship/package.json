@@ -4,9 +4,9 @@
   "version": "1.0.2",
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && yarn build:ez-transactions && vite --open",
-    "build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
-    "preview": "vite preview"
+    "start": "yarn build:packages && yarn build:ez-transactions && npx vite --open",
+    "build": "yarn build:packages && yarn build:ez-transactions && npx tsc && npx vite build",
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",

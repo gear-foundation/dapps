@@ -5,10 +5,10 @@
   "version": "1.0.2",
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && yarn build:ez-transactions && vite --open --host",
-    "build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
-    "preview": "vite preview",
-    "deploy": "tsc && vite build && npx thirdweb@latest upload dist"
+    "start": "yarn build:packages && yarn build:ez-transactions && npx vite --open --host",
+    "build": "yarn build:packages && yarn build:ez-transactions && npx tsc && npx vite build",
+    "preview": "npx vite preview",
+    "deploy": "npx tsc && npx vite build && npx thirdweb@latest upload dist"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",

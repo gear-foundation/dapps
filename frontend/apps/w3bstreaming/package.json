@@ -39,8 +39,8 @@
     "video.js": "8.3.0"
   },
   "scripts": {
-    "start": "yarn build:packages && react-app-rewired start",
-    "build": "yarn build:packages && react-app-rewired build"
+    "start": "yarn build:packages && npx react-app-rewired start",
+    "build": "yarn build:packages && npx react-app-rewired build"
   },
   "eslintConfig": {
     "extends": "./.eslintrc.js"
