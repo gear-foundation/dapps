@@ -2,7 +2,7 @@
   "name": "dapps-frontend",
   "version": "1.0.2",
   "private": true,
-  "packageManager": "yarn@4.4.0",
+  "packageManager": "yarn@4.6.0",
   "scripts": {
     "bump": "yarn up --exact",
     "bump:api": "yarn bump @gear-js/api",
