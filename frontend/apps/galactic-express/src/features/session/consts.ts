@@ -9,8 +9,6 @@ const TRAITS = [
   { heading: 'Reward', SVG: RewardSVG },
 ];
 
-// const WEATHERS = ['Sunny ☀️', 'Cloudy ☁️', 'Rainy 🌦️', 'Storm 🌧️', 'Thunder ⛈️', 'Tornado 🌪️'];
-
 const WEATHERS = {
   Clear: {
     weight: 0,

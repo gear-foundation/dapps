@@ -1,18 +1,18 @@
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { Card } from 'components';
+import { Card } from '@/components';
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import { RegistrationStatus } from 'features/session/types';
+import { RegistrationStatus } from '@/features/session/types';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
 import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
-import { useStartGameMessage, useRegisterMessage } from 'app/utils';
-import { getPanicType } from 'utils';
+import { useStartGameMessage, useRegisterMessage } from '@/app/utils';
+import { getPanicType } from '@/utils';
 
 type Props = {
   weather: string;

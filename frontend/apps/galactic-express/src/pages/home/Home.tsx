@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import { REGISTRATION_STATUS } from 'atoms';
+import { REGISTRATION_STATUS } from '@/atoms';
 import { useAccount } from '@gear-js/react-hooks';
-import { Start, Session, useLaunchState } from 'features/session';
-import { Welcome } from 'features/welcome/components/welcome';
-import { RequestGame } from 'features/welcome/components/enter-contract-address';
-import { SessionPassedInfo } from 'features/session/components/session-passed-info';
-import { TextModal } from 'features/session/components/game-not-found-modal';
+import { Start, Session, useLaunchState } from '@/features/session';
+import { Welcome } from '@/features/welcome/components/welcome';
+import { RequestGame } from '@/features/welcome/components/enter-contract-address';
+import { SessionPassedInfo } from '@/features/session/components/session-passed-info';
+import { TextModal } from '@/features/session/components/game-not-found-modal';
 
 function Home() {
   const [registrationStatus, setRegistrationStatus] = useAtom(REGISTRATION_STATUS);

@@ -1,5 +1,5 @@
 import { HexString } from '@polkadot/util/types';
-import { HaltReason, Participant as ProgramParticipant, Turn } from 'app/utils';
+import { HaltReason, Participant as ProgramParticipant, Turn } from '@/app/utils';
 
 type Session = {
   altitude: string;
