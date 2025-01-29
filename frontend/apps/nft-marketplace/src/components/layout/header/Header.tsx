@@ -1,4 +1,4 @@
-import { OnLogin } from 'components';
+import { OnLogin } from '@/components';
 import { Wallet } from '@dapps-frontend/ui';
 import { Logo } from './logo';
 import { Menu } from './menu';

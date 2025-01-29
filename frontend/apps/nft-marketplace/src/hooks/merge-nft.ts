@@ -1,8 +1,8 @@
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { MarketNFT, NFT } from 'types';
-import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from 'app/utils';
-import { MarketState } from 'app/utils/sails/nft_marketplace';
+import { MarketNFT, NFT } from '@/types';
+import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from '@/app/utils';
+import { MarketState } from '@/app/utils/sails/nft_marketplace';
 
 function useMergedNFTs(items?: MarketState['items']) {
   const { api } = useApi();
