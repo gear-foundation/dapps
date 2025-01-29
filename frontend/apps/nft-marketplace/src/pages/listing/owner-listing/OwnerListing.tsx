@@ -1,7 +1,7 @@
 import { Button } from '@gear-js/ui';
-import { Listing, PriceModal, OnLogin } from 'components';
+import { Listing, PriceModal, OnLogin } from '@/components';
 import { useState } from 'react';
-import { AuctionFormValues, Listing as ListingType } from 'types';
+import { AuctionFormValues, Listing as ListingType } from '@/types';
 import { AuctionModal } from './auction-modal';
 
 type Props = {

@@ -14259,7 +14259,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ipfs-core-utils@npm:^0.18.0":
+"ipfs-core-utils@npm:^0.18.0, ipfs-core-utils@npm:^0.18.1":
   version: 0.18.1
   resolution: "ipfs-core-utils@npm:0.18.1"
   dependencies:
@@ -14338,6 +14338,33 @@ __metadata:
     stream-to-it: "npm:^0.2.2"
     uint8arrays: "npm:^4.0.2"
   checksum: 10c0/d3f1643be5fd7411842942e081d78f3b6ca0a3f0092d9aeed9414b9163835d186c77b6cde26c140e45a1d6bcfe538a1c87e1f138a5c52bf7e8f0ead534ae0b72
+  languageName: node
+  linkType: hard
+
+"ipfs-http-client@npm:60.0.1":
+  version: 60.0.1
+  resolution: "ipfs-http-client@npm:60.0.1"
+  dependencies:
+    "@ipld/dag-cbor": "npm:^9.0.0"
+    "@ipld/dag-json": "npm:^10.0.0"
+    "@ipld/dag-pb": "npm:^4.0.0"
+    "@libp2p/logger": "npm:^2.0.5"
+    "@libp2p/peer-id": "npm:^2.0.0"
+    "@multiformats/multiaddr": "npm:^11.1.5"
+    any-signal: "npm:^3.0.0"
+    dag-jose: "npm:^4.0.0"
+    err-code: "npm:^3.0.1"
+    ipfs-core-types: "npm:^0.14.1"
+    ipfs-core-utils: "npm:^0.18.1"
+    ipfs-utils: "npm:^9.0.13"
+    it-first: "npm:^2.0.0"
+    it-last: "npm:^2.0.0"
+    merge-options: "npm:^3.0.4"
+    multiformats: "npm:^11.0.0"
+    parse-duration: "npm:^1.0.0"
+    stream-to-it: "npm:^0.2.2"
+    uint8arrays: "npm:^4.0.2"
+  checksum: 10c0/99d2a856757582af6fbbd1a65dc1b548d2c228211f2edbcf09d650095694c6ab6989563363e81589f916d563d0240e6eb91162994ddba2b5d48ea9f41af9eb0f
   languageName: node
   linkType: hard
 
@@ -17017,10 +17044,8 @@ __metadata:
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
-    ipfs-http-client: "npm:57.0.1"
+    ipfs-http-client: "npm:60.0.1"
     jotai: "npm:2.7.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"

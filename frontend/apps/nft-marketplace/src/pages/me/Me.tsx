@@ -1,5 +1,5 @@
-import { List } from 'components';
-import { useMergedOwnerNFTs } from 'hooks';
+import { List } from '@/components';
+import { useMergedOwnerNFTs } from '@/hooks';
 
 function Me() {
   const { ownerNFTs, isEachNFTRead } = useMergedOwnerNFTs();

@@ -1,15 +1,15 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { NFTDetails } from 'types';
-import { getAuctionDate, getIpfsAddress, getListingProps } from 'utils';
-import { Loader } from 'components';
-import { useMarketplaceActions } from 'hooks';
+import { NFTDetails } from '@/types';
+import { getAuctionDate, getIpfsAddress, getListingProps } from '@/utils';
+import { Loader } from '@/components';
+import { useMarketplaceActions } from '@/hooks';
 import { AuctionListing } from './auction-listing';
 import { OwnerListing } from './owner-listing';
 import { SaleListing } from './sale-listing';
-import { useGetMarketQuery, useOwnerOfQuery, useTokenMetadataByIdQuery } from 'app/utils';
-import { ADDRESS } from 'consts';
+import { useGetMarketQuery, useOwnerOfQuery, useTokenMetadataByIdQuery } from '@/app/utils';
+import { ADDRESS } from '@/consts';
 
 type Params = {
   id: string;

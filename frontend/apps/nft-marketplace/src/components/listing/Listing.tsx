@@ -1,6 +1,6 @@
 import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ReactNode } from 'react';
-import { Listing as ListingType } from 'types';
+import { Listing as ListingType } from '@/types';
 import { Card } from './card';
 import { Offer } from './offer';
 import styles from './Listing.module.scss';

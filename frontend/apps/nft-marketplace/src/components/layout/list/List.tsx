@@ -1,7 +1,7 @@
-import { InfoText, Loader } from 'components';
-import { Filter, NFT as NFTType } from 'types';
-import { getNFTProps } from 'utils';
-import { useAccount } from '@gear-js/react-hooks';
+import { InfoText, Loader } from '@/components';
+import { Filter, NFT as NFTType } from '@/types';
+import { getNFTProps } from '@/utils';
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Header } from './header';
 import { NFT } from './nft';
 import styles from './List.module.scss';
@@ -23,12 +23,13 @@ function List({ heading, filter, NFTs }: Props) {
   const isAnyNft = !!list?.length;
 
   const { account } = useAccount();
+  const { getFormattedBalance } = useBalanceFormat();
 
   const getNFTs = () =>
     list?.map((nft) => {
       const { token_id, owner } = nft;
       const isOwner = account?.decodedAddress === owner;
-      const { name, path, src, text, price, button } = getNFTProps(nft, isOwner);
+      const { name, path, src, text, price, button } = getNFTProps(nft, isOwner, getFormattedBalance);
 
       return <NFT key={token_id} path={path} src={src} name={name} text={text} price={price} button={button} />;
     });

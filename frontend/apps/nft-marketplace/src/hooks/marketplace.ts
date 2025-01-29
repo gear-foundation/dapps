@@ -1,5 +1,5 @@
-import { AuctionFormValues, MarketNFT } from 'types';
-import { getMilliseconds } from 'utils';
+import { AuctionFormValues, MarketNFT } from '@/types';
+import { getMilliseconds } from '@/utils';
 import {
   useBuyItemMessage,
   useAddOfferMessage,
@@ -8,8 +8,8 @@ import {
   useAddMarketDataMessage,
   useCreateAuctionMessage,
   useGetMarketQuery,
-} from 'app/utils';
-import { useApproveMessage } from 'app/utils/sails/messages/use-approve-message';
+} from '@/app/utils';
+import { useApproveMessage } from '@/app/utils/sails/messages/use-approve-message';
 import { useAlert } from '@gear-js/react-hooks';
 
 function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | undefined, isMarketOwner: boolean) {
