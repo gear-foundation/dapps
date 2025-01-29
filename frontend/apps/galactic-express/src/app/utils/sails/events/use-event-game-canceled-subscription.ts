@@ -1,6 +1,6 @@
 import { useProgramEvent } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { REGISTRATION_STATUS } from 'atoms';
+import { useProgram } from '@/app/utils';
+import { REGISTRATION_STATUS } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 export function useEventGameCanceledSubscription(isUserAdmin: boolean) {

@@ -1,5 +1,5 @@
 import { useProgram as useGearJsProgram } from '@gear-js/react-hooks';
-import { Program } from 'app/utils';
+import { Program } from '@/app/utils';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 const useProgram = () => {

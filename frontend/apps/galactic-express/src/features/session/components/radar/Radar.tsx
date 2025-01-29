@@ -1,4 +1,4 @@
-import { PLAYER_COLORS } from 'features/session/consts';
+import { PLAYER_COLORS } from '@/features/session/consts';
 import { CSSProperties } from 'react';
 import cropEarthSrc from '../../assets/earth-crop.gif';
 import { Event, RankWithName } from '../../types';

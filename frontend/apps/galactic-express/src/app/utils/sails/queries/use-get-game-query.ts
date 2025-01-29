@@ -1,4 +1,4 @@
-import { useProgram } from 'app/utils';
+import { useProgram } from '@/app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 

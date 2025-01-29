@@ -2569,19 +2569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:^1.7.17":
-  version: 1.7.19
-  resolution: "@headlessui/react@npm:1.7.19"
-  dependencies:
-    "@tanstack/react-virtual": "npm:^3.0.0-beta.60"
-    client-only: "npm:^0.0.1"
-  peerDependencies:
-    react: ^16 || ^17 || ^18
-    react-dom: ^16 || ^17 || ^18
-  checksum: 10c0/c0ece0db6ca15092439177a5322de50b60fa5fd90354ae0f999b3e56abab0065ed54fa7b4b69994ec1bdc23adc6ae9919d7dd57f97922d0b9bb6515d27e3a7e5
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.11.10, @humanwhocodes/config-array@npm:^0.11.14":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -6719,29 +6706,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:^3.0.0-beta.60":
-  version: 3.9.0
-  resolution: "@tanstack/react-virtual@npm:3.9.0"
-  dependencies:
-    "@tanstack/virtual-core": "npm:3.9.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/25b6e24d6ef7c5322d9ed8f422ac1ec6d0c18c75a0ef8d113911dd298e860f12138d6946532d1d6642a6f52b51b92de02cdb10a2c728c95e2c9bf57c650e255c
-  languageName: node
-  linkType: hard
-
 "@tanstack/table-core@npm:8.9.3":
   version: 8.9.3
   resolution: "@tanstack/table-core@npm:8.9.3"
   checksum: 10c0/0192a6239f0624fff99bf74dadb13f5cb692f9f4883879716048b78e342df8a7a8cf92df3bcc39dbedc6884c3ac74e71919cf9164b0dd328d520e1c28dd71d3b
-  languageName: node
-  linkType: hard
-
-"@tanstack/virtual-core@npm:3.9.0":
-  version: 3.9.0
-  resolution: "@tanstack/virtual-core@npm:3.9.0"
-  checksum: 10c0/2c8ce40204e377808a0f5dc53b95a04710eac7832b97f61a743ee234aba894c1efdf56e55be44d57e559d71b8d47f4e18f9535091fbe0fea68cc1dc12c3b577e
   languageName: node
   linkType: hard
 
@@ -13076,27 +13044,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^10.16.4":
-  version: 10.18.0
-  resolution: "framer-motion@npm:10.18.0"
-  dependencies:
-    "@emotion/is-prop-valid": "npm:^0.8.2"
-    tslib: "npm:^2.4.0"
-  peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  dependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/0aea1b3dc5cf06687e31f3b6c0b6b1a2cd070afdd4a9d38ebf15715c662ca1d6d1c25e6778695e5ebff37a6ce92b031d036c02570370e6057e66aa9de9f9370f
-  languageName: node
-  linkType: hard
-
 "fresh@npm:0.5.2":
   version: 0.5.2
   resolution: "fresh@npm:0.5.2"
@@ -13283,18 +13230,15 @@ __metadata:
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@headlessui/react": "npm:^1.7.17"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     clsx: "npm:2.1.0"
-    framer-motion: "npm:^10.16.4"
-    jotai: "npm:^2.2.2"
+    framer-motion: "npm:10.16.4"
+    jotai: "npm:2.2.2"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
@@ -15741,6 +15685,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jotai@npm:2.2.2":
+  version: 2.2.2
+  resolution: "jotai@npm:2.2.2"
+  peerDependencies:
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 10c0/dc07c6a99c9cb077710b0297d4ada279c15d803102258951472a26938bd5cfb13b666439d703bed65c3a20011afeb3dc286d68a78ef48c7d2aa726ea2ebc1ca5
+  languageName: node
+  linkType: hard
+
 "jotai@npm:2.4.3":
   version: 2.4.3
   resolution: "jotai@npm:2.4.3"
@@ -15813,21 +15769,6 @@ __metadata:
     react:
       optional: true
   checksum: 10c0/7146023b77e32257e120e3a9f3f29ab3972f6ee2146e3c843cc43dc75aaa200c8e3d2513bb6a358755057a23ba716d6b74d56dbcd9d97416d8adf3d50545b096
-  languageName: node
-  linkType: hard
-
-"jotai@npm:^2.2.2":
-  version: 2.9.3
-  resolution: "jotai@npm:2.9.3"
-  peerDependencies:
-    "@types/react": ">=17.0.0"
-    react: ">=17.0.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/d7a2aedeebd84f332b930c5dc06f6827c11a70c3b6bae0817e0c778f7c34996f3a47d5c544ff1b7ed2662083feed55ea6d77b281adf2e0fba65ad93b1723d687
   languageName: node
   linkType: hard
 
