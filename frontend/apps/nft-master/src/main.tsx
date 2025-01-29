@@ -4,7 +4,6 @@ import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend
 import 'keen-slider/keen-slider.min.css';
 import { App } from './app';
 
-
 initAnalytics();
 initErrorTracking();
 logPublicEnvs();

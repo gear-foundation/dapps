@@ -1,4 +1,4 @@
-@use "utils" as *;
+@use '@/utils' as *;
 
 .root {
   position: fixed;
@@ -34,7 +34,7 @@
   text-transform: capitalize;
 
   &::before {
-    content: "";
+    content: '';
     display: inline-block;
     width: 20px;
     height: 20px;

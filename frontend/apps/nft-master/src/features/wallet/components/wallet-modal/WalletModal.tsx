@@ -1,8 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
-import { copyToClipboard, isMobileDevice } from 'utils';
-import { Button, Modal, ScrollArea, Sprite } from 'components';
-import { usePendingUI } from 'hooks';
+import { copyToClipboard, isMobileDevice } from '@/utils';
+import { Button, Modal, ScrollArea, Sprite } from '@/components';
+import { usePendingUI } from '@/hooks';
 import clsx from 'clsx';
 import Identicon from '@polkadot/react-identicon';
 import { WALLETS } from '../../consts';
