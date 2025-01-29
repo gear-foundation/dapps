@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { CrossIcon } from 'assets/images';
+import { CrossIcon } from '@/assets/images';
 import { AlertProps } from './alert.types';
 import styles from './alert.module.scss';
 import { Button } from '../button';

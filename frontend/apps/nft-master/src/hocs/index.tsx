@@ -9,8 +9,8 @@ import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider as UrqlClientProvider } from 'urql';
-import { Alert, alertStyles } from 'components/ui/alert';
-import { urqlClient } from 'utils';
+import { Alert, alertStyles } from '@/components/ui/alert';
+import { urqlClient } from '@/utils';
 import { ADDRESS } from '../consts';
 
 function ApiProvider({ children }: ProviderProps) {

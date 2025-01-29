@@ -3,10 +3,9 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
-import { Button, buttonVariants, Container, Loader } from 'components';
-import { useCheckBalance } from 'hooks';
-import { NFT } from 'features/nfts/types';
-import { GetNftsByNameQuery } from 'features/nfts/queries';
+import { Button, buttonVariants, Container, Loader } from '@/components';
+import { NFT } from '@/features/nfts/types';
+import { GetNftsByNameQuery } from '@/features/nfts/queries';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
 import { useNFTSearch, useNFTs, useMintNFT } from '../../hooks';
 import styles from './NFTs.module.scss';
@@ -28,7 +27,7 @@ function NFTs({ slider }: Props) {
     variables: { search_query: searchQuery || null },
   });
 
-  const { data: searchedData, fetching: searching, error } = result;
+  const { data: searchedData, fetching: searching } = result;
 
   const filteredNFTs = searchQuery ? (searchedData?.nfts as NFT[]) : nfts;
 

@@ -3,11 +3,11 @@ import { useAtom } from 'jotai';
 import { useQuery } from 'urql';
 import { AnyJson } from '@polkadot/types/types';
 import { stringShorten } from '@polkadot/util';
-import { IS_BALANCE_LOW_ATOM, isPendingUI } from 'consts';
+import { IS_BALANCE_LOW_ATOM, isPendingUI } from '@/consts';
 import { ProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
-import { useAccountAvailableBalance } from 'features/available-balance/hooks';
-import { GetAccountNFTQuery } from 'features/nfts/queries';
+import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
+import { GetAccountNFTQuery } from '@/features/nfts/queries';
 
 export function usePendingUI() {
   const [isPending, setIsPending] = useAtom(isPendingUI);
@@ -85,7 +85,7 @@ export const useResizeEffect = (callback: () => void) => {
 
 export function useCheckBalance() {
   const { account } = useAccount();
-  const { availableBalance, isAvailableBalanceReady } = useAccountAvailableBalance();
+  const { availableBalance } = useAccountAvailableBalance();
   const alert = useAlert();
   const [isLowBalance, setIsLowBalance] = useAtom(IS_BALANCE_LOW_ATOM);
 
