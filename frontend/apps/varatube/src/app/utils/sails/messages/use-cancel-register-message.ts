@@ -1,5 +1,5 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { Options, useSignAndSend } from 'hooks/use-sign-and-send';
+import { Options, useSignAndSend } from '@/hooks/use-sign-and-send';
 import { useVaratubeProgram } from '../sails';
 
 export const useCancelSubscriptionMessage = () => {
