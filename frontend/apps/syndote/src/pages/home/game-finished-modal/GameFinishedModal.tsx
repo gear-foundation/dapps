@@ -20,7 +20,7 @@ function GameFinishedModal({ winnerAddress, isAdmin, players, prizePool = '0', o
   const { getFormattedBalanceValue } = useBalanceFormat();
   const { deleteGame, exitGame } = useQuitGame();
 
-  const isWinner = account?.decodedAddress === players[winnerAddress].ownerId;
+  const isWinner = account?.decodedAddress === players[winnerAddress].owner_id;
   const winnerName = players[winnerAddress].name;
 
   const items = [

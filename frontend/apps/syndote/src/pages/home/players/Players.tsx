@@ -1,10 +1,11 @@
 import { HexString } from '@polkadot/util/types';
-import { PlayerState, PlayerType } from 'types';
+import { PlayerType } from 'types';
 import { Player } from '../player';
+import { PlayerInfoState } from 'app/utils';
 import styles from './Players.module.scss';
 
 type Props = {
-  list: (PlayerState & PlayerType)[];
+  list: (PlayerInfoState & PlayerType)[];
   winner: HexString | undefined;
 };
 

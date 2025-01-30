@@ -1,61 +1,26 @@
 import { HexString } from '@polkadot/util/types';
+import { Gear, PlayerInfoState } from 'app/utils';
 
-type PlayerState = {
-  position: string;
-  balance: string;
-  debt: string;
-  inJail: boolean;
-  round: string;
-  cells: [];
-  penalty: string;
-  lost: boolean;
-  ownerId: HexString;
-  name: string;
-};
-
-type Players = [HexString, PlayerState][];
+type Players = Array<[HexString, PlayerInfoState]>;
 
 type PlayersByStrategyAddress = {
-  [key: HexString]: PlayerState;
-};
-
-type GameSessionState = {
-  GameSession: {
-    gameSession: State;
-  };
-};
-
-type State = {
-  adminId: HexString;
-  currentTurn: string;
-  currentStep: string;
-  gameStatus: string & { WaitingForGasForStrategy: HexString };
-  numberOfPlayers: string;
-  ownership: {};
-  players: Players;
-  playersQueue: [];
-  properties: {};
-  propertiesInBank: string;
-  round: string;
-  winner: HexString;
-  prizePool: string;
-  entryFee: string | null;
+  [key: HexString]: PlayerInfoState;
 };
 
 type PlayerType = {
   color: 'pink' | 'purple' | 'green' | 'yellow';
   address: string;
-  balance: string;
+  balance: number;
 };
 
-type Properties = [HexString, ['Bronze' | 'Silver' | 'Gold'], string, string][];
+type Properties = Array<[HexString, Array<Gear>, number, number] | null>;
 
 type Step = {
-  currentStep: string;
-  currentPlayer: HexString;
-  players: Players;
   properties: Properties;
-  ownership: HexString[];
+  current_player: HexString;
+  players: Array<[HexString, PlayerInfoState]>;
+  ownership: Array<HexString>;
+  current_step: number | string | bigint;
 };
 
 type MessagePayload = ({ GameFinished: { winner: HexString } } & { Step: Step }) | string;
@@ -74,9 +39,7 @@ type CellValues = {
 };
 
 export type {
-  PlayerState,
   PlayerType,
-  State,
   Step,
   MessagePayload,
   MessageHandlePayload,
@@ -84,6 +47,5 @@ export type {
   Players,
   Properties,
   CellValues,
-  GameSessionState,
   PlayersByStrategyAddress,
 };
