@@ -8,9 +8,9 @@ import {
 } from '@gear-js/react-hooks';
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
-import { Alert, alertStyles } from 'components/ui/alert';
-import { AppProvider, GameProvider } from 'app/context';
-import { ENV } from 'app/consts';
+import { Alert, alertStyles } from '@/components/ui/alert';
+import { AppProvider, GameProvider } from '@/app/context';
+import { ENV } from '@/app/consts';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>

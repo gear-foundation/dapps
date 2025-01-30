@@ -1,5 +1,5 @@
 @use '@gear-js/ui/variables' as *;
-@use 'assets/styles/shared' as *;
+@use '@/assets/styles/shared' as *;
 
 .loader {
   @extend %absoluteCenter;

@@ -1,9 +1,9 @@
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { getBgColors } from 'app/utils';
+import { getBgColors } from '@/app/utils';
 import { useGame } from '../../../app/context';
 import { useEffect, useState } from 'react';
-import { playerNames } from 'app/consts';
+import { playerNames } from '@/app/consts';
 
 type Props = {
   index: number;
@@ -12,14 +12,16 @@ type Props = {
 
 export const PlayerCardSection = ({ index, active }: Props) => {
   const { game } = useGame();
-  const [countHand, setCountHand] = useState(0)
+  const [countHand, setCountHand] = useState(0);
 
   useEffect(() => {
     if (game) {
-      const onHandsCount = Object.values(game?.gameState?.tileToPlayer).filter((player) => Number(player) === index).length
-      setCountHand(onHandsCount)
+      const onHandsCount = Object.values(game?.gameState?.tileToPlayer).filter(
+        (player) => Number(player) === index,
+      ).length;
+      setCountHand(onHandsCount);
     }
-  }, [game, index])
+  }, [game, index]);
 
   return (
     <div className="relative flex flex-col h-full max-w-[160px]">

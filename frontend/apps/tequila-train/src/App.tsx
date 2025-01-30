@@ -1,9 +1,9 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
 import { Footer, Container } from '@dapps-frontend/ui';
-import { Routing } from 'pages';
-import { Header } from 'components/layout';
-import { ApiLoader } from 'components/loaders/api-loader';
-import { withProviders } from 'app/hocs';
+import { Routing } from '@/pages';
+import { Header } from '@/components/layout';
+import { ApiLoader } from '@/components/loaders/api-loader';
+import { withProviders } from '@/app/hocs';
 import './index.css';
 import './App.scss';
 
