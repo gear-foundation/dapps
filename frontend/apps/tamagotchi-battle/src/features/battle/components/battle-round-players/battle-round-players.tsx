@@ -1,14 +1,14 @@
 import { useBattle } from '../../context';
 import { buttonStyles } from '@gear-js/ui';
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useBattleMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { cn, gasLimitToNumber, toNumber } from 'app/utils';
+import { cn, gasLimitToNumber, toNumber } from '@/app/utils';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useGaslessTransactions } from 'gear-ez-transactions';
-import { GAS_LIMIT } from 'app/consts';
+import { GAS_LIMIT } from '@/app/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();

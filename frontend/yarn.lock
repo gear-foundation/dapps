@@ -21686,8 +21686,6 @@ __metadata:
     "@polkadot/util": "npm:12.3.2"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.7.0"
     clsx: "npm:1.2.1"
     framer-motion: "npm:9.0.7"

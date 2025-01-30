@@ -1,14 +1,14 @@
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useState } from 'react';
 import { HexString } from '@polkadot/util/types';
 import { PlayerColor } from '../features/battle/types/battles';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BattleRoundStatsAvatar } from 'features/battle/components/battle-round-stats-avatar';
+import { BattleRoundStatsAvatar } from '@/features/battle/components/battle-round-stats-avatar';
 import { TamagotchiAvatar } from '../features/battle/components/tamagotchi-avatar';
 import { buttonStyles } from '@gear-js/ui';
 import { BattlePlayersQueue } from '../features/battle/components/battle-players-queue';
 import { TamagotchiQueueCard } from '../features/battle/components/tamagotchi-queue-card';
-import { cn, toNumber } from 'app/utils';
+import { cn, toNumber } from '@/app/utils';
 
 const rivals = [
   {
@@ -39,7 +39,7 @@ const cnWrapper = 'relative flex flex-col';
 const cnT = 'm-auto h-full w-full max-w-full';
 
 export const Test = () => {
-  const [active, setActive] = useState(false);
+  const [active] = useState(false);
   const [show, setShow] = useState(false);
 
   return (
