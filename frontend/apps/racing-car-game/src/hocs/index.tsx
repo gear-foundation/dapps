@@ -12,7 +12,7 @@ import {
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from 'gear-ez-transactions';
-import { ADDRESS } from 'consts';
+import { ADDRESS } from '@/consts';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 import { Alert, alertStyles } from '@/ui';
