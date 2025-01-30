@@ -1,7 +1,7 @@
 import Identicon from '@polkadot/react-identicon';
 import { getVaraAddress } from '@gear-js/react-hooks';
 import clsx from 'clsx';
-import { PlayerType } from 'types';
+import { PlayerType } from '@/types';
 import styles from './Player.module.scss';
 import { stringShorten } from '@polkadot/util';
 

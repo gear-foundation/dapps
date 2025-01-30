@@ -21568,8 +21568,6 @@ __metadata:
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
     jotai: "npm:2.7.1"
     react: "npm:18.2.0"

@@ -2,10 +2,10 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { HexString } from '@polkadot/util/types';
 import { FunctionComponent, SVGProps, useState } from 'react';
-import { ReactComponent as GradeSVG } from 'assets/images/icons/grade.svg';
+import { ReactComponent as GradeSVG } from '@/assets/images/icons/grade.svg';
 import clsx from 'clsx';
-import { CellValues, PlayerType, PlayerState, Properties } from 'types';
-import { useOutsideClick } from 'hooks';
+import { CellValues, PlayerType, PlayerState, Properties } from '@/types';
+import { useOutsideClick } from '@/hooks';
 import styles from '../Home.module.scss';
 import { Chip } from '../chip';
 
