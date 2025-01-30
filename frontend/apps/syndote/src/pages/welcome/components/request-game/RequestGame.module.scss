@@ -1,4 +1,4 @@
-@use 'styles' as *;
+@use '@/styles' as *;
 
 .container {
   display: flex;
@@ -31,4 +31,3 @@
   margin: 0px auto;
   gap: 16px;
 }
-

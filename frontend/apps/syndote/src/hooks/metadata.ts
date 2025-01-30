@@ -3,10 +3,9 @@ import { useAtomValue } from 'jotai';
 import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
-import meta from 'assets/meta/syndote_meta.txt';
-import { ADDRESS } from 'consts';
-import { CURRENT_GAME_ADMIN_ATOM } from 'atoms';
-import { GameSessionState, State } from 'types';
+import meta from '@/assets/meta/syndote_meta.txt';
+import { CURRENT_GAME_ADMIN_ATOM } from '@/atoms';
+import { GameSessionState } from '@/types';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 function useBuffer(source: string) {
