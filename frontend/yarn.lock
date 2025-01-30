@@ -25711,6 +25711,7 @@ __metadata:
     eslint: "npm:8.48.0"
     eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.16.2"
+    gear-ez-transactions: "workspace:*"
     jotai: "npm:2.2.1"
     postcss: "npm:8.4.29"
     prettier: "npm:3.0.3"
