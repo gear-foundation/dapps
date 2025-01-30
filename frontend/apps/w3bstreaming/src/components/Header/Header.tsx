@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { Link } from '@ui';
+import { Link } from '@/ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { MenuHandler, Header as CommonHeader } from '@dapps-frontend/ui';
 import { cx } from '@/utils';

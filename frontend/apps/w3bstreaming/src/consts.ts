@@ -7,14 +7,14 @@ export const LOCAL_STORAGE = {
 };
 
 export const ADDRESS = {
-  NODE: (process.env.REACT_APP_NODE_ADDRESS || 'wss://testnet.vara-network.io') as string,
-  NODES: 'https://idea.gear-tech.io/gear-nodes',
-  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
-  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
-  IPFS_GATEWAY: process.env.REACT_APP_IPFS_GATEWAY_ADDRESS as string,
-  IPFS_NODE: process.env.REACT_APP_IPFS_ADDRESS as string,
-  SIGNALING_SERVER: process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001',
-  BACKEND_SERVER: process.env.REACT_APP_BACKEND_SERVER || 'http://127.0.0.1:3001',
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  NODES: import.meta.env.VITE_NODES_API_URL as string,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
+  IPFS_GATEWAY: import.meta.env.VITE_IPFS_GATEWAY_ADDRESS as string,
+  IPFS_NODE: import.meta.env.VITE_IPFS_ADDRESS as string,
+  SIGNALING_SERVER: import.meta.env.VITE_SIGNALING_SERVER as string,
+  BACKEND_SERVER: import.meta.env.VITE_BACKEND_SERVER as string,
 };
 
 export const SEARCH_PARAMS = {

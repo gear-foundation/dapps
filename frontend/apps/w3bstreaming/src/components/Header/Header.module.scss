@@ -1,39 +1,39 @@
-@use '~styles/variables' as *;
-@use '~styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .header {
-    box-sizing: border-box;
-    background: theme-var($background-secondary);
+  box-sizing: border-box;
+  background: theme-var($background-secondary);
 }
 
 .content {
-    padding: 20px 0;
+  padding: 20px 0;
 
-    @include lg {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
+  @include lg {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 .menu {
-    list-style: none;
-    display: flex;
+  list-style: none;
+  display: flex;
 
-    @include lg {
-        align-items: center;
-    }
+  @include lg {
+    align-items: center;
+  }
 }
 
 .menu-item {
-    margin: 0 30px;
-    font-size: 18px;
-    font-weight: 500;
+  margin: 0 30px;
+  font-size: 18px;
+  font-weight: 500;
 
-    @include lg {
-        margin: 0 10px;
-    }
+  @include lg {
+    margin: 0 10px;
+  }
 
-    &--active {
-        color: theme-var($green-special)
-    }
+  &--active {
+    color: theme-var($green-special);
+  }
 }
