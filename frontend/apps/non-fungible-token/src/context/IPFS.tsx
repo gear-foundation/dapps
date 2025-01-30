@@ -1,4 +1,4 @@
-import { ADDRESS } from 'consts';
+import { ADDRESS } from '@/consts';
 import { create, IPFSHTTPClient } from 'ipfs-http-client';
 import { createContext, ReactNode, useRef } from 'react';
 
