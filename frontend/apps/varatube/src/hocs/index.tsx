@@ -9,7 +9,7 @@ import {
 import { AvailableBalanceProvider } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 import { Alert, alertStyles } from '@gear-js/ui';
-import { ADDRESS } from 'consts';
+import { ADDRESS } from '@/consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
