@@ -1,9 +1,9 @@
 import { buttonStyles } from '@gear-js/ui';
 import { Wallet } from '@dapps-frontend/ui';
-import { useBattle } from 'features/battle/context';
+import { useBattle } from '@/features/battle/context';
 import { Link, useLocation } from 'react-router-dom';
-import { cn } from 'app/utils';
-import { NewGameButton } from 'features/battle/components/new-game-button';
+import { cn } from '@/app/utils';
+import { NewGameButton } from '@/features/battle/components/new-game-button';
 
 export const AccountComponent = () => {
   const { battle, isAdmin } = useBattle();

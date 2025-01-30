@@ -2,7 +2,7 @@ import { useBattle } from '../../context';
 import { SpriteIcon } from '../../../../components/ui/sprite-icon';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TamagotchiQueueCard } from '../tamagotchi-queue-card';
-import { toNumber } from 'app/utils';
+import { toNumber } from '@/app/utils';
 
 export const BattleRoundInfo = () => {
   const { rivals, currentPlayer, currentPairIdx, battle } = useBattle();
