@@ -1,7 +1,7 @@
-import { useApp, useGame } from 'app/context';
+import { useApp, useGame } from '@/app/context';
 import { useEffect, useMemo } from 'react';
 import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
-import meta from 'assets/meta/tequila_train.meta.txt';
+import meta from '@/assets/meta/tequila_train.meta.txt';
 
 import { IGame, IState } from '../types/game';
 import { useProgramMetadata, useReadState } from './use-metadata';
