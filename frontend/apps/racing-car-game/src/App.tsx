@@ -8,7 +8,6 @@ import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
 import { LOGIN, PLAY, START } from '@/App.routes';
 import styles from './App.module.scss';
-import 'babel-polyfill';
 import { useLoginByParams } from './hooks';
 import { ProtectedRoute } from './features/Auth/components';
 import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from './features/Wallet/hooks';

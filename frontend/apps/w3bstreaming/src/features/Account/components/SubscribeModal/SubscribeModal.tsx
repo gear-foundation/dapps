@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'components';
+import { Modal } from '@/components';
 import { useAccount } from '@gear-js/react-hooks';
 import { cx } from '@/utils';
 import playSVG from '@/assets/icons/play-icon.svg';

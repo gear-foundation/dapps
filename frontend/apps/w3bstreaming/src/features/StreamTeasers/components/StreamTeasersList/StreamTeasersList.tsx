@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { motion } from 'framer-motion';
 import { HexString } from '@gear-js/api';
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
-import { Button, Dropdown, Search } from '@ui';
+import { useAccount } from '@gear-js/react-hooks';
+import { Button, Dropdown, Search } from '@/ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
 import styles from './StreamTeasersList.module.scss';
 import { selectTeasersMenuAll, selectTeasersMenuAuthorized } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
-import { Stream, useGetStateQuery } from '@/app/utils';
+import { useGetStateQuery } from '@/app/utils';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const { account } = useAccount();
