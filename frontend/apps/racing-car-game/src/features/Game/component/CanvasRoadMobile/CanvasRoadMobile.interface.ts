@@ -1,4 +1,3 @@
-import { ForwardedRef, MutableRefObject } from 'react';
 import { CarsState } from '../Road/Road.interface';
 
 export interface CanvasRoadProps {

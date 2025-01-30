@@ -8650,7 +8650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assert@npm:2.1.0, assert@npm:^2.0.0":
+"assert@npm:^2.0.0":
   version: 2.1.0
   resolution: "assert@npm:2.1.0"
   dependencies:
@@ -17070,8 +17070,6 @@ __metadata:
     "@polkadot/util": "npm:12.3.2"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.7.0"
     clsx: "npm:1.2.1"
     graphql: "npm:16.8.1"
@@ -17229,8 +17227,6 @@ __metadata:
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
     ipfs-http-client: "npm:57.0.1"
     react: "npm:18.2.0"
@@ -19076,9 +19072,7 @@ __metadata:
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
     "@types/lodash.isequal": "npm:4.5.6"
-    assert: "npm:2.1.0"
     axios: "npm:1.4.0"
-    buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
     framer-motion: "npm:10.16.4"
     jotai: "npm:2.2.1"

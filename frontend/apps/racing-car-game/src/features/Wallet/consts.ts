@@ -6,7 +6,11 @@ import TalismanSVG from '@/assets/icons/talisman-icon.svg';
 import NovaSVG from '@/assets/icons/nova.svg';
 import { WalletValue } from './types';
 
-export const isNovaWallet = !!window?.walletExtension?.isNovaWallet;
+interface InjectedWindow extends Window {
+  walletExtension?: { isNovaWallet: boolean };
+}
+
+export const isNovaWallet = !!(window as InjectedWindow)?.walletExtension?.isNovaWallet;
 
 export const WALLET = isNovaWallet
   ? {
