@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { TokenDetails } from 'types';
-import { getIpfsAddress } from 'utils';
-import { ConfirmationModal, AddressModal, Loader } from 'components';
+import { TokenDetails } from '@/types';
+import { getIpfsAddress } from '@/utils';
+import { ConfirmationModal, AddressModal, Loader } from '@/components';
 import { HexString } from '@polkadot/util/types';
-import { useNFT, useSendNFTMessage } from 'hooks';
+import { useNFT, useSendNFTMessage } from '@/hooks';
 import { Content } from './content';
 
 function NFT() {
