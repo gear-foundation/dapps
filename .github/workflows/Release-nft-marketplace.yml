@@ -75,7 +75,7 @@ jobs:
             VITE_IPFS_ADDRESS=${{ secrets.VITE_IPFS_ADDRESS }}
             VITE_NFT_CONTRACT_ADDRESS=${{ secrets.VITE_NFT_CONTRACT_ADDRESS }}
             VITE_MARKETPLACE_CONTRACT_ADDRESS=${{ secrets.VITE_MARKETPLACE_CONTRACT_ADDRESS }}
-            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_NFT_MARKETPLACE }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_NFT_MARKETPLACE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

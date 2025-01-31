@@ -3,7 +3,7 @@ name: Staging - Deploy TicTac
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
     paths:
       - frontend/apps/tic-tac-toe/**
       - frontend/packages/**
@@ -18,7 +18,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: tic-tac-toe
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -79,7 +79,7 @@ jobs:
             VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_TIC_TAC }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS_TIC_TAC }}
-            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_TIC_TAC }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_TIC_TAC }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
