@@ -70,11 +70,11 @@ jobs:
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_DNS_API_URL=${{ secrets.REACT_APP_DNS_API_URL }}
-            REACT_APP_DNS_NAME=${{ secrets.REACT_APP_DNS_NAME_GALACTIC }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_GALEX }}
-            REACT_APP_GTM_ID=${{ secrets.REACT_APP_GTM_ID_GALACTIC }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
+            VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_GALACTIC }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_GALEX }}
+            VITE_GTM_ID=${{ secrets.VITE_GTM_ID_GALACTIC }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

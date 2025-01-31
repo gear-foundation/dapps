@@ -15,8 +15,8 @@ function getEnv(envName: string, default_?: string): string {
 
 export default {
   port: process.env.PORT || 3001,
-  wsAddress: getEnv("REACT_APP_NODE_ADDRESS", "wss://testnet.vara-network.io"),
+  wsAddress: getEnv("VITE_NODE_ADDRESS", "wss://testnet.vara-network.io"),
   programId: getEnv("PROGRAM_ID") as HexString,
-  dnsApiUrl: getEnv("REACT_APP_DNS_API_URL"),
-  dnsName: getEnv("REACT_APP_DNS_NAME"),
+  dnsApiUrl: getEnv("VITE_DNS_API_URL"),
+  dnsName: getEnv("VITE_DNS_NAME"),
 };

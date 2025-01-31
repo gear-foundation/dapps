@@ -3,7 +3,7 @@ name: Staging - Deploy Racing Game
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
     paths:
       - frontend/apps/racing-car-game/**
       - frontend/packages/**
@@ -18,7 +18,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: dapps-racing
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -75,11 +75,11 @@ jobs:
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_DNS_API_URL=${{ secrets.REACT_APP_DNS_API_URL }}
-            REACT_APP_DNS_NAME=${{ secrets.REACT_APP_DNS_NAME_RACING }}
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_GASLESS_BACKEND_ADDRESS=${{ secrets.REACT_APP_GASLESS_BACKEND_ADDRESS }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_RACING }}
+            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
+            VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_RACING }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_RACING }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
