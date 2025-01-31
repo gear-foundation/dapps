@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useApi, useSendMessage } from '@gear-js/react-hooks';
-import { useProgramMetadata } from 'app/hooks/api';
+import { useProgramMetadata } from '@/app/hooks/api';
 import { useBattle } from '../context';
 import meta from '../assets/meta/battle.meta.txt';
-import type { HexString, UserMessageSent } from '@gear-js/api';
+import type { UserMessageSent } from '@gear-js/api';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { BattleStatePlayer } from '../types/battles';
 import type { BattleCurrentStateVariants, RoundDamageType } from '../types/battles';
@@ -32,12 +32,6 @@ export function useInitBattleData() {
 
   const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
   const metadata = useProgramMetadata(meta);
-
-  useEffect(() => {
-    if (window) {
-      (window as any).BattleAddress = process.env.REACT_APP_CONTRACT_ADDRESS as HexString;
-    }
-  }, []);
 
   useEffect(() => {
     setBattle(state);

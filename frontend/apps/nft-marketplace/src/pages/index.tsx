@@ -1,6 +1,6 @@
 import { Route } from 'react-router-dom';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { OnLogin, InfoText } from 'components';
+import { OnLogin, InfoText } from '@/components';
 import { Listing } from './listing';
 import { Listings } from './listings';
 import { Create } from './create';

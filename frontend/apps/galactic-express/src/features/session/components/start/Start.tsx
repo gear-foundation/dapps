@@ -3,10 +3,10 @@ import clsx from 'clsx';
 import { HexString } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useAtom, useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from 'atoms';
+import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
 import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
-import earthGif from 'assets/images/earth.gif';
-import { Container } from 'components';
+import earthGif from '@/assets/images/earth.gif';
+import { Container } from '@/components';
 import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
@@ -14,7 +14,7 @@ import { ParticipantsTable } from '../participants-table';
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
 import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
-import { useEventGameCanceledSubscription, useEventPlayerDeletedSubscription } from 'app/utils';
+import { useEventGameCanceledSubscription, useEventPlayerDeletedSubscription } from '@/app/utils';
 import styles from './Start.module.scss';
 
 type Props = {

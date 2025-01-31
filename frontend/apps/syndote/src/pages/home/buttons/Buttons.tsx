@@ -1,6 +1,6 @@
 import { Button } from '@gear-js/ui';
-import { ReactComponent as NextSVG } from 'assets/images/buttons/next.svg';
-import { ReactComponent as LastSVG } from 'assets/images/buttons/last.svg';
+import { ReactComponent as NextSVG } from '@/assets/images/buttons/next.svg';
+import { ReactComponent as LastSVG } from '@/assets/images/buttons/last.svg';
 import styles from './Buttons.module.scss';
 
 type Props = {

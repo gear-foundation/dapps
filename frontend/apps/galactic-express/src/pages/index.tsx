@@ -1,6 +1,6 @@
 import { Route } from 'react-router-dom';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { ROUTES } from 'consts';
+import { ROUTES } from '@/consts';
 import { Home } from './home';
 
 export const routes = [{ path: ROUTES.HOME, Page: Home }];

@@ -1,4 +1,4 @@
-import { DropzoneUploader } from '@ui';
+import { DropzoneUploader } from '@/ui';
 import { ADDRESS } from '@/consts';
 
 function PictureDropzone({ ...props }: any) {

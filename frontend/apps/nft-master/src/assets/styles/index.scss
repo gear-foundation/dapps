@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use '@/utils' as *;
 
 @import 'fonts';
 
@@ -74,10 +74,10 @@ body {
   }
 
   &.welcome {
-    background-image: url(/assets/images/bg.png);
+    background-image: url(@/assets/images/bg.png);
 
     @include lg {
-      background-image: url(/assets/images/mobile-bg.png);
+      background-image: url(@/assets/images/mobile-bg.png);
     }
   }
 }

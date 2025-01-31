@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
-import { cx } from 'utils';
-import src from 'assets/images/earth.gif';
+import { cx } from '@/utils';
+import src from '@/assets/images/earth.gif';
 import styles from './Welcome.module.scss';
 
 type Props = {

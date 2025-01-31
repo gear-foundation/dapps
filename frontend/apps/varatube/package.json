@@ -2,6 +2,12 @@
   "name": "varatube",
   "version": "1.0.2",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "yarn build:packages && npx vite",
+    "build": "yarn build:packages && npx vite build",
+    "preview": "yarn build:packages && npx vite preview"
+  },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
@@ -14,8 +20,6 @@
     "@polkadot/react-identicon": "3.11.3",
     "@polkadot/util": "12.3.2",
     "@tanstack/react-query": "5.29.0",
-    "assert": "2.0.0",
-    "buffer": "6.0.3",
     "clsx": "1.2.1",
     "ipfs-http-client": "60.0.0",
     "jotai": "2.6.0",
@@ -25,28 +29,5 @@
     "react-transition-group": "4.4.5",
     "sails-js": "0.3.0",
     "simplebar-react": "3.2.1"
-  },
-  "scripts": {
-    "start": "yarn build:packages && npx react-app-rewired start",
-    "build": "yarn build:packages && npx react-app-rewired build",
-    "test": "npx react-app-rewired test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      "chrome >= 67",
-      "edge >= 79",
-      "firefox >= 68",
-      "opera >= 54",
-      "safari >= 14"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

@@ -1,6 +1,6 @@
 import { useSetAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
-import { CURRENT_GAME_ATOM } from 'atoms';
+import { CURRENT_GAME_ATOM } from '@/atoms';
 import styles from './SessionPassedInfo.module.scss';
 
 function SessionPassedInfo() {

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
 import clsx from 'clsx';
 
-import { BaseComponentProps } from 'app/types';
+import { BaseComponentProps } from '@/app/types';
 
 type PopupContainerProps = BaseComponentProps & {
   setIsOpen: Dispatch<SetStateAction<boolean>>;

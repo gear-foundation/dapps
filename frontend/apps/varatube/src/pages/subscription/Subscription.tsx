@@ -1,22 +1,22 @@
 import { useAlert, useApi } from '@gear-js/react-hooks';
 import { Button, checkboxStyles } from '@gear-js/ui';
 import { useState } from 'react';
-import { Heading, Loader, PurchaseSubscriptionModal } from 'components';
-import pic from 'assets/images/pic.png';
+import { Heading, Loader, PurchaseSubscriptionModal } from '@/components';
+import pic from '@/assets/images/pic.png';
 import clsx from 'clsx';
-import { ADDRESS, periods } from 'consts';
+import { ADDRESS, periods } from '@/consts';
 import styles from './Subscription.module.scss';
-import { PurchaseSubscriptionApproveModal } from 'components/modals/purchase-subscription-approve-modal';
-import { FormValues } from 'types';
+import { PurchaseSubscriptionApproveModal } from '@/components/modals/purchase-subscription-approve-modal';
+import { FormValues } from '@/types';
 import {
   useBalanceOfQuery,
   useCancelSubscriptionMessage,
   useGetSubscriberQuery,
   useRegisterSubscriptionMessage,
-} from 'app/utils';
-import { useApproveMessage } from 'app/utils/sails/messages/use-approve-message';
-import { Period } from 'app/utils/sails/varatube';
-import { useCurrenciesQuery } from 'app/utils/sails/queries/use-currencies-query';
+} from '@/app/utils';
+import { useApproveMessage } from '@/app/utils/sails/messages/use-approve-message';
+import { Period } from '@/app/utils/sails/varatube';
+import { useCurrenciesQuery } from '@/app/utils/sails/queries/use-currencies-query';
 
 function Subscription() {
   const { currencies } = useCurrenciesQuery();

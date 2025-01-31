@@ -1,20 +1,20 @@
-import { useApp, useGame } from 'app/context';
-import { useGameMessage } from 'app/hooks/use-game';
+import { useApp, useGame } from '@/app/context';
+import { useGameMessage } from '@/app/hooks/use-game';
 import { PlayerDomino } from '../../common/player-domino';
-import { DominoTileType } from 'app/types/game';
-import { cn, findTile, getTileId } from 'app/utils';
+import { DominoTileType } from '@/app/types/game';
+import { cn, findTile, getTileId } from '@/app/utils';
 import { useEffect, useState } from 'react';
-import { Icon } from 'components/ui/icon';
+import { Icon } from '@/components/ui/icon';
 import { useAccount } from '@gear-js/react-hooks';
 
 export const PlayerConsSection = () => {
   const { account } = useAccount();
   const { setIsPending, isPending } = useApp();
   const { game, setSelectedDomino, selectedDomino, setPlayerChoice, playerChoice } = useGame();
-  const [playersTiles, setPlayersTiles] = useState<DominoTileType[]>([])
+  const [playersTiles, setPlayersTiles] = useState<DominoTileType[]>([]);
   const handleMessage = useGameMessage();
   const [turnPending, setTurnPending] = useState(false);
-  const [passPending, setPassPending] = useState(false);
+  const [, setPassPending] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -30,14 +30,13 @@ export const PlayerConsSection = () => {
   useEffect(() => {
     if (game) {
       const playersTiles = Object.entries(game.gameState.tileToPlayer)
-        .filter(([key, value]) => value === game.gameState.currentPlayer)
-        .map(([key, value]) => findTile(key, game?.gameState?.tiles))
-        .filter(tile => tile !== null) as DominoTileType[];
+        .filter(([, value]) => value === game.gameState.currentPlayer)
+        .map(([key]) => findTile(key, game?.gameState?.tiles))
+        .filter((tile) => tile !== null) as DominoTileType[];
 
-      setPlayersTiles(playersTiles)
+      setPlayersTiles(playersTiles);
     }
-
-  }, [game])
+  }, [game]);
 
   const onSuccess = () => {
     setTurnPending(false);
@@ -77,7 +76,11 @@ export const PlayerConsSection = () => {
       if (+track_id >= 0 && +tile_id >= 0) {
         setIsPending((prev) => !prev);
         setTurnPending(true);
-        handleMessage({ payload: { Place: { creator: game?.admin, tile_id, track_id, remove_train } }, onSuccess, onError });
+        handleMessage({
+          payload: { Place: { creator: game?.admin, tile_id, track_id, remove_train } },
+          onSuccess,
+          onError,
+        });
       }
     }
   };
@@ -98,21 +101,21 @@ export const PlayerConsSection = () => {
       const tracks = game?.gameState.tracks[+game.gameState.currentPlayer];
       const isTracksValid = tracks?.hasTrain && tracks.tiles.length > 0;
 
-      return isPending || !validChoice || !validTrack || !isCurrentPlayer || !isTracksValid
+      return isPending || !validChoice || !validTrack || !isCurrentPlayer || !isTracksValid;
     } else {
-      return true
+      return true;
     }
-  }
+  };
 
   const isDisabledTurn = () => {
     if (playerChoice) {
       const { tile_id, track_id } = playerChoice;
 
-      return isPending || !tile_id || !track_id
+      return isPending || !tile_id || !track_id;
     } else {
-      return true
+      return true;
     }
-  }
+  };
 
   const onShot = () => {
     if (playerChoice) {
@@ -128,11 +131,11 @@ export const PlayerConsSection = () => {
               creator: game?.admin,
               tile_id,
               track_id,
-              remove_train: true
-            }
+              remove_train: true,
+            },
           },
           onSuccess,
-          onError
+          onError,
         });
       }
     }
@@ -172,8 +175,7 @@ export const PlayerConsSection = () => {
         <button
           className={cn('btn btn--primary bg-[#353535] text-white py-2 w-full', turnPending && 'btn--loading')}
           onClick={onPass}
-          disabled={isPending}
-        >
+          disabled={isPending}>
           Pass
         </button>
       </div>

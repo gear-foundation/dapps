@@ -1,5 +1,5 @@
-@use '~styles/variables' as *;
-@use '~styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .container {
 }
@@ -11,6 +11,6 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 25.6px;
-  color: #A0A0A0;
+  color: #a0a0a0;
   padding-bottom: 10px;
 }

@@ -1,107 +1,107 @@
-@use '~styles/variables' as *;
-@use '~styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .profile-info {
-    width: 275px;
-    max-width: 275px;
-    margin-right: 32px;
-    padding: 32px;
+  width: 275px;
+  max-width: 275px;
+  margin-right: 32px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, #f5f5f5 0%, rgba(245, 245, 245, 0) 100%);
+
+  &-name {
+    padding-top: 20px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &-image {
+    max-width: 211px;
+    max-height: 211px;
+  }
+
+  &-subs {
+    padding-top: 5px;
+
+    &-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    &-caption {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  &-role {
+    padding-top: 8px;
+    opacity: 0.5;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &-form-fields {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    background: linear-gradient(180deg, #F5F5F5 0%, rgba(245, 245, 245, 0) 100%);
+    gap: 20px;
+    padding: 20px 0;
+  }
 
-    &-name {
-        padding-top: 20px;
-        font-size: 18px;
-        font-weight: 600;
+  &-timezone {
+    padding: 6px 0 24px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    text-align: center;
+
+    & .abbr {
+      white-space: nowrap;
     }
+  }
 
-    &-image {
-        max-width: 211px;
-        max-height: 211px;
-    }
-
-    &-subs {
-        padding-top: 5px;
-
-        &-value {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        &-caption {
-            font-size: 14px;
-            font-weight: 400;
-        }
-    }
-
-    &-role {
-        padding-top: 8px;
-        opacity: 0.5;
-        font-size: 16px;
-        font-weight: 400;
-    }
-
-    &-form-fields {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding: 20px 0;
-    }
-
-    &-timezone {
-        padding: 6px 0 24px;
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 26px;
-        text-align: center;
-
-        & .abbr {
-            white-space: nowrap;
-        }
-    }
-
-    & .save-button {
-        width: 100%;
-    }
+  & .save-button {
+    width: 100%;
+  }
 }
 
 .dropzone-wrapper {
-    width: 211px;
-    height: 211px;
+  width: 211px;
+  height: 211px;
 }
 
 .field-error {
-    position: absolute;
-    bottom: -18px;
-    color: red;
-    font-size: 14px;
-    white-space: nowrap;
+  position: absolute;
+  bottom: -18px;
+  color: red;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .form-item {
-    position: relative;
+  position: relative;
 }
 
 .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .label {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    height: 100%;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
 
-    &-title {
-        font-size: 16px;
-        font-weight: 400;
-        color: theme-var($text-primary);
-    }
+  &-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: theme-var($text-primary);
+  }
 }

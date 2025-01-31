@@ -1,6 +1,6 @@
 import { CSSProperties, Fragment } from 'react';
-import { cx } from 'utils';
-import { shortenString } from 'features/session/utils';
+import { cx } from '@/utils';
+import { shortenString } from '@/features/session/utils';
 import { getVaraAddress } from '@gear-js/react-hooks';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';

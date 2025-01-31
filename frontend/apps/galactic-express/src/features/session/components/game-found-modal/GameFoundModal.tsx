@@ -1,9 +1,9 @@
-import { cx } from 'utils';
-import { Modal } from 'components/layout/modal';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
+import { cx } from '@/utils';
+import { Modal } from '@/components/layout/modal';
+import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
+import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
 import { useApi } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/TextField';
+import { TextField } from '@/components/layout/TextField';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { ReactComponent as UserSVG } from '../../assets/ic-user-small-24.svg';

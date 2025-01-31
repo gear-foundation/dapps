@@ -1,4 +1,4 @@
-import { Modal } from 'components/layout/modal';
+import { Modal } from '@/components/layout/modal';
 import { Button } from '@gear-js/vara-ui';
 import styles from './GameCancelledModal.module.scss';
 

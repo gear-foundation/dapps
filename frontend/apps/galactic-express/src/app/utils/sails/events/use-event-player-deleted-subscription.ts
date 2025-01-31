@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useProgramEvent, useAccount } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { REGISTRATION_STATUS } from 'atoms';
+import { useProgram } from '@/app/utils';
+import { REGISTRATION_STATUS } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 export function useEventPlayerDeletedSubscription() {

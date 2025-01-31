@@ -1,114 +1,114 @@
-@use '~styles/variables' as *;
-@use '~styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .container {
-    width: 100%;
-    height: 100%;
-    position: relative;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .table-wrapper {
-    width: 100%;
-    overflow: auto;
+  width: 100%;
+  overflow: auto;
 }
 
 .table {
-    width: 100%;
-    height: 100%;
-    min-height: 320px;
-    overflow: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  overflow: auto;
 }
 
 .head {
-    height: 40px;
-    display: block;
+  height: 40px;
+  display: block;
 }
 
 .header {
-    height: 100%;
-    width: 100%;
-    padding: 0 20px;
-    background: theme-var($background-tertiary);
-    color: theme-var($text-secondary);
-    display: flex;
-    justify-content: space-between;
-    color: theme-var($text-secondary);
+  height: 100%;
+  width: 100%;
+  padding: 0 20px;
+  background: theme-var($background-tertiary);
+  color: theme-var($text-secondary);
+  display: flex;
+  justify-content: space-between;
+  color: theme-var($text-secondary);
 
-    &-cell {
-        font-size: 14px;
-        font-weight: 400;
-        gap: 8px;
-    }
+  &-cell {
+    font-size: 14px;
+    font-weight: 400;
+    gap: 8px;
+  }
 }
 
 .body {
-    display: block;
-    background: theme-var($background-primary);
-    color: theme-var($text-primary);
+  display: block;
+  background: theme-var($background-primary);
+  color: theme-var($text-primary);
 }
 
 .row {
-    height: 52px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    border-top: 1px solid theme-var($background-secondary);
+  height: 52px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-top: 1px solid theme-var($background-secondary);
 }
 
 .cell {
-    min-width: 200px;
-    max-width: 300px;
-    text-align: left;
-    font-size: 14px;
-    font-weight: 400;
+  min-width: 200px;
+  max-width: 300px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 400;
 
-    @include lg {
-        min-width: 100px;
-      }
-} 
+  @include lg {
+    min-width: 100px;
+  }
+}
 
 .header-cell {
-    min-width: 200px;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
+  min-width: 200px;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
 
-    @include lg {
-        min-width: 100px;
-      }
+  @include lg {
+    min-width: 100px;
+  }
 }
 
 .empty-table {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 10%;
-    gap: 8px;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10%;
+  gap: 8px;
+  text-align: center;
 
-    &-title {
-        font-size: 26px;
-        font-weight: 500;
-        color: var-theme($text-primary)
-    }
-    
-    &-caption {
-        font-size: 16px;
-        font-weight: 400;
-        color: var-theme($text-primary);
-        opacity: 0.5;
-    }
+  &-title {
+    font-size: 26px;
+    font-weight: 500;
+    color: var-theme($text-primary);
+  }
+
+  &-caption {
+    font-size: 16px;
+    font-weight: 400;
+    color: var-theme($text-primary);
+    opacity: 0.5;
+  }
 }
 
 .search {
-    border: 1px solid theme-var($text-tertiary);
-    border-radius: 4px;
-    padding: 0 3px;
-    margin: 0 3px;
-    display: inline-block;
-    position: absolute;
-    top: -20px;
-    right: 0;
-    transform: translateY(-100%);
+  border: 1px solid theme-var($text-tertiary);
+  border-radius: 4px;
+  padding: 0 3px;
+  margin: 0 3px;
+  display: inline-block;
+  position: absolute;
+  top: -20px;
+  right: 0;
+  transform: translateY(-100%);
 }

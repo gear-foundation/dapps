@@ -1,4 +1,4 @@
-import { useNftProgram } from 'app/utils';
+import { useNftProgram } from '@/app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 
 type Params = {

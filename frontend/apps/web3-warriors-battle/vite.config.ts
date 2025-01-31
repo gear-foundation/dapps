@@ -23,7 +23,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'build',
-      sourcemap: true,
     },
     plugins: [svgr(), react(), nodePolyfills(), eslint()],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
