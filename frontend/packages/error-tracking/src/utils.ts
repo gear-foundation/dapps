@@ -1,6 +1,6 @@
 const getCRAEnv = (key: string) => {
   try {
-    return process.env[`REACT_APP_${key}`];
+    return process.env[`VITE_${key}`];
   } catch (error) {
     return undefined;
   }

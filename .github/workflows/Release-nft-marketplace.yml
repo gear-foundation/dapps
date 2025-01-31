@@ -13,7 +13,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: marketplace
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -70,12 +70,12 @@ jobs:
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
-            REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
-            REACT_APP_NFT_CONTRACT_ADDRESS=${{ secrets.REACT_APP_NFT_CONTRACT_ADDRESS }}
-            REACT_APP_MARKETPLACE_CONTRACT_ADDRESS=${{ secrets.REACT_APP_MARKETPLACE_CONTRACT_ADDRESS }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_NFT_MARKETPLACE }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_IPFS_GATEWAY_ADDRESS=${{ secrets.VITE_IPFS_GATEWAY_ADDRESS }}
+            VITE_IPFS_ADDRESS=${{ secrets.VITE_IPFS_ADDRESS }}
+            VITE_NFT_CONTRACT_ADDRESS=${{ secrets.VITE_NFT_CONTRACT_ADDRESS }}
+            VITE_MARKETPLACE_CONTRACT_ADDRESS=${{ secrets.VITE_MARKETPLACE_CONTRACT_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_NFT_MARKETPLACE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

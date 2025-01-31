@@ -3,7 +3,7 @@ name: Staging - Deploy W3bstreaming backend
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
     paths:
       - backend/w3bstreaming/**
 
@@ -17,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: w3bstreaming-backend
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -74,11 +74,11 @@ jobs:
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            WS_ADRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            PROGRAM_ID=${{ secrets.REACT_APP_CONTRACT_ADDRESS_W3BSTEAMING  }}
-            REACT_APP_DNS_API_URL=${{ secrets.REACT_APP_DNS_API_URL }}
-            REACT_APP_DNS_NAME=${{ secrets.REACT_APP_DNS_NAME_W3BSTEAMING }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            WS_ADRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            PROGRAM_ID=${{ secrets.VITE_CONTRACT_ADDRESS_W3BSTEAMING  }}
+            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
+            VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_W3BSTEAMING }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
