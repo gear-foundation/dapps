@@ -2531,7 +2531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^1.0.0, @floating-ui/react-dom@npm:^1.3.0":
+"@floating-ui/react-dom@npm:^1.3.0":
   version: 1.3.0
   resolution: "@floating-ui/react-dom@npm:1.3.0"
   dependencies:
@@ -2699,21 +2699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui-float/react@npm:0.10.1":
-  version: 0.10.1
-  resolution: "@headlessui-float/react@npm:0.10.1"
-  dependencies:
-    "@floating-ui/core": "npm:^1.0.0"
-    "@floating-ui/dom": "npm:^1.0.0"
-    "@floating-ui/react-dom": "npm:^1.0.0"
-  peerDependencies:
-    "@headlessui/react": ^1.0.0
-    react: ^16 || ^17 || ^18
-    react-dom: ^16 || ^17 || ^18
-  checksum: 10c0/13a37cec0470cef11deda77cd7dab8a19ccb309ff3c6bf81c691165f76680964b845678025d8bc9ea01ef6c1c96e6fdb0f8e736d2940956e4d9f6a886e213389
-  languageName: node
-  linkType: hard
-
 "@headlessui-float/react@npm:0.11.0":
   version: 0.11.0
   resolution: "@headlessui-float/react@npm:0.11.0"
@@ -2750,18 +2735,6 @@ __metadata:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
   checksum: 10c0/a17d819e8c7aca764479eba1bd1bfe28d9f99ce4c16a296986f902ee040e57e242bd21d525570118c318cf1f013c9b56c6568980686774ca1881e82ca5cdeebe
-  languageName: node
-  linkType: hard
-
-"@headlessui/react@npm:1.7.7":
-  version: 1.7.7
-  resolution: "@headlessui/react@npm:1.7.7"
-  dependencies:
-    client-only: "npm:^0.0.1"
-  peerDependencies:
-    react: ^16 || ^17 || ^18
-    react-dom: ^16 || ^17 || ^18
-  checksum: 10c0/0f67a377a7da7dac8754b32630846909e3148cc26f7790e88e0f373e3c5ba8648addee2af29a22ceaf3a508267d54625ff9b6a6f88ed1cc45f7f976904500787
   languageName: node
   linkType: hard
 
@@ -21307,15 +21280,11 @@ __metadata:
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@headlessui-float/react": "npm:0.10.1"
-    "@headlessui/react": "npm:1.7.7"
     "@mantine/form": "npm:5.10.0"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    class-variance-authority: "npm:0.7.0"
     clsx: "npm:1.2.1"
     framer-motion: "npm:9.0.7"
     gear-ez-transactions: "workspace:*"
@@ -21325,7 +21294,6 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
   languageName: unknown
   linkType: soft
