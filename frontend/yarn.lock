@@ -5502,13 +5502,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.6.1":
-  version: 1.6.1
-  resolution: "@remix-run/router@npm:1.6.1"
-  checksum: 10c0/6d6dad1b6a06171d5d8549eca7cd7ef332a40987b732829e48993d55b3c7a7ca661c7d891be938055a42a4b18f07b5f2b66295c89cb221464eda2678ac41621e
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-babel@npm:^5.2.0":
   version: 5.3.1
   resolution: "@rollup/plugin-babel@npm:5.3.1"
@@ -18857,25 +18850,20 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
-    "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.17"
-    "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
     "@types/lodash.isequal": "npm:4.5.6"
-    axios: "npm:1.4.0"
     clsx: "npm:1.2.1"
     framer-motion: "npm:10.16.4"
     jotai: "npm:2.2.1"
     lodash.isequal: "npm:4.5.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
-    react-router: "npm:6.11.1"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:^4.4.5"
     sails-js: "npm:0.3.0"
   languageName: unknown
   linkType: soft
@@ -19344,17 +19332,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.11.1":
-  version: 6.11.1
-  resolution: "react-router@npm:6.11.1"
-  dependencies:
-    "@remix-run/router": "npm:1.6.1"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 10c0/3b49692947ef2ddae134a15462e4fa47022d82c358cc90085b471989e4bc3c4e1637aa3a81389166b69db557ac420c289f64d64309f4d0bd87a6099e49aee6e1
-  languageName: node
-  linkType: hard
-
 "react-router@npm:6.21.0":
   version: 6.21.0
   resolution: "react-router@npm:6.21.0"
@@ -19480,7 +19457,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-transition-group@npm:4.4.5, react-transition-group@npm:^4.4.5":
+"react-transition-group@npm:4.4.5":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
   dependencies:
