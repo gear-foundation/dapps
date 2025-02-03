@@ -12058,6 +12058,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
+    "@gear-js/vara-ui": "npm:0.0.11"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/react-identicon": "npm:3.11.3"
