@@ -17013,7 +17013,6 @@ __metadata:
     "@gear-js/react-hooks": "npm:0.14.1"
     "@gear-js/ui": "npm:0.5.26"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/react-identicon": "npm:3.11.3"
     "@polkadot/util": "npm:12.3.2"
     "@tanstack/react-query": "npm:5.29.0"
     clsx: "npm:1.2.1"
@@ -17022,7 +17021,6 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-hook-form: "npm:7.43.5"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
   languageName: unknown
   linkType: soft
