@@ -660,6 +660,7 @@ version = "0.1.0"
 dependencies = [
  "gstd",
  "sails-rs",
+ "session-service",
 ]
 
 [[package]]

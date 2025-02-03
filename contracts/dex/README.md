@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=dex/https://github.com/gear-foundation/dapps)
+
 # DEX
 
 This is a basic implementation of a Decentralized Exchange (DEX) contract designed to showcase fundamental functionality. It includes liquidity management, token swaps, and administrative controls. While simple, this example can serve as a foundation for more complex implementations.
