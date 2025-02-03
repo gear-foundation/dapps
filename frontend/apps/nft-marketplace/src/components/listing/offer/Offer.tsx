@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { HexString } from '@polkadot/util/types';
+import { HexString } from '@gear-js/api';
 import { ConfirmationModal } from '@/components/modals';
 import { useAcceptOfferMessage } from '@/app/utils';
 import styles from './Offer.module.scss';
