@@ -3,7 +3,7 @@ tasks:
   - init: |
       sudo apt update
       sudo apt install cmake binaryen -y
-      [ $FOLDER ] && gp open contracts/$FOLDER/README
+      [ $FOLDER ] && gp open contracts/$FOLDER/README.md
       [ $FOLDER ] && cd contracts/$FOLDER
       clear
 vscode:
