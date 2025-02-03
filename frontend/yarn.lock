@@ -5748,15 +5748,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4.17.6":
-  version: 4.17.12
-  resolution: "@types/lodash-es@npm:4.17.12"
-  dependencies:
-    "@types/lodash": "npm:*"
-  checksum: 10c0/5d12d2cede07f07ab067541371ed1b838a33edb3c35cb81b73284e93c6fd0c4bbeaefee984e69294bffb53f62d7272c5d679fdba8e595ff71e11d00f2601dde0
-  languageName: node
-  linkType: hard
-
 "@types/lodash.isequal@npm:4.5.6":
   version: 4.5.6
   resolution: "@types/lodash.isequal@npm:4.5.6"
@@ -11440,21 +11431,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:2.6.0":
-  version: 2.6.0
-  resolution: "jotai@npm:2.6.0"
-  peerDependencies:
-    "@types/react": ">=17.0.0"
-    react: ">=17.0.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/8e1687453c3713d227c8081291e286b51ca634657dc456303b3d9f9bf80d67b4a5e71481768675a8480789b432e3b0c0159521ac7794df8a0cce989713fdc7a4
-  languageName: node
-  linkType: hard
-
 "jotai@npm:2.7.0":
   version: 2.7.0
   resolution: "jotai@npm:2.7.0"
@@ -11735,13 +11711,6 @@ __metadata:
   dependencies:
     p-locate: "npm:^5.0.0"
   checksum: 10c0/d3972ab70dfe58ce620e64265f90162d247e87159b6126b01314dd67be43d50e96a50b517bce2d9452a79409c7614054c277b5232377de50416564a77ac7aad3
-  languageName: node
-  linkType: hard
-
-"lodash-es@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 10c0/fb407355f7e6cd523a9383e76e6b455321f0f153a6c9625e21a8827d10c54c2a2341bd2ae8d034358b60e07325e1330c14c224ff582d04612a46a4f0479ff2f2
   languageName: node
   linkType: hard
 
@@ -14438,28 +14407,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"simplebar-core@npm:^1.2.1":
-  version: 1.2.6
-  resolution: "simplebar-core@npm:1.2.6"
-  dependencies:
-    "@types/lodash-es": "npm:^4.17.6"
-    lodash: "npm:^4.17.21"
-    lodash-es: "npm:^4.17.21"
-  checksum: 10c0/df6ab12755f32eb2388036d4cd30614d446ccb73f3ae594c7c2e579f8a6d6e5f07d64d85fceee3e943719ee9222f2ff5fe04549abf7cad534c82901eafa64703
-  languageName: node
-  linkType: hard
-
-"simplebar-react@npm:3.2.1":
-  version: 3.2.1
-  resolution: "simplebar-react@npm:3.2.1"
-  dependencies:
-    simplebar-core: "npm:^1.2.1"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 10c0/094bffa31589f2fab73be25be0dcddc84f0a75df4101d404c184912019f846ee1dfea0df2ed84b1fac447cc35ce47d3222df7db4147f07bd840432680f68cd2d
-  languageName: node
-  linkType: hard
-
 "slash@npm:^3.0.0":
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
@@ -15780,18 +15727,13 @@ __metadata:
     "@gear-js/ui": "npm:0.5.26"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:14.3.1"
-    "@polkadot/react-identicon": "npm:3.11.3"
-    "@polkadot/util": "npm:12.3.2"
     "@tanstack/react-query": "npm:5.29.0"
     clsx: "npm:1.2.1"
     ipfs-http-client: "npm:60.0.0"
-    jotai: "npm:2.6.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
-    simplebar-react: "npm:3.2.1"
   languageName: unknown
   linkType: soft
 
