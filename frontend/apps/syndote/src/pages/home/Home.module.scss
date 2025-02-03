@@ -1,6 +1,4 @@
-@use '@gear-js/ui/mixins' as *;
 @use '@/assets/styles/shared' as *;
-@use '@gear-js/ui/headings' as *;
 
 .requestGameContainer {
   background: #ffffff;
@@ -125,7 +123,8 @@
 }
 
 .field {
-  @include square(720px);
+  width: 720px;
+  height: 720px;
   margin: 0 auto;
   border: 10px solid #fff;
 }
@@ -173,7 +172,7 @@
   .header {
     padding: 8px 16px;
     background-color: #5314f1;
-    font-family: Kanit;
+
     font-size: 14px;
     font-weight: 600;
     line-height: 14px;
@@ -183,7 +182,7 @@
   .body {
     padding: 8px 16px;
     background-color: #fff;
-    font-family: Kanit;
+
     font-size: 12px;
     font-weight: 400;
     line-height: 18px;
@@ -228,7 +227,7 @@
 
     &:hover {
       .icon {
-        @include transition;
+        transition: all 0.25s;
         opacity: 0.5;
       }
     }

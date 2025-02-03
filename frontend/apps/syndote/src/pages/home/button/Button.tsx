@@ -1,4 +1,4 @@
-import { ButtonProps } from '@gear-js/ui';
+import { ButtonProps } from '@gear-js/vara-ui';
 import styles from './Button.module.scss';
 
 function Button({ type = 'button', text, form, onClick }: ButtonProps) {
