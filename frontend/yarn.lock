@@ -21365,15 +21365,9 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.39.0"
     "@gear-js/react-hooks": "npm:0.14.1"
-    "@headlessui/react": "npm:1.7.17"
     "@polkadot/api": "npm:14.3.1"
     "@polkadot/util": "npm:12.3.2"
-    "@polkadot/util-crypto": "npm:12.6.2"
-    "@radix-ui/react-dialog": "npm:1.0.4"
-    "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@tanstack/react-query": "npm:5.29.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
     framer-motion: "npm:10.16.2"
@@ -21383,7 +21377,6 @@ __metadata:
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
   languageName: unknown
   linkType: soft
