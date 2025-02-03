@@ -16141,15 +16141,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:0.263.1":
-  version: 0.263.1
-  resolution: "lucide-react@npm:0.263.1"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/ce4b0cb79cb689d0bf6293dba132d83850407a42de49bc589e65eeb99d8ec773946fe96b23bdd6f8941b2dfa0540050b8b73226d80589704745e7e55cc0706e1
-  languageName: node
-  linkType: hard
-
 "m3u8-parser@npm:^6.0.0":
   version: 6.2.0
   resolution: "m3u8-parser@npm:6.2.0"
@@ -16868,11 +16859,9 @@ __metadata:
     graphql: "npm:16.8.1"
     jotai: "npm:2.1.0"
     keen-slider: "npm:6.8.5"
-    lucide-react: "npm:0.263.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.10.0"
-    react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.3.0"
     urql: "npm:4.0.5"
   languageName: unknown
