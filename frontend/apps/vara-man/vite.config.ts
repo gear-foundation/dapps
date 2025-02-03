@@ -1,25 +1,15 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+import { defineConfig } from 'vite';
+import svgr from 'vite-plugin-svgr';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import eslint from 'vite-plugin-eslint';
+import { checker } from 'vite-plugin-checker';
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@/assets': path.resolve(__dirname, './src/assets'),
-    },
-  },
-  server: {
-    port: 3000,
-  },
-  preview: {
-    port: 3000,
-  },
-  base: './',
-  plugins: [react(), nodePolyfills(), eslint()],
-  assetsInclude: ['**/*.wasm?inline'],
+  plugins: [react(), svgr(), nodePolyfills(), checker({ typescript: true })],
+  server: { port: 3000, open: true },
+  preview: { port: 3000, open: true },
+  resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   build: { outDir: 'build' },
 });
