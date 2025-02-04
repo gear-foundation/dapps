@@ -1,4 +1,4 @@
-import { InputProps } from '@gear-js/ui';
+import { InputProps } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { ReactComponent as SearchSVG } from '@/assets/images/icons/search.svg';
 import styles from './Input.module.scss';

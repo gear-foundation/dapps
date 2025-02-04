@@ -1,10 +1,8 @@
-@use '@gear-js/ui/headings' as *;
-@use '@gear-js/ui/mixins' as *;
-
 .button {
-  @include heading(21px, 18px, 500);
-  @include transition;
   padding: 18px 24px;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 18px;
   letter-spacing: 0.08em;
   color: #333;
   text-transform: uppercase;
@@ -12,6 +10,7 @@
   border: 1px solid #333;
   box-shadow: inset -1px -1px 0px 0px #333;
   cursor: pointer;
+  transition: all 0.25s;
 
   &:hover {
     background-color: #1bd744;

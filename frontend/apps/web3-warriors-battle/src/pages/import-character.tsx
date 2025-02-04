@@ -66,9 +66,9 @@ export default function ImportCharacter() {
             placeholder="0x…"
             label="Specify program ID of your Warrior character"
             required
-            className="w-full"
             onChange={(e) => setAddress(e.target.value.trim())}
             error={error && 'The program must include the "Warrior" service and the "getAppearance" function.'}
+            block
           />
           {isCharacterFound && appearance && (
             <div className={styles.character}>

@@ -1,4 +1,4 @@
-import { InputProps } from '@gear-js/ui';
+import { InputProps } from '@gear-js/vara-ui';
 import styles from './Input.module.scss';
 
 function Input({ error, value, onChange }: InputProps) {
