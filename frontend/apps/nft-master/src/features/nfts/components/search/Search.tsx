@@ -1,7 +1,7 @@
 import { useForm } from '@mantine/form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Button } from 'components';
+import { Button } from '@/components';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as ResetSVG } from '../../assets/reset.svg';
 import { useNFTSearch } from '../../hooks';

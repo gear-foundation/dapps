@@ -1,5 +1,5 @@
-import { useGetSubscriberQuery } from 'app/utils/sails/queries';
-import { Loader } from 'components';
+import { useGetSubscriberQuery } from '@/app/utils/sails/queries';
+import { Loader } from '@/components';
 
 import { ReactNode } from 'react';
 

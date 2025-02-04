@@ -3,8 +3,8 @@ import { useAccount, useAlert, useHandleCalculateGas, useSendMessage, withoutCom
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useAtom } from 'jotai';
-import metaMasterNFT from 'assets/master_nft.meta.txt';
-import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from 'hooks';
+import metaMasterNFT from '@/assets/master_nft.meta.txt';
+import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from '@/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { IUserNFTRequest, NFT } from './types';
 import { IS_MINTING_ATOM, NFTS_ATOM, USER_NFT_QUERY_ATOM } from './consts';

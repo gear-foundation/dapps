@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 export const Logo = () => {
   const { pathname } = useLocation();

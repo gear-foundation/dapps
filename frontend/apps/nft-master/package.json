@@ -2,11 +2,11 @@
   "name": "nft-master",
   "version": "1.0.2",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "yarn build:packages && npx react-app-rewired start",
-    "build": "yarn build:packages && npx react-app-rewired build",
-    "test": "npx react-app-rewired test",
-    "eject": "react-scripts eject"
+    "start": "yarn build:packages && npx vite",
+    "build": "yarn build:packages && npx vite build",
+    "preview": "yarn build:packages && npx vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
@@ -19,8 +19,6 @@
     "@polkadot/util": "12.3.2",
     "@radix-ui/react-scroll-area": "1.0.4",
     "@tanstack/react-query": "5.29.0",
-    "assert": "2.0.0",
-    "buffer": "6.0.3",
     "class-variance-authority": "0.7.0",
     "clsx": "1.2.1",
     "graphql": "16.8.1",
@@ -33,25 +31,5 @@
     "react-transition-group": "4.4.5",
     "sails-js": "0.3.0",
     "urql": "4.0.5"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      "chrome >= 67",
-      "edge >= 79",
-      "firefox >= 68",
-      "opera >= 54",
-      "safari >= 14"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "lint-staged": {
-    "./**/*.{js,css,ts,tsx}": "eslint --fix"
   }
 }

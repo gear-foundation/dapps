@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { useRefDimensions } from '../../hooks';
 import { motion, useAnimation } from 'framer-motion';
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { BattleStatePlayer } from '../../types/battles';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { ScrollArea } from 'components/ui/scroll-area';
-import { cn, toNumber } from 'app/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn, toNumber } from '@/app/utils';
 
 export const BattleTableChampions = () => {
   const ref = useRef<HTMLDivElement>(null);

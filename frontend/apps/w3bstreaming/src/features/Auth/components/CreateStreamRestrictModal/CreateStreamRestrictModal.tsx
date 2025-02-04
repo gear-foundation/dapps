@@ -1,4 +1,4 @@
-import { Modal } from 'components';
+import { Modal } from '@/components';
 import { cx } from '@/utils';
 import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
 

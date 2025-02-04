@@ -9,7 +9,7 @@ import { Alert, alertStyles } from '@gear-js/ui';
 import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { ADDRESS } from 'consts';
+import { ADDRESS } from '@/consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;

@@ -14,14 +14,14 @@ const validate: Record<string, typeof stringRequired> = {
 };
 
 export function RegistrationForm() {
-  const { setIsPending, isPending } = useApp();
+  const { setIsPending } = useApp();
   const { account } = useAccount();
   const form = useForm({
     initialValues,
     validate,
     validateInputOnChange: true,
   });
-  const { getInputProps, errors, reset } = form;
+  const { getInputProps, reset } = form;
 
   const handleMessage = useGameMessage();
   const onSuccess = () => {
@@ -51,7 +51,6 @@ export function RegistrationForm() {
           autoComplete="name"
           {...getInputProps('name')}
           required
-
         />
       </div>
     </form>

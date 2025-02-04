@@ -2,9 +2,9 @@ import { buttonStyles } from '@gear-js/ui';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 import { MenuHandler, Header as CommonHeader } from '@dapps-frontend/ui';
-import logo from 'assets/images/logo.png';
+import logo from '@/assets/images/logo.png';
 import styles from './Header.module.scss';
-import { useBalanceOfQuery } from 'app/utils';
+import { useBalanceOfQuery } from '@/app/utils';
 
 function Header() {
   const { balance } = useBalanceOfQuery();

@@ -2,7 +2,7 @@ import { TamagotchiQueueCard } from '../tamagotchi-queue-card';
 import 'keen-slider/keen-slider.min.css';
 import { KeenSliderOptions, useKeenSlider } from 'keen-slider/react';
 import { useEffect, useRef, useState } from 'react';
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { useRefDimensions, useIsLarge } from '../../hooks';
 import { AnimatePresence, motion } from 'framer-motion';

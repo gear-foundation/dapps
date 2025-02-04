@@ -32,36 +32,28 @@ jobs:
             build: build
           - subdir: apps/galactic-express
             build: build
-            test: test --passWithNoTests
           - subdir: apps/nft-marketplace
             build: build
-            test: test --passWithNoTests
           - subdir: apps/nft-master
             build: build
-            test: test --passWithNoTests
           - subdir: apps/non-fungible-token
             build: build
-            test: test --passWithNoTests
           - subdir: apps/racing-car-game
             build: build
           - subdir: apps/syndote
             build: build
-            test: test --passWithNoTests
           - subdir: apps/tamagotchi
             build: build
           - subdir: apps/tamagotchi-battle
             build: build
-            test: test --passWithNoTests
           - subdir: apps/tequila-train
             build: build
-            test: test --passWithNoTests
           - subdir: apps/tic-tac-toe
             build: build
           - subdir: apps/vara-man
             build: build
           - subdir: apps/varatube
             build: build
-            test: test --passWithNoTests
 
           # Packages
           - subdir: packages/error-tracking
@@ -85,7 +77,3 @@ jobs:
       - name: Build
         if: ${{ matrix.build }} != null
         run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
-
-      - name: Test
-        if: ${{ matrix.test }} != null
-        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}

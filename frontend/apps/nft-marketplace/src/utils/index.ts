@@ -1,4 +1,4 @@
-import { ADDRESS } from 'consts';
+import { ADDRESS } from '@/consts';
 import { getMintDetails } from './form';
 import { getAuctionDate, getListingProps, getNFTProps } from './nft';
 

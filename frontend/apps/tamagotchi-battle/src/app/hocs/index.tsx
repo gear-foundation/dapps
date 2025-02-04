@@ -9,8 +9,8 @@ import {
 import { Alert, alertStyles } from '@gear-js/ui';
 import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from 'gear-ez-transactions';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { BattleProvider } from 'features/battle/context';
-import { ENV } from 'app/consts';
+import { BattleProvider } from '@/features/battle/context';
+import { ENV } from '@/app/consts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const ApiProvider = ({ children }: ProviderProps) => (

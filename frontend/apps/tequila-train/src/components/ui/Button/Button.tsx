@@ -1,4 +1,4 @@
-import { cx } from 'app/utils';
+import { cx } from '@/app/utils';
 import styles from './Button.module.scss';
 import { ButtonProps } from './Button.interfaces';
 

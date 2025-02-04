@@ -1,5 +1,5 @@
 @use '@gear-js/ui/mixins' as *;
-@use 'assets/styles/shared' as *;
+@use '@/assets/styles/shared' as *;
 @use '@gear-js/ui/headings' as *;
 
 .requestGameContainer {
@@ -17,7 +17,7 @@
 .downloadGameContainer {
   width: 682px;
   margin-top: 37px;
-  background: #00FFC4;
+  background: #00ffc4;
   padding: 24px 40px;
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@
     font-size: 17px;
     font-weight: 700;
     line-height: 17px;
-    letter-spacing: 0.02px
+    letter-spacing: 0.02px;
   }
 
   & .donwloadText {
@@ -78,11 +78,11 @@
 }
 
 .headingBankrupt {
-  color: #F24A4A;
+  color: #f24a4a;
 }
 
 .headingWinner {
-  color: #00FFC4;
+  color: #00ffc4;
 }
 
 .subheading {
@@ -90,7 +90,7 @@
   font-weight: 400;
   letter-spacing: 0.025px;
   line-height: 24px;
-  color: #555756
+  color: #555756;
 }
 
 .players {
@@ -121,7 +121,7 @@
 
 .mainButtons {
   display: flex;
-  gap: 16px
+  gap: 16px;
 }
 
 .field {
@@ -347,10 +347,10 @@
   align-items: center;
   text-align: center;
   padding: 32px;
-  
+
   &White {
     background: #ffffff;
-  box-shadow: 0px 0px 0px 6px rgba(255,255,255,1);
+    box-shadow: 0px 0px 0px 6px rgba(255, 255, 255, 1);
     overflow: hidden;
     border-radius: 10px;
   }

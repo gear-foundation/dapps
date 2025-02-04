@@ -1,5 +1,5 @@
 import { buttonStyles } from '@gear-js/ui';
-import { Icon } from 'components/ui/icon';
+import { Icon } from '@/components/ui/icon';
 import clsx from 'clsx';
 
 export const GetGasBalance = () => {

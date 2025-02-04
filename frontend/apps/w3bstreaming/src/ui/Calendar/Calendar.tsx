@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps } from 'react-datepicker';
 import { Button } from '@/ui';
 import { cx } from '@/utils';
@@ -12,9 +12,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 function Calendar({ onChange }: CalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const calendarRef = useRef<DatePicker<never, undefined>>(null);
+  const calendarRef = useRef<DatePicker>(null);
 
-  const handleChangeCalendar = (value: Date) => {
+  const handleChangeCalendar = (value: Date | null) => {
+    if (!value) return;
+
     setSelectedDate(value);
     onChange?.(value);
   };

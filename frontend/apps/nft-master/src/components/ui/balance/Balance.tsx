@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { PropsWithChildren } from 'react';
-import { TVaraCoinIcon, VaraCoinIcon } from 'assets/images';
-import { useAccountAvailableBalance } from 'features/available-balance/hooks';
+import { TVaraCoinIcon, VaraCoinIcon } from '@/assets/images';
+import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
 import styles from './Balance.module.scss';
 import { SVGComponent } from '../../../types';
 

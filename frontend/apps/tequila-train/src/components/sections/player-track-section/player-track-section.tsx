@@ -1,14 +1,14 @@
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { findTile, getBgColors, isPartialSubset } from 'app/utils';
+import { findTile, getBgColors, isPartialSubset } from '@/app/utils';
 import { DominoItem } from '../../common/domino-item';
 import { DominoZone } from '../../common/domino-zone';
-import { DominoTileType } from 'app/types/game';
+import { DominoTileType } from '@/app/types/game';
 import { useEffect, useRef, useState } from 'react';
 import { useApp, useGame } from '../../../app/context';
 import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
 import { TooltipWrapper } from '@gear-js/ui';
-import { playerNames } from 'app/consts';
+import { playerNames } from '@/app/consts';
 import Timer from './timer';
 
 type Props = {
@@ -50,7 +50,6 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
   };
 
   const checkIsRowDominoReverse = (tile: DominoTileType, i: number, tiles: DominoTileType[]) => {
-
     if (game) {
       const lastTile = tiles.length > 0 ? (i > 0 ? tiles[i - 1] : false) : game.gameState.startTile;
       return lastTile ? (lastTile[1] === tile[0] ? false : lastTile[1] === tile[1]) : false;
@@ -59,9 +58,8 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
 
   useEffect(() => {
     if (playerChoice?.tile && tiles && game && !train && (active || isUserTrain)) {
-
-      const stateStartTile = game.gameState.startTile
-      const startTile = stateStartTile && findTile(stateStartTile, game.gameState.tiles)
+      const stateStartTile = game.gameState.startTile;
+      const startTile = stateStartTile && findTile(stateStartTile, game.gameState.tiles);
 
       if (startTile) {
         setIsDisabled(
@@ -71,7 +69,6 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
     } else {
       setIsDisabled(false);
     }
-
   }, [active, isUserTrain, playerChoice, tiles, train, game]);
 
   return (
@@ -98,13 +95,14 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
             className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
           />
         )}
-        {isUserTrain &&
+        {isUserTrain && (
           <Icon
             name="train"
             width={43}
             height={35}
             className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
-          />}
+          />
+        )}
         <h3
           className={clsx(
             'uppercase leading-4 font-semibold tracking-[0.03em] w-min min-w-[80px]',
@@ -116,11 +114,8 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
             className="after:text-dark-500 after:!bg-primary after:!transition-none after:!shadow-md">
             <span className="line-clamp-2">{train ? 'Tequila Train' : `Señor ${playerNames[index]}`}</span>
           </TooltipWrapper>
-
         </h3>
-        {active &&
-          <Timer />
-        }
+        {active && <Timer />}
       </div>
 
       <div className="relative flex overflow-auto max-w-full" ref={ref}>

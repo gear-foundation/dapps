@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import { useSearchParams } from 'react-router-dom';
 import { useAccount, Account, useAlert } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
-import { useWallet } from 'features/wallet/hooks';
+import { useWallet } from '@/features/wallet/hooks';
 import { IS_AUTH_READY_ATOM } from './consts';
 
 function useAuth() {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Wallet } from 'features/wallet';
-import { Search } from 'features/nfts';
-import { useResizeEffect } from 'hooks';
-import { Button, Sprite } from 'components';
+import { Wallet } from '@/features/wallet';
+import { Search } from '@/features/nfts';
+import { useResizeEffect } from '@/hooks';
+import { Button, Sprite } from '@/components';
 import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
 import { Container } from '../container';

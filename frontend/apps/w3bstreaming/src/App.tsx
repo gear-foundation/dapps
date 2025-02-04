@@ -9,7 +9,6 @@ import { StreamTeasersList } from '@/features/StreamTeasers';
 import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
-import 'babel-polyfill';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 import '@gear-js/vara-ui/dist/style.css';
 import { useGetStateQuery } from './app/utils';

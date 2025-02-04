@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@gear-js/ui';
-import { Listing, PriceModal, ConfirmationModal, OnLogin } from 'components';
-import { Listing as ListingType } from 'types';
+import { Listing, PriceModal, ConfirmationModal, OnLogin } from '@/components';
+import { Listing as ListingType } from '@/types';
 import styles from './AuctionListing.module.scss';
 
 type Props = {

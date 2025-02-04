@@ -1,4 +1,4 @@
-import { useReadState } from 'app/hooks/api';
+import { useReadState } from '@/app/hooks/api';
 import { useMemo } from 'react';
 import {
   BattleAdminsResponse,

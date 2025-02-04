@@ -1,14 +1,14 @@
 import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { gasLimitToNumber, hexRequired } from 'app/utils';
+import { gasLimitToNumber, hexRequired } from '@/app/utils';
 import { useBattle } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useBattleMessage } from 'features/battle/hooks/use-battle';
+import { useBattleMessage } from '@/features/battle/hooks/use-battle';
 import { useApi } from '@gear-js/react-hooks';
 import { useGaslessTransactions } from 'gear-ez-transactions';
-import { GAS_LIMIT } from 'app/consts';
+import { GAS_LIMIT } from '@/app/consts';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,

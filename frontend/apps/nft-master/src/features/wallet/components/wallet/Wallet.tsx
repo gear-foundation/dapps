@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
-import { Button } from 'components';
+import { Button } from '@/components';
 import clsx from 'clsx';
-import { useIsAppReady } from 'app/hooks/use-is-app-ready';
+import { useIsAppReady } from '@/app/hooks/use-is-app-ready';
 import { WalletModal } from '../wallet-modal';
 import styles from './Wallet.module.scss';
 

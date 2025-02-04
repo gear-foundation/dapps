@@ -1,4 +1,4 @@
-import { useMarketplaceProgram } from 'app/utils';
+import { useMarketplaceProgram } from '@/app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 
 export const useGetMarketQuery = () => {
