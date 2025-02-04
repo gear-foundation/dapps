@@ -6,7 +6,7 @@
   "scripts": {
     "start": "yarn build:packages && npx vite",
     "build": "yarn build:packages && npx vite build",
-    "preview": "yarn build:packages && npx vite preview"
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",

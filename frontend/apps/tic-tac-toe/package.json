@@ -6,7 +6,7 @@
   "scripts": {
     "start": "yarn build:packages && yarn build:ez-transactions && npx vite",
     "build": "yarn build:packages && yarn build:ez-transactions && npx vite build",
-    "preview": "yarn build:packages && yarn build:ez-transactions && npx vite preview"
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
