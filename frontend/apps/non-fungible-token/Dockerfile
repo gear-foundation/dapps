@@ -7,6 +7,9 @@ COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
+COPY /frontend/vite.apps.config.ts .
+COPY /frontend/tsconfig.json .
+COPY /frontend/tsconfig.node.json .
 
 COPY ./frontend/apps/non-fungible-token ./apps/non-fungible-token
 COPY ./frontend/packages ./packages
