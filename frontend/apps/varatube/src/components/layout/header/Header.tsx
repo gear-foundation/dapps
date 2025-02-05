@@ -39,7 +39,7 @@ function Header() {
           My Subscription
         </Link>
 
-        {balance && (
+        {Boolean(balance) && (
           <p className={styles.balance}>
             <span className={styles.currency}>Tokens:</span> {String(balance)}
           </p>
