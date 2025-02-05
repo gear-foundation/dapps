@@ -1,6 +1,6 @@
 import { InputProps } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { ReactComponent as SearchSVG } from '@/assets/images/icons/search.svg';
+import SearchSVG from '@/assets/images/icons/search.svg?react';
 import styles from './Input.module.scss';
 
 function Input(props: Omit<InputProps, 'size' | 'color'>) {

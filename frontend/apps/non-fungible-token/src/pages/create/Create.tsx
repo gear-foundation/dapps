@@ -1,5 +1,5 @@
 import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
-import { ReactComponent as PlusSVG } from '@/assets/images/form/plus.svg';
+import PlusSVG from '@/assets/images/form/plus.svg?react';
 import { useIPFS, useSendNFTMessage } from '@/hooks';
 import { getMintDetails, getMintPayload } from '@/utils';
 import { useForm, useFieldArray } from 'react-hook-form';

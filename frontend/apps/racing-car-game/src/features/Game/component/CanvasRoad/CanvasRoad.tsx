@@ -7,8 +7,8 @@ import finishSVG from '@/assets/icons/game-finish-icon.svg';
 import roadLineSVG from '@/assets/icons/road-line-svg.svg';
 import sectionEndLineSVG from '@/assets/icons/section-end-line.svg';
 
-import { ReactComponent as PlayerCarSVG } from '@/assets/icons/player-car-icon.svg';
-import { ReactComponent as ContractCarSVG } from '@/assets/icons/contract-car-icon.svg';
+import PlayerCarSVG from '@/assets/icons/player-car-icon.svg?react';
+import ContractCarSVG from '@/assets/icons/contract-car-icon.svg?react';
 
 import smokeGIF from '@/assets/icons/smoke.gif';
 import fireGIF from '@/assets/icons/fire.gif';

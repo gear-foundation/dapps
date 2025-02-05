@@ -12,7 +12,7 @@ import { Road } from '../Road';
 import { Button } from '@/ui';
 import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
 import shootSVG from '@/assets/icons/shoot-icon.svg';
-import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
+import GearLogoIcon from '@/assets/icons/gear-logo-icon.svg?react';
 import { Loader } from '@/components';
 import { PLAY } from '@/App.routes';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';

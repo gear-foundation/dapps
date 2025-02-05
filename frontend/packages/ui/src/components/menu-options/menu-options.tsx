@@ -1,9 +1,9 @@
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './menu-options.module.css';
-import { ReactComponent as UserSVG } from './assets/user.svg';
-import { ReactComponent as GridSVG } from './assets/grid.svg';
-import { ReactComponent as DisconnectSVG } from './assets/disconnect.svg';
+import UserSVG from './assets/user.svg?react';
+import GridSVG from './assets/grid.svg?react';
+import DisconnectSVG from './assets/disconnect.svg?react';
 import clsx from 'clsx';
 
 export type ClassNameProps = {

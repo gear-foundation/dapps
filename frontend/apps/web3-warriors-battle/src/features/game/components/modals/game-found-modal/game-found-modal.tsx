@@ -1,8 +1,8 @@
 import { useApi } from '@gear-js/react-hooks';
 import { Button, Input } from '@gear-js/vara-ui';
 import { Modal } from '@/components/ui/modal';
-import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { GameDetails } from '@/components/layout';
 import { UserIcon } from '@/assets/images';

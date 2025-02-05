@@ -11,7 +11,7 @@ import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js
 import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
 import { copyToClipboard } from '@/app/utils/utils';
-import { ReactComponent as FilledCrossSVG } from '../../assets/icons/filled-cross.svg';
+import FilledCrossSVG from '../../assets/icons/filled-cross.svg?react';
 import {
   useEventGameCancelled,
   useEventPlayerJoinedGame,

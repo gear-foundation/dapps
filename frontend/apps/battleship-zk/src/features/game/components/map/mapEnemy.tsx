@@ -3,7 +3,7 @@ import seaPng from '@/assets/images/sea.png';
 import styles from './map.module.scss';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { ReactComponent as CellCrossSVG } from '@/assets/images/icons/cross.svg';
+import CellCrossSVG from '@/assets/images/icons/cross.svg?react';
 import smokeSVG from '@/assets/images/smoke.gif';
 import shipX1SVG from '@/assets/images/icons/ship-x1.svg';
 import shipX2SVG from '@/assets/images/icons/ship-x2.svg';

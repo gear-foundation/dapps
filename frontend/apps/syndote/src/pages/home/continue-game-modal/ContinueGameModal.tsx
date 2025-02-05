@@ -2,8 +2,8 @@ import { Modal } from '@/components/layout/modal';
 import { Button } from '@gear-js/vara-ui';
 import styles from './ContinueGameModal.module.scss';
 import { GameDetails } from '@/components/layout/game-details';
-import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { useApi } from '@gear-js/react-hooks';
 
 type Props = {
