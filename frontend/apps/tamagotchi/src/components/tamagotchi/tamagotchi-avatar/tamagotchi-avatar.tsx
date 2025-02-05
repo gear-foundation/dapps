@@ -26,7 +26,6 @@ export const TamagotchiAvatar = ({
   age = 'baby',
   isDead,
   hasItem = [],
-  color,
   isActive,
   isWinner,
   energy,

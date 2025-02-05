@@ -113,7 +113,7 @@ export function useThrottleWasmState() {
   const [, meta] = useLessonAssets();
   const { tamagotchi, setTamagotchi } = useTamagotchi();
 
-  const { state, readWasmState } = useReadWasmState<StateWasmResponse>({
+  const { state } = useReadWasmState<StateWasmResponse>({
     programId: lesson?.programId,
     wasm: stateMeta?.buffer,
     programMetadata: meta,
