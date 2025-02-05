@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useGame } from '@/app/context/ctx-game';
 import { HeaderAdmin } from '@/components/layout/header/header-admin';
-import { Icons } from '@/components/ui/icons';
 
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';

@@ -362,8 +362,6 @@ export class Character {
   }
 
   countTotalCoins(): number {
-    const oneCoinTiles = 16;
-
     let count = 0;
     for (let layer of this.mapData.layers) {
       if (layer.name === 'coins') {

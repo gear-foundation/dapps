@@ -1,4 +1,4 @@
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiState } from '@/app/types/lessons';
 import { getTamagotchiAge } from '@/app/utils/get-tamagotchi-age';
 

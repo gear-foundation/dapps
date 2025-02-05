@@ -7,7 +7,7 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { BaseComponentProps } from '@/app/types';
 
-export function Welcome({ children, className }: BaseComponentProps) {
+export function Welcome({ children,  }: BaseComponentProps) {
   return (
     <ColumnsContainer className={styles.wrapper}>
       <ColumnLeft>

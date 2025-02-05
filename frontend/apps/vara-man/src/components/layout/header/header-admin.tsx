@@ -33,13 +33,13 @@ export function HeaderAdmin({}: HeaderAdminProps) {
     <>
       {status === 'Paused' && (
         <button type="button" className="btn btn--primary px-6" disabled={isPending} onClick={onActivateGame}>
-          <Icons.gameJoystick className="w-5 h-5 mr-2" />
+          <Icons.gameJoystick />
           <span>Activate game</span>
         </button>
       )}
       {status === 'Started' && (
         <button type="button" className="btn btn--theme-red px-6" disabled={isPending} onClick={onDeactivateGame}>
-          <Icons.gameJoystick className="w-5 h-5 mr-2" />
+          <Icons.gameJoystick />
           <span>Deactivate game</span>
         </button>
       )}

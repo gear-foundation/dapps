@@ -32,7 +32,7 @@ export class GameEngine {
   map: TileMap;
   level: Level;
 
-  setGameOver = (gameOver: boolean) => {};
+  setGameOver = (_gameOver: boolean) => {};
   gameOver = false;
   pause?: boolean;
 

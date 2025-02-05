@@ -11,7 +11,7 @@ type LogoProps = BaseComponentProps & {
   label?: string;
 };
 
-export function Logo({ className, label }: LogoProps) {
+export function Logo({ className }: LogoProps) {
   return (
     <NavLink to={'/'} className={({ isActive }) => clsx(styles.link, isActive && styles.active, className)}>
       <SpriteIcon name="vara-logo" width={92} height={60} className={styles.logo} />

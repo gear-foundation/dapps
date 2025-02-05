@@ -103,7 +103,7 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
       <div className="flex flex-col gap-3 w-full">
         {tournamentGame?.participants.map((player, index) => {
           const isActivePlayer = account?.decodedAddress === player[0];
-          const { name, points, time } = player[1];
+          const { name } = player[1];
 
           return (
             <div
