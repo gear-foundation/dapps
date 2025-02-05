@@ -7,7 +7,15 @@ import { checker } from 'vite-plugin-checker';
 
 // https://vite.dev/config/
 const viteAppsConfig = defineConfig({
-  plugins: [react(), svgr(), nodePolyfills(), checker({ typescript: true })],
+  plugins: [
+    react(),
+    svgr(),
+    nodePolyfills(),
+    checker({
+      typescript: true,
+      eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', useFlatConfig: true },
+    }),
+  ],
   server: { port: 3000, open: true },
   preview: { port: 3000, open: true },
 
