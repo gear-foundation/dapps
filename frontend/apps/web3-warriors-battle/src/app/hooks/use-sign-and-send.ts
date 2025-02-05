@@ -1,6 +1,6 @@
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useAlert } from '@gear-js/react-hooks';
-import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/esm/hooks/sails/types';
+import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 import { useEzTransactions } from 'gear-ez-transactions';
 
 import { usePending } from '@/features/game/hooks';

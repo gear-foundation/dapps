@@ -11,10 +11,10 @@
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.39.0",
-    "@gear-js/react-hooks": "0.14.1",
+    "@gear-js/api": "0.41.0",
+    "@gear-js/react-hooks": "0.15.0",
     "@headlessui/react": "1.7.17",
-    "@polkadot/api": "14.3.1",
+    "@polkadot/api": "15.4.1",
     "@polkadot/react-identicon": "3.11.3",
     "@polkadot/util": "12.3.2",
     "@polkadot/util-crypto": "12.6.2",
