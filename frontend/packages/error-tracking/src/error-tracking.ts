@@ -1,9 +1,7 @@
 import {
-  BrowserTracing,
   ErrorBoundary,
-  Replay,
   init,
-  reactRouterV6Instrumentation,
+  reactRouterV6BrowserTracingIntegration,
   withErrorBoundary,
   withSentryReactRouterV6Routing,
 } from '@sentry/react';
@@ -18,15 +16,15 @@ function initErrorTracking() {
 
   // See docs for support of different versions of variation of react router
   // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
-  const routingInstrumentation = reactRouterV6Instrumentation(
+  const routingInstrumentation = reactRouterV6BrowserTracingIntegration({
     useEffect,
     useLocation,
     useNavigationType,
     createRoutesFromChildren,
     matchRoutes,
-  );
+  });
 
-  const integrations = [new BrowserTracing({ routingInstrumentation }), new Replay()];
+  const integrations = [routingInstrumentation];
 
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
   const tracePropagationTargets = [target];
