@@ -7,7 +7,6 @@ import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { usePending } from '../../hooks';
-import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { getFormattedTime } from '../../utils';
 import { SHIP_LENGTHS } from '../../consts';
@@ -55,15 +54,11 @@ export default function GameProcess({
   resetGameState,
 }: Props) {
   const { account } = useAccount();
-  const { signless, gasless } = useEzTransactions();
+  const { gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [enemiesDeadShips, setEnemiesDeadShips] = useState<number[]>([]);
   const { setPending, pending } = usePending();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
   const { getBoard, checkIsStepOnShip } = useShips();
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
