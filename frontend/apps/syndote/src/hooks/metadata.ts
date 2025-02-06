@@ -1,6 +1,5 @@
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
-import { HexString } from '@polkadot/util/types';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 
