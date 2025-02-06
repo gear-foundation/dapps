@@ -1,7 +1,7 @@
-import { ReactComponent as ArrowRight } from '@/assets/images/icons/arrow-right.svg';
-import { ReactComponent as AndroidLine } from '@/assets/images/icons/android-line.svg';
-import { ReactComponent as AdminLine } from '@/assets/images/icons/admin-line.svg';
-import { ReactComponent as SearchLine } from '@/assets/images/icons/search-line.svg';
+import ArrowRight from '@/assets/images/icons/arrow-right.svg?react';
+import AndroidLine from '@/assets/images/icons/android-line.svg?react';
+import AdminLine from '@/assets/images/icons/admin-line.svg?react';
+import SearchLine from '@/assets/images/icons/search-line.svg?react';
 import { Button } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import styles from './SelectGameMode.module.scss';

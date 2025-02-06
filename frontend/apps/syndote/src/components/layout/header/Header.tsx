@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import { ReactComponent as VaraSVG } from '@/assets/images/icons/logo-vara.svg';
-import { ReactComponent as CrossSVG } from '@/assets/images/icons/cross-icon.svg';
+import VaraSVG from '@/assets/images/icons/logo-vara.svg?react';
+import CrossSVG from '@/assets/images/icons/cross-icon.svg?react';
 import { Button } from '@gear-js/vara-ui';
 import { useReadGameSessionState } from '@/hooks/metadata';
 import { useAccount } from '@gear-js/react-hooks';

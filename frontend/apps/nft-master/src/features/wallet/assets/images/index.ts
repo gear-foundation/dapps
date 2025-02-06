@@ -1,6 +1,6 @@
-export { ReactComponent as PolkadotSVG } from './polkadot.svg';
-export { ReactComponent as SubWalletSVG } from './subwallet.svg';
-export { ReactComponent as TalismanSVG } from './talisman.svg';
-export { ReactComponent as EnkryptSVG } from './enkrypt.svg';
-export { ReactComponent as ExitSVG } from './exit.svg';
-export { ReactComponent as NovaIcon } from './nova.svg';
+export { default as PolkadotSVG } from './polkadot.svg?react';
+export { default as SubWalletSVG } from './subwallet.svg?react';
+export { default as TalismanSVG } from './talisman.svg?react';
+export { default as EnkryptSVG } from './enkrypt.svg?react';
+export { default as ExitSVG } from './exit.svg?react';
+export { default as NovaIcon } from './nova.svg?react';

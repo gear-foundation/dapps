@@ -1,6 +1,6 @@
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useAlert } from '@gear-js/react-hooks';
-import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/esm/hooks/sails/types';
+import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 
 export type Options<T = null> = {
   onSuccess?: (result: T) => void;

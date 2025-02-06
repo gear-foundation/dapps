@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ReactComponent as CrossIconSVG } from '@/assets/images/icons/cross-icon.svg';
+import CrossIconSVG from '@/assets/images/icons/cross-icon.svg?react';
 import { useAtom, useSetAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';

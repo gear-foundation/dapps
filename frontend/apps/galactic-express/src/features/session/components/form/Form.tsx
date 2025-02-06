@@ -6,7 +6,7 @@ import { useForm } from '@mantine/form';
 import { Card } from '@/components';
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { RegistrationStatus } from '@/features/session/types';
-import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
+import RocketSVG from '../../assets/rocket.svg?react';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
 import { Range } from '../range';
 import { Probability } from '../probability';

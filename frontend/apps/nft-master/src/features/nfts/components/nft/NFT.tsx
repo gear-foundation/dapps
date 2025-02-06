@@ -4,8 +4,8 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Container, Loader } from '@/components';
 import { useQuery } from 'urql';
 import { GetNFTByIdQuery } from '@/features/nfts/queries';
-import { ReactComponent as SearchSVG } from '../../assets/search.svg';
-import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
+import SearchSVG from '../../assets/search.svg?react';
+import BackArrowSVG from '../../assets/back-arrow.svg?react';
 import { useNFTs } from '../../hooks';
 import styles from './NFT.module.scss';
 

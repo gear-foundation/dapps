@@ -1,12 +1,12 @@
 import { cx } from '@/utils';
 import { Modal } from '@/components/layout/modal';
-import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { useApi } from '@gear-js/react-hooks';
 import { TextField } from '@/components/layout/TextField';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { ReactComponent as UserSVG } from '../../assets/ic-user-small-24.svg';
+import UserSVG from '../../assets/ic-user-small-24.svg?react';
 import styles from './GameFoundModal.module.scss';
 
 type Props = {

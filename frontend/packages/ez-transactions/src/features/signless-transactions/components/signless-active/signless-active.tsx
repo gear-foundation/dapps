@@ -1,6 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useSignlessTransactions } from '../../context';
-import { ReactComponent as Signless } from '@/assets/icons/signless.svg';
+import Signless from '@/assets/icons/signless.svg?react';
 import styles from './signless-active.module.css';
 
 function SignlessActive() {

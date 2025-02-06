@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { Button, buttonVariants, Container, Loader } from '@/components';
 import { NFT } from '@/features/nfts/types';
 import { GetNftsByNameQuery } from '@/features/nfts/queries';
-import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
+import ArrowLeftSVG from '../../assets/arrow-left.svg?react';
 import { useNFTSearch, useNFTs, useMintNFT } from '../../hooks';
 import styles from './NFTs.module.scss';
 

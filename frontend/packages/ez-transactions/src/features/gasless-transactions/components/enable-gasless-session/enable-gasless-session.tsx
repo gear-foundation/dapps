@@ -1,8 +1,8 @@
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { ChangeEvent } from 'react';
-import { ReactComponent as GaslessSVG } from '@/assets/icons/gas-station-line.svg';
-import { ReactComponent as PowerSVG } from '@/assets/icons/power.svg';
+import GaslessSVG from '@/assets/icons/gas-station-line.svg?react';
+import PowerSVG from '@/assets/icons/power.svg?react';
 import { useGaslessTransactions } from '../../context';
 import styles from './enable-gasless-session.module.css';
 

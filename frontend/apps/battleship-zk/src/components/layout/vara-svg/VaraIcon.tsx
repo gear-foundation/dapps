@@ -1,5 +1,5 @@
-import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { useApi } from '@gear-js/react-hooks';
 
 function VaraIcon() {

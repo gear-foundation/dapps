@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { ReactComponent as GaslessSVG } from '@/assets/icons/gas-station-line.svg';
+import GaslessSVG from '@/assets/icons/gas-station-line.svg?react';
 import { EnableGaslessSession } from '../enable-gasless-session';
 import { useGaslessTransactions } from '../../context';
 import styles from './gasless-transactions.module.css';

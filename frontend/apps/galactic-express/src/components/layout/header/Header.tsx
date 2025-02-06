@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import { ReactComponent as GalexSVG } from '@/assets/images/logo.svg';
-import { ReactComponent as VaraSVG } from '@/assets/images/logo-vara.svg';
+import GalexSVG from '@/assets/images/logo.svg?react';
+import VaraSVG from '@/assets/images/logo-vara.svg?react';
 import { cx } from '@/utils';
 import { useLaunchState } from '@/features/session';
 import { useAccount } from '@gear-js/react-hooks';

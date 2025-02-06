@@ -5,8 +5,8 @@ import { useState } from 'react';
 import clsx from 'clsx';
 
 import { useCountdown } from '@dapps-frontend/hooks';
-import { ReactComponent as SignlessSVG } from '@/assets/icons/signless.svg';
-import { ReactComponent as PowerSVG } from '@/assets/icons/power.svg';
+import SignlessSVG from '@/assets/icons/signless.svg?react';
+import PowerSVG from '@/assets/icons/power.svg?react';
 import { useSignlessTransactions } from '../../context';
 import { getDHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';

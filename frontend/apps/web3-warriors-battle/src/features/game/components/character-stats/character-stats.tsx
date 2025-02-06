@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Text } from '@/components';
 import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
-import { ReactComponent as VectorIcon } from './vector.svg';
+import VectorIcon from './vector.svg?react';
 import { HealthIndicator } from '../health-indicator';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';

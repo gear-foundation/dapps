@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, MouseEvent } from 'react';
-import { ReactComponent as CrossSVG } from '@/assets/images/icons/cross.svg';
+import CrossSVG from '@/assets/images/icons/cross.svg?react';
 import clsx from 'clsx';
 import styles from './Modal.module.scss';
 import { Button } from '../button';
