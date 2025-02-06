@@ -1,18 +1,20 @@
+import { HexString } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas, getVaraAddress } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { Players } from '@/types';
-import { useSyndoteMessage } from '@/hooks/metadata';
-import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
-import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
-import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';
-import CopySVG from '@/assets/images/icons/copy-text.svg?react';
-import RemovePlayerSVG from '@/assets/images/icons/remove-player.svg?react';
-import styles from './SessionInfo.module.scss';
 import { stringShorten } from '@polkadot/util';
-import { GameDetails } from '@/components/layout/game-details';
+
 import clsx from 'clsx';
-import { HexString } from '@gear-js/api';
+import CopySVG from '@/assets/images/icons/copy-text.svg?react';
+import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';
+import RemovePlayerSVG from '@/assets/images/icons/remove-player.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { GameDetails } from '@/components/layout/game-details';
+import { useSyndoteMessage } from '@/hooks/metadata';
+import { Players } from '@/types';
 import { copyToClipboard } from '@/utils';
+
+import styles from './SessionInfo.module.scss';
 
 type Props = {
   entryFee: string | null;

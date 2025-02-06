@@ -1,14 +1,16 @@
 import { useApi } from '@gear-js/react-hooks';
 import { Button, Input } from '@gear-js/vara-ui';
-import { Modal } from '@/components/ui/modal';
-import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
-import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { GameDetails } from '@/components/layout';
-import { UserIcon } from '@/assets/images';
-import styles from './game-found-modal.module.scss';
+
 import { MAX_PLAYERS_COUNT } from '@/app/consts';
+import { UserIcon } from '@/assets/images';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { GameDetails } from '@/components/layout';
+import { Modal } from '@/components/ui/modal';
 import { usePending } from '@/features/game/hooks';
+
+import styles from './game-found-modal.module.scss';
 
 type Props = {
   entryFee: number | string;

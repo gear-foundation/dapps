@@ -1,10 +1,12 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Routing } from '@/pages';
+
 import { ApiLoader } from '@/components';
 import { withProviders } from '@/hocs';
+import { Routing } from '@/pages';
 import '@gear-js/vara-ui/dist/style.css';
 import './App.scss';
 import { Header } from '@/components/layout/header';
+
 import { Container, Footer } from '@dapps-frontend/ui';
 
 function Component() {

@@ -1,6 +1,8 @@
 import { Button } from '@gear-js/vara-ui';
-import NextSVG from '@/assets/images/buttons/next.svg?react';
+
 import LastSVG from '@/assets/images/buttons/last.svg?react';
+import NextSVG from '@/assets/images/buttons/next.svg?react';
+
 import styles from './Buttons.module.scss';
 
 type Props = {

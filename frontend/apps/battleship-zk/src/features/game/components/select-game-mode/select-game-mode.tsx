@@ -1,12 +1,14 @@
-import ArrowRight from '@/assets/images/icons/arrow-right.svg?react';
-import AndroidLine from '@/assets/images/icons/android-line.svg?react';
 import AdminLine from '@/assets/images/icons/admin-line.svg?react';
+import AndroidLine from '@/assets/images/icons/android-line.svg?react';
+import ArrowRight from '@/assets/images/icons/arrow-right.svg?react';
 import SearchLine from '@/assets/images/icons/search-line.svg?react';
 import { Button } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
-import styles from './SelectGameMode.module.scss';
+
 import { useGameMode } from '../../hooks';
 import { Illustration } from '../illustration';
+
+import styles from './SelectGameMode.module.scss';
 
 export default function SelectGameMode() {
   const { setGameMode } = useGameMode();

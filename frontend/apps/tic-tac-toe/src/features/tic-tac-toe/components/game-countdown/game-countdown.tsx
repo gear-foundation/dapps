@@ -1,13 +1,16 @@
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 import Countdown, { CountdownRenderProps } from 'react-countdown';
-import styles from './game-countdown.module.scss';
-import { GameMark } from '../game-mark';
-import { useGame } from '../../hooks';
+
 import { BaseComponentProps } from '@/app/types';
-import { stateChangeLoadingAtom } from '../../store';
 import { GameInstance } from '@/app/utils';
+
+import { useGame } from '../../hooks';
 import { useConfigQuery } from '../../sails';
+import { stateChangeLoadingAtom } from '../../store';
+import { GameMark } from '../game-mark';
+
+import styles from './game-countdown.module.scss';
 
 type GameCountdownProps = BaseComponentProps & {
   game: GameInstance;

@@ -1,4 +1,5 @@
 import { CrossIcon } from '@/assets/images';
+
 import styles from './map.module.scss';
 
 type Props = {

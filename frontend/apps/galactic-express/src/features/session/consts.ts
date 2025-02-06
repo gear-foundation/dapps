@@ -1,6 +1,6 @@
 import AltitudeSVG from './assets/altitude.svg?react';
-import WeatherSVG from './assets/weather.svg?react';
 import RewardSVG from './assets/reward.svg?react';
+import WeatherSVG from './assets/weather.svg?react';
 import { isGreaterThanZero } from './utils';
 
 const TRAITS = [

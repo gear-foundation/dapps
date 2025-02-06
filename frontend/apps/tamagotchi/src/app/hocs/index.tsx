@@ -1,5 +1,3 @@
-import type { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
@@ -7,9 +5,13 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
+import type { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
+import { QueryProvider } from '@dapps-frontend/ui';
+
 import { ENV } from '../consts';
 import { AppProvider, LessonsProvider, TmgProvider } from '../context';
-import { QueryProvider } from '@dapps-frontend/ui';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>

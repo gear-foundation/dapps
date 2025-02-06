@@ -1,11 +1,12 @@
+import { useApi } from '@gear-js/react-hooks';
 import { Button, Input } from '@gear-js/vara-ui';
-
-import styles from './start-secrtion.module.scss';
-import { Sprite } from '@/components/ui/sprite';
 import { useForm } from '@mantine/form';
+
 import { useApp } from '@/app/context';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { useApi } from '@gear-js/react-hooks';
+import { Sprite } from '@/components/ui/sprite';
+
+import styles from './start-secrtion.module.scss';
 
 const initialValues = {
   bid: 0,

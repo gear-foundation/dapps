@@ -1,15 +1,17 @@
-import { Logo } from './logo';
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { useAccount } from '@gear-js/react-hooks';
+import { useState } from 'react';
+
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
+import { useApp, useGame } from '@/app/context';
+import { useGameMessage } from '@/app/hooks/use-game';
+import { Icon } from '@/components/ui/icon';
+import { Modal } from '@/components/ui/modal';
 
 import styles from './header.module.scss';
-import { Icon } from '@/components/ui/icon';
-import { useApp, useGame } from '@/app/context';
-import { useState } from 'react';
-import { Modal } from '@/components/ui/modal';
-import { useGameMessage } from '@/app/hooks/use-game';
+import { Logo } from './logo';
 
 export function Header() {
   const { account } = useAccount();

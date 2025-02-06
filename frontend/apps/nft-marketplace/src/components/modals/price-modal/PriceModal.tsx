@@ -1,8 +1,10 @@
+import { useAlert } from '@gear-js/react-hooks';
 import { Button, Input, Modal } from '@gear-js/ui';
 import { ChangeEvent, FormEvent, useState } from 'react';
+
 import { MIN_PRICE } from '@/consts';
+
 import styles from '../index.module.scss';
-import { useAlert } from '@gear-js/react-hooks';
 
 type Props = {
   heading: string;

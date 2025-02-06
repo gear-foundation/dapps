@@ -2,8 +2,8 @@ import { HexString } from '@gear-js/api';
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
-import { Appearance, useProgram } from '@/app/utils';
 import { Options, useSignAndSend } from '@/app/hooks/use-sign-and-send';
+import { Appearance, useProgram } from '@/app/utils';
 
 type RegisterParams = {
   value: bigint;

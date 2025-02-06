@@ -1,6 +1,8 @@
 import { useAccount, usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useNftProgram } from '@/app/utils';
+
 import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
+import { useNftProgram } from '@/app/utils';
+
 import { TokenMetadata } from '../nft';
 
 type Params = TokenMetadata;

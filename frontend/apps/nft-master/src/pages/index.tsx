@@ -1,6 +1,9 @@
 import { Route } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
+
 import { NFTs } from '@/features/nfts';
+
 import { Home } from './home';
 import { NFT } from './nft';
 import { NotFound } from './not-found';

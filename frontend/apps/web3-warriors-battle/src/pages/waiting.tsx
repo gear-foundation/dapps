@@ -1,13 +1,8 @@
-import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Card, Loader, Text, Modal } from '@/components';
-import { Background, GameCanceledModal, WaitList } from '@/features/game/components';
-import { Character } from '@/features/game/components/character';
-import { CharacterStats } from '@/features/game/components/character-stats';
-import { InfoIcon } from '@/features/game/assets/images';
 import { ROUTES } from '@/app/consts';
 import {
   useMyBattleQuery,
@@ -15,8 +10,14 @@ import {
   useCancelTournamentMessage,
   useStartBattleMessage,
 } from '@/app/utils';
-import { usePending, useResetGameState } from '@/features/game/hooks';
 import { useEventBattleCanceledSubscription } from '@/app/utils/sails/events';
+import { Card, Loader, Text, Modal } from '@/components';
+import { InfoIcon } from '@/features/game/assets/images';
+import { Background, GameCanceledModal, WaitList } from '@/features/game/components';
+import { Character } from '@/features/game/components/character';
+import { CharacterStats } from '@/features/game/components/character-stats';
+import { usePending, useResetGameState } from '@/features/game/hooks';
+
 import styles from './waiting.module.scss';
 
 export default function WaitingPage() {

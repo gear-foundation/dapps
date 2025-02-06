@@ -1,7 +1,9 @@
-import { PropsWithChildren } from 'react';
-import styles from './background.module.scss';
-import { backgroundSvg } from '../../assets/images';
 import clsx from 'clsx';
+import { PropsWithChildren } from 'react';
+
+import { backgroundSvg } from '../../assets/images';
+
+import styles from './background.module.scss';
 
 type BackgroundProps = PropsWithChildren & {
   className?: string;

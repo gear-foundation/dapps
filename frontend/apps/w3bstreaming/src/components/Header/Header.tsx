@@ -1,12 +1,15 @@
-import { useLocation } from 'react-router-dom';
-import { Link } from '@/ui';
 import { useAccount } from '@gear-js/react-hooks';
+import { useLocation } from 'react-router-dom';
+
 import { MenuHandler, Header as CommonHeader } from '@dapps-frontend/ui';
-import { cx } from '@/utils';
-import styles from './Header.module.scss';
+
 import logo from '@/assets/icons/logo.svg';
-import { HeaderProps } from './Header.interfaces';
 import { useMediaQuery } from '@/hooks';
+import { Link } from '@/ui';
+import { cx } from '@/utils';
+
+import { HeaderProps } from './Header.interfaces';
+import styles from './Header.module.scss';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();

@@ -1,9 +1,11 @@
-import styles from './not-authorized.module.scss';
 import { Link } from 'react-router-dom';
+
 import { buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
+
+import styles from './not-authorized.module.scss';
 
 const testnetURL = import.meta.env.VITE_TESTNET_WEBSITE_ADDRESS;
 

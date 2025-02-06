@@ -18,7 +18,7 @@ function useCheckBalance(args?: Props) {
 
   const checkBalance = (limit: number, callback: () => void, onError?: () => void) => {
     const chainBalance = Number(getFormattedBalanceValue(Number(withoutCommas(balance?.toString() || ''))).toFixed());
-    const valuePerGas = Number(withoutCommas(getFormattedGasValue(api!.valuePerGas!.toHuman()).toFixed()));
+    const valuePerGas = Number(withoutCommas(getFormattedGasValue(api!.valuePerGas.toHuman()).toFixed()));
     const chainEDeposit = Number(
       getFormattedBalanceValue(Number(withoutCommas(api?.existentialDeposit.toString() || ''))).toFixed(),
     );

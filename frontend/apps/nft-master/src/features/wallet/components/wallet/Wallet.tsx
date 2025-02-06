@@ -1,10 +1,13 @@
-import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
-import { Button } from '@/components';
 import clsx from 'clsx';
+import { useState } from 'react';
+
 import { useIsAppReady } from '@/app/hooks/use-is-app-ready';
+import { Button } from '@/components';
+
 import { WalletModal } from '../wallet-modal';
+
 import styles from './Wallet.module.scss';
 
 export function Wallet({ className }: { className?: string }) {

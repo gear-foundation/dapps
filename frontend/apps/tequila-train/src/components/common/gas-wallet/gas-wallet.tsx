@@ -1,4 +1,5 @@
 import { useApi, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+
 import { GetGasBalance } from '@/components/common/get-gas-balance';
 
 type Props = {

@@ -1,5 +1,6 @@
-import { useGame } from '@/app/context';
 import { useEffect, useState } from 'react';
+
+import { useGame } from '@/app/context';
 
 const Timer = () => {
   const { timer } = useGame();

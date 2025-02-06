@@ -1,14 +1,17 @@
-import { PlayerTrackSection } from '../player-track-section';
+import clsx from 'clsx';
+import { useEffect } from 'react';
+
+import { useApp, useGame } from '@/app/context';
+
+import { convertFormattedTileToNumbers, findTile, getBgColors } from '../../../app/utils';
+import { DominoItem } from '../../common/domino-item';
+import { Icon } from '../../ui/icon';
 import { PlayerCardSection } from '../player-card-section';
 import { PlayerConsSection } from '../player-cons-section';
-import { useApp, useGame } from '@/app/context';
-import clsx from 'clsx';
-import { convertFormattedTileToNumbers, findTile, getBgColors } from '../../../app/utils';
-import { Icon } from '../../ui/icon';
-import { DominoItem } from '../../common/domino-item';
+import { PlayerTrackSection } from '../player-track-section';
+
 import { CanceledSection } from './canceled-modal';
 import { FinishedSection } from './finished-modal';
-import { useEffect } from 'react';
 
 export const GameSection = () => {
   const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup } = useApp();

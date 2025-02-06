@@ -1,11 +1,13 @@
-import { useSetAtom } from 'jotai';
-import { cx } from '@/utils';
-import { REGISTRATION_STATUS } from '@/atoms';
 import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { shortenString } from '@/features/session/utils';
-import { RankWithName } from '@/features/session/types';
+import { useSetAtom } from 'jotai';
+
 import { useCancelGameMessage, useLeaveGameMessage } from '@/app/utils';
+import { REGISTRATION_STATUS } from '@/atoms';
+import { RankWithName } from '@/features/session/types';
+import { shortenString } from '@/features/session/utils';
+import { cx } from '@/utils';
+
 import styles from './WinStatus.module.scss';
 
 type Props = {

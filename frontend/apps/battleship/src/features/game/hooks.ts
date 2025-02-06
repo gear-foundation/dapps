@@ -1,15 +1,17 @@
-import { useEffect, useMemo } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useLocation } from 'react-router-dom';
-import { useDnsProgramIds, useProgramMetadata } from '@dapps-frontend/hooks';
 import { useSignlessSendMessage } from 'gear-ez-transactions';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { useDnsProgramIds, useProgramMetadata } from '@dapps-frontend/hooks';
+
+import { ROUTES } from '@/app/consts';
+import { useReadState } from '@/app/hooks/api';
 
 import meta from './assets/meta/battleship.meta.txt';
-import { IGameInstance } from './types';
 import { gameAtom, isActiveGameAtom, pendingAtom } from './store';
-import { useReadState } from '@/app/hooks/api';
-import { ROUTES } from '@/app/consts';
+import { IGameInstance } from './types';
 
 export function useGame() {
   const gameState = useAtomValue(gameAtom);

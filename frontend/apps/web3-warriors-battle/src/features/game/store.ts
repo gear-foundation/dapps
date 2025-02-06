@@ -1,6 +1,8 @@
 import { atom } from 'jotai';
-import { BattleHistory, CharacterStatsFormValues, CurrentPlayers } from './types';
+
 import { Appearance } from '@/app/utils';
+
+import { BattleHistory, CharacterStatsFormValues, CurrentPlayers } from './types';
 
 const getStorage = <T>(key: string) => ({
   set: (item: T | null) => localStorage.setItem(key, JSON.stringify(item)),

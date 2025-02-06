@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
+import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
+import { useAtomValue } from 'jotai';
+import { useEffect, useMemo, useState } from 'react';
+
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
 import meta from '@/assets/meta/syndote_meta.txt';
 import { CURRENT_GAME_ADMIN_ATOM } from '@/atoms';
 import { GameSessionState } from '@/types';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 function useBuffer(source: string) {
   const alert = useAlert();
@@ -34,7 +36,7 @@ function useProgramMetadata(source: string) {
   useEffect(() => {
     fetch(source)
       .then((response) => response.text())
-      .then((raw) => `0x${raw}` as HexString)
+      .then((raw) => `0x${raw}`)
       .then((metaHex) => ProgramMetadata.from(metaHex))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message));

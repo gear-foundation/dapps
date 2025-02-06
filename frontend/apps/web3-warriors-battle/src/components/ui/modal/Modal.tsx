@@ -1,11 +1,14 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
-import { Button } from '../button';
-import { Sprite } from '@/components/ui/sprite';
+import { MouseEvent, useEffect, useRef } from 'react';
+
 import type { BaseComponentProps } from '@/app/types';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+import { Sprite } from '@/components/ui/sprite';
+
+import { Button } from '../button';
+
 import styles from './Modal.module.scss';
 
 const variants = cva('', {

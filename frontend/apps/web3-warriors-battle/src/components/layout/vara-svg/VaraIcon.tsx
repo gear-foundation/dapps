@@ -1,6 +1,7 @@
-import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
-import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { useApi } from '@gear-js/react-hooks';
+
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
 
 type VaraIconProps = {
   className?: string;

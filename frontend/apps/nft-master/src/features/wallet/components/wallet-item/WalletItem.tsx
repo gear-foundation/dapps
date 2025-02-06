@@ -1,4 +1,5 @@
 import { SVGComponent } from '@/types';
+
 import styles from './WalletItem.module.scss';
 
 type Props = {

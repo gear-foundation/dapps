@@ -1,8 +1,11 @@
 import clsx from 'clsx';
-import { AlertProps } from './alert.types';
-import styles from './alert.module.scss';
-import { Button } from '../button';
+
 import CrossSVG from '@/assets/images/icons/cross.svg';
+
+import { Button } from '../button';
+
+import styles from './alert.module.scss';
+import { AlertProps } from './alert.types';
 
 export function Alert({ alert, close }: AlertProps) {
   const { content, options } = alert;

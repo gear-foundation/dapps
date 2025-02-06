@@ -1,10 +1,13 @@
 import { useForm } from '@mantine/form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { Button } from '@/components';
-import SearchSVG from '../../assets/search.svg?react';
+
 import ResetSVG from '../../assets/reset.svg?react';
+import SearchSVG from '../../assets/search.svg?react';
 import { useNFTSearch } from '../../hooks';
+
 import styles from './Search.module.scss';
 
 export function Search() {
@@ -35,7 +38,7 @@ export function Search() {
   return (
     <form className={styles.inputWrapper} onSubmit={handleSubmit}>
       <SearchSVG />
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      {}
       <input type="text" placeholder="Search NFTs and accounts" id="search" {...getInputProps('query')} />
 
       {searchQuery && (

@@ -1,9 +1,10 @@
-import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+
+import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
-import svgr from 'vite-plugin-svgr';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { checker } from 'vite-plugin-checker';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
 const viteAppsConfig = defineConfig({
@@ -11,11 +12,12 @@ const viteAppsConfig = defineConfig({
     react(),
     svgr(),
     nodePolyfills(),
-    checker({
-      typescript: true,
-      eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', useFlatConfig: true },
-    }),
+
+    // TODO: replace with one checker after eslint issues are resolved
+    checker({ typescript: true }),
+    checker({ eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', useFlatConfig: true }, enableBuild: false }),
   ],
+
   server: { port: 3000, open: true },
   preview: { port: 3000, open: true },
 

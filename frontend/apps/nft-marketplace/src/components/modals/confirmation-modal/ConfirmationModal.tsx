@@ -1,4 +1,5 @@
 import { Button, Modal } from '@gear-js/ui';
+
 import styles from './ConfirmationModal.module.scss';
 
 type Props = {

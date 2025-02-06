@@ -1,18 +1,18 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
+import { useRef, useEffect, useState } from 'react';
 
-import { TileMap } from '@/app/types/game';
-
-import { findMapLevel } from '../game/utils/findMapLevel';
-import { GameEngine } from '../game/models/Game';
-import { COINS, GAME_OVER, MS_TIME_GAME_OVER } from '../game/consts';
 import { useGame } from '@/app/context/ctx-game';
+import { TileMap } from '@/app/types/game';
+import { useRecordTournamentResultMessage } from '@/app/utils';
+import useOnScreen from '@/hooks/use-on-screen';
+
+import { GameCanvas } from '../game/components/game-canvas/game-canvas';
+import { COINS, GAME_OVER, MS_TIME_GAME_OVER } from '../game/consts';
+import { GameEngine } from '../game/models/Game';
+import { findMapLevel } from '../game/utils/findMapLevel';
 
 import { GamePlayAgainModal } from './components/modals/game-play-again';
-import { useEzTransactions } from 'gear-ez-transactions';
-import useOnScreen from '@/hooks/use-on-screen';
-import { GameCanvas } from '../game/components/game-canvas/game-canvas';
-import { useRecordTournamentResultMessage } from '@/app/utils';
 
 type Props = {
   isPause: boolean;

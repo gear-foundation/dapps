@@ -1,14 +1,15 @@
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { EzSignlessTransactions, EzGaslessTransactions } from 'gear-ez-transactions';
 import { useNavigate } from 'react-router-dom';
 
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
 import { ALLOWED_SIGNLESS_ACTIONS, ROUTES } from '@/app/consts';
 import { GameButton } from '@/features/game/components/game-button';
 
-import { Logo } from './logo';
 import styles from './header.module.scss';
+import { Logo } from './logo';
 
 export function Header() {
   const { account } = useAccount();

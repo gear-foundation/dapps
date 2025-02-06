@@ -1,5 +1,4 @@
 import { useApp } from '@/app/context';
-
 import { WinnerPopup } from '@/components/popups/winner-popup/winner-popup';
 
 export function FinishedSection() {

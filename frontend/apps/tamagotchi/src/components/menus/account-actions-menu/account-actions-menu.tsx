@@ -1,7 +1,8 @@
-import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { cn } from '@/app/utils';
+import { Fragment } from 'react';
+
 import { useApp, useLessons, useTamagotchi } from '@/app/context';
+import { cn } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 export const AccountActionsMenu = () => {

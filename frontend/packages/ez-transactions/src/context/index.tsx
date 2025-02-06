@@ -1,5 +1,4 @@
 import { useAccount } from '@gear-js/react-hooks';
-
 import { ReactNode, createContext, useContext, useEffect } from 'react';
 
 import { useGaslessTransactions } from '@/features/gasless-transactions';

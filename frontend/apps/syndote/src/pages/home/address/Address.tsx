@@ -2,9 +2,11 @@ import { useApi } from '@gear-js/react-hooks';
 import { useForm } from '@mantine/form';
 import { isHex } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
+
 import { Button } from '../button';
 import commonStyles from '../connect/Connect.module.scss';
 import { Input } from '../input';
+
 import styles from './Address.module.scss';
 
 type Props = {

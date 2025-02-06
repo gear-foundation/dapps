@@ -1,5 +1,7 @@
 import clsx from 'clsx';
+
 import { useGame } from '@/app/context';
+
 import { DominoItem } from '../domino-item';
 
 type Props = {
@@ -38,8 +40,8 @@ export const DominoZone = ({ light, id, disabled, reverse }: Props) => {
         playerChoice?.track_id === id.toString()
           ? 'enabled:bg-primary/15 enabled:border-primary'
           : light
-          ? 'enabled:bg-white/15 enabled:border-white'
-          : 'enabled:bg-black/15 enabled:border-black',
+            ? 'enabled:bg-white/15 enabled:border-white'
+            : 'enabled:bg-black/15 enabled:border-black',
       )}
       onClick={onClick}
       disabled={disabled}>

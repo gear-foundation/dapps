@@ -1,5 +1,7 @@
 import { Filter as FilterType } from '@/types';
+
 import { Filter } from '../filter';
+
 import styles from './Header.module.scss';
 
 type Props = {

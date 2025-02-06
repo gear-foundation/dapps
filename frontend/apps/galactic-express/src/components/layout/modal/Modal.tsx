@@ -1,9 +1,10 @@
-import { MouseEvent, useEffect, useRef } from 'react';
+import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { MouseEvent, useEffect, useRef } from 'react';
+
 import CrossIcon from '@/assets/images/icons/cross-icon.svg?react';
 import { variantsOverlay, variantsPanel } from '@/components/layout/modal/Modal.variants';
-import { Button } from '@gear-js/vara-ui';
 
 import styles from './Modal.module.scss';
 

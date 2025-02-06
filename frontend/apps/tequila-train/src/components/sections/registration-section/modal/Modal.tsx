@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import styles from './Modal.module.scss';
-import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+import { useEffect, useRef } from 'react';
+
 import type { BaseComponentProps } from '@/app/types';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+
+import styles from './Modal.module.scss';
 
 export function Modal({ children }: BaseComponentProps) {
   const ref = useRef<HTMLDialogElement>(null);

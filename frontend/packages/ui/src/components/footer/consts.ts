@@ -1,7 +1,7 @@
-import TwitterSVG from './assets/twitter.svg?react';
-import GithubSVG from './assets/github.svg?react';
 import DiscordSVG from './assets/discord.svg?react';
+import GithubSVG from './assets/github.svg?react';
 import MediumSVG from './assets/medium.svg?react';
+import TwitterSVG from './assets/twitter.svg?react';
 
 const SOCIALS = [
   { href: 'https://twitter.com/VaraNetwork', SVG: TwitterSVG },

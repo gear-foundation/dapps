@@ -1,14 +1,16 @@
-import { Modal } from '@/components/ui/modal';
-import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
-import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import { useApi } from '@gear-js/react-hooks';
-import { TextField } from '@/components/layout/text-field';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { GameDetails } from '@/components/layout/game-details';
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
+
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { GameDetails } from '@/components/layout/game-details';
+import { TextField } from '@/components/layout/text-field';
+import { Modal } from '@/components/ui/modal';
 import { usePending } from '@/features/game/hooks';
+
 import styles from './GameFoundModal.module.scss';
 
 type Props = {

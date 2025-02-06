@@ -1,6 +1,8 @@
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+
 import { useEventMoveMadeSubscription, useEventGameFinishedSubscription, useSkipMessage } from '../../sails';
 
 export function GameSkipButton() {

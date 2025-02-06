@@ -1,7 +1,8 @@
-import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from '@/features/account-available-balance/hooks';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
+
+import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from '@/features/account-available-balance/hooks';
 import { useAuth } from '@/features/auth';
 
 const isAppReadyAtom = atom<boolean>(false);

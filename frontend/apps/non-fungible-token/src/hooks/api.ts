@@ -1,9 +1,11 @@
 import { useAccount, useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
+import { useParams } from 'react-router-dom';
+
+import metaTxt from '@/assets/meta/meta.txt';
+import stateMetaWasm from '@/assets/wasm/state.meta.wasm?url';
 import { ADDRESS } from '@/consts';
 import { Params, Token } from '@/types';
-import { useParams } from 'react-router-dom';
-import stateMetaWasm from '@/assets/wasm/state.meta.wasm?url';
-import metaTxt from '@/assets/meta/meta.txt';
+
 import { useMetadata, useWasmMetadata } from './useMetadata';
 
 function useNFTMetadata() {

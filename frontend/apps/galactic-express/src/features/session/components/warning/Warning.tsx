@@ -1,7 +1,10 @@
 import { ReactElement } from 'react';
+
 import { cx } from '@/utils';
-import styles from './Warning.module.scss';
+
 import ErrorIcon from '../../assets/error-icon.svg?react';
+
+import styles from './Warning.module.scss';
 
 type Props = {
   title: string;

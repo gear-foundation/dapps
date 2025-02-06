@@ -1,10 +1,11 @@
 import { Button, buttonStyles, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { hexRequired } from '@/app/utils/form-validations';
-import { useApp, useLessons } from '@/app/context';
-import { createTamagotchiInitial } from '@/app/consts';
 import { Link } from 'react-router-dom';
+
+import { createTamagotchiInitial } from '@/app/consts';
+import { useApp, useLessons } from '@/app/context';
 import { cn } from '@/app/utils';
+import { hexRequired } from '@/app/utils/form-validations';
 
 const validate: Record<string, typeof hexRequired> = {
   programId: hexRequired,

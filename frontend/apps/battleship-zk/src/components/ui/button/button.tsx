@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ButtonHTMLAttributes } from 'react';
 import { Loader2 } from 'lucide-react';
+import { ButtonHTMLAttributes } from 'react';
+
 import styles from './buttons.module.scss';
 
 export const buttonVariants = cva('', {

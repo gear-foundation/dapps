@@ -1,20 +1,23 @@
+import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransactionBuilder } from 'sails-js';
+
 import { ROUTES } from '@/app/consts';
-import { useEzTransactions } from 'gear-ez-transactions';
-import { Button } from '@gear-js/vara-ui';
-import { useAccount } from '@gear-js/react-hooks';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { Map } from '../';
-import styles from './ShipArrangement.module.scss';
-import { usePending } from '../../hooks';
-import { generateShipsField } from './shipGenerator';
-import { convertShipsToField } from '../../utils';
-import { useShips } from '@/features/zk/hooks/use-ships';
 import { useProofShipArrangement } from '@/features/zk/hooks/use-proof-ship-arrangement';
+import { useShips } from '@/features/zk/hooks/use-ships';
 import { ZkProofData } from '@/features/zk/types';
+
+import { Map } from '../';
+import { usePending } from '../../hooks';
+import { convertShipsToField } from '../../utils';
+
+import styles from './ShipArrangement.module.scss';
+import { generateShipsField } from './shipGenerator';
 
 type GameType = 'single' | 'multi';
 interface Props {

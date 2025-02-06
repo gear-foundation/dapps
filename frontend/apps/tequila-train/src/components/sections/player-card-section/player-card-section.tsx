@@ -1,9 +1,11 @@
-import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { getBgColors } from '@/app/utils';
-import { useGame } from '../../../app/context';
 import { useEffect, useState } from 'react';
+
 import { playerNames } from '@/app/consts';
+import { getBgColors } from '@/app/utils';
+
+import { useGame } from '../../../app/context';
+import { Icon } from '../../ui/icon';
 
 type Props = {
   index: number;

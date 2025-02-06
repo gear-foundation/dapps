@@ -1,10 +1,13 @@
-import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import styles from './Modal.module.scss';
-import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
-import { Button } from '@/components/ui/Button';
+import { MouseEvent, useEffect, useRef } from 'react';
+
 import type { BaseComponentProps } from '@/app/types';
+import { Button } from '@/components/ui/Button';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+
 import { Icon } from '../icon';
+
+import styles from './Modal.module.scss';
 
 type Props = BaseComponentProps & {
   heading: string;

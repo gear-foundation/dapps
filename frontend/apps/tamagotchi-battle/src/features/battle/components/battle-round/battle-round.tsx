@@ -1,8 +1,8 @@
 import { BattleRoundInfo } from '../battle-round-info';
-import { BattleRoundStats } from '../battle-round-stats';
 import { BattleRoundPlayers } from '../battle-round-players';
-import { BattleTablePairs } from '../battle-table-pairs';
+import { BattleRoundStats } from '../battle-round-stats';
 import { BattleTableChampions } from '../battle-table-champions';
+import { BattleTablePairs } from '../battle-table-pairs';
 
 export const BattleRound = () => {
   return (

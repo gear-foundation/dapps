@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps } from 'react-datepicker';
-import { Button } from '@/ui';
-import { cx } from '@/utils';
-import PlaySVG from '@/assets/icons/play-icon.svg';
+
 import chevronLeftSVG from '@/assets/icons/chevron-left.svg';
 import chevronRightSVG from '@/assets/icons/chevron-right.svg';
+import PlaySVG from '@/assets/icons/play-icon.svg';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
 import { CalendarProps } from './Calendar.interfaces';
 import styles from './Calendar.module.scss';
 

@@ -1,11 +1,14 @@
-import { useApp, useGame } from '@/app/context';
-import { useEffect, useMemo } from 'react';
 import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
+import { useEffect, useMemo } from 'react';
+
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { useApp, useGame } from '@/app/context';
 import meta from '@/assets/meta/tequila_train.meta.txt';
 
 import { IGame, IState } from '../types/game';
+
 import { useProgramMetadata, useReadState } from './use-metadata';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 function useGameState() {
   const { programId } = useDnsProgramIds();
@@ -21,7 +24,6 @@ function useGameState() {
           }
         : undefined,
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [account?.decodedAddress],
   );
 

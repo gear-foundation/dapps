@@ -1,16 +1,15 @@
+import { HexString } from '@gear-js/api';
 import { getVaraAddress, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { Button } from '@gear-js/vara-ui';
 
-import { cn, copyToClipboard, shortenString } from '@/app/utils';
-
 import { useApp, useGame } from '@/app/context';
-import { HexString } from '@gear-js/api';
-
+import { useGameMessage } from '@/app/hooks/use-game';
+import { cn, copyToClipboard, shortenString } from '@/app/utils';
 import { Icon } from '@/components/ui/icon';
-import { Modal } from './modal';
 
 import { MockGameSection } from '../game-section/mock/mock-game-section';
+
+import { Modal } from './modal';
 
 export function RegistrationSection() {
   const { api } = useApi();
@@ -67,7 +66,7 @@ export function RegistrationSection() {
   };
 
   const reversedArrayPlayers = [...(game?.initialPlayers ?? [])];
-  const disableButton = !Boolean(game && game.initialPlayers?.length >= 2);
+  const disableButton = !(game && game.initialPlayers?.length >= 2);
 
   const [decimals] = api?.registry.chainDecimals ?? [12];
   const bid = parseFloat(game?.bid.replace(/,/g, '') || '0') / 10 ** decimals;

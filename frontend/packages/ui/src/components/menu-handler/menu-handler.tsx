@@ -1,16 +1,19 @@
-import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Wallet, WalletModal } from '@gear-js/wallet-connect';
-import BurgerMenuSVG from './assets/burger-menu.svg?react';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+
 import CrossSVG from '@/assets/cross-icon.svg?react';
-import styles from './menu-handler.module.css';
+import { useClickOutside, useRootModalRef } from '@/utils';
+
 import { MenuOptions, MobileMenu } from '..';
 import { MenuOptionsClassNameProps } from '../menu-options';
 import { MobileMenuClassNameProps } from '../mobile-menu';
-import { useClickOutside, useRootModalRef } from '@/utils';
-import clsx from 'clsx';
-import { useAccount } from '@gear-js/react-hooks';
+
+import BurgerMenuSVG from './assets/burger-menu.svg?react';
+import styles from './menu-handler.module.css';
 
 type Props = {
   customItems?: {

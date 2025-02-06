@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai';
+
 import { IS_LOADING } from '@/atoms';
 
 export function usePending() {

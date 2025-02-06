@@ -1,11 +1,13 @@
-import clsx from 'clsx';
-import CrossIconSVG from '@/assets/images/icons/cross-icon.svg?react';
-import { useAtom, useSetAtom } from 'jotai';
-import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { Participant } from '@/features/session/types';
-import { IS_LOADING, REGISTRATION_STATUS } from '@/atoms';
+import { Button } from '@gear-js/vara-ui';
+import clsx from 'clsx';
+import { useAtom, useSetAtom } from 'jotai';
+
 import { useCancelGameMessage, useCancelRegisterMessage } from '@/app/utils';
+import CrossIconSVG from '@/assets/images/icons/cross-icon.svg?react';
+import { IS_LOADING, REGISTRATION_STATUS } from '@/atoms';
+import { Participant } from '@/features/session/types';
+
 import styles from './CancelGameButton.module.scss';
 
 type Props = {

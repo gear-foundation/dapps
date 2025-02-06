@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+
 import { getIpfsAddress } from '@/utils';
+
 import styles from './NFT.module.scss';
 
 type Props = {

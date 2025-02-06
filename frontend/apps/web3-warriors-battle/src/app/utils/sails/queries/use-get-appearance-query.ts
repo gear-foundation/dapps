@@ -1,4 +1,5 @@
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
 import { useWarriorProgram } from '../warrior-programm';
 
 export const useGetAppearanceQuery = (programId: string) => {

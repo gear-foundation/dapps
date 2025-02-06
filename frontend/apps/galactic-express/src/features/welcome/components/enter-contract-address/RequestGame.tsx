@@ -1,20 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Wallet } from '@dapps-frontend/ui';
-import { Button } from '@gear-js/vara-ui';
-import { cx } from '@/utils';
-import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
-import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
-import { useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from '@/components/layout/TextField';
-import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString, decodeAddress } from '@gear-js/api';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { useSetAtom, useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+
+import { Wallet } from '@dapps-frontend/ui';
+
+import { GameState, useGetGameQuery, useCreateNewSessionMessage } from '@/app/utils';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
+import { TextField } from '@/components/layout/TextField';
 import { GameFoundModal } from '@/features/session/components/game-found-modal';
 import { JoinModalFormValues } from '@/features/session/components/game-found-modal/GameFoundModal';
 import { TextModal } from '@/features/session/components/game-not-found-modal';
+import { cx } from '@/utils';
+
 import { GameIntro } from '../game-intro';
-import { GameState, useGetGameQuery, useCreateNewSessionMessage } from '@/app/utils';
+
 import styles from './RequestGame.module.scss';
 
 type Status = 'creating' | 'joining' | null;
