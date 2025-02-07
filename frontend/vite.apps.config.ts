@@ -22,8 +22,12 @@ const viteAppsConfig = defineConfig({
   server: { port: 3000, open: true },
   preview: { port: 3000, open: true },
 
-  // process.cwd to resolve to the launch directory
-  resolve: { alias: { '@': path.resolve(process.cwd(), 'src') } },
+  resolve: {
+    alias: {
+      '@': path.resolve(process.cwd(), 'src'), // process.cwd to resolve to the launch directory
+      '@ui': path.resolve(__dirname, 'packages/ui/src'),
+    },
+  },
 
   build: { outDir: 'build' },
 });

@@ -21,7 +21,13 @@
     "noFallthroughCasesInSwitch": true,
 
     // custom
-    "types": ["vite-plugin-svgr/client"]
+    "types": ["vite-plugin-svgr/client"],
+
+    "paths": {
+      "@/*": ["${configDir}/src/*"],
+      "@ui/*": ["${configDir}/../../packages/ui/src/*"]
+    }
   },
+  "include": ["${configDir}/src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
