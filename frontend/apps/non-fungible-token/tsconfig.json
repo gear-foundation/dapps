@@ -1,8 +1,20 @@
 {
   "extends": "../../tsconfig.json",
 
+  // each package has its own @ alias, cuz vite doesn't support single alias for multiple paths
+  // sources:
+  // https://github.com/vercel/turborepo/discussions/620
+  // https://github.com/vitejs/vite/issues/5370
+
+  // TODO: replace with configDir in the root config,
+  // once https://github.com/import-js/eslint-import-resolver-typescript/issues/299 is resolved
   "compilerOptions": {
-    "paths": { "@/*": ["./src/*"] }
+    "paths": {
+      "@/*": ["./src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@ez/*": ["../../packages/ez-transactions/src/*"],
+      "gear-ez-transactions": ["../../packages/ez-transactions/src/index.ts"]
+    }
   },
 
   "include": ["src"]
