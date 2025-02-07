@@ -1,15 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
+
   "compilerOptions": {
-    "skipLibCheck": true,
-    "outDir": "./dist",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "removeComments": true,
-    "module": "ESNext",
-    "target": "esnext",
-    "strict": true,
-    "allowJs": true,
-    "declaration": true,
     "types": ["node", "./src/index.d.ts"]
   }
 }

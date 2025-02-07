@@ -14,6 +14,7 @@ const viteAppsConfig = defineConfig({
     nodePolyfills(),
 
     // TODO: replace with one checker after eslint issues are resolved
+    // TODO: eslint src only runs through the current app, need to lint workspace packages too
     checker({ typescript: true }),
     checker({ eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', useFlatConfig: true }, enableBuild: false }),
   ],
