@@ -56,9 +56,7 @@ jobs:
             build: build
 
           # Packages
-          - subdir: packages/error-tracking
-            build: build
-          - subdir: packages/ui
+          - subdir: packages/ez-transactions
             build: build
 
     runs-on: ubuntu-latest
