@@ -3,5 +3,6 @@
 
   "compilerOptions": {
     "types": ["node", "./src/index.d.ts"]
-  }
+  },
+  "include": ["src"]
 }
