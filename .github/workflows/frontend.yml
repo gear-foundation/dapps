@@ -30,6 +30,8 @@ jobs:
           # Apps
           - subdir: apps/battleship
             build: build
+          - subdir: apps/battleship-zk
+            build: build
           - subdir: apps/galactic-express
             build: build
           - subdir: apps/nft-marketplace
@@ -53,6 +55,10 @@ jobs:
           - subdir: apps/vara-man
             build: build
           - subdir: apps/varatube
+            build: build
+          - subdir: apps/w3bstreaming
+            build: build
+          - subdir: apps/web3-warriors-battle
             build: build
 
           # Packages
