@@ -6,8 +6,8 @@ import { useState } from 'react';
 
 import { useCountdown } from '@dapps-frontend/hooks';
 
-import PowerSVG from '@/assets/icons/power.svg?react';
-import SignlessSVG from '@/assets/icons/signless.svg?react';
+import PowerSVG from '@ez/assets/icons/power.svg?react';
+import SignlessSVG from '@ez/assets/icons/signless.svg?react';
 
 import { useSignlessTransactions } from '../../context';
 import { getDHMS } from '../../utils';

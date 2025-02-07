@@ -26,6 +26,8 @@ const viteAppsConfig = defineConfig({
     alias: {
       '@': path.resolve(process.cwd(), 'src'), // process.cwd to resolve to the launch directory
       '@ui': path.resolve(__dirname, 'packages/ui/src'),
+      '@ez': path.resolve(__dirname, 'packages/ez-transactions/src'),
+      'gear-ez-transactions': path.resolve(__dirname, 'packages/ez-transactions/src'),
     },
   },
 
