@@ -1,0 +1,88 @@
+name: Build and Use Builder Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release image version'
+        required: true
+        default: '1.2.0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  RELEASE_VERSION: ${{ inputs.version }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@master
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Rust Build image
+        uses: docker/build-push-action@master
+        with:
+          push: true
+          context: scripts/docker-rust
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+
+  build-project:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rust-src component
+        run: rustup component add rust-src --toolchain stable-x86_64-unknown-linux-gnu
+
+      - name: Build
+        run: 'cargo build --release --workspace;'
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm
+          path: |
+            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+
+      - name: Update the nightly tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git tag nightly
+          git push -f origin nightly
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
+          tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
+          prerelease: ${{ github.ref == 'refs/heads/master' }}
+          files: |
+            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+
+      - name: Upload the GitHub Pages artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: contracts/target/doc
