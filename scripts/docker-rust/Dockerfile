@@ -7,8 +7,10 @@ RUN cp binaryen-version_119/bin/wasm-opt /usr/bin/
 
 RUN cargo install sails-cli@0.7.3
 
-RUN rustup show || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN rustup show || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 
-RUN rustup component add rust-src --toolchain stable
+RUN rustup install stable
+RUN rustup default stable
+RUN rustup component add rust-src --toolchain $(rustup show active-toolchain | cut -d ' ' -f1)
 
 WORKDIR /app
