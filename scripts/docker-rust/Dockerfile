@@ -1,4 +1,4 @@
-FROM rust:1.82 AS builder
+FROM rust:1.83 AS builder
 
 RUN apt-get update
 RUN apt-get install -y git jq
