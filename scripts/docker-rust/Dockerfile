@@ -1,4 +1,5 @@
-FROM rust:1.83 AS builder
+ARG RUST_VERSION=1.83.0
+FROM rust:${RUST_VERSION} AS builder
 
 RUN apt-get update && apt-get install -y git jq
 
@@ -7,10 +8,9 @@ RUN cp binaryen-version_119/bin/wasm-opt /usr/bin/
 
 RUN cargo install sails-cli@0.7.3
 
-RUN rustup show || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+ARG RUST_VERSION=1.83.0
+RUN rustup install ${RUST_VERSION} && rustup default ${RUST_VERSION}
 
-RUN rustup install stable
-RUN rustup default stable
-RUN rustup component add rust-src --toolchain $(rustup show active-toolchain | cut -d ' ' -f1)
+RUN rustup component add rust-src --toolchain ${RUST_VERSION}
 
 WORKDIR /app
