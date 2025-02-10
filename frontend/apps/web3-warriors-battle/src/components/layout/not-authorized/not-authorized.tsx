@@ -1,6 +1,8 @@
-import { Background } from '@/features/game/components';
-import { Card } from '@/components/ui/card';
 import { Wallet } from '@dapps-frontend/ui';
+
+import { Card } from '@/components/ui/card';
+import { Background } from '@/features/game/components';
+
 import styles from './not-authorized.module.scss';
 
 export function NotAuthorized() {

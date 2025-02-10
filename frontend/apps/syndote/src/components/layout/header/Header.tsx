@@ -1,11 +1,14 @@
-import { Link } from 'react-router-dom';
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import VaraSVG from '@/assets/images/icons/logo-vara.svg?react';
-import CrossSVG from '@/assets/images/icons/cross-icon.svg?react';
-import { Button } from '@gear-js/vara-ui';
-import { useReadGameSessionState } from '@/hooks/metadata';
 import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { Link } from 'react-router-dom';
+
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
+import CrossSVG from '@/assets/images/icons/cross-icon.svg?react';
+import VaraSVG from '@/assets/images/icons/logo-vara.svg?react';
+import { useReadGameSessionState } from '@/hooks/metadata';
 import { useQuitGame } from '@/hooks/useQuitGame';
+
 import styles from './Header.module.scss';
 
 function Header() {

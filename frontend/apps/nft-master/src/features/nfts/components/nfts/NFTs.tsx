@@ -1,13 +1,16 @@
-import { useQuery } from 'urql';
 import { useAccount } from '@gear-js/react-hooks';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
+import { useKeenSlider } from 'keen-slider/react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useQuery } from 'urql';
+
 import { Button, buttonVariants, Container, Loader } from '@/components';
-import { NFT } from '@/features/nfts/types';
 import { GetNftsByNameQuery } from '@/features/nfts/queries';
+import { NFT } from '@/features/nfts/types';
+
 import ArrowLeftSVG from '../../assets/arrow-left.svg?react';
 import { useNFTSearch, useNFTs, useMintNFT } from '../../hooks';
+
 import styles from './NFTs.module.scss';
 
 type Props = {

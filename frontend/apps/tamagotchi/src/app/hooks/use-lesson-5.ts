@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
 import type { UserMessageSent } from '@gear-js/api';
 import { useApi } from '@gear-js/react-hooks';
 import type { UnsubscribePromise } from '@polkadot/api/types';
-import { useLessons, useTamagotchi } from '../context';
+import { useEffect, useState } from 'react';
+
 import type { NotificationResponseTypes, NotificationType } from '@/app/types/lessons';
 import { getNotificationTypeValue } from '@/app/utils';
+
+import { useLessons, useTamagotchi } from '../context';
 
 export const useLesson5 = () => {
   const { api, isApiReady } = useApi();

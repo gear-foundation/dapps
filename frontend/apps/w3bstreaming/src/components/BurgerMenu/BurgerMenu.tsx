@@ -1,12 +1,14 @@
-import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
-import { cx } from '@/utils';
+import { useNavigate } from 'react-router-dom';
+
 // import { WalletInfo } from '@/features/Wallet/components';
 import { routes } from '@/App.routes';
-import { Button } from '@/ui';
 import closeMenuIcon from '@/assets/icons/cross-icon.svg';
-import styles from './BurgerMenu.module.scss';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
 import { BurgerMenuProps } from './BurgerMenu.interfaces';
+import styles from './BurgerMenu.module.scss';
 
 function BurgerMenu({ burgerMenuHandler }: BurgerMenuProps) {
   const navigate = useNavigate();

@@ -1,14 +1,18 @@
-import { useState } from 'react';
-import { useEzTransactions } from 'gear-ez-transactions';
 import { Button } from '@gear-js/vara-ui';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useState } from 'react';
+
+import { useCheckBalance } from '@dapps-frontend/hooks';
+
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
+
 import { Map } from '../';
-import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
-import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+
+import styles from './ShipArrangement.module.scss';
+import { generateShipsField } from './shipGenerator';
 
 export default function ShipArrangement() {
   const { gasless, signless } = useEzTransactions();

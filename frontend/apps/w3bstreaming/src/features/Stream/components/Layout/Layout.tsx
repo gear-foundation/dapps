@@ -1,17 +1,19 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import styles from './Layout.module.scss';
-import { cx, socket } from '@/utils';
-import { Button } from '@/ui';
-import speakerPhoto from '@/assets/icons/no-avatar-user-img.png';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import editProfileSVG from '@/assets/icons/edit-profile-icon.svg';
+import eyeSVG from '@/assets/icons/eye-icon.svg';
+import speakerPhoto from '@/assets/icons/no-avatar-user-img.png';
+import subscribeSVG from '@/assets/icons/subscribe.svg';
 import timerSVG from '@/assets/icons/timer-icon.svg';
 import unsubSVG from '@/assets/icons/unsubscribe.svg';
-import subscribeSVG from '@/assets/icons/subscribe.svg';
-import eyeSVG from '@/assets/icons/eye-icon.svg';
-import { LayoutProps } from './Layout.interfaces';
 import { SubscribeModal } from '@/features/Account/components/SubscribeModal';
+import { Button } from '@/ui';
+import { cx, socket } from '@/utils';
+
+import { LayoutProps } from './Layout.interfaces';
+import styles from './Layout.module.scss';
 
 function Layout({
   isBroadcaster,

@@ -1,13 +1,16 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
-import SignlessSVG from '@/assets/icons/signless.svg?react';
+
 import PowerSVG from '@/assets/icons/power.svg?react';
-import styles from './enable-signless-session.module.css';
-import { CreateSessionModal } from '../create-session-modal';
+import SignlessSVG from '@/assets/icons/signless.svg?react';
+
 import { useSignlessTransactions } from '../../context';
-import { EnableSessionModal } from '../enable-session-modal';
 import { useIsAvailable } from '../../hooks';
+import { CreateSessionModal } from '../create-session-modal';
+import { EnableSessionModal } from '../enable-session-modal';
+
+import styles from './enable-signless-session.module.css';
 
 type Props = {
   type: 'button' | 'switcher';

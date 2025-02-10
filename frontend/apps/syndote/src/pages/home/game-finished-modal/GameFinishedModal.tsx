@@ -1,11 +1,14 @@
 import { useBalanceFormat, useAccount, withoutCommas } from '@gear-js/react-hooks';
-import { Modal } from '@/components/layout/modal';
 import { Button } from '@gear-js/vara-ui';
+
 import { GameDetails } from '@/components/layout/game-details';
-import styles from './GameFinishedModal.module.scss';
-import { VaraIcon } from '../vara-icon';
-import { PlayersByStrategyAddress } from '@/types';
+import { Modal } from '@/components/layout/modal';
 import { useQuitGame } from '@/hooks/useQuitGame';
+import { PlayersByStrategyAddress } from '@/types';
+
+import { VaraIcon } from '../vara-icon';
+
+import styles from './GameFinishedModal.module.scss';
 
 type Props = {
   winnerAddress: `0x${string}`;

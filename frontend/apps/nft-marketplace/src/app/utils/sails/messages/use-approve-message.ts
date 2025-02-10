@@ -1,6 +1,7 @@
 import { useAccount, usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useNftProgram } from '@/app/utils';
+
 import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
+import { useNftProgram } from '@/app/utils';
 import { ADDRESS } from '@/consts';
 
 type Params = {

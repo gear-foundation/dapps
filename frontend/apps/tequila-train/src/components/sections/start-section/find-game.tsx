@@ -1,16 +1,17 @@
-import { Button, Input } from '@gear-js/vara-ui';
-import { useState } from 'react';
-import { useApi } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
+import { useApi } from '@gear-js/react-hooks';
+import { Button, Input } from '@gear-js/vara-ui';
+import { useForm } from '@mantine/form';
+import { useState } from 'react';
 
-import styles from './start-secrtion.module.scss';
 import { useGame, useApp } from '@/app/context';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { useForm } from '@mantine/form';
-import { stringRequired } from '@/app/utils';
-import { Modal } from '@/components/ui/modal';
-import { Icon } from '@/components/ui/icon';
 import { GameType } from '@/app/types/game';
+import { stringRequired } from '@/app/utils';
+import { Icon } from '@/components/ui/icon';
+import { Modal } from '@/components/ui/modal';
+
+import styles from './start-secrtion.module.scss';
 
 const initialValues = {
   creator: '',

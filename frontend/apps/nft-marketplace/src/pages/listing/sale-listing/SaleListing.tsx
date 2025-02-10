@@ -1,6 +1,7 @@
 import { Button } from '@gear-js/ui';
-import { ConfirmationModal, Listing, PriceModal, OnLogin } from '@/components';
 import { useState } from 'react';
+
+import { ConfirmationModal, Listing, PriceModal, OnLogin } from '@/components';
 import { Listing as ListingType } from '@/types';
 
 type Props = {

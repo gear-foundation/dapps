@@ -1,8 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { StateMetadata, getStateMetadata } from '@gear-js/api';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY } from '@/consts';
+
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from './features/Auth/consts';
 
 export function useStateMetadata(source: string) {

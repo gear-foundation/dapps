@@ -1,11 +1,13 @@
+import { useAccount } from '@gear-js/react-hooks';
+import { useEffect, useState } from 'react';
+
 import { useApp, useGame } from '@/app/context';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { PlayerDomino } from '../../common/player-domino';
 import { DominoTileType } from '@/app/types/game';
 import { cn, findTile, getTileId } from '@/app/utils';
-import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
-import { useAccount } from '@gear-js/react-hooks';
+
+import { PlayerDomino } from '../../common/player-domino';
 
 export const PlayerConsSection = () => {
   const { account } = useAccount();
@@ -32,7 +34,7 @@ export const PlayerConsSection = () => {
       const playersTiles = Object.entries(game.gameState.tileToPlayer)
         .filter(([, value]) => value === game.gameState.currentPlayer)
         .map(([key]) => findTile(key, game?.gameState?.tiles))
-        .filter((tile) => tile !== null) as DominoTileType[];
+        .filter((tile) => tile !== null);
 
       setPlayersTiles(playersTiles);
     }

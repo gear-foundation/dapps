@@ -1,8 +1,10 @@
-import styles from './Layout.module.scss';
-import { cx } from '@/utils';
 import { TabPanel } from '@/ui';
-import { ProfileInfo } from '../ProfileInfo';
+import { cx } from '@/utils';
+
 import { tabs } from '../../config';
+import { ProfileInfo } from '../ProfileInfo';
+
+import styles from './Layout.module.scss';
 
 function Layout() {
   return (

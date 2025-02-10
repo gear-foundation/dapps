@@ -1,7 +1,9 @@
-import { Heading, Loader } from '@/components';
 import { useParams } from 'react-router-dom';
+
+import { Heading, Loader } from '@/components';
 import { ADDRESS } from '@/consts';
 import { useSubscription } from '@/hooks';
+
 import styles from './Video.module.scss';
 
 const description =

@@ -1,9 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
+import { useEffect } from 'react';
+
 import { useApp, useGame } from '@/app/context';
+import { useInitGame } from '@/app/hooks/use-game';
 import { cn } from '@/app/utils';
 import { LoginSection, GameSection, StartSection, RegistrationSection, CanceledSection } from '@/components/sections';
-import { useInitGame } from '@/app/hooks/use-game';
-import { useEffect } from 'react';
 
 export const Home = () => {
   useInitGame();

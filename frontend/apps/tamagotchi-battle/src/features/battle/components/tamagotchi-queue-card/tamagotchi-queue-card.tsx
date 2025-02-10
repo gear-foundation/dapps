@@ -1,8 +1,10 @@
-import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { SpriteIcon } from '@/components/ui/sprite-icon';
-import type { BattleStatePlayer } from '../../types/battles';
 import { TooltipWrapper } from '@gear-js/ui';
+
 import { cn, toNumber } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+
+import type { BattleStatePlayer } from '../../types/battles';
+import { TamagotchiAvatar } from '../tamagotchi-avatar';
 
 type TamagotchiQueueCardProps = {
   className?: string;

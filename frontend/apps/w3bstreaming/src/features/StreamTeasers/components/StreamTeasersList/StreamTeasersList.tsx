@@ -1,17 +1,20 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
-import { motion } from 'framer-motion';
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
+import { motion } from 'framer-motion';
+import moment from 'moment';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+import { useGetStateQuery } from '@/app/utils';
 import { Button, Dropdown, Search } from '@/ui';
 import { cx } from '@/utils';
-import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
-import styles from './StreamTeasersList.module.scss';
+
 import { selectTeasersMenuAll, selectTeasersMenuAuthorized } from '../../config';
 import { FormattedTeaser } from '../../types';
+import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
+
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
-import { useGetStateQuery } from '@/app/utils';
+import styles from './StreamTeasersList.module.scss';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const { account } = useAccount();

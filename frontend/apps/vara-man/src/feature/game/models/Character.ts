@@ -1,4 +1,5 @@
 import { TileMap } from '../types';
+
 import { Vec2 } from './Vec2';
 
 interface LimbAnimation {
@@ -191,11 +192,11 @@ export class Character {
         this.velocity = nextVelocity;
         this.position.add(this.velocity);
       } else {
-        let horizontalMovement = new Vec2(nextVelocity.x, 0);
-        let verticalMovement = new Vec2(0, nextVelocity.y);
+        const horizontalMovement = new Vec2(nextVelocity.x, 0);
+        const verticalMovement = new Vec2(0, nextVelocity.y);
 
-        let horizontalCollision = this.checkCollision(Vec2.add(this.position, horizontalMovement));
-        let verticalCollision = this.checkCollision(Vec2.add(this.position, verticalMovement));
+        const horizontalCollision = this.checkCollision(Vec2.add(this.position, horizontalMovement));
+        const verticalCollision = this.checkCollision(Vec2.add(this.position, verticalMovement));
 
         if (!horizontalCollision && verticalCollision) {
           this.position.add(horizontalMovement);
@@ -229,11 +230,11 @@ export class Character {
       this.velocity = nextVelocity;
       this.position.add(this.velocity);
     } else {
-      let horizontalMovement = new Vec2(nextVelocity.x, 0);
-      let verticalMovement = new Vec2(0, nextVelocity.y);
+      const horizontalMovement = new Vec2(nextVelocity.x, 0);
+      const verticalMovement = new Vec2(0, nextVelocity.y);
 
-      let horizontalCollision = this.checkCollision(Vec2.add(this.position, horizontalMovement));
-      let verticalCollision = this.checkCollision(Vec2.add(this.position, verticalMovement));
+      const horizontalCollision = this.checkCollision(Vec2.add(this.position, horizontalMovement));
+      const verticalCollision = this.checkCollision(Vec2.add(this.position, verticalMovement));
 
       if (!horizontalCollision && verticalCollision) {
         this.position.add(horizontalMovement);
@@ -363,9 +364,9 @@ export class Character {
 
   countTotalCoins(): number {
     let count = 0;
-    for (let layer of this.mapData.layers) {
+    for (const layer of this.mapData.layers) {
       if (layer.name === 'coins') {
-        for (let tile of layer.data) {
+        for (const tile of layer.data) {
           if (tile > 0) count++;
         }
       }

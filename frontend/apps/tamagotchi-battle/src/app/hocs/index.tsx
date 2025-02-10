@@ -1,5 +1,3 @@
-import type { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
@@ -7,11 +5,15 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
-import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from 'gear-ez-transactions';
-import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { BattleProvider } from '@/features/battle/context';
-import { ENV } from '@/app/consts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from 'gear-ez-transactions';
+import type { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { ENV } from '@/app/consts';
+import { BattleProvider } from '@/features/battle/context';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>

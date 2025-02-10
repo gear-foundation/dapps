@@ -1,9 +1,9 @@
 import clsx from 'clsx';
+
 // import { Modal } from '@gear-js/ui';
 import { findTile, getBgColors } from '../../../../app/utils';
-import { Icon } from '../../../ui/icon';
 import { DominoItem } from '../../../common/domino-item';
-
+import { Icon } from '../../../ui/icon';
 import mockData from '../mock/mock-data.json';
 
 export const MockGameSection = () => {

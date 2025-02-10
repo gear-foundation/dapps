@@ -4,19 +4,20 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from 'gear-ez-transactions';
-import { ADDRESS } from '@/consts';
+import { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
-import { Alert, alertStyles } from '@/ui';
+
 import { useProgram } from '@/app/utils';
+import { ADDRESS } from '@/consts';
+import { Alert, alertStyles } from '@/ui';
 
 function DnsProvider({ children }: ProviderProps) {
   return (

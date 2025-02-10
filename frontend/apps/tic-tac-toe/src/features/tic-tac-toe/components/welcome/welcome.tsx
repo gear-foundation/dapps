@@ -1,13 +1,15 @@
+import { BaseComponentProps } from '@/app/types';
+import { Heading } from '@/components/ui/heading';
+import { TextGradient } from '@/components/ui/text-gradient';
+
 import WelcomePNG from '../../assets/images/welcome-bg.png';
 import WelcomeWebp from '../../assets/images/welcome-bg.webp';
 import { ColumnLeft, ColumnRight, ColumnsContainer } from '../ui/columns';
 import { HelpDescription } from '../ui/typography';
-import styles from './welcome.module.scss';
-import { Heading } from '@/components/ui/heading';
-import { TextGradient } from '@/components/ui/text-gradient';
-import { BaseComponentProps } from '@/app/types';
 
-export function Welcome({ children,  }: BaseComponentProps) {
+import styles from './welcome.module.scss';
+
+export function Welcome({ children }: BaseComponentProps) {
   return (
     <ColumnsContainer className={styles.wrapper}>
       <ColumnLeft>

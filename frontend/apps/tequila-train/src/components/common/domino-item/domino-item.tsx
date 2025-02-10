@@ -1,6 +1,8 @@
-import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
+
 import { DominoTileType } from '@/app/types/game';
+
+import { Icon } from '../../ui/icon';
 
 type Props = {
   row?: boolean;

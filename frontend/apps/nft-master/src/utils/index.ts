@@ -1,8 +1,9 @@
-import { Client, cacheExchange, fetchExchange } from 'urql';
+import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { isHex } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
+import { Client, cacheExchange, fetchExchange } from 'urql';
+
 import { ADDRESS } from '@/consts';
-import { AlertContainerFactory } from '@gear-js/react-hooks';
 
 export const copyToClipboard = async ({
   alert,

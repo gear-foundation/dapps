@@ -1,13 +1,15 @@
 import './app.scss';
 import { useAccount } from '@gear-js/react-hooks';
+
 import { Loader } from '@/components';
-import { Routing } from '@/pages';
-import { withProviders } from '@/hocs';
 import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
-import { useNFTSetup } from './features/nfts';
-import { usePendingUI } from './hooks';
+import { withProviders } from '@/hocs';
+import { Routing } from '@/pages';
+
 import { useIsAppReady } from './app/hooks/use-is-app-ready';
 import { MainLayout } from './components/layout/main-layout';
+import { useNFTSetup } from './features/nfts';
+import { usePendingUI } from './hooks';
 
 function Component() {
   const { isAccountReady } = useAccount();

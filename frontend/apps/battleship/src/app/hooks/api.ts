@@ -1,8 +1,8 @@
-import { useAlert, useReadFullState } from '@gear-js/react-hooks';
 import { getStateMetadata, StateMetadata } from '@gear-js/api';
+import { useAlert, useReadFullState } from '@gear-js/react-hooks';
+import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
 import { useEffect, useState } from 'react';
-import { AnyJson } from '@polkadot/types/types';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 

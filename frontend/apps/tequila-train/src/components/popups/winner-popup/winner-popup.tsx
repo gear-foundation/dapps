@@ -1,13 +1,15 @@
+import { useApi } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import { Dialog } from '@headlessui/react';
 import { Dispatch, SetStateAction } from 'react';
-import { useApp, useGame } from '../../../app/context';
-import { PopupContainer } from '../popup-container';
-import { useGameMessage } from '@/app/hooks/use-game';
+
 import { playerNames } from '@/app/consts';
-import { Button } from '@gear-js/vara-ui';
+import { useGameMessage } from '@/app/hooks/use-game';
 import { PlayersGame } from '@/app/types/game';
 import { Icon } from '@/components/ui/icon';
-import { useApi } from '@gear-js/react-hooks';
+
+import { useApp, useGame } from '../../../app/context';
+import { PopupContainer } from '../popup-container';
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;

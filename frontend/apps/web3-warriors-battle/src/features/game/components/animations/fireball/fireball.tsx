@@ -1,5 +1,6 @@
-import { BattleHistory } from '@/features/game/types';
 import React, { useRef, useEffect } from 'react';
+
+import { BattleHistory } from '@/features/game/types';
 
 interface Particle {
   index: number;
@@ -158,7 +159,6 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
     return () => {
       window.removeEventListener('resize', resize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const launchFireball = (

@@ -1,7 +1,9 @@
+import clsx from 'clsx';
+
 import CoinSVG from '@/assets/images/icons/coin.svg?react';
 import StarSVG from '@/assets/images/icons/star.svg?react';
+
 import styles from './Balance.module.scss';
-import clsx from 'clsx';
 
 type Props = BaseComponentProps & {
   SVG: SVGComponent;

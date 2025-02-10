@@ -1,11 +1,13 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useNavigate, NavigateFunction } from 'react-router-dom';
+import { EzTransactionsSwitch, useEzTransactions } from 'gear-ez-transactions';
 import { ArrowRight } from 'lucide-react';
+import { useNavigate, NavigateFunction } from 'react-router-dom';
+
 import { Wallet } from '@dapps-frontend/ui/';
+
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import IntroImage from '@/assets/images/welcome.png';
 import { Icons } from '@/components/ui/icons';
-import { EzTransactionsSwitch, useEzTransactions } from 'gear-ez-transactions';
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 const selectMode = [
   {

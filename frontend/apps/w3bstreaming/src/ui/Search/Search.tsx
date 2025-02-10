@@ -1,7 +1,8 @@
+import searchIcon from '@/assets/icons/search-icon.svg';
 import { cx } from '@/utils';
+
 import { SearchProps } from './Search.interfaces';
 import styles from './Search.module.scss';
-import searchIcon from '@/assets/icons/search-icon.svg';
 
 function Search({ placeholder = 'Search', value, onChange }: SearchProps) {
   return (

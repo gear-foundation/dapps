@@ -1,5 +1,7 @@
-import { cx } from '@/utils';
 import { useAccount } from '@gear-js/react-hooks';
+
+import { cx } from '@/utils';
+
 import styles from './GameIntro.module.scss';
 
 type Props = {

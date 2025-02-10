@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+
 import { EnkryptSVG, PolkadotSVG, SubWalletSVG, TalismanSVG, NovaSVG } from './assets';
 
 export const VOUCHER_MIN_LIMIT = 3;

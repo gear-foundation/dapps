@@ -1,4 +1,5 @@
 import { TileMap } from '../types';
+
 import { Vec2 } from './Vec2';
 
 interface LimbAnimation {
@@ -219,7 +220,7 @@ export class Enemy {
   }
 
   performMovement(_isPlayerInVision?: boolean) {
-    let proposedPosition = new Vec2(this.position.x, this.position.y);
+    const proposedPosition = new Vec2(this.position.x, this.position.y);
 
     switch (this.direction) {
       case Direction.up:
@@ -305,7 +306,7 @@ export class Enemy {
   chooseNewDirection(): void {
     const currentTileX = Math.floor(this.position.x / this.mapData.tilewidth);
     const currentTileY = Math.floor(this.position.y / this.mapData.tileheight);
-    let availableDirections = this.getAvailableDirections(currentTileX, currentTileY);
+    const availableDirections = this.getAvailableDirections(currentTileX, currentTileY);
 
     let filteredDirections = availableDirections.filter(
       (dir) =>

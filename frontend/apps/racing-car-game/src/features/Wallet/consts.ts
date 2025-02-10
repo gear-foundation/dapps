@@ -1,9 +1,11 @@
 import { atom } from 'jotai';
+
 import EnkryptSVG from '@/assets/icons/enkrypt-icon.svg';
+import NovaSVG from '@/assets/icons/nova.svg';
 import PolkadotSVG from '@/assets/icons/polkadot-js-icon.svg';
 import SubWalletSVG from '@/assets/icons/sub-wallet-icon.svg';
 import TalismanSVG from '@/assets/icons/talisman-icon.svg';
-import NovaSVG from '@/assets/icons/nova.svg';
+
 import { WalletValue } from './types';
 
 interface InjectedWindow extends Window {

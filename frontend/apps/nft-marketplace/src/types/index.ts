@@ -1,4 +1,5 @@
 import { HexString } from '@gear-js/api';
+
 import { TokenMetadata } from '@/app/utils/sails/nft';
 import { ItemState, Auction } from '@/app/utils/sails/nft_marketplace';
 

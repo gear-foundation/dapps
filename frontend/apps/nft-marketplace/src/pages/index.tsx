@@ -1,9 +1,12 @@
 import { Route } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
+
 import { OnLogin, InfoText } from '@/components';
+
+import { Create } from './create';
 import { Listing } from './listing';
 import { Listings } from './listings';
-import { Create } from './create';
 import { Me } from './me';
 
 const routes = [

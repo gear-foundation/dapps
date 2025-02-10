@@ -1,8 +1,11 @@
 import { ReactNode, useEffect, useRef, MouseEvent } from 'react';
+
 import { useResizeEffect } from '@/hooks';
-import styles from './Modal.module.scss';
+
 import { Button } from '../ui/button';
 import { Sprite } from '../ui/sprite';
+
+import styles from './Modal.module.scss';
 
 type Props = {
   heading: string;

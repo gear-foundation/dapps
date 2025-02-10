@@ -1,14 +1,17 @@
-import { Icon } from '../../ui/icon';
+import { TooltipWrapper } from '@gear-js/ui';
 import clsx from 'clsx';
-import { findTile, getBgColors, isPartialSubset } from '@/app/utils';
-import { DominoItem } from '../../common/domino-item';
-import { DominoZone } from '../../common/domino-zone';
-import { DominoTileType } from '@/app/types/game';
 import { useEffect, useRef, useState } from 'react';
+
+import { playerNames } from '@/app/consts';
+import { DominoTileType } from '@/app/types/game';
+import { findTile, getBgColors, isPartialSubset } from '@/app/utils';
+
 import { useApp, useGame } from '../../../app/context';
 import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
-import { TooltipWrapper } from '@gear-js/ui';
-import { playerNames } from '@/app/consts';
+import { DominoItem } from '../../common/domino-item';
+import { DominoZone } from '../../common/domino-zone';
+import { Icon } from '../../ui/icon';
+
 import Timer from './timer';
 
 type Props = {

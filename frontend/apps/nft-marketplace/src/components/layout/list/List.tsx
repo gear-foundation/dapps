@@ -1,10 +1,12 @@
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
+
 import { InfoText, Loader } from '@/components';
 import { Filter, NFT as NFTType } from '@/types';
 import { getNFTProps } from '@/utils';
-import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
+
+import styles from './List.module.scss';
 import { Header } from './header';
 import { NFT } from './nft';
-import styles from './List.module.scss';
 
 type NFTs = {
   list: NFTType[] | undefined;

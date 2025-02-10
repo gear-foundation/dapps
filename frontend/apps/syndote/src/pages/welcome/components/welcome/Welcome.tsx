@@ -1,6 +1,8 @@
 import { ReactElement } from 'react';
-import src from '@/assets/images/earth.gif';
+
 import styles from './Welcome.module.scss';
+
+import src from '@/assets/images/earth.gif';
 
 type Props = {
   children: ReactElement;

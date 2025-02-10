@@ -1,7 +1,9 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { Navigate, Route, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { Navigate, Route, useLocation } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
+
 import { ROUTES } from '@/app/consts';
 import { Loader } from '@/components';
 

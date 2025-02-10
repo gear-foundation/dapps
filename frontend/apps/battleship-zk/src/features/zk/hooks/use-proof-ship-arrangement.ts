@@ -1,5 +1,6 @@
-import { getArrangementShips, getHash } from '@/features/zk/utils';
 import { ADDRESS } from '@/app/consts';
+import { getArrangementShips, getHash } from '@/features/zk/utils';
+
 import { ZkProofData } from '../types';
 
 export const useProofShipArrangement = () => {

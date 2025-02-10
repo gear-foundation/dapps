@@ -1,5 +1,6 @@
 import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ButtonProps } from '@gear-js/ui';
+
 import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from '@/types';
 import { getIpfsAddress } from '@/utils';
 

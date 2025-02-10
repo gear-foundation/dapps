@@ -1,11 +1,13 @@
-import { useBattle } from '@/features/battle/context';
-import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useBattleMessage } from '@/features/battle/hooks';
-import { Button } from '@gear-js/ui';
 import { useApi } from '@gear-js/react-hooks';
-import { gasLimitToNumber } from '@/app/utils';
+import { Button } from '@gear-js/ui';
 import { useGaslessTransactions } from 'gear-ez-transactions';
+
+import { useCheckBalance } from '@dapps-frontend/hooks';
+
 import { GAS_LIMIT } from '@/app/consts';
+import { gasLimitToNumber } from '@/app/utils';
+import { useBattle } from '@/features/battle/context';
+import { useBattleMessage } from '@/features/battle/hooks';
 
 export const NewGameButton = () => {
   const { api } = useApi();

@@ -1,7 +1,7 @@
 import { Dialog, DialogPanel } from '@headlessui/react';
+import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
-import clsx from 'clsx';
 
 import { BaseComponentProps } from '@/app/types';
 

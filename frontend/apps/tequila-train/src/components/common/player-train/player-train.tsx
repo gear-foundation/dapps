@@ -1,7 +1,9 @@
 import { Popover } from '@headlessui/react';
-import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
+
 import { getBgColors } from '@/app/utils';
+
+import { Icon } from '../../ui/icon';
 
 type Props = {
   index: number;

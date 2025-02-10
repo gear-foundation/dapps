@@ -1,14 +1,16 @@
-import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useState } from 'react';
-import { HexString } from '@polkadot/util/types';
-import { PlayerColor } from '../features/battle/types/battles';
-import { AnimatePresence, motion } from 'framer-motion';
-import { BattleRoundStatsAvatar } from '@/features/battle/components/battle-round-stats-avatar';
-import { TamagotchiAvatar } from '../features/battle/components/tamagotchi-avatar';
 import { buttonStyles } from '@gear-js/ui';
-import { BattlePlayersQueue } from '../features/battle/components/battle-players-queue';
-import { TamagotchiQueueCard } from '../features/battle/components/tamagotchi-queue-card';
+import { HexString } from '@polkadot/util/types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
+
 import { cn, toNumber } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+import { BattleRoundStatsAvatar } from '@/features/battle/components/battle-round-stats-avatar';
+
+import { BattlePlayersQueue } from '../features/battle/components/battle-players-queue';
+import { TamagotchiAvatar } from '../features/battle/components/tamagotchi-avatar';
+import { TamagotchiQueueCard } from '../features/battle/components/tamagotchi-queue-card';
+import { PlayerColor } from '../features/battle/types/battles';
 
 const rivals = [
   {

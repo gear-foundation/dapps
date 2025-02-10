@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { GameProcess, ShipArrangement } from '@/features/game';
-import { Modal } from '@/components';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { ROUTES } from '@/app/consts';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { decodeAddress } from '@gear-js/api';
-import { usePending } from '@/features/game/hooks';
+import { Modal } from '@/components';
+import { GameProcess, ShipArrangement } from '@/features/game';
 import { GameCancelledModal } from '@/features/game/components';
+import { usePending } from '@/features/game/hooks';
+import { useShips } from '@/features/zk/hooks/use-ships';
+
+import { useMultiplayerGame, useProcessWithMultiplayer, useArrangementWithMultiplayer } from '../../hooks';
 import {
   useEventPlacementVerified,
   useEventGameCancelled,
@@ -16,8 +19,8 @@ import {
   useEventPlayerDeleted,
   useEventGameLeft,
 } from '../../sails/events';
-import { useMultiplayerGame, useProcessWithMultiplayer, useArrangementWithMultiplayer } from '../../hooks';
 import { getIsPlacementStatus } from '../../utils';
+
 import styles from './Multiplayer.module.scss';
 
 export function Multiplayer() {

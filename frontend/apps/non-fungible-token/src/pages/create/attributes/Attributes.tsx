@@ -1,6 +1,8 @@
 import { Button, Input } from '@gear-js/ui';
-import MinusSVG from '@/assets/images/form/minus.svg?react';
 import { FieldArrayWithId, UseFormRegister } from 'react-hook-form';
+
+import MinusSVG from '@/assets/images/form/minus.svg?react';
+
 import styles from './Attributes.module.scss';
 
 type Props = {

@@ -1,9 +1,11 @@
-import { Fragment } from 'react';
-import { cx } from '@/utils';
-import { shortenString } from '@/features/session/utils';
 import { decodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/vara-ui';
+import { Fragment } from 'react';
+
 import { useDeletePlayerMessage } from '@/app/utils';
+import { shortenString } from '@/features/session/utils';
+import { cx } from '@/utils';
+
 import styles from './ParticipantsTable.module.scss';
 
 interface TableData {

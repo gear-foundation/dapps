@@ -1,20 +1,23 @@
-import { useEffect } from 'react';
-import clsx from 'clsx';
 import { HexString } from '@gear-js/api';
-import { Button } from '@gear-js/ui';
-import { useAtom, useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
 import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/ui';
+import clsx from 'clsx';
+import { useAtom, useSetAtom } from 'jotai';
+import { useEffect } from 'react';
+
+import { useEventGameCanceledSubscription, useEventPlayerDeletedSubscription } from '@/app/utils';
 import earthGif from '@/assets/images/earth.gif';
+import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
 import { Container } from '@/components';
+
 import { Participant, Session } from '../../types';
-import { Traits } from '../traits';
+import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
 import { Form } from '../form';
 import { ParticipantsTable } from '../participants-table';
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
+import { Traits } from '../traits';
 import { Warning } from '../warning';
-import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
-import { useEventGameCanceledSubscription, useEventPlayerDeletedSubscription } from '@/app/utils';
+
 import styles from './Start.module.scss';
 
 type Props = {

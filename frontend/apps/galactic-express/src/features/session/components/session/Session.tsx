@@ -1,16 +1,19 @@
-import { Button } from '@gear-js/ui';
-import { CSSProperties, useState } from 'react';
-import clsx from 'clsx';
-import { getVaraAddress, withoutCommas } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { getVaraAddress, withoutCommas } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/ui';
+import clsx from 'clsx';
+import { CSSProperties, useState } from 'react';
+
 import { Container } from '@/components';
-import LeftDoubleArrowSVG from '../../assets/left-double-arrow.svg?react';
+
 import LeftArrowSVG from '../../assets/left-arrow.svg?react';
+import LeftDoubleArrowSVG from '../../assets/left-double-arrow.svg?react';
 import { PLAYER_COLORS } from '../../consts';
 import { Event, Rank, Session as SessionType, Turns, Participant, RankWithName } from '../../types';
-import { Traits } from '../traits';
 import { Radar } from '../radar';
 import { Table } from '../table';
+import { Traits } from '../traits';
+
 import styles from './Session.module.scss';
 
 type Props = {

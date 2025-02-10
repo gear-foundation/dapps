@@ -1,5 +1,6 @@
-import { EnkryptSVG, NovaIcon, PolkadotSVG, SubWalletSVG, TalismanSVG } from './assets';
 import { IWalletExtensionContent, IWalletId } from '@/features/wallet/types';
+
+import { EnkryptSVG, NovaIcon, PolkadotSVG, SubWalletSVG, TalismanSVG } from './assets';
 
 export const WALLET_ID_LOCAL_STORAGE_KEY = 'wallet';
 

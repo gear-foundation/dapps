@@ -1,6 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useLayoutEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+
 import { Welcome } from '@/features/welcome';
 
 function Home() {

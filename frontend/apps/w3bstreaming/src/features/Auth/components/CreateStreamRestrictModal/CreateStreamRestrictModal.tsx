@@ -1,10 +1,10 @@
-import { Modal } from '@/components';
-import { cx } from '@/utils';
 import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
-
-import styles from './CreateStreamRestrictModal.module.scss';
+import { Modal } from '@/components';
 import { Button } from '@/ui';
+import { cx } from '@/utils';
+
 import { WalletModalProps } from './CreateStreamRestrictModal.interface';
+import styles from './CreateStreamRestrictModal.module.scss';
 
 function CreateStreamRestrictModal({ onClose }: WalletModalProps) {
   const handleCancelModal = () => {

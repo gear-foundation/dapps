@@ -1,6 +1,8 @@
-import { DominoItem } from '../domino-item';
-import { DominoTileType } from '@/app/types/game';
 import clsx from 'clsx';
+
+import { DominoTileType } from '@/app/types/game';
+
+import { DominoItem } from '../domino-item';
 
 type Props = {
   tile: DominoTileType;

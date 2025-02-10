@@ -1,12 +1,15 @@
 import { HexString } from '@polkadot/util/types';
-import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Button, Container, Loader } from '@/components';
+import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from 'urql';
+
+import { Button, Container, Loader } from '@/components';
 import { GetNFTByIdQuery } from '@/features/nfts/queries';
-import SearchSVG from '../../assets/search.svg?react';
+
 import BackArrowSVG from '../../assets/back-arrow.svg?react';
+import SearchSVG from '../../assets/search.svg?react';
 import { useNFTs } from '../../hooks';
+
 import styles from './NFT.module.scss';
 
 type Params = {
@@ -119,7 +122,7 @@ function NFT() {
                 {attribUrl && (
                   <div>
                     <div className={styles.header}>
-                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                      {}
                       <label htmlFor="search" className={styles.label}>
                         NFT Details:
                       </label>

@@ -1,7 +1,6 @@
 import { Button } from '@gear-js/vara-ui';
 
 import { useApp, useGame } from '@/app/context';
-
 import { Modal } from '@/components/ui/modal';
 
 export function CanceledSection() {

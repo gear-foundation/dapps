@@ -1,7 +1,9 @@
-import { usePending } from './';
-import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useAlert } from '@gear-js/react-hooks';
 import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
+
+import { useCheckBalance } from '@dapps-frontend/hooks';
+
+import { usePending } from './';
 
 export type Options = {
   onSuccess?: () => void;
