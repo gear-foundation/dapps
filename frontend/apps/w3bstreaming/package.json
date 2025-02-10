@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && npx vite",
-    "build": "yarn build:packages && npx vite build",
+    "start": "npx vite",
+    "build": "npx vite build",
     "preview": "npx vite preview"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { GaslessTransactions } from '@/features/gasless-transactions';
+import { GaslessTransactions } from '@ez/features/gasless-transactions';
 
 import { useEzTransactions } from '../../context';
 

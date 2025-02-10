@@ -2,8 +2,8 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useState } from 'react';
 
-import PowerSVG from '@/assets/icons/power.svg?react';
-import SignlessSVG from '@/assets/icons/signless.svg?react';
+import PowerSVG from '@ez/assets/icons/power.svg?react';
+import SignlessSVG from '@ez/assets/icons/signless.svg?react';
 
 import { useSignlessTransactions } from '../../context';
 import { useIsAvailable } from '../../hooks';

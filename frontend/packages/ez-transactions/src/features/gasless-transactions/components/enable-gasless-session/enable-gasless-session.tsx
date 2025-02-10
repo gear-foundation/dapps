@@ -2,8 +2,8 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { ChangeEvent } from 'react';
 
-import GaslessSVG from '@/assets/icons/gas-station-line.svg?react';
-import PowerSVG from '@/assets/icons/power.svg?react';
+import GaslessSVG from '@ez/assets/icons/gas-station-line.svg?react';
+import PowerSVG from '@ez/assets/icons/power.svg?react';
 
 import { useGaslessTransactions } from '../../context';
 

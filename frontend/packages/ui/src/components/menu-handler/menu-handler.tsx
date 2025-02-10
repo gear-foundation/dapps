@@ -5,8 +5,8 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 
-import CrossSVG from '@/assets/cross-icon.svg?react';
-import { useClickOutside, useRootModalRef } from '@/utils';
+import CrossSVG from '@ui/assets/cross-icon.svg?react';
+import { useClickOutside, useRootModalRef } from '@ui/utils';
 
 import { MenuOptions, MobileMenu } from '..';
 import { MenuOptionsClassNameProps } from '../menu-options';

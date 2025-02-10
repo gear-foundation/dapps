@@ -31,6 +31,5 @@
   "files": [
     "dist"
   ],
-  "main": "dist/ui.js",
-  "types": "dist/index.d.ts"
+  "main": "src/index.ts"
 }
