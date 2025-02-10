@@ -47,6 +47,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build
+        working-directory: contracts
         run: 'cargo build --release --workspace;'
 
       - name: 'Upload Artifact'
