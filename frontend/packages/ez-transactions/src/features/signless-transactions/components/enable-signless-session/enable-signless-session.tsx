@@ -56,7 +56,7 @@ function EnableSignlessSession(props: Props) {
     setIsLoading(false);
   };
 
-  const handleDeleteSession = async () => {
+  const handleDeleteSession = () => {
     if (!session) throw new Error('Signless session not found');
     if (!pair) throw new Error('Signless pair not found');
 
