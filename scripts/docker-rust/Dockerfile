@@ -12,5 +12,6 @@ ARG RUST_VERSION=1.83.0
 RUN rustup install ${RUST_VERSION} && rustup default ${RUST_VERSION}
 
 RUN rustup component add rust-src --toolchain ${RUST_VERSION}
+RUN rustup component add rustfmt --toolchain ${RUST_VERSION}
 
 WORKDIR /app
