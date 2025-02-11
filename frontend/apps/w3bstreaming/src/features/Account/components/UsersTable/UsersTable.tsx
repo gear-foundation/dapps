@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import styles from './UsersTable.module.scss';
-import { EmptyTableContentProps, UsersTableProps } from './UsersTable.interfaces';
-import { cx } from '@/utils';
-import { Table } from '@/ui';
+
 import img from '@/assets/icons/no-avatar-user-img.png';
+import { Table } from '@/ui';
 import { CellValue, TableRow } from '@/ui/Table/Table.interfaces';
+import { cx } from '@/utils';
+
 import { SubscribeModal } from '../SubscribeModal';
+
+import { EmptyTableContentProps, UsersTableProps } from './UsersTable.interfaces';
+import styles from './UsersTable.module.scss';
 
 function EmptyTableContent({ name }: EmptyTableContentProps) {
   return (

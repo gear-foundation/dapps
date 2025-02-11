@@ -1,13 +1,17 @@
-import { useState } from 'react';
-import { Wallet } from '@dapps-frontend/ui';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useAtom } from 'jotai';
-import { IS_LOADING } from 'atoms';
-import { useAccount } from '@gear-js/react-hooks';
-import { GameIntro } from '../game-intro';
-import styles from './RequestGame.module.scss';
+import { useState } from 'react';
+
+import { Wallet } from '@dapps-frontend/ui';
+
+import { IS_LOADING } from '@/atoms';
+
 import { CreateGameForm } from '../create-game-form';
+import { GameIntro } from '../game-intro';
 import { JoinGameForm } from '../join-game-form';
+
+import styles from './RequestGame.module.scss';
 
 type Status = 'creating' | 'joining' | null;
 

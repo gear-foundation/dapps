@@ -1,31 +1,29 @@
-import { Route, Routes } from 'react-router-dom';
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
-import { Header, Footer } from '@/components';
-import { withProviders } from '@/hocs';
-import { useScrollToTop, cx } from '@/utils';
+import { Route, Routes } from 'react-router-dom';
+
 import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
-import { StreamTeasersList } from '@/features/StreamTeasers';
+import { Header, Footer } from '@/components';
 import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
-import { Loader } from './components/Loader';
+import { StreamTeasersList } from '@/features/StreamTeasers';
+import { withProviders } from '@/hocs';
+import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
+import { useScrollToTop, cx } from '@/utils';
+
 import styles from './App.module.scss';
-import 'babel-polyfill';
-import { useProgramState } from './hooks';
-import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
+import { Loader } from './components/Loader';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 import '@gear-js/vara-ui/dist/style.css';
+import { useGetStateQuery } from './app/utils';
 
 function AppComponent() {
   useScrollToTop();
-  useCreateStreamMetadata();
   useAccountAvailableBalanceSync();
 
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
-  const { isStateRead } = useProgramState();
-  const { isMeta } = useGetStreamMetadata();
+  const { isFetched } = useGetStateQuery();
 
-  const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
+  const isAppReady = isApiReady && isAccountReady && isFetched;
 
   return (
     <div className={cx(styles['app-container'])}>

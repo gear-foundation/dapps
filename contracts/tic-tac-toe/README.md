@@ -1,4 +1,6 @@
-# Sails Tic-Tac-Toe
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=tic-tac-toe/https://github.com/gear-foundation/dapps)
+
+# Tic-Tac-Toe
 
 A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/tictactoe).
 
@@ -13,5 +15,5 @@ cargo b -r -p "tic-tac-toe"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "tic-tac-toe-app"
+cargo t -r -p "tic-tac-toe"
 ```

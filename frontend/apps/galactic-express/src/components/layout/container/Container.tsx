@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
 import clsx from 'clsx';
+import { ReactNode } from 'react';
+
 import styles from './Container.module.scss';
 
 type Props = {

@@ -1,7 +1,10 @@
 import { HexString } from '@polkadot/util/types';
-import { PlayerType } from 'types';
+
+import { PlayerType } from '@/types';
+import { PlayerInfoState } from '@/app/utils';
+
 import { Player } from '../player';
-import { PlayerInfoState } from 'app/utils';
+
 import styles from './Players.module.scss';
 
 type Props = {

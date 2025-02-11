@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useAtom, useSetAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
 
+import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
 import { cn, useCancelTournamentMessage } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useApp } from '@/app/context/ctx-app';
 import { GAME_OVER, PRIZE_POOL } from '@/feature/game/consts';
+
 import { ConfirmCancelModal } from '../modals/confirm-cancel';
-import { useEzTransactions } from 'gear-ez-transactions';
 
 export const GamePlayers = () => {
   const { api } = useApi();

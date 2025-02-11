@@ -1,7 +1,9 @@
 #![no_std]
 
-use sails_rs::gstd::{exec, msg};
-use sails_rs::prelude::*;
+use sails_rs::{
+    gstd::{exec, msg},
+    prelude::*,
+};
 
 pub const COST_FOR_UPGRADE: u32 = 500;
 pub const FINE: u32 = 1_000;

@@ -1,1 +1,1 @@
-export { ReactComponent as CrossIcon } from './icons/cross.svg';
+export { default as CrossIcon } from './icons/cross.svg?react';

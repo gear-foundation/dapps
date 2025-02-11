@@ -1,9 +1,10 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
-import { NotificationResponseTypes, NotificationType, TamagotchiState } from '@/app/types/lessons';
-import type { ItemsStoreResponse, StoreItemsNames, StoreItemType } from '@/app/types/ft-store';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import type { ItemsStoreResponse, StoreItemsNames, StoreItemType } from '@/app/types/ft-store';
+import { NotificationResponseTypes, NotificationType, TamagotchiState } from '@/app/types/lessons';
 
 export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {
   function unsecuredCopyToClipboard(text: string) {

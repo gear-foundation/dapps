@@ -1,13 +1,16 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
-import { useMultiplayerGame } from './use-multiplayer-game';
+import { clearZkData } from '@/features/zk/utils';
+
 import { useEventGameEndSubscription } from '../sails/events';
 import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage } from '../sails/messages';
-import { ROUTES } from '@/app/consts';
-import { clearZkData } from '@/features/zk/utils';
 import { useRemainingTimeQuery } from '../sails/queries/use-remaining-time-query';
+
+import { useMultiplayerGame } from './use-multiplayer-game';
 
 export const useProcessWithMultiplayer = () => {
   const { game, triggerGame, resetGameState } = useMultiplayerGame();

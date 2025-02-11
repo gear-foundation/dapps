@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useAccount, useReadFullState, useSendMessageWithGas, withoutCommas } from '@gear-js/react-hooks';
-import { useLessons, useTamagotchi } from '@/app/context';
-import type { HexString } from '@polkadot/util/types';
-import type { TamagotchiState } from '@/app/types/lessons';
 import { AnyJson } from '@polkadot/types/types';
+import type { HexString } from '@polkadot/util/types';
+import { useEffect, useState } from 'react';
+
+import { useLessons, useTamagotchi } from '@/app/context';
+import type { TamagotchiState } from '@/app/types/lessons';
 
 export function useReadTamagotchi<T>() {
   const { lesson, lessonMeta } = useLessons();

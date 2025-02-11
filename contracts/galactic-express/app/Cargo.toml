@@ -1,18 +1,9 @@
 [package]
 name = "galactic-express-app"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
+sails-rs.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-sails-rs = { workspace = true, features = ["gtest"] }
-num-traits.workspace = true
-
-[dev-dependencies]
-gtest.workspace = true
-gstd.workspace = true
-gear-core.workspace = true
-gclient.workspace = true
-galactic-express = { path = "../wasm" }
-tokio = "1"
+num-traits = { version = "0.2", default-features = false }

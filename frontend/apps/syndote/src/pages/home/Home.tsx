@@ -1,17 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
-import clsx from 'clsx';
-import { HexString } from '@polkadot/util/types';
-import { fields, INIT_PLAYERS } from 'consts';
-import { PlayersByStrategyAddress, Step } from 'types';
-import { Loader } from 'components';
-import { Roll } from './roll';
-import styles from './Home.module.scss';
-import { Players } from './players/Players';
 import { Button } from '@gear-js/vara-ui';
-import { Cell } from './cell';
-import { RequestGame } from 'pages/welcome/components/request-game';
+import { HexString } from '@polkadot/util/types';
+import clsx from 'clsx';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useRef, useState } from 'react';
+
 import {
   PlayerInfoState,
   useAddGasToPlayerStrategyMessage,
@@ -21,13 +14,25 @@ import {
   useGetGameSessionQuery,
   usePlayMessage,
   useRegisterMessage,
-} from 'app/utils';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
-import { SessionInfo } from './session-info';
-import { TextModal } from './text-modal';
+} from '@/app/utils';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
+import { Loader } from '@/components';
+import { fields, INIT_PLAYERS } from '@/consts';
+import { PlayersByStrategyAddress, Step } from '@/types';
+
+import { RequestGame } from '../welcome/components/request-game';
+
+import styles from './Home.module.scss';
+import { Cell } from './cell';
 import { ContinueGameModal } from './continue-game-modal';
-import { ReserveModal } from './reserve-modal';
 import { GameFinishedModal } from './game-finished-modal';
+import { Players } from './players/Players';
+import { ReserveModal } from './reserve-modal';
+import { Roll } from './roll';
+
+import { SessionInfo } from './session-info';
+
+import { TextModal } from './text-modal';
 
 type ModalContract = 'contractRequresGas' | 'adminReservesGas' | null;
 type ModalStrategy = 'strategyRequresGas' | 'playerReservesGas' | null;
@@ -382,7 +387,8 @@ function Home() {
               </a>
               <a
                 target="_blank"
-                href="https://wiki.gear-tech.io/docs/examples/Gaming/monopoly/#%EF%B8%8F-build-master-and-player-programs">
+                href="https://wiki.gear-tech.io/docs/examples/Gaming/monopoly/#%EF%B8%8F-build-master-and-player-programs"
+                rel="noreferrer">
                 <Button color="transparent" text="How does it work?" />
               </a>
             </div>

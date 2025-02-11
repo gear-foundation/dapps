@@ -1,15 +1,5 @@
 import { useIPFS } from './context';
-import { useMarketNft, useMarketplaceMessage, useMarketplaceActions } from './marketplace';
-import { useNft, useNftMessage } from './nft';
-import { useMergedNFTs, useMergedOwnerNFTs } from './merge-nft';
+import { useMarketplaceActions } from './marketplace';
+import { useMergedAllNFTs, useMergedOwnerNFTs } from './merge-nft';
 
-export {
-  useIPFS,
-  useNft,
-  useNftMessage,
-  useMergedNFTs,
-  useMergedOwnerNFTs,
-  useMarketNft,
-  useMarketplaceMessage,
-  useMarketplaceActions,
-};
+export { useIPFS, useMergedAllNFTs, useMergedOwnerNFTs, useMarketplaceActions };

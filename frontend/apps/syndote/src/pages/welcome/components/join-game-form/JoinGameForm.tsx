@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import { Button } from '@gear-js/vara-ui';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { decodeAddress } from '@gear-js/api';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { decodeAddress, HexString } from '@gear-js/api';
 import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { HexString } from '@gear-js/api';
-import { GameFoundModal, JoinModalFormValues } from 'pages/home/game-found-modal';
-import { TextModal } from 'pages/home/text-modal';
-import { GameState, useGetGameSessionQuery } from 'app/utils';
-import { getSafeDecodedAddress } from 'utils';
+import { useAtom, useSetAtom } from 'jotai';
+import { useState } from 'react';
+
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
+import { TextField } from '@/components/layout/text-field';
+
+import { GameFoundModal, JoinModalFormValues } from '../../../home/game-found-modal';
+import { TextModal } from '../../../home/text-modal';
+
 import styles from './JoinGameForm.module.scss';
+import { GameState, useGetGameSessionQuery } from '@/app/utils';
+import { getSafeDecodedAddress } from '@/utils';
 
 type Props = {
   onCancel: () => void;
@@ -28,7 +30,7 @@ function JoinGameForm({ onCancel }: Props) {
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
   const setCurrentStrategyId = useSetAtom(CURRENT_STRATEGY_ID_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
-  const isLoading = useAtomValue(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
   const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);

@@ -1,20 +1,22 @@
-import { Route, Routes } from 'react-router-dom';
 import { useAccount, useApi } from '@gear-js/react-hooks';
+import { Route, Routes } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Container, Footer } from '@dapps-frontend/ui';
-import { GamePage, MainPage } from '@/pages';
+
+import { LOGIN, PLAY, START } from '@/App.routes';
 import { Header } from '@/components';
 import { withProviders } from '@/hocs';
+import { GamePage, MainPage } from '@/pages';
 import { ScrollToTop, cx } from '@/utils';
-import { LOGIN, PLAY, START } from '@/App.routes';
+
 import styles from './App.module.scss';
-import 'babel-polyfill';
-import { useLoginByParams } from './hooks';
-import { ProtectedRoute } from './features/Auth/components';
-import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from './features/Wallet/hooks';
-import { LoginPage } from './pages/LoginPage';
 import { ApiLoader } from './components/ApiLoader';
+import { ProtectedRoute } from './features/Auth/components';
 import { useAuth, useAuthSync } from './features/Auth/hooks';
+import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from './features/Wallet/hooks';
+import { useLoginByParams } from './hooks';
+import { LoginPage } from './pages/LoginPage';
 import '@gear-js/vara-ui/dist/style.css';
 
 function AppComponent() {

@@ -1,5 +1,5 @@
-@use '@gear-js/ui/mixins' as *;
 @use '@/assets/styles/shared' as *;
+@use '@/assets/styles/utils' as *;
 
 .loader {
   @extend %absoluteCenter;

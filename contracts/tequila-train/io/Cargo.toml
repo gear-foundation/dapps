@@ -7,6 +7,6 @@ publish.workspace = true
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-enum-iterator.workspace = true
 parity-scale-codec.workspace = true
 scale-info.workspace = true
+enum-iterator = "1"

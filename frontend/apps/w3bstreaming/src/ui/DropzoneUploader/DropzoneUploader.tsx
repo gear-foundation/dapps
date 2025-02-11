@@ -1,11 +1,14 @@
-import { useDropzone } from 'react-dropzone';
 import { MouseEvent, useEffect, useState } from 'react';
-import { cx } from '@/utils';
-import picImage from '@/assets/icons/picture.png';
+import { useDropzone } from 'react-dropzone';
+
 import closeIcon from '@/assets/icons/cross-icon.svg';
-import styles from './DropzoneUploader.module.scss';
+import picImage from '@/assets/icons/picture.png';
+import { cx } from '@/utils';
+
 import { Button } from '../Button';
+
 import { DropzoneUploaderProps } from './DropzoneUploader.interface';
+import styles from './DropzoneUploader.module.scss';
 
 function DropzoneUploader({
   content,
@@ -15,8 +18,7 @@ function DropzoneUploader({
   multi,
   previewLinks,
 }: DropzoneUploaderProps) {
-  // const uploadUrl = 'http://127.0.0.1:5001/api/v0/add';
-  const uploadUrl = `${uploadConfig.address}/add`;
+  const uploadUrl = `${uploadConfig.address}`;
   const [preview, setPreview] = useState<string[]>(previewLinks || []);
 
   useEffect(() => {
@@ -33,13 +35,13 @@ function DropzoneUploader({
       body: formData,
     })
       .then((res) => res.json())
-      .then(({ Hash }) => {
+      .then(([{ ipfsHash }]) => {
         const link = `${uploadConfig.gateway}/`;
 
         if (multi) {
-          setPreview((prev) => [...prev, `${link}${Hash}`]);
+          setPreview((prev) => [...prev, `${link}${ipfsHash}`]);
         } else {
-          setPreview([`${link}${Hash}`]);
+          setPreview([`${link}${ipfsHash}`]);
         }
       });
   };

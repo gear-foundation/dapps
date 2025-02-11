@@ -1,15 +1,13 @@
-import styles from './Layout.module.scss';
-import { cx } from '@/utils';
 import { TabPanel } from '@/ui';
-import { ProfileInfo } from '../ProfileInfo';
+import { cx } from '@/utils';
+
 import { tabs } from '../../config';
-import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { Loader } from '@/components';
+import { ProfileInfo } from '../ProfileInfo';
+
+import styles from './Layout.module.scss';
 
 function Layout() {
-  const { isMeta } = useGetStreamMetadata();
-
-  return isMeta ? (
+  return (
     <div className={cx(styles.layout)}>
       <h1 className={cx(styles.title)}>My Account</h1>
       <div className={cx(styles.content)}>
@@ -17,8 +15,6 @@ function Layout() {
         <TabPanel tabs={tabs} />
       </div>
     </div>
-  ) : (
-    <Loader />
   );
 }
 

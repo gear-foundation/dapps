@@ -1,6 +1,7 @@
 import { createContext } from 'react';
-import { SignlessContext } from './types';
+
 import { DEFAULT_SIGNLESS_CONTEXT } from './consts';
+import { SignlessContext } from './types';
 
 const SignlessTransactionsContext = createContext<SignlessContext>(DEFAULT_SIGNLESS_CONTEXT);
 

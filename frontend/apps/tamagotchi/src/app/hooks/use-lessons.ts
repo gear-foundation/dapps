@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useLessonAssets } from '@/app/utils/get-lesson-assets';
+
 import { useLessons } from '@/app/context';
+import { useLessonAssets } from '@/app/utils/get-lesson-assets';
 
 const key = 'tmgState';
 

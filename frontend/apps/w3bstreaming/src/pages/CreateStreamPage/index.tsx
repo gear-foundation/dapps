@@ -1,20 +1,16 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
+
+import { useGetStateQuery } from '@/app/utils';
 import { CreateStreamRestrictModal } from '@/features/Auth/components';
 import { LayoutCreateForm } from '@/features/CreateStream/components/LayoutCreateForm';
-import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { Loader } from '@/components';
-import { useProgramState } from '@/hooks';
 
 function CreateStreamPage() {
   const { account } = useAccount();
-  const {
-    state: { users },
-  } = useProgramState();
+  const { users } = useGetStateQuery();
   const navigate = useNavigate();
   const [isModal, setIsModal] = useState<boolean>(false);
-  const { meta, isMeta } = useGetStreamMetadata();
 
   const handleCloseModal = () => {
     setIsModal(false);
@@ -31,13 +27,11 @@ function CreateStreamPage() {
     }
   }, [users, account?.decodedAddress]);
 
-  return isMeta ? (
+  return (
     <>
-      <LayoutCreateForm meta={meta} />
+      <LayoutCreateForm />
       {isModal && <CreateStreamRestrictModal onClose={handleCloseModal} />}
     </>
-  ) : (
-    <Loader />
   );
 }
 

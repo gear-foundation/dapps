@@ -1,7 +1,8 @@
 import { Button, Input, Modal } from '@gear-js/ui';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { modalStyles } from 'components/modals';
-import { AuctionFormValues } from 'types';
+
+import { modalStyles } from '@/components/modals';
+import { AuctionFormValues } from '@/types';
 
 type Props = {
   close: () => void;
@@ -9,8 +10,8 @@ type Props = {
 };
 
 function AuctionModal({ close, onSubmit }: Props) {
-  const [values, setValues] = useState({ minPrice: '', duration: '', bidPeriod: '' });
-  const { minPrice, duration, bidPeriod } = values;
+  const [values, setValues] = useState({ minPrice: '', duration: '' });
+  const { minPrice, duration } = values;
 
   const handleChange = ({ target: { value, name } }: ChangeEvent<HTMLInputElement>) => {
     setValues((prevValues) => ({ ...prevValues, [name]: value }));
@@ -19,7 +20,7 @@ function AuctionModal({ close, onSubmit }: Props) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (minPrice && duration && bidPeriod) onSubmit(values, close);
+    if (minPrice && duration) onSubmit(values, close);
   };
 
   return (
@@ -27,13 +28,6 @@ function AuctionModal({ close, onSubmit }: Props) {
       <form className={modalStyles.form} onSubmit={handleSubmit}>
         <Input type="number" placeholder="min price" name="minPrice" value={minPrice} onChange={handleChange} />
         <Input type="number" placeholder="duration (min)" name="duration" value={duration} onChange={handleChange} />
-        <Input
-          type="number"
-          placeholder="bid period (min)"
-          name="bidPeriod"
-          value={bidPeriod}
-          onChange={handleChange}
-        />
         <Button type="submit" text="Start auction" block />
       </form>
     </Modal>

@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
-import styles from './header.module.css';
 import { PropsWithChildren } from 'react';
+
+import styles from './header.module.css';
 
 type Props = {
   logo: JSX.Element;

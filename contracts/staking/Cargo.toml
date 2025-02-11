@@ -1,0 +1,22 @@
+[package]
+name = "staking"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+staking-app = { path = "app" }
+
+[build-dependencies]
+staking-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen = "0.7.1"
+
+[dev-dependencies]
+staking = { path = ".", features = ["wasm-binary"] }
+staking-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { version = "1.41", features = ["rt", "macros"] }
+extended-vft-client.workspace = true
+
+[features]
+wasm-binary = []

@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ButtonHTMLAttributes, forwardRef } from 'react';
+
 import styles from './buttons.module.scss';
 
 export const buttonVariants = cva('', {

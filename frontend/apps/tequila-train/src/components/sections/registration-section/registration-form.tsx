@@ -1,9 +1,10 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { stringRequired } from '../../../app/utils';
-import { useGameMessage } from '../../../app/hooks/use-game';
-import { useAccount } from '@gear-js/react-hooks';
+
 import { useApp } from '../../../app/context';
+import { useGameMessage } from '../../../app/hooks/use-game';
+import { stringRequired } from '../../../app/utils';
 
 const initialValues = {
   name: '',
@@ -14,14 +15,14 @@ const validate: Record<string, typeof stringRequired> = {
 };
 
 export function RegistrationForm() {
-  const { setIsPending, isPending } = useApp();
+  const { setIsPending } = useApp();
   const { account } = useAccount();
   const form = useForm({
     initialValues,
     validate,
     validateInputOnChange: true,
   });
-  const { getInputProps, errors, reset } = form;
+  const { getInputProps, reset } = form;
 
   const handleMessage = useGameMessage();
   const onSuccess = () => {
@@ -51,7 +52,6 @@ export function RegistrationForm() {
           autoComplete="name"
           {...getInputProps('name')}
           required
-
         />
       </div>
     </form>

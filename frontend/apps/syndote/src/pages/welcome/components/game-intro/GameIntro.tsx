@@ -1,6 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
-import styles from './GameIntro.module.scss';
 import clsx from 'clsx';
+
+import styles from './GameIntro.module.scss';
 
 type Props = {
   heading: string;

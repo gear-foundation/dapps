@@ -1,8 +1,9 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { DominoNumber, DominoTileType, StateDominoNumber, StateDominoTileType } from '../types/game';
 import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { DominoNumber, DominoTileType, StateDominoNumber, StateDominoTileType } from '../types/game';
 
 export const cx = (...styles: string[]) => clsx(...styles);
 

@@ -9,7 +9,6 @@ type Props = {
 function OnLogin({ children, fallback }: Props) {
   const { account } = useAccount();
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{account ? children : fallback}</>;
 }
 

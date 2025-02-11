@@ -1,4 +1,4 @@
-type Config = struct {
+type UtilsConfig = struct {
   health: u16,
   max_participants: u8,
   attack_range: struct { u16, u16 },
@@ -12,6 +12,12 @@ type Config = struct {
   time_to_cancel_the_battle: u32,
   reservation_amount: u64,
   reservation_time: u32,
+};
+
+type SessionConfig = struct {
+  gas_to_delete_session: u64,
+  minimum_session_duration_ms: u64,
+  ms_per_block: u64,
 };
 
 type Appearance = struct {
@@ -76,30 +82,54 @@ type Pair = struct {
   round_start_time: u64,
 };
 
+/// Reservation identifier.
+/// 
+/// The identifier is used to reserve and unreserve gas amount for program
+/// execution later.
 type ReservationId = struct {
   [u8, 32],
 };
 
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  CreateNewBattle,
+  Registration,
+  StartBattle,
+  MakeMove,
+};
+
+type SessionData = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
 constructor {
-  New : (config: Config);
+  New : (config: UtilsConfig, session_config: SessionConfig);
 };
 
 service Battle {
   AddAdmin : (new_admin: actor_id) -> null;
   AutomaticMove : (player_id: actor_id, number_of_victories: u8, round: u8) -> null;
-  CancelRegister : () -> null;
-  CancelTournament : () -> null;
-  ChangeConfig : (config: Config) -> null;
-  CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16) -> null;
+  CancelRegister : (session_for_account: opt actor_id) -> null;
+  CancelTournament : (session_for_account: opt actor_id) -> null;
+  ChangeConfig : (config: UtilsConfig) -> null;
+  CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16, session_for_account: opt actor_id) -> null;
   DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
-  DeletePlayer : (player_id: actor_id) -> null;
-  ExitGame : () -> null;
-  MakeMove : (warrior_move: Move) -> null;
-  Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16) -> null;
-  StartBattle : () -> null;
-  StartNextFight : () -> null;
+  DeletePlayer : (player_id: actor_id, session_for_account: opt actor_id) -> null;
+  ExitGame : (session_for_account: opt actor_id) -> null;
+  MakeMove : (warrior_move: Move, session_for_account: opt actor_id) -> null;
+  Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16, session_for_account: opt actor_id) -> null;
+  StartBattle : (session_for_account: opt actor_id) -> null;
+  StartNextFight : (session_for_account: opt actor_id) -> null;
   query Admins : () -> vec actor_id;
-  query Config : () -> Config;
+  query Config : () -> UtilsConfig;
   query GetBattle : (game_id: actor_id) -> opt BattleState;
   query GetMyBattle : () -> opt BattleState;
 
@@ -117,10 +147,22 @@ service Battle {
     EnemyWaiting;
     WarriorGenerated: struct { address: actor_id };
     AdminAdded: struct { new_admin: actor_id };
-    ConfigChanged: struct { config: Config };
+    ConfigChanged: struct { config: UtilsConfig };
     GameLeft;
     RoundAction: struct { round: u8, player_1: struct { actor_id, Move, u16 }, player_2: struct { actor_id, Move, u16 } };
     AutomaticMoveMade;
   }
 };
 
+service Session {
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt SessionData;
+  query Sessions : () -> vec struct { actor_id, SessionData };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
+};

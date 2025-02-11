@@ -1,0 +1,24 @@
+[package]
+name = "vara-man"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+vara-man-app = { path = "app" }
+
+[build-dependencies]
+vara-man-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+vara-man = { path = ".", features = ["wasm-binary"] }
+vara-man-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+gtest.workspace = true
+extended-vft-client.workspace = true
+
+[features]
+wasm-binary = []

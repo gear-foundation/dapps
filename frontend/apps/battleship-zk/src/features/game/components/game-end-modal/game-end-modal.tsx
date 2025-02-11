@@ -1,12 +1,14 @@
-import { useNavigate } from 'react-router-dom';
 import { decodeAddress } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
+import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
 import { ModalBottom } from '@/components/ui/modal';
 import { Text } from '@/components/ui/text';
-import { clearZkData } from '@/features/zk/utils';
-import { useAccount } from '@gear-js/react-hooks';
 import { GameType } from '@/features/game/types';
-import { ROUTES } from '@/app/consts';
+import { clearZkData } from '@/features/zk/utils';
+
 import styles from './GameEndModal.module.scss';
 
 type Props = {

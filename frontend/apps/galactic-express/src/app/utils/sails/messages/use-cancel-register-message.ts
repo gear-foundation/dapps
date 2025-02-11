@@ -1,6 +1,7 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { Options, useSignAndSend } from 'app/hooks';
+
+import { Options, useSignAndSend } from '@/app/hooks';
+import { useProgram } from '@/app/utils';
 
 export const useCancelRegisterMessage = () => {
   const program = useProgram();

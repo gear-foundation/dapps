@@ -561,8 +561,7 @@ impl GameState {
         if track_id != self.current_player
             && !self
                 .tracks
-                .get(track_id as usize)
-                .map_or(false, |data| data.has_train)
+                .get(track_id as usize).is_some_and(|data| data.has_train)
         {
             return Err(Error::InvalidTrack);
         }

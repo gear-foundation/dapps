@@ -1,11 +1,12 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { HexString } from '@gear-js/api';
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { HexString } from '@polkadot/util/types';
-import { ConfirmationModal } from 'components/modals';
-import { ADDRESS } from 'consts';
-import { useMarketplaceMessage } from 'hooks';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { useAcceptOfferMessage } from '@/app/utils';
+import { ConfirmationModal } from '@/components/modals';
+
 import styles from './Offer.module.scss';
 
 type Props = {
@@ -15,18 +16,21 @@ type Props = {
 };
 
 type Params = {
-  tokenId: string;
+  id: string;
 };
 
 function Offer({ bidder, listingOwner, price }: Props) {
-  const { tokenId } = useParams() as Params;
+  const { id } = useParams() as Params;
   const { account } = useAccount();
 
-  const sendMessage = useMarketplaceMessage();
+  const { acceptOfferMessage } = useAcceptOfferMessage();
+  const { getFormattedBalance } = useBalanceFormat();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isOwner = account?.decodedAddress === listingOwner;
+
+  const formattedPrice = getFormattedBalance(price).value;
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -37,16 +41,14 @@ function Offer({ bidder, listingOwner, price }: Props) {
   };
 
   const accept = () => {
-    const payload = { AcceptOffer: { nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: tokenId, price } };
-
-    sendMessage({ payload, onSuccess: closeModal });
+    acceptOfferMessage({ tokenId: id, price: BigInt(price) }, { onSuccess: closeModal });
   };
 
   return (
     <>
       <div className={styles.offer}>
         <div className={styles.info}>
-          <p className={styles.bid}>{price}</p>
+          <p className={styles.bid}>{formattedPrice}</p>
           <p className={styles.bidder}>{bidder}</p>
         </div>
         {isOwner && <Button text="Accept" size="small" onClick={openModal} />}
@@ -54,7 +56,7 @@ function Offer({ bidder, listingOwner, price }: Props) {
 
       {isModalOpen && (
         <ConfirmationModal
-          heading={`Do you agree to sell the item for ${price}?`}
+          heading={`Do you agree to sell the item for ${formattedPrice}?`}
           close={closeModal}
           onSubmit={accept}
         />

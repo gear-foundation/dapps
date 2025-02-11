@@ -4,7 +4,7 @@ import {
   useDeleteGameMessage,
   useExitGameMessage,
   useGetGameSessionQuery,
-} from 'app/utils';
+} from '@/app/utils';
 
 export const useQuitGame = () => {
   const { state, isFetched } = useGetGameSessionQuery();

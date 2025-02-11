@@ -1,23 +1,24 @@
+import { HexString } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
+import { motion } from 'framer-motion';
+import moment from 'moment';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
-import { motion } from 'framer-motion';
-import { HexString } from '@gear-js/api';
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
-import { Button, Dropdown, Search } from '@ui';
+
+import { useGetStateQuery } from '@/app/utils';
+import { Button, Dropdown, Search } from '@/ui';
 import { cx } from '@/utils';
-import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
-import styles from './StreamTeasersList.module.scss';
+
 import { selectTeasersMenuAll, selectTeasersMenuAuthorized } from '../../config';
 import { FormattedTeaser } from '../../types';
+import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
+
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
-import { useProgramState } from '@/hooks';
+import styles from './StreamTeasersList.module.scss';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
   const { account } = useAccount();
-  const {
-    state: { streamTeasers, users },
-  } = useProgramState();
+  const { users, streams } = useGetStateQuery();
   const selectTeasersMenu = users?.[account?.decodedAddress as HexString]
     ? { ...selectTeasersMenuAll, ...selectTeasersMenuAuthorized }
     : selectTeasersMenuAll;
@@ -28,19 +29,19 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
-    if (streamTeasers && Object.keys(streamTeasers).length) {
+    if (streams && Object.keys(streams).length) {
       setTeasers(
-        Object.keys(streamTeasers)
-          .map((key) => ({ ...streamTeasers[key], id: key }))
+        Object.keys(streams)
+          .map((key) => ({ ...streams[key], id: key }))
           .sort((a, b) => {
-            const aTimeCreation = moment(Number(a.timeCreation.replace(/,/g, '')));
-            const bTimeCreation = moment(Number(b.timeCreation.replace(/,/g, '')));
+            const aTimeCreation = moment(Number(a.start_time));
+            const bTimeCreation = moment(Number(b.start_time));
 
             return bTimeCreation.diff(aTimeCreation);
           }),
       );
     }
-  }, [streamTeasers]);
+  }, [streams]);
 
   const handleExpandPage = () => {
     setShowedTeasersCount((prev) => prev + streamTeasersToExpand);
@@ -61,8 +62,8 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     setSelectedStreamsOption(label);
 
     if (value === 'subscription') {
-      const foundTeasers = teasers.filter((teaser) =>
-        users?.[teaser.broadcaster].subscribers.includes(account?.decodedAddress || ''),
+      const foundTeasers = teasers.filter(
+        (teaser) => account && users?.[teaser.broadcaster].subscribers.includes(account.decodedAddress),
       );
       setShowedTeasers(foundTeasers);
 
@@ -71,10 +72,9 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
 
     if (value === 'upcoming') {
       const foundStreams = teasers
-        .filter((teaser) => moment.unix(Number(withoutCommas(teaser.startTime)) / 1000).valueOf() > moment().valueOf())
+        .filter((teaser) => moment.unix(Number(teaser.start_time) / 1000).valueOf() > moment().valueOf())
         .sort((a, b) =>
-          moment.unix(Number(withoutCommas(a.startTime)) / 1000).valueOf() >
-          moment.unix(Number(withoutCommas(b.startTime)) / 1000).valueOf()
+          moment.unix(Number(a.start_time) / 1000).valueOf() > moment.unix(Number(b.start_time) / 1000).valueOf()
             ? 1
             : -1,
         );
@@ -87,8 +87,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       const foundTeasers = teasers
         .filter((teaser) => teaser.broadcaster === account?.decodedAddress)
         .sort((a, b) =>
-          moment.unix(Number(withoutCommas(a.startTime)) / 1000).valueOf() >
-          moment.unix(Number(withoutCommas(b.startTime)) / 1000).valueOf()
+          moment.unix(Number(a.start_time) / 1000).valueOf() > moment.unix(Number(b.start_time) / 1000).valueOf()
             ? 1
             : -1,
         );
@@ -130,11 +129,11 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
             .slice(0, showedTeasersCount)
             .map((item) => (
               <motion.div
-                key={item.title + item.description + item.startTime + item.endTime}
+                key={item.title + item.description + item.start_time + item.end_time}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false }}>
-                <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
+                <Link to={`/stream/${item.id}`} key={item.title + item.description + item.start_time + item.end_time}>
                   <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
                 </Link>
               </motion.div>

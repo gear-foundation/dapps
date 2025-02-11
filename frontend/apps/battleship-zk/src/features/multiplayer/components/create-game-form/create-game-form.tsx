@@ -1,15 +1,18 @@
-import { Button } from '@gear-js/vara-ui';
 import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from '@/components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
+
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { TextField } from '@/components/layout/text-field';
+import { VaraIcon } from '@/components/layout/vara-svg';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { EzTransactionsSwitch } from 'gear-ez-transactions';
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
+
 import { useMultiplayerGame } from '../../hooks';
 import { useCreateGameMessage } from '../../sails/messages';
+
 import styles from './CreateGameForm.module.scss';
 
 type CreateFormValues = {

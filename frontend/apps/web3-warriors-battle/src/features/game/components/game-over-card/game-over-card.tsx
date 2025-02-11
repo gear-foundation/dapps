@@ -1,10 +1,13 @@
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
+
+import { Player, State } from '@/app/utils';
 import { Card, Text } from '@/components';
 import { VaraIcon } from '@/components/layout';
-import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
-import { Player, State } from '@/app/utils';
+
 import { battleHistoryAtom, currentPlayersAtom } from '../../store';
+
 import styles from './game-over-card.module.scss';
 
 type GameOverCardProps = {

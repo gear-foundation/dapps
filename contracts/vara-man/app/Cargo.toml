@@ -1,18 +1,10 @@
 [package]
 name = "vara-man-app"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
+sails-rs.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-sails-rs = { workspace = true, features = ["gtest"] }
 schnorrkel.workspace = true
 extended-vft-client.workspace = true
-
-[dev-dependencies]
-gtest.workspace = true
-gclient.workspace = true
-vara-man = { path = "../wasm" }
-tokio = "1"
-extended-vft.workspace = true

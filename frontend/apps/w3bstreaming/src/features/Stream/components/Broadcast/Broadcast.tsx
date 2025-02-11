@@ -1,24 +1,24 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
-import styles from './Broadcast.module.scss';
-import { cx } from '@/utils';
-import { RTC_CONFIG } from '../../config';
-import { Player } from '../Player';
-import { Button } from '@/ui';
 
+import { useGetStateQuery } from '@/app/utils';
 import StreamSignalSVG from '@/assets/icons/signal-stream-icon.svg';
-import { BroadcastProps, AnswerMsg, CandidateMsg, WatchMsg, StreamStatus, StreamType } from './Broadcast.interface';
 import { ADDRESS } from '@/consts';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { RTC_CONFIG } from '../../config';
 import { TrackIds } from '../../types';
-import { useProgramState } from '@/hooks';
+import { Player } from '../Player';
+
+import { BroadcastProps, AnswerMsg, CandidateMsg, WatchMsg, StreamStatus, StreamType } from './Broadcast.interface';
+import styles from './Broadcast.module.scss';
 
 function Broadcast({ socket, streamId }: BroadcastProps) {
   const { account } = useAccount();
   const navigate = useNavigate();
-  const {
-    state: { streamTeasers },
-  } = useProgramState();
+  const { streams } = useGetStateQuery();
 
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
@@ -446,14 +446,15 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           );
         }
 
-        conns.current[idOfWatcher]!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+        conns.current[idOfWatcher].onicecandidate = (event: RTCPeerConnectionIceEvent) => {
           if (event.candidate) {
             socket.emit('candidate', idOfWatcher, { userId: account.address, candidate: event.candidate, streamId });
           }
         };
 
-        conns.current[idOfWatcher]!.onnegotiationneeded = () => {
-          conns.current[idOfWatcher]!.createOffer()
+        conns.current[idOfWatcher].onnegotiationneeded = () => {
+          conns.current[idOfWatcher]
+            .createOffer()
             .then((offer) => conns.current[idOfWatcher]?.setLocalDescription(offer))
             .then(() =>
               socket.emit('offer', account?.decodedAddress, {
@@ -555,10 +556,10 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       {streamStatus === 'loading' && <div className={cx(styles['start-stream-curtain'])}>loading...</div>}
       {streamStatus === 'not-started' && (
         <div className={cx(styles['start-stream-curtain'])}>
-          {streamTeasers?.[streamId]?.imgLink && (
+          {streams?.[streamId]?.img_link && (
             <>
               <img
-                src={streamTeasers?.[streamId]?.imgLink}
+                src={streams?.[streamId]?.img_link}
                 alt="stream background"
                 className={cx(styles['stream-background'])}
               />

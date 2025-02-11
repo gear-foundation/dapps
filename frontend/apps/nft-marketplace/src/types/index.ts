@@ -1,13 +1,11 @@
-import { HexString } from '@polkadot/util/types';
+import { HexString } from '@gear-js/api';
 
-type BaseNFT = {
-  id: string;
-  name: string;
-  description: string;
-  media: string;
-  reference: string;
-  ownerId: HexString;
-  approvedAccountIds: HexString[];
+import { TokenMetadata } from '@/app/utils/sails/nft';
+import { ItemState, Auction } from '@/app/utils/sails/nft_marketplace';
+
+type BaseNFT = TokenMetadata & {
+  token_id: number;
+  owner: HexString;
 };
 
 type NFTDetails = {
@@ -18,23 +16,7 @@ type NFTDetails = {
 
 type Offers = { [key: `[null,${string}]`]: HexString };
 
-type Auction = {
-  bidPeriod: string;
-  startedAt: string;
-  endedAt: string;
-  currentPrice: string;
-  currentWinner: HexString;
-};
-
-type MarketNFT = {
-  tokenId: string;
-  owner: HexString;
-  ftContractId: HexString | null;
-  price: string | null;
-  auction: Auction | null;
-  offers: Offers;
-  tx: null;
-};
+type MarketNFT = ItemState;
 
 type NFT = BaseNFT & MarketNFT;
 
@@ -54,6 +36,7 @@ type Listing = {
   description: string;
   owner: HexString;
   src: string;
+  currentWinner?: HexString;
   offers?: { bidder: string; price: string }[];
   price?: MarketNFT['price'];
   rarity?: string;
@@ -62,7 +45,6 @@ type Listing = {
 
 type AuctionFormValues = {
   duration: string;
-  bidPeriod: string;
   minPrice: string;
 };
 

@@ -1,6 +1,6 @@
 import { HexString } from '@gear-js/api';
 import { atom } from 'jotai';
-// import { RegistrationStatus } from 'features/session/types';
+// import { RegistrationStatus } from '@/features/session/types';
 
 export const CURRENT_GAME_ADMIN_ATOM = atom<HexString | null>(null);
 

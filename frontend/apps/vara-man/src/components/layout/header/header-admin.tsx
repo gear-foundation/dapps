@@ -1,8 +1,9 @@
-import { Icons } from '@/components/ui/icons';
-import { useGame } from '@/app/context/ctx-game';
-import { useApp } from '@/app/context/ctx-app';
 import { useEzTransactions } from 'gear-ez-transactions';
+
+import { useApp } from '@/app/context/ctx-app';
+import { useGame } from '@/app/context/ctx-game';
 import { useChangeStatusMessage } from '@/app/utils';
+import { Icons } from '@/components/ui/icons';
 
 type HeaderAdminProps = BaseComponentProps & {};
 
@@ -33,13 +34,13 @@ export function HeaderAdmin({}: HeaderAdminProps) {
     <>
       {status === 'Paused' && (
         <button type="button" className="btn btn--primary px-6" disabled={isPending} onClick={onActivateGame}>
-          <Icons.gameJoystick className="w-5 h-5 mr-2" />
+          <Icons.gameJoystick />
           <span>Activate game</span>
         </button>
       )}
       {status === 'Started' && (
         <button type="button" className="btn btn--theme-red px-6" disabled={isPending} onClick={onDeactivateGame}>
-          <Icons.gameJoystick className="w-5 h-5 mr-2" />
+          <Icons.gameJoystick />
           <span>Deactivate game</span>
         </button>
       )}

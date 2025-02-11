@@ -1,20 +1,23 @@
-import { Button } from '@gear-js/vara-ui';
-import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
-import { useState } from 'react';
+import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
+import { useState } from 'react';
 
 import { useCountdown } from '@dapps-frontend/hooks';
-import { ReactComponent as SignlessSVG } from '@/assets/icons/signless.svg';
-import { ReactComponent as PowerSVG } from '@/assets/icons/power.svg';
+
+import PowerSVG from '@ez/assets/icons/power.svg?react';
+import SignlessSVG from '@ez/assets/icons/signless.svg?react';
+
 import { useSignlessTransactions } from '../../context';
 import { getDHMS } from '../../utils';
+import { AccountPair } from '../account-pair';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
-import styles from './signless-transactions.module.css';
-import { SignlessParams } from '../signless-params-list';
-import { AccountPair } from '../account-pair';
 import { EnableSignlessSession } from '../enable-signless-session';
+import { SignlessParams } from '../signless-params-list';
+
+import styles from './signless-transactions.module.css';
 
 type Props = {
   allowedActions: string[];

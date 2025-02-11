@@ -11,7 +11,7 @@ export const createTamagotchiInitial = {
 };
 
 export const ENV = {
-  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  NODE: import.meta.env.VITE_NODE_ADDRESS,
 };
 
 export const MULTIPLIER = {

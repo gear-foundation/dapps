@@ -1,18 +1,17 @@
-import { useParams } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { useParams } from 'react-router-dom';
+
+import { useGetStateQuery } from '@/app/utils';
 import { Watch, Broadcast } from '@/features/Stream/components';
 import { Layout } from '@/features/Stream/components/Layout';
 import { socket } from '@/utils';
-import { useProgramState } from '@/hooks';
 
 function StreamPage() {
   const { account } = useAccount();
+  const { streams, users } = useGetStateQuery();
   const { id: streamId } = useParams();
-  const {
-    state: { users, streamTeasers },
-  } = useProgramState();
 
-  const streamTeaser = streamTeasers?.[streamId as string];
+  const streamTeaser = streams?.[streamId as string];
 
   return (
     <div>
@@ -30,7 +29,7 @@ function StreamPage() {
             broadcasterId={streamTeaser.broadcaster}
             title={streamTeaser.title}
             description={streamTeaser.description}
-            startTime={new Date(Number(streamTeaser?.startTime?.replace(/,/g, '')))}
+            startTime={new Date(Number(streamTeaser?.start_time))}
             broadcasterInfo={users?.[streamTeaser.broadcaster]}
             isUserSubscribed={users?.[streamTeaser.broadcaster]?.subscribers?.includes(account?.decodedAddress)}
             streamId={streamId}

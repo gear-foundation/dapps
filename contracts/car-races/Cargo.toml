@@ -1,0 +1,23 @@
+[package]
+name = "car-races"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+car-races-app = { path = "app" }
+
+[build-dependencies]
+car-races-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+car-races = { path = ".", features = ["wasm-binary"] }
+car-races-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+
+[features]
+wasm-binary = []

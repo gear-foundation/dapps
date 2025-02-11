@@ -1,11 +1,14 @@
-import { CSSProperties, Fragment } from 'react';
-import { cx } from 'utils';
-import { shortenString } from 'features/session/utils';
 import { getVaraAddress } from '@gear-js/react-hooks';
-import { ReactComponent as CheckSVG } from '../../assets/check.svg';
-import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
+import { CSSProperties, Fragment } from 'react';
+
+import { shortenString } from '@/features/session/utils';
+import { cx } from '@/utils';
+
+import CheckSVG from '../../assets/check.svg?react';
+import CrossSVG from '../../assets/cross.svg?react';
 import { PLAYER_COLORS, TABLE_HEADINGS } from '../../consts';
 import { Event } from '../../types';
+
 import styles from './Table.module.scss';
 
 type Props = {

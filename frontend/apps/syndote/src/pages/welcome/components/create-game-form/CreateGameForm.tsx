@@ -1,12 +1,14 @@
-import { Button } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { useCreateGameSessionMessage } from 'app/utils';
-import { usePending } from 'app/hooks';
+
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { TextField } from '@/components/layout/text-field';
+import { useCreateGameSessionMessage } from '@/app/utils';
+import { usePending } from '@/app/hooks';
+
 import styles from './CreateGameForm.module.scss';
 
 type CreateFormValues = {
