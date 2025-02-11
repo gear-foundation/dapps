@@ -1,6 +1,6 @@
-import { ActorId, TransactionBuilder, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+import { ActorId, TransactionBuilder, ZERO_ADDRESS } from 'sails-js';
 
 export interface GameInfo {
   admin_id: ActorId;
@@ -33,7 +33,10 @@ export class Program {
   public readonly registry: TypeRegistry;
   public readonly player: Player;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
       GameInfo: {
         admin_id: '[u8;32]',

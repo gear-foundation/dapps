@@ -4,13 +4,13 @@ import { HexString } from '@polkadot/util/types';
 import clsx from 'clsx';
 import { FunctionComponent, SVGProps, useState } from 'react';
 
+import { PlayerInfoState } from '@/app/utils';
 import GradeSVG from '@/assets/images/icons/grade.svg?react';
 import { useOutsideClick } from '@/hooks';
 import { CellValues, PlayerType, Properties } from '@/types';
 
-import { Chip } from '../chip';
-import { PlayerInfoState } from '@/app/utils';
 import styles from '../Home.module.scss';
+import { Chip } from '../chip';
 
 type Props = {
   index: number;

@@ -1,6 +1,8 @@
 import { useAlert } from '@gear-js/react-hooks';
+
+import { getPanicType } from '@/utils';
+
 import { usePending } from './use-pending';
-import { getPanicType } from 'utils';
 
 export type Options = {
   onSuccess?: () => void;

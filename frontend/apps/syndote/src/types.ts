@@ -1,5 +1,6 @@
 import { HexString } from '@polkadot/util/types';
-import { Gear, PlayerInfoState } from 'app/utils';
+
+import { Gear, PlayerInfoState } from '@/app/utils';
 
 type Players = Array<[HexString, PlayerInfoState]>;
 

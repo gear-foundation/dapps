@@ -3,11 +3,11 @@ import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 
+import { usePending } from '@/app/hooks';
+import { useCreateGameSessionMessage } from '@/app/utils';
 import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
 import { TextField } from '@/components/layout/text-field';
-import { useCreateGameSessionMessage } from '@/app/utils';
-import { usePending } from '@/app/hooks';
 
 import styles from './CreateGameForm.module.scss';
 

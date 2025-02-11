@@ -1,7 +1,7 @@
 import { HexString } from '@polkadot/util/types';
 
-import { PlayerType } from '@/types';
 import { PlayerInfoState } from '@/app/utils';
+import { PlayerType } from '@/types';
 
 import { Player } from '../player';
 

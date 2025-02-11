@@ -1,5 +1,6 @@
 import { useProgramEvent } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
+
+import { useProgram } from '@/app/utils';
 
 export function useEventGameCanceledSubscription(onData: () => void) {
   const program = useProgram();

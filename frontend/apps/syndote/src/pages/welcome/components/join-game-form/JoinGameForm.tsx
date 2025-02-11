@@ -5,15 +5,15 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { useAtom, useSetAtom } from 'jotai';
 import { useState } from 'react';
 
+import { GameState, useGetGameSessionQuery } from '@/app/utils';
 import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
 import { TextField } from '@/components/layout/text-field';
+import { getSafeDecodedAddress } from '@/utils';
 
 import { GameFoundModal, JoinModalFormValues } from '../../../home/game-found-modal';
 import { TextModal } from '../../../home/text-modal';
 
 import styles from './JoinGameForm.module.scss';
-import { GameState, useGetGameSessionQuery } from '@/app/utils';
-import { getSafeDecodedAddress } from '@/utils';
 
 type Props = {
   onCancel: () => void;

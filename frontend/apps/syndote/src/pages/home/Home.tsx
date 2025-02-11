@@ -29,9 +29,7 @@ import { GameFinishedModal } from './game-finished-modal';
 import { Players } from './players/Players';
 import { ReserveModal } from './reserve-modal';
 import { Roll } from './roll';
-
 import { SessionInfo } from './session-info';
-
 import { TextModal } from './text-modal';
 
 type ModalContract = 'contractRequresGas' | 'adminReservesGas' | null;
@@ -140,7 +138,7 @@ function Home() {
 
   useEffect(() => {
     if (admin_id) {
-      adminRef.current = admin_id as HexString;
+      adminRef.current = admin_id;
     }
     if (isFetched && !admin_id) {
       adminRef.current = null;

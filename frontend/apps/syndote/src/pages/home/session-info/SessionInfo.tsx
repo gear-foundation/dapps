@@ -2,8 +2,8 @@ import { HexString } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas, getVaraAddress } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { stringShorten } from '@polkadot/util';
-
 import clsx from 'clsx';
+
 import { useDeletePlayerMessage } from '@/app/utils';
 import CopySVG from '@/assets/images/icons/copy-text.svg?react';
 import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';

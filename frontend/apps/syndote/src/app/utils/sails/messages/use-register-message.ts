@@ -1,7 +1,8 @@
-import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { Options, useExecuteWithPending, useSignAndSend } from 'app/hooks';
 import { HexString } from '@gear-js/api';
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
+import { useProgram } from '@/app/utils';
 
 type Params = {
   value?: bigint;

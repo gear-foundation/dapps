@@ -1,7 +1,8 @@
-import { useProgram } from '@/app/utils';
-import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 import { useAtomValue } from 'jotai';
+
+import { useProgram } from '@/app/utils';
 import { CURRENT_GAME_ADMIN_ATOM } from '@/atoms';
 
 export const useGetGameSessionQuery = (address?: HexString | null, disabled?: boolean) => {
