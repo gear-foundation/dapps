@@ -1,6 +1,7 @@
 import { cx } from '@/utils';
-import styles from './Input.module.scss';
+
 import { InputProps } from './Input.interfaces';
+import styles from './Input.module.scss';
 
 function Input({ size = 'medium', ...props }: InputProps) {
   return (

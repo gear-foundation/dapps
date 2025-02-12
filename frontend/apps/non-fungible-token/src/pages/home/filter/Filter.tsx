@@ -1,5 +1,5 @@
-import { Button } from './button';
 import styles from './Filter.module.scss';
+import { Button } from './button';
 
 type Props = {
   list: string[];

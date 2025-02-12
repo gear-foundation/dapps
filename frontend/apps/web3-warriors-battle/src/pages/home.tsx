@@ -1,11 +1,11 @@
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { useNavigate } from 'react-router-dom';
 
-import { Card } from '@/components';
 import { ALLOWED_SIGNLESS_ACTIONS, ROUTES } from '@/app/consts';
-import { Background } from '@/features/game/components';
+import { Card } from '@/components';
 import { CardButton } from '@/components/ui/card-button';
 import { CodeSlashIcon, MagicLineIcon } from '@/features/game/assets/images';
+import { Background } from '@/features/game/components';
 import { useResetCharacterStats } from '@/features/game/hooks';
 
 import styles from './home.module.scss';

@@ -1,7 +1,10 @@
 import clsx from 'clsx';
+
 import { Text } from '@/components';
-import styles from './timer.module.scss';
+
 import { UseTimerParams, useTimer } from '../../hooks';
+
+import styles from './timer.module.scss';
 
 type Props = UseTimerParams & {
   isYourTurn?: boolean;

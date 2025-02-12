@@ -1,7 +1,10 @@
 import { cva, VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
+
 import { BaseComponentProps } from '@/app/types';
+
 import { Text } from '../text';
+
 import styles from './card.module.scss';
 
 export const cardVariants = cva('', {

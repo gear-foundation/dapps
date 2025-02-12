@@ -1,19 +1,22 @@
-import { useState } from 'react';
-import { Button } from '@gear-js/vara-ui';
-import { useSetAtom, useAtom } from 'jotai';
-import { decodeAddress } from '@gear-js/api';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
-import metaTxt from 'assets/meta/syndote_meta.txt';
+import { decodeAddress, HexString } from '@gear-js/api';
 import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { HexString } from '@gear-js/api';
-import { GameFoundModal, JoinModalFormValues } from 'pages/home/game-found-modal';
-import { useProgramMetadata } from 'hooks/metadata';
-import { TextModal } from 'pages/home/text-modal';
+import { useSetAtom, useAtom } from 'jotai';
+import { useState } from 'react';
+
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import metaTxt from '@/assets/meta/syndote_meta.txt';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
+import { TextField } from '@/components/layout/text-field';
+import { useProgramMetadata } from '@/hooks/metadata';
+import { GameSessionState, State } from '@/types';
+
+import { GameFoundModal, JoinModalFormValues } from '../../../home/game-found-modal';
+import { TextModal } from '../../../home/text-modal';
+
 import styles from './JoinGameForm.module.scss';
-import { GameSessionState, State } from 'types';
 
 type Props = {
   onCancel: () => void;
@@ -33,7 +36,7 @@ function JoinGameForm({ onCancel }: Props) {
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
   const setCurrentStrategyId = useSetAtom(CURRENT_STRATEGY_ID_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
   const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);
@@ -47,12 +50,7 @@ function JoinGameForm({ onCancel }: Props) {
     },
   });
 
-  const {
-    errors: joinErrors,
-    getInputProps: getJoinInputProps,
-    onSubmit: onJoinSubmit,
-    setFieldError: setJoinFieldError,
-  } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
 
   const handleCloseFoundModal = () => {
     setIsJoinSessionModalShown(false);

@@ -15,10 +15,20 @@ export class WarriorProgram {
   public readonly registry: TypeRegistry;
   public readonly warrior: Warrior;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
-      Appearance: {"head_index":"u16","hat_index":"u16","body_index":"u16","accessory_index":"u16","body_color":"String","back_color":"String"},
-    }
+      Appearance: {
+        head_index: 'u16',
+        hat_index: 'u16',
+        body_index: 'u16',
+        accessory_index: 'u16',
+        body_color: 'String',
+        back_color: 'String',
+      },
+    };
 
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
@@ -61,7 +71,11 @@ export class WarriorProgram {
 export class Warrior {
   constructor(private _program: WarriorProgram) {}
 
-  public async getAppearance(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Appearance> {
+  public async getAppearance(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Appearance> {
     const payload = this._program.registry.createType('(String, String)', ['Warrior', 'GetAppearance']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId!,
@@ -76,7 +90,11 @@ export class Warrior {
     return result[2].toJSON() as unknown as Appearance;
   }
 
-  public async getOwner(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<ActorId> {
+  public async getOwner(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<ActorId> {
     const payload = this._program.registry.createType('(String, String)', ['Warrior', 'GetOwner']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId!,

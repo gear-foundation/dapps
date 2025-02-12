@@ -1,13 +1,15 @@
-import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { Container } from '@/components/ui/container';
-import { WalletChange, WalletConnect } from '@/features/wallet/components';
-import { AccountInfo } from './account-info';
-import ModalBackground from './ModalBackground';
-import { Logo } from './logo';
-import styles from './header.module.scss';
-import { useIsLocationGamePage } from '@/features/game/hooks';
 import clsx from 'clsx';
+import { AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+
+import { Container } from '@/components/ui/container';
+import { useIsLocationGamePage } from '@/features/game/hooks';
+import { WalletChange, WalletConnect } from '@/features/wallet/components';
+
+import ModalBackground from './ModalBackground';
+import { AccountInfo } from './account-info';
+import styles from './header.module.scss';
+import { Logo } from './logo';
 
 export function Header() {
   const [isOpenChange, setIsOpenChange] = useState(false);

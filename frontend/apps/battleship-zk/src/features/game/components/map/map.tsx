@@ -1,6 +1,8 @@
-import { CrossIcon } from '@/assets/images';
-import styles from './map.module.scss';
 import clsx from 'clsx';
+
+import { CrossIcon } from '@/assets/images';
+
+import styles from './map.module.scss';
 
 type Props = {
   sizeBlock: number;

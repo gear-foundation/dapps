@@ -1,5 +1,6 @@
 import { Button as GearButton } from '@gear-js/ui';
 import clsx from 'clsx';
+
 import styles from './Button.module.scss';
 
 type Props = {

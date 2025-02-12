@@ -2,9 +2,9 @@ import { useContext, ReactElement } from 'react';
 
 import { DEFAULT_SIGNLESS_CONTEXT } from './consts';
 import { SignlessTransactionsContext } from './context';
-import { BaseProgram, SignlessContext } from './types';
 import { SignlessTransactionsMetadataProvider, SignlessTransactionsMetadataProviderProps } from './metadata-provider';
 import { SignlessTransactionsSailsProvider, SignlessTransactionsSailsProviderProps } from './sails-provider';
+import { BaseProgram, SignlessContext } from './types';
 
 function SignlessTransactionsProvider(props: SignlessTransactionsMetadataProviderProps): ReactElement;
 function SignlessTransactionsProvider<TProgram extends BaseProgram>(

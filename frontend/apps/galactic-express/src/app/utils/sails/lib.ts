@@ -1,6 +1,6 @@
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, HexString, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -52,7 +52,10 @@ export class Program {
   public readonly registry: TypeRegistry;
   public readonly galacticExpress: GalacticExpress;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
       Participant: { id: '[u8;32]', name: 'String', fuel_amount: 'u8', payload_amount: 'u8' },
       State: {

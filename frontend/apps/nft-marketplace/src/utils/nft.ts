@@ -1,7 +1,8 @@
 import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ButtonProps } from '@gear-js/ui';
-import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from 'types';
-import { getIpfsAddress } from 'utils';
+
+import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from '@/types';
+import { getIpfsAddress } from '@/utils';
 
 function getButtonText(isOwner: boolean, isAuction: boolean) {
   if (!isOwner) {
@@ -13,9 +14,12 @@ function getButtonText(isOwner: boolean, isAuction: boolean) {
   return 'Your item';
 }
 
-function getNFTProps(nft: NFT, isOwner: boolean) {
+function getNFTProps(
+  nft: NFT,
+  isOwner: boolean,
+  getFormattedBalance: ReturnType<typeof useBalanceFormat>['getFormattedBalance'],
+) {
   const { token_id, auction, price, media, name } = nft;
-  const { getFormattedBalance } = useBalanceFormat();
   const { current_price } = auction || {};
   const isAuction = !!auction;
 

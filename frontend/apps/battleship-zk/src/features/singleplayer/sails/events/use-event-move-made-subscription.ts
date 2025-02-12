@@ -1,13 +1,15 @@
-import { useEffect } from 'react';
-import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
-import { isNull } from '@polkadot/util';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
-import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
-import { useProgram } from '@/app/utils/sails';
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { isNull } from '@polkadot/util';
+import { useEffect } from 'react';
+
+import { useProgram } from '@/app/utils/sails';
+import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
 import { usePending } from '@/features/game/hooks';
+import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
+import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
+import { useShips } from '@/features/zk/hooks/use-ships';
+
 import { EVENT_NAME, SERVICE_NAME } from '../../consts';
 
 type MoveMadeEvent = {

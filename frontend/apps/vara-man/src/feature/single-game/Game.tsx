@@ -1,17 +1,19 @@
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useAtom } from 'jotai';
 import { useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAtom } from 'jotai';
-import { TileMap } from '@/app/types/game';
-import { GameOverModal } from './components/modals/game-over';
+
 import { useApp } from '@/app/context/ctx-app';
-import { findMapLevel } from '../game/utils/findMapLevel';
-import { GameEngine } from '../game/models/Game';
-import { COINS, GAME_OVER } from '../game/consts';
-import { useEzTransactions } from 'gear-ez-transactions';
-import useOnScreen from '@/hooks/use-on-screen';
+import { TileMap } from '@/app/types/game';
 import { Level, useFinishSingleGameMessage } from '@/app/utils';
+import useOnScreen from '@/hooks/use-on-screen';
 
 import { GameCanvas } from '../game/components/game-canvas/game-canvas';
+import { COINS, GAME_OVER } from '../game/consts';
+import { GameEngine } from '../game/models/Game';
+import { findMapLevel } from '../game/utils/findMapLevel';
+
+import { GameOverModal } from './components/modals/game-over';
 
 export const Game = () => {
   const [searchParams] = useSearchParams();

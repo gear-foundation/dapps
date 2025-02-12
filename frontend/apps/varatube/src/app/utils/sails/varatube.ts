@@ -1,6 +1,6 @@
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = string;
 
@@ -35,7 +35,10 @@ export class Program {
   public readonly registry: TypeRegistry;
   public readonly varatube: Varatube;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
       Config: {
         gas_for_token_transfer: 'u64',

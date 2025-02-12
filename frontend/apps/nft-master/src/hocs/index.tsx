@@ -4,13 +4,16 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
-import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider as UrqlClientProvider } from 'urql';
-import { Alert, alertStyles } from 'components/ui/alert';
-import { urqlClient } from 'utils';
+
+import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
+
+import { Alert, alertStyles } from '@/components/ui/alert';
+import { urqlClient } from '@/utils';
+
 import { ADDRESS } from '../consts';
 
 function ApiProvider({ children }: ProviderProps) {

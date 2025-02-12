@@ -1,4 +1,5 @@
 import { TRAITS, WEATHERS } from '../../consts';
+
 import styles from './Traits.module.scss';
 
 type Props = {

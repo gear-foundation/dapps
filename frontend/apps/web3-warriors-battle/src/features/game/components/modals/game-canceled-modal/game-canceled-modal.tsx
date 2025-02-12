@@ -1,9 +1,11 @@
 import { Button } from '@gear-js/vara-ui';
 import { useSetAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from '@/components';
+
 import { ROUTES } from '@/app/consts';
+import { Modal } from '@/components';
 import { isBattleCanceledAtom } from '@/features/game/store';
+
 import styles from './game-canceled-modal.module.scss';
 
 export const GameCanceledModal = () => {

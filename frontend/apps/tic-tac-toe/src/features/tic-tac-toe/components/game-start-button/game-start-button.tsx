@@ -1,10 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { BaseComponentProps } from '@/app/types';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useGaslessTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
-import { stateChangeLoadingAtom } from '../../store';
+
+import { BaseComponentProps } from '@/app/types';
+import { Button } from '@/components/ui/button';
+
 import { useStartGameMessage, useEventGameStartedSubscription } from '../../sails';
+import { stateChangeLoadingAtom } from '../../store';
 
 type GameStartButtonProps = BaseComponentProps;
 

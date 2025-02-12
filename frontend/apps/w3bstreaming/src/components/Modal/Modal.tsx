@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, MouseEvent, useCallback } from 'react';
+
 import crossSVG from '@/assets/icons/cross-icon.svg';
-import styles from './Modal.module.scss';
-import { ModalProps } from './Modal.interface';
-import { cx } from '@/utils';
 import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { ModalProps } from './Modal.interface';
+import styles from './Modal.module.scss';
 
 function Modal({ heading, children, onClose, className }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);

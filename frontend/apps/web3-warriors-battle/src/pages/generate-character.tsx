@@ -4,13 +4,11 @@ import { useSetAtom } from 'jotai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Card, CardButton } from '@/components';
-import { Background, CharacterStatsForm, Character } from '@/features/game/components';
-import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
-import { CharacterView } from '@/features/game/components/character/character';
-import { generateRandomCharacterView } from '@/features/game/utils';
 import { ROUTES } from '@/app/consts';
-
+import { Card, CardButton } from '@/components';
+import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
+import { Background, CharacterStatsForm, Character } from '@/features/game/components';
+import { CharacterView } from '@/features/game/components/character/character';
 import {
   characterAppearanceAtom,
   characterAppearanceStorage,
@@ -18,6 +16,8 @@ import {
   warriorIdStorage,
 } from '@/features/game/store';
 import { CharacterStatsFormValues } from '@/features/game/types';
+import { generateRandomCharacterView } from '@/features/game/utils';
+
 import styles from './generate-character.module.scss';
 
 export default function GenerateCharacter() {

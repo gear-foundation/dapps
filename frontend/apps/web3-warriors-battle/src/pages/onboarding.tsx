@@ -1,10 +1,9 @@
-import clsx from 'clsx';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@gear-js/vara-ui';
+import clsx from 'clsx';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Background } from '@/features/game/components';
-import { Character } from '@/features/game/components/character';
-import { CharacterStats } from '@/features/game/components/character-stats';
+import { Modal, Segmented, Text } from '@/components';
 import {
   AttackButtonIcon,
   DefenceButtonIcon,
@@ -12,11 +11,12 @@ import {
   UserSkullIcon,
   UserSmileIcon,
 } from '@/features/game/assets/images';
-import { GameButton, Timer } from '@/features/game/components';
-import { useEffect, useState } from 'react';
-import { Modal, Segmented, Text } from '@/components';
+import { Background, GameButton, Timer } from '@/features/game/components';
+import { Character } from '@/features/game/components/character';
+import { CharacterStats } from '@/features/game/components/character-stats';
 import { mockCharacterView, mockCharacterView2, mockPlayer1, mockPlayer2 } from '@/features/game/consts';
 import { characterAppearanceStorage, characterStatsStorage } from '@/features/game/store';
+
 import styles from './onboarding.module.scss';
 
 const steps = [

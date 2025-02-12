@@ -2,8 +2,10 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useGame } from '@/app/context/ctx-game';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { useGame } from '@/app/context/ctx-game';
+
 import { useAdminsQuery, useAllStateQuery, useConfigQuery, useTournamentQuery } from '../utils';
 
 export const useInitGame = () => {

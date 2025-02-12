@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+import { useEffect } from 'react';
+
 import { useProgram } from '@/app/utils/sails';
-import { SERVICE_NAME } from '../consts';
+
 import { useMultiplayerGame } from '../../hooks';
+import { SERVICE_NAME } from '../consts';
 
 export const useRemainingTimeQuery = () => {
   const { account } = useAccount();

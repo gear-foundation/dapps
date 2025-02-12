@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { BaseHTMLAttributes } from 'react';
+
 import styles from './Heading.module.scss';
 
 export const headingVariants = cva('', {
@@ -28,7 +29,6 @@ export interface HeadingProps extends BaseHTMLAttributes<HTMLHeadingElement>, Va
 
 export function Heading({ children, className, size, weight, ...props }: HeadingProps) {
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <h2 className={headingVariants({ size, weight, className })} {...props}>
       {children}
     </h2>

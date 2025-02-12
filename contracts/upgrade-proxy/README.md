@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=upgrade-proxy/https://github.com/gear-foundation/dapps)
+
 ## UpgradeProxy example
 
 UpgradeProxy programs are a design pattern in blockchain development used to delegate function calls to a separate logic program. This separation of responsibilities allows developers to modify the business logic of a program without changing its state or address. UpgradeProxy programs act as intermediaries, forwarding user interactions to a logic program, making the system both modular and upgradeable.

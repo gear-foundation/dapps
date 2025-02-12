@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+
 import styles from './switcher.module.css';
 
 type Props = {

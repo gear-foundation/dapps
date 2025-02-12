@@ -1,9 +1,11 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
+
 import { Footer } from '@dapps-frontend/ui';
-import { Routing } from 'pages';
-import { Header, ApiLoader } from 'components';
-import { withProviders } from 'hocs';
-import 'App.scss';
+
+import { Header, ApiLoader } from '@/components';
+import { withProviders } from '@/hocs';
+import { Routing } from '@/pages';
+import './App.scss';
 
 function Component() {
   const { isApiReady } = useApi();

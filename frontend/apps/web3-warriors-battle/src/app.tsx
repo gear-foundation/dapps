@@ -3,6 +3,7 @@ import { withProviders } from '@/app/hocs';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
+
 import { useMyBattleQuery, useProgram } from './app/utils';
 
 function Component() {

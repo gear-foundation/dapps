@@ -4,8 +4,9 @@ import { ReactNode } from 'react';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 
 import { Session, useCreateMetadataSession } from '../hooks';
-import { usePair, useMetadataSession } from './hooks';
+
 import { SignlessTransactionsContext } from './context';
+import { usePair, useMetadataSession } from './hooks';
 
 type SignlessTransactionsMetadataProviderProps = {
   programId: HexString;

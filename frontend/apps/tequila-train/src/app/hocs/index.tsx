@@ -1,16 +1,18 @@
-import type { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import type { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
-import { Alert, alertStyles } from 'components/ui/alert';
-import { AppProvider, GameProvider } from 'app/context';
-import { ENV } from 'app/consts';
+
+import { ENV } from '@/app/consts';
+import { AppProvider, GameProvider } from '@/app/context';
+import { Alert, alertStyles } from '@/components/ui/alert';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
