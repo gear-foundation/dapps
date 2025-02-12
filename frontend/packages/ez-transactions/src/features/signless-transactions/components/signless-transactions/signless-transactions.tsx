@@ -64,7 +64,7 @@ function SignlessTransactions({
     }
   };
 
-  const handleRevokeVoucherFromStoragePair = async () => {
+  const handleRevokeVoucherFromStoragePair = () => {
     if (!pair) throw new Error('Signless pair not found');
 
     const decodedAddress = decodeAddress(pair.address);
