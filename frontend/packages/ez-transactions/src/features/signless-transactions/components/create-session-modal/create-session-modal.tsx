@@ -134,7 +134,7 @@ function CreateSessionModal({
           onFinally,
           pair: pairToSave,
         });
-      } catch (err) {
+      } catch (_err) {
         alert.error('Error when fetching gasless voucher');
         onFinally();
       }
@@ -160,7 +160,8 @@ function CreateSessionModal({
             },
             {
               heading: 'Voucher to issue:',
-              value: `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}`,
+              value:
+                issueVoucherValue > 0 ? `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}` : '',
             },
           ]}
         />
