@@ -1,10 +1,10 @@
-name: Build Builder Image for Release
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release image version'
+        description: 'Release version'
         required: true
         default: '1.2.0'
 
@@ -12,13 +12,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  RELEASE_VERSION: ${{ inputs.version }}
-
 jobs:
-  build-and-push-whitepaper-image:
+  build-and-push-rust-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,10 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to the github container registry
+      - name: Log in to the GitHub Container Registry
         uses: docker/login-action@master
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -40,4 +35,62 @@ jobs:
         with:
           push: true
           context: scripts/docker-rust
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+          tags: ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
+
+      - name: Save Docker Image as Artifact
+        run: |
+          docker save ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }} -o image.tar
+        if: success()
+      
+      - name: Upload Docker Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: image.tar
+        if: success()
+
+  build-release:
+    needs: build-and-push-rust-image
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        working-directory: contracts
+        run: 'cargo build --release --workspace;'
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm
+          path: |
+            contracts/target/wasm32-unknown-unknown/release/*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+            contracts/target/wasm32-unknown-unknown/release/*.idl
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ inputs.version }}
+          tag_name: ${{ inputs.version }}
+          prerelease: false
+          body: |
+            ## Release ${{ inputs.version }}
+            
+            **Build Image:**  
+            ```
+            ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
+            ```
+            Use:
+            ```
+            docker pull ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
+            ```
+          files: |
+            contracts/target/wasm32-unknown-unknown/release/*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+            contracts/target/wasm32-unknown-unknown/release/*.idl
+            image.tar
