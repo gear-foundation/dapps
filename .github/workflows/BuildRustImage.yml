@@ -1,10 +1,10 @@
-name: Build and Use Builder Image
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release image version'
+        description: 'Release version'
         required: true
         default: '1.2.0'
 
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-push-image:
+  build-and-push-rust-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,11 +35,11 @@ jobs:
         with:
           push: true
           context: scripts/docker-rust
-          tags: ghcr.io/${{ github.repository }}:${{ inputs.version }}
+          tags: ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
 
       - name: Save Docker Image as Artifact
         run: |
-          docker save ghcr.io/${{ github.repository }}:${{ inputs.version }} -o image.tar
+          docker save ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }} -o image.tar
         if: success()
       
       - name: Upload Docker Image Artifact
@@ -49,11 +49,11 @@ jobs:
           path: image.tar
         if: success()
 
-  build-project:
-    needs: build-and-push-image
+  build-release:
+    needs: build-and-push-rust-image
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}:${{ inputs.version }}
+      image: ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
 
     steps:
       - name: Checkout
@@ -83,11 +83,11 @@ jobs:
             
             **Build Image:**  
             ```
-            ghcr.io/${{ github.repository }}:${{ inputs.version }}
+            ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
             ```
             Use:
             ```
-            docker pull ghcr.io/${{ github.repository }}:${{ inputs.version }}
+            docker pull ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
             ```
           files: |
             contracts/target/wasm32-unknown-unknown/release/*.wasm
