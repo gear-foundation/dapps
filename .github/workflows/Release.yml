@@ -15,6 +15,7 @@ concurrency:
 jobs:
   build-and-push-rust-image:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: read
       packages: write
