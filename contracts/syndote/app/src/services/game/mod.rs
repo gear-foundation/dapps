@@ -102,6 +102,8 @@ pub enum Event {
     Killed {
         inheritor: ActorId,
     },
+
+    WaitingForGasForGameContract
 }
 
 #[derive(Clone)]
@@ -384,7 +386,7 @@ impl GameService {
         }
     }
 
-    // pub fn dns_info(&self) -> Option<(ActorId, String)> {
-    //     self.get().dns_info.clone()
-    // }
+    pub fn dns_info(&self) -> Option<(ActorId, String)> {
+        self.get().dns_info.clone()
+    }
 }

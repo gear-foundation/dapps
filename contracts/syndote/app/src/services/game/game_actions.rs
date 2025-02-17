@@ -205,7 +205,7 @@ impl GameSessionActions for Game {
             } else {
                 self.current_msg_id = MessageId::zero();
                 self.game_status = GameStatus::WaitingForGasForGameContract;
-                return Err(GameError::AddGasToGameContract);
+                return Ok(Event::WaitingForGasForGameContract);
             }
         }
 

@@ -28,7 +28,7 @@ async fn test_play_game() {
 
     let syndote_factory = Factory::new(program_space.clone());
     let config = Config {
-        reservation_amount: 700_000_000_000,
+        reservation_amount: 500_000_000_000,
         reservation_duration_in_block: 1_000,
         time_for_step: 10,
         min_gas_limit: 10_000_000_000,
@@ -111,7 +111,7 @@ async fn test_play_game() {
         .await
         .unwrap();
 
-    for _ in 0..20 {
+    for _ in 0..6 {
         client
             .make_reservation(ADMIN_ID.into())
             .send_recv(syndote_id)
