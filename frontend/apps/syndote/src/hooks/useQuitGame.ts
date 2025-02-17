@@ -1,4 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
+
 import { useReadGameSessionState, useSyndoteMessage } from './metadata';
 
 export const useQuitGame = () => {

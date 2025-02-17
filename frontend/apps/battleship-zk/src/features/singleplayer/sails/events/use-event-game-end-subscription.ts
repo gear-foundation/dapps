@@ -1,12 +1,14 @@
-import { isNull } from '@polkadot/util';
-import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
-import { useProgram } from '@/app/utils/sails';
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { isNull } from '@polkadot/util';
 import { useAtom } from 'jotai';
-import { gameEndResultAtom } from '../../atoms';
-import { useSingleplayerGame } from '../../hooks';
+
+import { useProgram } from '@/app/utils/sails';
+import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
 import { useShips } from '@/features/zk/hooks/use-ships';
+
+import { gameEndResultAtom } from '../../atoms';
 import { EVENT_NAME, SERVICE_NAME } from '../../consts';
+import { useSingleplayerGame } from '../../hooks';
 
 export type GameEndEvent = {
   winner: BattleshipParticipants;

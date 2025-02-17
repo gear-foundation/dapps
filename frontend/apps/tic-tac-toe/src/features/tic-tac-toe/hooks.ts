@@ -1,9 +1,11 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { countdownAtom, gameAtom, pendingAtom } from './store';
-import { useConfigQuery, useGameQuery } from '@/features/tic-tac-toe/sails';
+import { useEffect } from 'react';
+
 import { GameInstance } from '@/app/utils';
+import { useConfigQuery, useGameQuery } from '@/features/tic-tac-toe/sails';
+
+import { countdownAtom, gameAtom, pendingAtom } from './store';
 
 export function useGame() {
   const setGameState = useSetAtom(gameAtom);

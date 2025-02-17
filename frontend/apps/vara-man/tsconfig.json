@@ -1,32 +1,21 @@
 {
+  "extends": "../../tsconfig.json",
+
+  // each package has its own @ alias, cuz vite doesn't support single alias for multiple paths
+  // sources:
+  // https://github.com/vercel/turborepo/discussions/620
+  // https://github.com/vitejs/vite/issues/5370
+
+  // TODO: replace with configDir in the root config,
+  // once https://github.com/import-js/eslint-import-resolver-typescript/issues/299 is resolved
   "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
-      //      "@/app/*": ["./src/app/*"],
-      //      "@/assets/*": ["./src/assets/*"],
-      //      "@/components/*": ["./src/components/*"]
+      "@/*": ["./src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@ez/*": ["../../packages/ez-transactions/src/*"],
+      "gear-ez-transactions": ["../../packages/ez-transactions/src/index.ts"]
     }
   },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
-}
 
+  "include": ["src"]
+}

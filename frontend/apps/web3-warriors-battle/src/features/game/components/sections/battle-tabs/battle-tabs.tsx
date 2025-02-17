@@ -1,14 +1,16 @@
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 
 import { Switcher } from '@dapps-frontend/ui';
-import { BattleHistoryCard, BattleCard, PlayersList, List } from '@/features/game/components';
-import { Segmented, Text } from '@/components';
+
 import { BattleState, Player } from '@/app/utils';
+import { Segmented, Text } from '@/components';
 import { UserSkullIcon, UserSmileIcon } from '@/features/game/assets/images';
-import { PlayerStatus } from '@/features/game/types';
+import { BattleHistoryCard, BattleCard, PlayersList, List } from '@/features/game/components';
 import { battleHistoryAtom, currentPlayersAtom, otherPairBattleWatchAtom } from '@/features/game/store';
+import { PlayerStatus } from '@/features/game/types';
+
 import styles from './battle-tabs.module.scss';
 
 type Tabs = 'players' | 'history';

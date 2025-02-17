@@ -1,5 +1,5 @@
-import { Modal } from '@gear-js/vara-ui';
-import { Button } from '@gear-js/vara-ui';
+import { Modal, Button } from '@gear-js/vara-ui';
+
 import styles from './TextModal.module.scss';
 
 type Props = {

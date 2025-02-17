@@ -1,4 +1,4 @@
-use battle_client::{traits::*, Appearance, Config, Move, State};
+use battle_client::{traits::*, Appearance, Move, SessionConfig, State, UtilsConfig};
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
 use gtest::{Program, System};
 use sails_rs::{
@@ -39,23 +39,31 @@ async fn test() {
     let program_code_id = remoting.system().submit_code(battle::WASM_BINARY);
 
     let program_factory = battle_client::BattleFactory::new(remoting.clone());
+    let session_config = SessionConfig {
+        gas_to_delete_session: 10_000_000_000,
+        minimum_session_duration_ms: 180_000,
+        ms_per_block: 3_000,
+    };
 
     let program_id = program_factory
-        .new(Config {
-            health: 100,
-            max_participants: 10,
-            attack_range: (10, 20),
-            defence_range: (0, 10),
-            dodge_range: (0, 10),
-            available_points: 20,
-            time_for_move_in_blocks: 20,
-            block_duration_ms: 3_000,
-            gas_for_create_warrior: 10_000_000_000,
-            gas_to_cancel_the_battle: 10_000_000_000,
-            reservation_amount: 500_000_000_000,
-            reservation_time: 1_000,
-            time_to_cancel_the_battle: 10_000,
-        })
+        .new(
+            UtilsConfig {
+                health: 100,
+                max_participants: 10,
+                attack_range: (10, 20),
+                defence_range: (0, 10),
+                dodge_range: (0, 10),
+                available_points: 20,
+                time_for_move_in_blocks: 20,
+                block_duration_ms: 3_000,
+                gas_for_create_warrior: 10_000_000_000,
+                gas_to_cancel_the_battle: 10_000_000_000,
+                reservation_amount: 500_000_000_000,
+                reservation_time: 1_000,
+                time_to_cancel_the_battle: 10_000,
+            },
+            session_config,
+        )
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
@@ -72,6 +80,7 @@ async fn test() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .send_recv(program_id)
@@ -99,6 +108,7 @@ async fn test() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .with_args(GTestArgs::new(USER_2.into()))
@@ -112,7 +122,7 @@ async fn test() {
     assert_eq!(state.participants.len(), 2);
 
     service_client
-        .start_battle()
+        .start_battle(None)
         .send_recv(program_id)
         .await
         .unwrap();
@@ -159,23 +169,30 @@ async fn test_both_made_move() {
     let program_code_id = remoting.system().submit_code(battle::WASM_BINARY);
 
     let program_factory = battle_client::BattleFactory::new(remoting.clone());
-
+    let session_config = SessionConfig {
+        gas_to_delete_session: 10_000_000_000,
+        minimum_session_duration_ms: 180_000,
+        ms_per_block: 3_000,
+    };
     let program_id = program_factory
-        .new(Config {
-            health: 100,
-            max_participants: 10,
-            attack_range: (10, 20),
-            defence_range: (0, 10),
-            dodge_range: (0, 10),
-            available_points: 20,
-            time_for_move_in_blocks: 20,
-            block_duration_ms: 3_000,
-            gas_for_create_warrior: 10_000_000_000,
-            gas_to_cancel_the_battle: 10_000_000_000,
-            reservation_amount: 500_000_000_000,
-            reservation_time: 1_000,
-            time_to_cancel_the_battle: 10_000,
-        })
+        .new(
+            UtilsConfig {
+                health: 100,
+                max_participants: 10,
+                attack_range: (10, 20),
+                defence_range: (0, 10),
+                dodge_range: (0, 10),
+                available_points: 20,
+                time_for_move_in_blocks: 20,
+                block_duration_ms: 3_000,
+                gas_for_create_warrior: 10_000_000_000,
+                gas_to_cancel_the_battle: 10_000_000_000,
+                reservation_amount: 500_000_000_000,
+                reservation_time: 1_000,
+                time_to_cancel_the_battle: 10_000,
+            },
+            session_config,
+        )
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
@@ -192,6 +209,7 @@ async fn test_both_made_move() {
             20,
             5,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .send_recv(program_id)
@@ -220,6 +238,7 @@ async fn test_both_made_move() {
             15,
             8,
             7,
+            None,
         )
         .with_value(10_000_000_000)
         .with_args(GTestArgs::new(USER_2.into()))
@@ -233,7 +252,7 @@ async fn test_both_made_move() {
     assert_eq!(state.participants.len(), 2);
 
     service_client
-        .start_battle()
+        .start_battle(None)
         .send_recv(program_id)
         .await
         .unwrap();
@@ -283,23 +302,30 @@ async fn test_three_player() {
     let program_code_id = remoting.system().submit_code(battle::WASM_BINARY);
 
     let program_factory = battle_client::BattleFactory::new(remoting.clone());
-
+    let session_config = SessionConfig {
+        gas_to_delete_session: 10_000_000_000,
+        minimum_session_duration_ms: 180_000,
+        ms_per_block: 3_000,
+    };
     let program_id = program_factory
-        .new(Config {
-            health: 100,
-            max_participants: 10,
-            attack_range: (10, 20),
-            defence_range: (0, 10),
-            dodge_range: (0, 10),
-            available_points: 20,
-            time_for_move_in_blocks: 20,
-            block_duration_ms: 3_000,
-            gas_for_create_warrior: 10_000_000_000,
-            gas_to_cancel_the_battle: 10_000_000_000,
-            reservation_amount: 500_000_000_000,
-            reservation_time: 1_000,
-            time_to_cancel_the_battle: 10_000,
-        })
+        .new(
+            UtilsConfig {
+                health: 100,
+                max_participants: 10,
+                attack_range: (10, 20),
+                defence_range: (0, 10),
+                dodge_range: (0, 10),
+                available_points: 20,
+                time_for_move_in_blocks: 20,
+                block_duration_ms: 3_000,
+                gas_for_create_warrior: 10_000_000_000,
+                gas_to_cancel_the_battle: 10_000_000_000,
+                reservation_amount: 500_000_000_000,
+                reservation_time: 1_000,
+                time_to_cancel_the_battle: 10_000,
+            },
+            session_config,
+        )
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
@@ -316,6 +342,7 @@ async fn test_three_player() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .send_recv(program_id)
@@ -343,6 +370,7 @@ async fn test_three_player() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .with_args(GTestArgs::new(USER_2.into()))
@@ -371,6 +399,7 @@ async fn test_three_player() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .with_args(GTestArgs::new(USER_3.into()))
@@ -384,7 +413,7 @@ async fn test_three_player() {
     assert_eq!(state.participants.len(), 3);
 
     service_client
-        .start_battle()
+        .start_battle(None)
         .send_recv(program_id)
         .await
         .unwrap();
@@ -419,7 +448,7 @@ async fn test_three_player() {
     assert_eq!(state.pairs[0].1.round_start_time, 0);
 
     service_client
-        .start_next_fight()
+        .start_next_fight(None)
         .with_args(GTestArgs::new(user))
         .send_recv(program_id)
         .await
@@ -445,23 +474,30 @@ async fn test_error() {
     let program_code_id = remoting.system().submit_code(battle::WASM_BINARY);
 
     let program_factory = battle_client::BattleFactory::new(remoting.clone());
-
+    let session_config = SessionConfig {
+        gas_to_delete_session: 10_000_000_000,
+        minimum_session_duration_ms: 180_000,
+        ms_per_block: 3_000,
+    };
     let program_id = program_factory
-        .new(Config {
-            health: 100,
-            max_participants: 10,
-            attack_range: (10, 20),
-            defence_range: (0, 10),
-            dodge_range: (0, 10),
-            available_points: 20,
-            time_for_move_in_blocks: 20,
-            block_duration_ms: 3_000,
-            gas_for_create_warrior: 10_000_000_000,
-            gas_to_cancel_the_battle: 10_000_000_000,
-            reservation_amount: 500_000_000_000,
-            reservation_time: 1_000,
-            time_to_cancel_the_battle: 10_000,
-        })
+        .new(
+            UtilsConfig {
+                health: 100,
+                max_participants: 10,
+                attack_range: (10, 20),
+                defence_range: (0, 10),
+                dodge_range: (0, 10),
+                available_points: 20,
+                time_for_move_in_blocks: 20,
+                block_duration_ms: 3_000,
+                gas_for_create_warrior: 10_000_000_000,
+                gas_to_cancel_the_battle: 10_000_000_000,
+                reservation_amount: 500_000_000_000,
+                reservation_time: 1_000,
+                time_to_cancel_the_battle: 10_000,
+            },
+            session_config,
+        )
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
@@ -478,6 +514,7 @@ async fn test_error() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .send_recv(program_id)
@@ -500,6 +537,7 @@ async fn test_error() {
             15,
             10,
             5,
+            None,
         )
         .with_value(10_000_000_000)
         .with_args(GTestArgs::new(USER_2.into()))
@@ -508,7 +546,7 @@ async fn test_error() {
         .unwrap();
 
     service_client
-        .start_battle()
+        .start_battle(None)
         .send_recv(program_id)
         .await
         .unwrap();
@@ -534,7 +572,7 @@ async fn make_move(
     program_id: ActorId,
 ) -> Result<(), Error> {
     service_client
-        .make_move(turn)
+        .make_move(turn, None)
         .with_args(GTestArgs::new(user.into()))
         .send_recv(program_id)
         .await

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { Buffer } from 'buffer';
+
+import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { useAlert, useReadFullState } from '@gear-js/react-hooks';
-import { HexString } from '@polkadot/util/types';
 import { AnyJson } from '@polkadot/types/types';
+import { HexString } from '@polkadot/util/types';
+import { useEffect, useState } from 'react';
 
 export function useProgramMetadata(source: string) {
   const alert = useAlert();

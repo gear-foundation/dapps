@@ -1,5 +1,6 @@
 import { useSendProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+
 import { useProgram } from '@/app/utils';
 
 type Options = {

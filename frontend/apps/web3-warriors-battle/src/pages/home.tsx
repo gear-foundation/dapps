@@ -1,9 +1,11 @@
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { useNavigate } from 'react-router-dom';
+
+import { ALLOWED_SIGNLESS_ACTIONS, ROUTES } from '@/app/consts';
 import { Card } from '@/components';
-import { ROUTES } from '@/app/consts';
-import { Background } from '@/features/game/components';
 import { CardButton } from '@/components/ui/card-button';
 import { CodeSlashIcon, MagicLineIcon } from '@/features/game/assets/images';
+import { Background } from '@/features/game/components';
 import { useResetCharacterStats } from '@/features/game/hooks';
 
 import styles from './home.module.scss';
@@ -22,6 +24,7 @@ export default function Home() {
             title="Import Character from Program"
             description="Enter the program ID to view your character."
           />
+
           <CardButton
             onClick={() => navigate(ROUTES.GENERATE_CHARACTER)}
             icon={<MagicLineIcon />}
@@ -29,6 +32,8 @@ export default function Home() {
             description="Simply generate a random appearance and attributes."
           />
         </div>
+
+        <EzTransactionsSwitch allowedActions={ALLOWED_SIGNLESS_ACTIONS} />
       </Card>
     </Background>
   );

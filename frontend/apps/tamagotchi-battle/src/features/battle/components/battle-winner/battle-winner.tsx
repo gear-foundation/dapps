@@ -1,9 +1,11 @@
-import { BattleStateResponse } from '../../types/battles';
-import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';
 import { useRef } from 'react';
+
+import { toNumber } from '@/app/utils';
+
+import { BattleStateResponse } from '../../types/battles';
+import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { TamagotchiQueueCard } from '../tamagotchi-queue-card';
-import { toNumber } from 'app/utils';
 
 export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
   const winner = battle.players[battle.currentWinner];

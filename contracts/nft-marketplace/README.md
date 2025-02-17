@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=nft-marketplace/https://github.com/gear-foundation/dapps)
+
 ## The **NFT marketplace** program
 
 A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/NFTs/nft-marketplace/marketplace).

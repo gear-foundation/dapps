@@ -1,6 +1,8 @@
-import { getArrangementShips, getHash, getParsedZkData, setZkData } from '@/features/zk/utils';
 import { useAccount } from '@gear-js/react-hooks';
+
 import { ADDRESS } from '@/app/consts';
+import { getArrangementShips, getHash, getParsedZkData, setZkData } from '@/features/zk/utils';
+
 import { GameType, ZkProofData } from '../types';
 
 export const useProofShipHit = () => {

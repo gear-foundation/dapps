@@ -1,9 +1,10 @@
 import { Button } from '@gear-js/ui';
-import { cn } from '@/app/utils';
 import { Popover } from '@headlessui/react';
 import { Float } from '@headlessui-float/react';
 import { useEffect, useState } from 'react';
+
 import { useApp, useLessons } from '@/app/context';
+import { cn } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type Props = {

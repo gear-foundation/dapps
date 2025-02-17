@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { List } from 'components';
-import { useMergedAllNFTs } from 'hooks';
-import { MarketNFT } from 'types';
+
+import { List } from '@/components';
+import { useMergedAllNFTs } from '@/hooks';
+import { MarketNFT } from '@/types';
 
 const filters = ['All', 'Buy now', 'On auction', 'Has offers'];
 

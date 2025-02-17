@@ -1,7 +1,9 @@
-import styles from './Balance.module.scss';
 import clsx from 'clsx';
+
 import type { BaseComponentProps } from '@/app/types';
 import { Sprite } from '@/components/ui/sprite';
+
+import styles from './Balance.module.scss';
 
 type Props = BaseComponentProps & {
   icon: string;

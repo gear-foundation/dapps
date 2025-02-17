@@ -1,7 +1,9 @@
-import { buildPoseidon } from '@/features/zk/utils/poseidon';
 import { Account } from '@gear-js/react-hooks';
-import { GameType, ZkData, ZkProofData } from '../types';
+
 import { VerificationVariables } from '@/app/utils/sails/lib/lib';
+import { buildPoseidon } from '@/features/zk/utils/poseidon';
+
+import { GameType, ZkData, ZkProofData } from '../types';
 
 export const getHash = async (data: number[] | string[]) => {
   const poseidon = await buildPoseidon();

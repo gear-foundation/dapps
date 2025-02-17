@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=galactic-express/https://github.com/gear-foundation/dapps)
+
 # Galactic Express
 
 Galactic Express (GalEx) is a 100% on-chain PvE economic game.

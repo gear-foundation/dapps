@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
-import { cx } from '@/utils';
-import styles from './Dropdown.module.scss';
-import { DropdownMenuItem, DropdownProps } from './Dropdown.interfaces';
+
 import selectArrow from '@/assets/icons/select-arrow.svg';
 import { useClickOutside } from '@/hooks';
+import { cx } from '@/utils';
+
+import { DropdownMenuItem, DropdownProps } from './Dropdown.interfaces';
+import styles from './Dropdown.module.scss';
 
 function Dropdown({
   label,

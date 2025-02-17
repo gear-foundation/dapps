@@ -1,9 +1,9 @@
 import { useCountdown } from '@dapps-frontend/hooks';
 
-import { toNumber } from 'app/utils';
+import { toNumber } from '@/app/utils';
 
-import { getDoubleDigitSeconds } from '../../utils';
 import { useBattle } from '../../context';
+import { getDoubleDigitSeconds } from '../../utils';
 
 export const Countdown = () => {
   const { battle, currentPairIdx } = useBattle();

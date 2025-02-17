@@ -1,10 +1,12 @@
-import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
-import styles from './logo.module.scss';
+import { NavLink } from 'react-router-dom';
+
 import { ROUTES } from '@/app/consts';
-import { TextGradient } from '@/components/ui/text-gradient';
-import { Sprite } from '@/components/ui/sprite';
 import type { BaseComponentProps } from '@/app/types';
+import { Sprite } from '@/components/ui/sprite';
+import { TextGradient } from '@/components/ui/text-gradient';
+
+import styles from './logo.module.scss';
 
 type LogoProps = BaseComponentProps & {
   label?: string;

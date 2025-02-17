@@ -1,9 +1,22 @@
+import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@gear-js/vara-ui';
-import { useAccount } from '@gear-js/react-hooks';
 
+import { ROUTES } from '@/app/consts';
+import {
+  Move,
+  useCancelTournamentMessage,
+  useConfigQuery,
+  useExitGameMessage,
+  useMakeMoveMessage,
+  useMyBattleQuery,
+  useStartNextFightMessage,
+} from '@/app/utils';
+import { Loader, Modal } from '@/components';
+import { AttackButtonIcon, DefenceButtonIcon, ExitIcon, UltimateButtonIcon } from '@/features/game/assets/images';
 import {
   Background,
   BattleTabs,
@@ -18,19 +31,7 @@ import {
   FireballCanvas,
   GameSpinner,
 } from '@/features/game/components';
-import { AttackButtonIcon, DefenceButtonIcon, ExitIcon, UltimateButtonIcon } from '@/features/game/assets/images';
-import { useEffect, useState } from 'react';
-import { Loader, Modal } from '@/components';
-import {
-  Move,
-  useCancelTournamentMessage,
-  useConfigQuery,
-  useExitGameMessage,
-  useMakeMoveMessage,
-  useMyBattleQuery,
-  useStartNextFightMessage,
-} from '@/app/utils';
-import { ROUTES } from '@/app/consts';
+import { useParticipants, usePending } from '@/features/game/hooks';
 import {
   battleHistoryAtom,
   battleHistoryStorage,
@@ -38,7 +39,7 @@ import {
   currentPlayersStorage,
   otherPairBattleWatchAtom,
 } from '@/features/game/store';
-import { useParticipants, usePending } from '@/features/game/hooks';
+
 import styles from './game.module.scss';
 
 export default function GamePage() {

@@ -1,12 +1,14 @@
-import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { cx } from '@/utils';
-import styles from './BurgerMenu.module.scss';
-import { BurgerMenuProps } from './BurgerMenu.interfaces';
+import { useState } from 'react';
+
 import closeMenuIcon from '@/assets/icons/cross-icon.svg';
-import { Button } from '@/ui';
 import { WalletModal } from '@/features/Wallet/components';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { BurgerMenuProps } from './BurgerMenu.interfaces';
+import styles from './BurgerMenu.module.scss';
 
 // @deprecated
 function BurgerMenu({ burgerMenuHandler }: BurgerMenuProps) {

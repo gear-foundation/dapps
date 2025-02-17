@@ -1,7 +1,9 @@
 import { Popover } from '@headlessui/react';
-import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { getBgColors } from 'app/utils';
+
+import { getBgColors } from '@/app/utils';
+
+import { Icon } from '../../ui/icon';
 
 type Props = {
   index: number;
@@ -21,9 +23,7 @@ export const PlayerTrain = ({ index }: Props) => {
           </p>
 
           <div className="grid grid-cols-2 items-center gap-2 mt-2">
-            <Popover.Button className="btn btn--primary py-1.5 grow">
-              Drink!
-            </Popover.Button>
+            <Popover.Button className="btn btn--primary py-1.5 grow">Drink!</Popover.Button>
             <Popover.Button className="btn btn--black py-1.5 grow">No, thanks</Popover.Button>
           </div>
         </div>

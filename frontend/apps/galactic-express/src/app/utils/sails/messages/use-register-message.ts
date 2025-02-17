@@ -1,7 +1,8 @@
-import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { Participant, useProgram } from 'app/utils';
-import { Options, useSignAndSend } from 'app/hooks';
 import { HexString } from '@gear-js/api';
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+
+import { Options, useSignAndSend } from '@/app/hooks';
+import { Participant, useProgram } from '@/app/utils';
 
 type Params = {
   creator: HexString;

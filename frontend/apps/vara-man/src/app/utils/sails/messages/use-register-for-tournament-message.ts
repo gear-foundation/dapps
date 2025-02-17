@@ -1,7 +1,8 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
-import { useProgram } from '@/app/utils';
+
 import { useSignAndSend, Options } from '@/app/hooks/use-sign-and-send';
+import { useProgram } from '@/app/utils';
 
 export const useRegisterForTournamentMessage = () => {
   const program = useProgram();
