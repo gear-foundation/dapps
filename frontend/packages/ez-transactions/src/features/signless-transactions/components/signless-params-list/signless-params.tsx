@@ -8,17 +8,19 @@ type Props = {
 };
 
 function SignlessParams({ params }: Props) {
-  return (
-    <ul className={styles.summary}>
-      {params.map((param) => (
-        <li className={styles.summaryItem} key={param.heading}>
-          <h4 className={styles.heading}>{param.heading}</h4>
-          <div className={styles.separator} />
-          <p className={styles.value}>{param.value}</p>
-        </li>
-      ))}
-    </ul>
-  );
+  const renderParams = () =>
+    params.map(
+      ({ heading, value }) =>
+        value && (
+          <li className={styles.summaryItem} key={heading}>
+            <h4 className={styles.heading}>{heading}</h4>
+            <div className={styles.separator} />
+            <p className={styles.value}>{value}</p>
+          </li>
+        ),
+    );
+
+  return <ul className={styles.summary}>{renderParams()}</ul>;
 }
 
 export { SignlessParams };
