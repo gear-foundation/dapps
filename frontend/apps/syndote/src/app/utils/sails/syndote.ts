@@ -1,6 +1,6 @@
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, HexString, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -394,6 +394,25 @@ export class Syndote {
     );
   }
 
+  public async dnsInfo(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<[ActorId, string] | null> {
+    const payload = this._program.registry.createType('(String, String)', ['Syndote', 'DnsInfo']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId!,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
+    const result = this._program.registry.createType('(String, String, Option<([u8;32], String)>)', reply.payload);
+    return result[2].toJSON() as unknown as [ActorId, string] | null;
+  }
+
   public async getConfig(
     originAddress?: string,
     value?: number | string | bigint,
@@ -703,6 +722,21 @@ export class Syndote {
             .createType('(String, String, {"inheritor":"[u8;32]"})', message.payload)[2]
             .toJSON() as unknown as { inheritor: ActorId },
         );
+      }
+    });
+  }
+
+  public subscribeToWaitingForGasForGameContractEvent(
+    callback: (data: null) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Syndote' && getFnNamePrefix(payload) === 'WaitingForGasForGameContract') {
+        callback(null);
       }
     });
   }

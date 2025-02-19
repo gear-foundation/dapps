@@ -81,6 +81,7 @@ service Syndote {
   Skip : (admin_id: actor_id) -> null;
   ThrowRoll : (admin_id: actor_id, pay_fine: bool, properties_for_sale: opt vec u8) -> null;
   Upgrade : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
+  query DnsInfo : () -> opt struct { actor_id, str };
   query GetConfig : () -> Config;
   query GetGameSession : (account_id: actor_id) -> opt GameState;
   query GetOwnerId : (admin_id: actor_id, strategy_id: actor_id) -> opt actor_id;
@@ -88,19 +89,20 @@ service Syndote {
   query GetPlayersToSessions : () -> vec struct { actor_id, actor_id };
 
   events {
-        GameSessionCreated: struct { admin_id: actor_id };
-        ReservationMade;
-        StrategyRegistered;
-            GameFinished: struct { admin_id: actor_id, winner: actor_id };
-        GasForPlayerStrategyAdded;
-        GameWasCancelled;
-        PlayerLeftGame;
-        Step: struct { players: vec struct { actor_id, PlayerInfoState }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }, current_player: actor_id, ownership: vec actor_id, current_step: u64 };
-            NextRoundFromReservation;
-        GameDeleted;
-        PlayerDeleted;
+    GameSessionCreated: struct { admin_id: actor_id };
+    ReservationMade;
+    StrategyRegistered;
+    GameFinished: struct { admin_id: actor_id, winner: actor_id };
+    GasForPlayerStrategyAdded;
+    GameWasCancelled;
+    PlayerLeftGame;
+    Step: struct { players: vec struct { actor_id, PlayerInfoState }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }, current_player: actor_id, ownership: vec actor_id, current_step: u64 };
+    NextRoundFromReservation;
+    GameDeleted;
+    PlayerDeleted;
     StrategicSuccess;
     Killed: struct { inheritor: actor_id };
+    WaitingForGasForGameContract;
   }
 };
 
