@@ -2,15 +2,15 @@ import { HexString } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas, getVaraAddress } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { stringShorten } from '@polkadot/util';
-
 import clsx from 'clsx';
+
+import { useDeletePlayerMessage } from '@/app/utils';
 import CopySVG from '@/assets/images/icons/copy-text.svg?react';
 import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';
 import RemovePlayerSVG from '@/assets/images/icons/remove-player.svg?react';
 import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
 import { GameDetails } from '@/components/layout/game-details';
-import { useSyndoteMessage } from '@/hooks/metadata';
 import { Players } from '@/types';
 import { copyToClipboard } from '@/utils';
 
@@ -26,7 +26,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
-  const { isMeta, sendMessage } = useSyndoteMessage();
+  const { deletePlayerMessage } = useDeletePlayerMessage();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
 
@@ -75,19 +75,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const isAdmin = adminId === account?.decodedAddress;
 
   const removePlayer = (playerId: HexString) => {
-    if (!isMeta) {
-      return;
-    }
-
-    const payload = {
-      DeletePlayer: {
-        playerId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
+    deletePlayerMessage({ playerId });
   };
 
   return (
@@ -96,18 +84,18 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       <ul className={styles.playersContainer}>
         {players.map((player) => (
           <li
-            key={player[1].ownerId}
+            key={player[1].owner_id}
             className={clsx(
               styles.playerItem,
-              player[1].ownerId === account?.decodedAddress && styles.playerItemAdmin,
-              isAdmin && player[1].ownerId !== account?.decodedAddress && styles.playerItemForAdmin,
+              player[1].owner_id === account?.decodedAddress && styles.playerItemAdmin,
+              isAdmin && player[1].owner_id !== account?.decodedAddress && styles.playerItemForAdmin,
             )}>
             <span>
-              {stringShorten(getVaraAddress(player[1].ownerId), 4)}{' '}
-              {player[1].ownerId === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
+              {stringShorten(getVaraAddress(player[1].owner_id), 4)}{' '}
+              {player[1].owner_id === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
             </span>
-            {isAdmin && player[1].ownerId !== account?.decodedAddress && (
-              <Button color="transparent" icon={RemovePlayerSVG} onClick={() => removePlayer(player[1].ownerId)} />
+            {isAdmin && player[1].owner_id !== account?.decodedAddress && (
+              <Button color="transparent" icon={RemovePlayerSVG} onClick={() => removePlayer(player[1].owner_id)} />
             )}
           </li>
         ))}
