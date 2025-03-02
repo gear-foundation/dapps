@@ -136,6 +136,12 @@ function Home() {
     startGame();
   };
 
+  const handleCloseModal = () => {
+    setModalGameStatus(null);
+    setModalContract(null);
+    setModalStrategy(null);
+  };
+
   useEffect(() => {
     if (admin_id) {
       adminRef.current = admin_id;
@@ -178,6 +184,14 @@ function Home() {
       setModalGameStatus('gameFinished');
     }
   }, [game_status]);
+
+  useEffect(() => {
+    if (!state) {
+      handleCloseModal();
+      setSteps([]);
+      setStep(0);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (steps.length > 0) {
@@ -228,12 +242,6 @@ function Home() {
       ),
     );
   }, [winner]);
-
-  const handleCloseModal = () => {
-    setModalGameStatus(null);
-    setModalContract(null);
-    setModalStrategy(null);
-  };
 
   const entryFee = entry_fee ? String(entry_fee) : null;
   if (!isFetched) return <Loader />;

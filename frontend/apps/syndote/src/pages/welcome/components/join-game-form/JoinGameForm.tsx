@@ -75,11 +75,11 @@ function JoinGameForm({ onCancel }: Props) {
     }
   };
 
-  const handleJoinSession = (values: JoinModalFormValues) => {
+  const handleJoinSession = ({ strategyId, name }: JoinModalFormValues) => {
     if (foundGame) {
       setCurrentGame(foundGame);
-      setCurrentStrategyId(decodeAddress(values.strategyId));
-      setPlayerName(values.name);
+      setCurrentStrategyId(decodeAddress(strategyId));
+      setPlayerName(name);
     }
   };
 
