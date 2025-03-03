@@ -24,12 +24,6 @@ function RequestGame() {
     setStatus(newStatus);
   };
 
-  // useEffect(() => {
-  //   setRegistrationStatus('registration');
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   return (
     <div className={styles.container}>
       <GameIntro heading="Welcome to Syndote" status={status} />

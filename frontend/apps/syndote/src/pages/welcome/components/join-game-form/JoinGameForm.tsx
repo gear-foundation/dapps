@@ -1,17 +1,14 @@
 import { decodeAddress, HexString } from '@gear-js/api';
-import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { useSetAtom, useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useState } from 'react';
 
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
-
-import metaTxt from '@/assets/meta/syndote_meta.txt';
+import { GameState, useGetGameSessionQuery } from '@/app/utils';
 import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
 import { TextField } from '@/components/layout/text-field';
-import { useProgramMetadata } from '@/hooks/metadata';
-import { GameSessionState, State } from '@/types';
+import { getSafeDecodedAddress } from '@/utils';
 
 import { GameFoundModal, JoinModalFormValues } from '../../../home/game-found-modal';
 import { TextModal } from '../../../home/text-modal';
@@ -28,11 +25,8 @@ type JoinFormValues = {
 
 function JoinGameForm({ onCancel }: Props) {
   const { account } = useAccount();
-  const { api } = useApi();
-  const { programId } = useDnsProgramIds();
   const { getFormattedBalanceValue } = useBalanceFormat();
-  const [foundState, setFoundState] = useState<State | null>(null);
-  const meta = useProgramMetadata(metaTxt);
+  const [foundState, setFoundState] = useState<GameState | null>(null);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
   const setCurrentStrategyId = useSetAtom(CURRENT_STRATEGY_ID_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
@@ -41,7 +35,7 @@ function JoinGameForm({ onCancel }: Props) {
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
   const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);
 
-  const joinForm = useForm({
+  const joinForm = useForm<JoinFormValues>({
     initialValues: {
       address: undefined,
     },
@@ -50,36 +44,25 @@ function JoinGameForm({ onCancel }: Props) {
     },
   });
 
-  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
+
+  const decodedAdminAddress = getSafeDecodedAddress(values.address?.trim());
+  const { refetch } = useGetGameSessionQuery(decodedAdminAddress, true);
 
   const handleCloseFoundModal = () => {
     setIsJoinSessionModalShown(false);
   };
 
-  const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
-    if (!account?.decodedAddress || !values.address) {
+  const handleOpenJoinSessionModal = async () => {
+    if (!account?.decodedAddress || !decodedAdminAddress) {
+      setGameNotFoundModal(true);
       return;
     }
 
-    const decodedAdminAddress = decodeAddress(values.address);
-
-    const payload = { GetGameSession: { accountId: decodedAdminAddress.trim() } };
-
     try {
-      const res = await api?.programState.read(
-        {
-          programId,
-          payload,
-        },
-        meta,
-      );
-
-      const state = (await res?.toHuman()) as GameSessionState;
-      console.log('STATE');
-      console.log(state.GameSession.gameSession);
-
-      if (state.GameSession.gameSession) {
-        setFoundState(state.GameSession.gameSession);
+      const { data: state } = await refetch();
+      if (state) {
+        setFoundState(state);
         setFoundGame(decodedAdminAddress);
         setIsJoinSessionModalShown(true);
         return;
@@ -87,16 +70,16 @@ function JoinGameForm({ onCancel }: Props) {
 
       setGameNotFoundModal(true);
     } catch (err: any) {
-      console.log(err.message);
+      console.error(err?.message);
       setGameNotFoundModal(true);
     }
   };
 
-  const handleJoinSession = (values: JoinModalFormValues) => {
+  const handleJoinSession = ({ strategyId, name }: JoinModalFormValues) => {
     if (foundGame) {
       setCurrentGame(foundGame);
-      setCurrentStrategyId(decodeAddress(values.strategyId));
-      setPlayerName(values.name);
+      setCurrentStrategyId(decodeAddress(strategyId));
+      setPlayerName(name);
     }
   };
 
@@ -130,10 +113,10 @@ function JoinGameForm({ onCancel }: Props) {
         </div>
       </form>
 
-      {isJoinSessionModalShown && (
+      {isJoinSessionModalShown && foundState && (
         <GameFoundModal
-          entryFee={getFormattedBalanceValue(withoutCommas(foundState?.entryFee || '')).toFixed()}
-          players={foundState?.players.length || 1}
+          entryFee={foundState.entry_fee ? getFormattedBalanceValue(String(foundState.entry_fee)).toFixed() : 0}
+          players={foundState.players.length}
           gasAmount={1.121}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}
