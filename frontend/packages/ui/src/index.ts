@@ -10,7 +10,6 @@ import {
   MenuHandler,
   Switcher,
 } from './components';
-
 import { QueryProvider } from './providers';
 
 export {

@@ -1,4 +1,5 @@
 import { HexString } from '@gear-js/api';
+
 import { WALLET } from './consts';
 
 type WalletId = keyof typeof WALLET;

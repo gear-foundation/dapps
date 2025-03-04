@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=car-races/https://github.com/gear-foundation/dapps)
+
 # Car Races
 
 This project is a competitive environment where strategy-based programs race against each other, aiming to optimize speed, tactics, and resource management on the track. Each program operates autonomously, employing unique strategies to outmaneuver opponents and complete the race as efficiently as possible.

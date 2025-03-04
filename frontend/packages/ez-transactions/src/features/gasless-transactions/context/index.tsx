@@ -1,10 +1,11 @@
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { GaslessContext, VoucherStatus } from './types';
-import { DEFAULT_GASLESS_CONTEXT } from './consts';
-import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
-import { getVoucherId, getVoucherStatus } from './utils';
+import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+import { DEFAULT_GASLESS_CONTEXT } from './consts';
 import { useLoading } from './hooks';
+import { GaslessContext, VoucherStatus } from './types';
+import { getVoucherId, getVoucherStatus } from './utils';
 
 const GaslessTransactionsContext = createContext<GaslessContext>(DEFAULT_GASLESS_CONTEXT);
 const { Provider } = GaslessTransactionsContext;

@@ -1,10 +1,13 @@
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
+
+import { Player, State } from '@/app/utils';
 import { Card, Text } from '@/components';
 import { VaraIcon } from '@/components/layout';
-import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
-import { Player, State } from '@/app/utils';
+
 import { battleHistoryAtom, currentPlayersAtom } from '../../store';
+
 import styles from './game-over-card.module.scss';
 
 type GameOverCardProps = {
@@ -16,6 +19,18 @@ type GameOverCardProps = {
   isShowOtherBattle: boolean;
   className?: string;
 };
+
+const STATUS = {
+  WIN: 'win',
+  LOSS: 'loss',
+  DRAW: 'draw',
+} as const;
+
+const STATUS_TEXT = {
+  [STATUS.WIN]: 'You won',
+  [STATUS.LOSS]: 'You lost',
+  [STATUS.DRAW]: "It's a draw",
+} as const;
 
 const GameOverCard = ({
   bid,
@@ -37,16 +52,18 @@ const GameOverCard = ({
 
   const isTournamentDraw = isTournamentOver && state.gameIsOver.winners[1];
 
-  const getMyResultStatus = () => {
-    if (!account) return null;
+  const getStatus = () => {
+    if (!account) return;
+
     if (isCurrentDraw || (isTournamentDraw && state.gameIsOver.winners.includes(account.decodedAddress)))
-      return 'It’s a draw';
-    if (!isAlive && (!isShowOtherBattle || isTournamentOver)) return 'You lose';
-    if (isTournamentOver && state.gameIsOver.winners[0] === account.decodedAddress) return 'You win';
-    return null;
+      return STATUS.DRAW;
+
+    if (!isAlive && (!isShowOtherBattle || isTournamentOver)) return STATUS.LOSS;
+
+    if (isTournamentOver && state.gameIsOver.winners[0] === account.decodedAddress) return STATUS.WIN;
   };
 
-  const myResultStatus = getMyResultStatus();
+  const status = getStatus();
 
   const getDesctiptionText = () => {
     if (!isTournamentOver) {
@@ -69,10 +86,10 @@ const GameOverCard = ({
   };
 
   return (
-    myResultStatus && (
-      <div className={clsx(styles.backdrop, className)}>
+    status && (
+      <div className={clsx(styles.backdrop, status === STATUS.LOSS && styles.grayedOut, className)}>
         {!isCurrentDraw && (
-          <Card title="Game over" description={getDesctiptionText()} className={styles.card} size="md">
+          <Card title={STATUS_TEXT[status]} description={getDesctiptionText()} className={styles.card} size="md">
             {isTournamentOver && (
               <div className={styles.prize}>
                 <Text size="sm">Winner prize:</Text>
@@ -84,8 +101,6 @@ const GameOverCard = ({
             )}
           </Card>
         )}
-
-        <p className={styles.result}>{myResultStatus}</p>
       </div>
     )
   );

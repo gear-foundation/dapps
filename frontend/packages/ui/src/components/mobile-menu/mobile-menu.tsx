@@ -1,10 +1,11 @@
-import { PropsWithChildren, Suspense } from 'react';
-import Identicon from '@polkadot/react-identicon';
-import { motion } from 'framer-motion';
-import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import styles from './mobile-menu.module.css';
+import { Button } from '@gear-js/vara-ui';
+import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { PropsWithChildren, Suspense } from 'react';
+
+import styles from './mobile-menu.module.css';
 
 export type ClassNameProps = {
   container?: string;

@@ -1,12 +1,14 @@
-import { useCallback, useRef, useState } from 'react';
-import { useRefDimensions } from '../../hooks';
 import { motion, useAnimation } from 'framer-motion';
-import { SpriteIcon } from 'components/ui/sprite-icon';
+import { useCallback, useRef, useState } from 'react';
+
+import { cn, toNumber } from '@/app/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+
 import { useBattle } from '../../context';
+import { useRefDimensions } from '../../hooks';
 import { BattleStatePlayer } from '../../types/battles';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { ScrollArea } from 'components/ui/scroll-area';
-import { cn, toNumber } from 'app/utils';
 
 export const BattleTableChampions = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -130,10 +132,10 @@ const BattleTablePairsRow = ({ player, position }: { player: BattleStatePlayer; 
             ? position === 0
               ? 'wins'
               : position === 1
-              ? 'sword-2'
-              : position === 2
-              ? 'sword-1'
-              : 'sword-single'
+                ? 'sword-2'
+                : position === 2
+                  ? 'sword-1'
+                  : 'sword-single'
             : 'sword-single'
         }
         className="w-5 h-5"

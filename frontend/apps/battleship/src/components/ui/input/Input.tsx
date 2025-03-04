@@ -1,6 +1,8 @@
-import { InputProps } from '@gear-js/ui';
+import { InputProps } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { ReactComponent as SearchSVG } from '@/assets/images/icons/search.svg';
+
+import SearchSVG from '@/assets/images/icons/search.svg?react';
+
 import styles from './Input.module.scss';
 
 function Input(props: Omit<InputProps, 'size' | 'color'>) {
@@ -11,7 +13,7 @@ function Input(props: Omit<InputProps, 'size' | 'color'>) {
     <div className={wrapperClassName}>
       <SearchSVG />
 
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      {}
       <input type="text" placeholder="Search" id="search" {...attrs} />
     </div>
   );

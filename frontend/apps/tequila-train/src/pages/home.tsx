@@ -1,35 +1,35 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useApp, useGame } from 'app/context';
-import { cn } from 'app/utils';
-import { LoginSection, GameSection, StartSection, RegistrationSection, CanceledSection } from 'components/sections';
-import { useInitGame } from 'app/hooks/use-game';
 import { useEffect } from 'react';
+
+import { useApp, useGame } from '@/app/context';
+import { useInitGame } from '@/app/hooks/use-game';
+import { cn } from '@/app/utils';
+import { LoginSection, GameSection, StartSection, RegistrationSection, CanceledSection } from '@/components/sections';
 
 export const Home = () => {
   useInitGame();
 
   const { account } = useAccount();
   const { game, previousGame, setPreviousGame } = useGame();
-  const { setOpenEmptyPopup, openEmptyPopup, isUserCancelled, setIsUserCancelled } = useApp()
+  const { setOpenEmptyPopup, openEmptyPopup, isUserCancelled, setIsUserCancelled } = useApp();
 
   useEffect(() => {
     const isAdmin = previousGame?.admin === account?.decodedAddress;
 
     if (game) {
       setPreviousGame(game);
-    }
-    else if (previousGame) {
+    } else if (previousGame) {
       if (!isAdmin && !isUserCancelled && !previousGame.state.Winners) {
-        setOpenEmptyPopup(true)
+        setOpenEmptyPopup(true);
       }
-      setIsUserCancelled(false)
-      setPreviousGame(null)
+      setIsUserCancelled(false);
+      setPreviousGame(null);
     }
   }, [game]);
 
   const renderSection = () => {
     if (!account) {
-      return <LoginSection />
+      return <LoginSection />;
     }
 
     if (game?.isStarted || previousGame?.isStarted) {

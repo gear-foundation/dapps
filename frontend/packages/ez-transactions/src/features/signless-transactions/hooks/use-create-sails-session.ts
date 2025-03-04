@@ -1,7 +1,9 @@
 import { HexString, decodeAddress } from '@gear-js/api';
 import { useAccount, useApi, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { KeyringPair } from '@polkadot/keyring/types';
+
 import { BaseProgram } from '../context/types';
+
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
 function useCreateSailsSession(programId: HexString, program: BaseProgram) {

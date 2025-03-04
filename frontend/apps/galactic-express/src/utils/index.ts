@@ -1,4 +1,4 @@
-import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
+import { AlertContainerFactory } from '@gear-js/react-hooks/dist/types';
 import clsx from 'clsx';
 
 export const copyToClipboard = async ({

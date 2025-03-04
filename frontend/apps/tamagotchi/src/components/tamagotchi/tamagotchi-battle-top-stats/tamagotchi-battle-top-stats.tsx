@@ -1,5 +1,5 @@
-import { cn } from '@/app/utils';
 import { BattleStatesList } from '@/app/types/battles';
+import { cn } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type Props = {

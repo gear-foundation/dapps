@@ -1,10 +1,12 @@
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { useTamagotchiInit } from '@/app/hooks/use-tamagotchi';
-import { useThrottleWasmState } from '@/app/hooks/use-read-wasm-state';
-import { Loader } from '@/components/loaders/loader';
+
 import { useLessonsInit } from '@/app/hooks/use-lessons';
+import { useThrottleWasmState } from '@/app/hooks/use-read-wasm-state';
+import { useTamagotchiInit } from '@/app/hooks/use-tamagotchi';
+import { Loader } from '@/components/loaders/loader';
 
 const routes = [{ path: '/', Page: lazy(() => import('./home')) }];
 

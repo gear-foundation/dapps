@@ -1,17 +1,21 @@
+import { decodeAddress } from '@gear-js/api';
+import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { stringShorten } from '@polkadot/util';
+import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
-import { Button } from '@gear-js/vara-ui';
+
+import { ROUTES } from '@/app/consts';
+import { copyToClipboard } from '@/app/utils/utils';
+import { VaraIcon } from '@/components/layout/vara-svg';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { VaraIcon } from '@/components/layout/vara-svg';
-import { usePending } from '@/features/game/hooks';
 import { GameCancelledModal, Illustration } from '@/features/game/components';
-import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
-import { decodeAddress } from '@gear-js/api';
-import { stringShorten } from '@polkadot/util';
-import { copyToClipboard } from '@/app/utils/utils';
-import { ReactComponent as FilledCrossSVG } from '../../assets/icons/filled-cross.svg';
+import { usePending } from '@/features/game/hooks';
+
+import FilledCrossSVG from '../../assets/icons/filled-cross.svg?react';
+import { useMultiplayerGame } from '../../hooks';
 import {
   useEventGameCancelled,
   useEventPlayerJoinedGame,
@@ -19,10 +23,9 @@ import {
   useEventGameLeft,
 } from '../../sails/events';
 import { useCancelGameMessage } from '../../sails/messages';
-import { useMultiplayerGame } from '../../hooks';
-import styles from './Registration.module.scss';
 import { useDeleteGameMessage } from '../../sails/messages/use-delete-player-message';
-import { ROUTES } from '@/app/consts';
+
+import styles from './Registration.module.scss';
 
 type UserProps = {
   name: string;

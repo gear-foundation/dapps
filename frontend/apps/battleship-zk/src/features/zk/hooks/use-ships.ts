@@ -1,7 +1,9 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { getParsedZkData, setZkData } from '../utils';
-import { checkDeadShip, defineDeadShip } from '@/features/game/utils';
 import { isNull, isUndefined } from '@polkadot/util';
+
+import { checkDeadShip, defineDeadShip } from '@/features/game/utils';
+
+import { getParsedZkData, setZkData } from '../utils';
 
 type PlayerType = 'player' | 'enemy';
 type GameType = 'single' | 'multi';

@@ -1,5 +1,7 @@
 import { atom } from 'jotai';
+
 import { MultipleGameState } from '@/app/utils/sails/lib/lib';
+
 import { GameEndEvent } from './sails/events/use-event-game-end-subscription';
 
 export const multiplayerGameAtom = atom<MultipleGameState | undefined | null>(undefined);

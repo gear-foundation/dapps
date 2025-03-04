@@ -1,21 +1,21 @@
+import { Input, Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { useSetAtom } from 'jotai';
-import { Input, Button } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Card, CardButton } from '@/components';
-import { Background, CharacterStatsForm, Character } from '@/features/game/components';
-import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
 import { ROUTES } from '@/app/consts';
 import { useGetAppearanceQuery } from '@/app/utils/sails/queries/use-get-appearance-query';
-import { CharacterStatsFormValues } from '@/features/game/types';
+import { Card, CardButton } from '@/components';
+import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
+import { Background, CharacterStatsForm, Character } from '@/features/game/components';
 import {
   characterAppearanceAtom,
   characterAppearanceStorage,
   characterStatsStorage,
   warriorIdStorage,
 } from '@/features/game/store';
+import { CharacterStatsFormValues } from '@/features/game/types';
 
 import styles from './import-character.module.scss';
 
@@ -66,9 +66,9 @@ export default function ImportCharacter() {
             placeholder="0x…"
             label="Specify program ID of your Warrior character"
             required
-            className="w-full"
             onChange={(e) => setAddress(e.target.value.trim())}
             error={error && 'The program must include the "Warrior" service and the "getAppearance" function.'}
+            block
           />
           {isCharacterFound && appearance && (
             <div className={styles.character}>

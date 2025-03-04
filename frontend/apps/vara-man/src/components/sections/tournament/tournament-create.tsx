@@ -1,14 +1,12 @@
-import { useNavigate } from 'react-router-dom';
-import { hasLength, useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Select, Button } from '@gear-js/vara-ui';
+import { hasLength, useForm } from '@mantine/form';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useNavigate } from 'react-router-dom';
 
 import { useApp } from '@/app/context/ctx-app';
-
+import { useCreateNewTournamentMessage, Level } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from 'gear-ez-transactions';
-import { useCreateNewTournamentMessage } from '@/app/utils';
-import { Level } from '@/app/utils';
 
 const initialValues = {
   bid: 0,

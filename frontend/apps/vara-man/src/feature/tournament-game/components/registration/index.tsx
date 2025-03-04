@@ -1,3 +1,8 @@
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { useEzTransactions } from 'gear-ez-transactions';
+
+import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
 import {
   TournamentState,
@@ -7,13 +12,9 @@ import {
   useCancelTournamentMessage,
   useStartTournamentMessage,
 } from '@/app/utils';
-import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
-import { Button } from '@gear-js/vara-ui';
-import { useApp } from '@/app/context/ctx-app';
-import { useEzTransactions } from 'gear-ez-transactions';
-import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
 import { useCancelRegisterMessage } from '@/app/utils/sails/messages/use-cancel-register-message';
+import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type Props = {
   tournamentGame: TournamentState;
@@ -103,7 +104,7 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
       <div className="flex flex-col gap-3 w-full">
         {tournamentGame?.participants.map((player, index) => {
           const isActivePlayer = account?.decodedAddress === player[0];
-          const { name, points, time } = player[1];
+          const { name } = player[1];
 
           return (
             <div

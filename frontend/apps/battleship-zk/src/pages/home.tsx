@@ -1,14 +1,16 @@
 import { useAccount } from '@gear-js/react-hooks';
-import Login from './login';
+import { useEffect } from 'react';
+
+import { Loader } from '@/components';
 import SelectGameMode from '@/features/game/components/select-game-mode/select-game-mode';
 import { useGameMode } from '@/features/game/hooks';
-import { JoinGameForm } from '@/features/multiplayer/components/join-game-form';
 import { CreateGameForm } from '@/features/multiplayer/components/create-game-form';
-import { useInitMultiplayerGame, useMultiplayerGame } from '@/features/multiplayer/hooks';
-import { Loader } from '@/components';
+import { JoinGameForm } from '@/features/multiplayer/components/join-game-form';
 import { Registration } from '@/features/multiplayer/components/registration';
-import { useEffect } from 'react';
+import { useInitMultiplayerGame, useMultiplayerGame } from '@/features/multiplayer/hooks';
 import { clearZkData } from '@/features/zk/utils';
+
+import Login from './login';
 
 export default function Home() {
   const { account } = useAccount();

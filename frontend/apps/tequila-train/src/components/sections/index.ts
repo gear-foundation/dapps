@@ -1,15 +1,8 @@
-import { LoginSection } from './login-section'
-import { StartSection } from './start-section'
-import { RegistrationSection } from './registration-section'
-import { GameSection } from './game-section'
-import { FinishedSection } from './game-section/finished-modal'
-import { CanceledSection } from './game-section/canceled-modal'
+import { GameSection } from './game-section';
+import { CanceledSection } from './game-section/canceled-modal';
+import { FinishedSection } from './game-section/finished-modal';
+import { LoginSection } from './login-section';
+import { RegistrationSection } from './registration-section';
+import { StartSection } from './start-section';
 
-export {
-	LoginSection,
-	StartSection,
-	RegistrationSection,
-	GameSection,
-	FinishedSection,
-	CanceledSection
-}
+export { LoginSection, StartSection, RegistrationSection, GameSection, FinishedSection, CanceledSection };

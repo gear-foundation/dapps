@@ -63,12 +63,6 @@ async fn test_play_game() {
         .await
         .unwrap();
 
-    client
-        .turn(3, None)
-        .send_recv(tic_tac_toe_id)
-        .await
-        .unwrap();
-
     // check game instance
     let game_instance = client
         .game(ADMIN_ID.into())

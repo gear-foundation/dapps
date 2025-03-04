@@ -1,54 +1,42 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useReadGameSessionState, useSyndoteMessage } from './metadata';
+
+import {
+  useCancelGameSessionMessage,
+  useDeleteGameMessage,
+  useExitGameMessage,
+  useGetGameSessionQuery,
+} from '@/app/utils';
 
 export const useQuitGame = () => {
-  const { state, isStateRead } = useReadGameSessionState();
-  const { isMeta, sendMessage } = useSyndoteMessage();
+  const { state, isFetched } = useGetGameSessionQuery();
   const { account } = useAccount();
-  const { adminId } = state || {};
+  const { admin_id: adminId } = state || {};
 
+  const { cancelGameSessionMessage } = useCancelGameSessionMessage();
+  const { exitGameMessage } = useExitGameMessage();
+  const { deleteGameMessage } = useDeleteGameMessage();
   const cancelGame = () => {
-    if (!isMeta || !account?.decodedAddress || !isStateRead) {
+    if (!account?.decodedAddress || !isFetched || !adminId) {
       return;
     }
 
-    const payload = {
-      CancelGameSession: {
-        adminId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
+    cancelGameSessionMessage({ adminId });
   };
 
   const exitGame = () => {
-    if (!isMeta || !account?.decodedAddress || !isStateRead) {
+    if (!account?.decodedAddress || !isFetched || !adminId) {
       return;
     }
 
-    const payload = {
-      ExitGame: {
-        adminId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
+    exitGameMessage({ adminId });
   };
 
   const deleteGame = () => {
-    const payload = {
-      DeleteGame: {
-        adminId,
-      },
-    };
+    if (!account?.decodedAddress || !isFetched || !adminId) {
+      return;
+    }
 
-    sendMessage({
-      payload,
-    });
+    deleteGameMessage({ adminId });
   };
 
   return { cancelGame, exitGame, deleteGame };

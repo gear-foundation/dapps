@@ -1,7 +1,9 @@
 [workspace]
 resolver = "2"
+
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
+
 members = [
     "battle",
     "battle/warrior/wasm",
@@ -11,21 +13,21 @@ members = [
     "car-races/car-3",
     "car-races",
     "concert",
+    "dex",
     "dynamic-nft",
     "galactic-express",
     "multisig-wallet",
     "nft-marketplace",
     "oracle",
-    "oracle/state",
     "oracle/randomness",
-    "oracle/randomness/state",
     "ping-pong",
-    "proxy-example/counter",
-    "proxy-example/proxy",
+    "upgrade-proxy/counter",
+    "upgrade-proxy/upgrade-proxy",
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
+    "staking",
     "syndote/wasm",
     "syndote/player/wasm",
     "tamagotchi",
@@ -54,10 +56,7 @@ publish = false
 # Keep in the lexicographic order!
 
 battleship-bot.path = "battleship/bot"
-oracle.path = "oracle"
-oracle-randomness.path = "oracle/randomness"
 rmrk-catalog.path = "rmrk/catalog"
-syndote-player.path = "syndote/player"
 tamagotchi.path = "tamagotchi"
 
 # Local states
@@ -70,36 +69,29 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 # Keep in the lexicographic order!
 
 battleship-io.path = "battleship/io"
-car-races-io.path = "car-races/io"
-multi-token-io.path = "multi-token/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
-rock-paper-scissors-io.path = "rock-paper-scissors/io"
-oracle-io.path = "oracle/io"
-oracle-randomness-io.path = "oracle/randomness/io"
-syndote-io.path = "syndote/io"
-syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
-w3bstreaming-io.path = "w3bstreaming/io"
 
 # Local libraries
 # Keep in the lexicographic order!
+
 rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.7.0"
-gear-wasm-builder = "1.7.0"
-gmeta = "1.7.0"
-gclient = "1.7.0"
+gstd = "1.7.1"
+gear-wasm-builder = "1.7.1"
+gmeta = "1.7.1"
+gclient = "1.7.1"
 gtest = "1.6.1"
-gear-core = "1.7.0"
-sails-idl-gen = "0.7.1"
-sails-rs = "0.7.1"
-sails-client-gen = "0.7.1"
+gear-core = "1.7.1"
+sails-idl-gen = "0.7.3"
+sails-rs = "0.7.3"
+sails-client-gen = "0.7.3"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
@@ -114,22 +106,9 @@ primitive-types = { version = "0.12", default-features = false }
 sp-core = { version = "21.0.0", default-features = false, features = ["full_crypto", "sp-externalities"] }
 sp-core-hashing = { version = "10", default-features = false }
 tokio = "1"
-blake2-rfc = "0.2"
 hex-literal = "0.4"
 hex = { version = "0.4", default-features = false }
-async-trait = "0.1"
-rand = { version = "0.8", default-features = false }
-rand_xoshiro = "0.6"
-indexmap = { version = "2", default-features = false }
-ahash = { version = "0.8", default-features = false, features = ["no-rng"] }
 schnorrkel = { version = "0.10", default-features = false, features = ["u64_backend"] }
-syn = { version = "2", default-features = false }
 quote = "1"
-clap = { version = "4", default-features = false, features = ["std"] }
-enum-iterator = "1"
-xshell = "0.2"
-anyhow = "1"
-sha2 = "0.10"
-num-traits = { version = "0.2", default-features = false }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }

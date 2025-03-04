@@ -1,17 +1,14 @@
-import React from 'react';
-import { AssetType } from './types';
-import { assetsCount, back_colors, body_colors } from './consts';
-import { CharacterView } from './components/character/character';
 import { decodeAddress } from '@gear-js/api';
+import { lazy } from 'react';
+
+import { CharacterView } from './components/character/character';
+import { assetsCount, back_colors, body_colors } from './consts';
+import { AssetType } from './types';
 
 export const getLazySvg = (assetType: AssetType, index: number) => {
   const assetNumber = index > 0 ? (index % assetsCount[assetType]) + 1 : 1;
 
-  return React.lazy(() =>
-    import(`./assets/images/character/${assetType}-${assetNumber}.svg`).then((module) => ({
-      default: module.ReactComponent,
-    })),
-  );
+  return lazy(() => import(`./assets/images/character/${assetType}-${assetNumber}.svg?react`));
 };
 
 export const getRandomNumber = (maxNumber: number) => Math.floor(Math.random() * maxNumber);
@@ -29,7 +26,7 @@ export const getSafeDecodedAddress = (address?: string) => {
   if (address) {
     try {
       return decodeAddress(address.trim());
-    } catch (error) {
+    } catch (_error) {
       // empty
     }
   }

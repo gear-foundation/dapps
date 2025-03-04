@@ -1,5 +1,6 @@
-import { useVaratubeProgram } from '../sails';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
+import { useVaratubeProgram } from '../sails';
 
 export const useGetSubscriberQuery = () => {
   const program = useVaratubeProgram();

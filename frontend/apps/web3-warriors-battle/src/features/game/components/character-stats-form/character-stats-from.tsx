@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useForm } from '@mantine/form';
+import { useEffect } from 'react';
+
 import { Text } from '@/components';
 import { Heading } from '@/components/ui/heading';
+
 import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon, InfoIcon } from '../../assets/images';
-import { CharacterStatsFormValues } from '../../types';
 import { characterStatsStorage } from '../../store';
+import { CharacterStatsFormValues } from '../../types';
+
 import styles from './character-stats-form.module.scss';
 
 type Stats = 'attack' | 'defence' | 'dodge';

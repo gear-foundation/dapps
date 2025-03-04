@@ -1,20 +1,22 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Suspense, useEffect } from 'react';
 import { Route, useNavigate, useLocation } from 'react-router-dom';
-import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { ROUTES } from '@/app/consts';
-import { Loader, NotAuthorized } from '@/components';
-import { useAccount } from '@gear-js/react-hooks';
 
-import Home from './home';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
+
+import { ROUTES } from '@/app/consts';
 import { useMyBattleQuery } from '@/app/utils';
-import ImportCharacterPage from './import-character';
-import GenerateCharacterPage from './generate-character';
+import { Loader, NotAuthorized } from '@/components';
+
 import CreateGamePage from './create-game';
 import FindGamePage from './find-game';
-import NotFoundPage from './not-found';
-import WaitingPage from './waiting';
 import GamePage from './game';
+import GenerateCharacterPage from './generate-character';
+import Home from './home';
+import ImportCharacterPage from './import-character';
+import NotFoundPage from './not-found';
 import OnboardingPage from './onboarding';
+import WaitingPage from './waiting';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },

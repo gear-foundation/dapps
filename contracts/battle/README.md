@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=battle/https://github.com/gear-foundation/dapps)
+
 ## The **battle** program
 
 The program workspace includes the following packages:

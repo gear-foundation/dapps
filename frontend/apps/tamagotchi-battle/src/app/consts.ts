@@ -5,10 +5,10 @@ export const LOCAL_STORAGE = {
 };
 
 export const ENV = {
-  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  GASLESS_BACKEND: process.env.REACT_APP_BACKEND_ADDRESS as string,
-  DNS_API_URL:  process.env.REACT_APP_DNS_API_URL as string,
-  DNS_NAME:  process.env.REACT_APP_DNS_NAME as string,
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  GASLESS_BACKEND: import.meta.env.VITE_BACKEND_ADDRESS as string,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
 };
 
 export const ROUTES = {

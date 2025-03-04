@@ -6,6 +6,9 @@ COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
+COPY /frontend/vite.apps.config.ts .
+COPY /frontend/tsconfig.json .
+COPY /frontend/tsconfig.node.json .
 
 COPY ./frontend/apps/battleship ./apps/battleship
 COPY ./frontend/packages ./packages

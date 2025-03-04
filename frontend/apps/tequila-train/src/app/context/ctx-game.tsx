@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useState } from 'react';
+
 import { DominoTileType, PlayerChoiceType, GameType, IState, PlayersGame } from '../types/game';
 
 const useProgram = () => {
@@ -12,7 +13,6 @@ const useProgram = () => {
   const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
 
   const [previousGame, setPreviousGame] = useState<GameType | null>(null);
-
 
   return {
     state,

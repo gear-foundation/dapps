@@ -1,6 +1,8 @@
-import { Text } from '@/components';
-import { SkullBigIcon } from '../../assets/images';
 import clsx from 'clsx';
+
+import { Text } from '@/components';
+
+import { SkullBigIcon } from '../../assets/images';
 
 import styles from './player-status.module.scss';
 
