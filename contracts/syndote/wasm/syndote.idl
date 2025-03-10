@@ -1,4 +1,34 @@
-type PlayerInfo = struct {
+type Config = struct {
+  reservation_amount: u64,
+  reservation_duration_in_block: u32,
+  time_for_step: u32,
+  min_gas_limit: u64,
+  gas_refill_timeout: u32,
+  gas_for_step: u64,
+};
+
+type GameState = struct {
+  admin_id: actor_id,
+  properties_in_bank: vec u8,
+  round: u128,
+  players: vec struct { actor_id, PlayerInfoState },
+  owners_to_strategy_ids: vec struct { actor_id, actor_id },
+  players_queue: vec actor_id,
+  current_turn: u8,
+  current_player: actor_id,
+  current_step: u64,
+  properties: vec opt struct { actor_id, vec Gear, u32, u32 },
+  ownership: vec actor_id,
+  game_status: GameStatus,
+  winner: actor_id,
+  reservations: vec ReservationId,
+  entry_fee: opt u128,
+  prize_pool: u128,
+};
+
+type PlayerInfoState = struct {
+  owner_id: actor_id,
+  name: str,
   position: u8,
   balance: u32,
   debt: u32,
@@ -7,6 +37,15 @@ type PlayerInfo = struct {
   cells: vec u8,
   penalty: u8,
   lost: bool,
+  reservation_id: opt ReservationId,
+};
+
+/// Reservation identifier.
+/// 
+/// The identifier is used to reserve and unreserve gas amount for program
+/// execution later.
+type ReservationId = struct {
+  [u8, 32],
 };
 
 type Gear = enum {
@@ -15,58 +54,72 @@ type Gear = enum {
   Gold,
 };
 
-type StorageState = struct {
-  admin: actor_id,
-  properties_in_bank: vec u8,
-  round: u128,
-  players: vec struct { actor_id, PlayerInfo },
-  players_queue: vec actor_id,
-  current_player: actor_id,
-  current_step: u64,
-  properties: vec opt struct { actor_id, vec Gear, u32, u32 },
-  ownership: vec actor_id,
-  game_status: GameStatus,
-  winner: actor_id,
-};
-
 type GameStatus = enum {
   Registration,
   Play,
   Finished,
+  Wait,
+  WaitingForGasForGameContract,
+  WaitingForGasForStrategy: actor_id,
 };
 
 constructor {
-  New : (dns_id_and_name: opt struct { actor_id, str });
+  New : (config: Config, dns_id_and_name: opt struct { actor_id, str });
 };
 
 service Syndote {
-  AddGear : (properties_for_sale: opt vec u8) -> null;
-  BuyCell : (properties_for_sale: opt vec u8) -> null;
+  AddGasToPlayerStrategy : (admin_id: actor_id) -> null;
+  AddGear : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
+  BuyCell : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
+  CancelGameSession : (admin_id: actor_id) -> null;
   ChangeAdmin : (admin: actor_id) -> null;
+  CreateGameSession : (entry_fee: opt u128, name: str, strategy_id: actor_id) -> null;
+  DeleteGame : (admin_id: actor_id) -> null;
+  DeletePlayer : (player_id: actor_id) -> null;
+  ExitGame : (admin_id: actor_id) -> null;
   Kill : (inheritor: actor_id) -> null;
-  PayRent : (properties_for_sale: opt vec u8) -> null;
-  Play : () -> null;
-  Register : (player: actor_id) -> null;
-  ReserveGas : () -> null;
-  StartRegistration : () -> null;
-  ThrowRoll : (pay_fine: bool, properties_for_sale: opt vec u8) -> Event;
-  Upgrade : (properties_for_sale: opt vec u8) -> null;
+  MakeReservation : (admin_id: actor_id) -> null;
+  PayRent : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
+  Play : (admin_id: actor_id) -> null;
+  Register : (admin_id: actor_id, strategy_id: actor_id, name: str) -> null;
+  Skip : (admin_id: actor_id) -> null;
+  ThrowRoll : (admin_id: actor_id, pay_fine: bool, properties_for_sale: opt vec u8) -> null;
+  Upgrade : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
   query DnsInfo : () -> opt struct { actor_id, str };
-  query GetStorage : () -> StorageState;
+  query GetConfig : () -> Config;
+  query GetGameSession : (account_id: actor_id) -> opt GameState;
+  query GetOwnerId : (admin_id: actor_id, strategy_id: actor_id) -> opt actor_id;
+  query GetPlayerInfo : (account_id: actor_id) -> opt PlayerInfoState;
+  query GetPlayersToSessions : () -> vec struct { actor_id, actor_id };
 
   events {
-    Registered;
-    StartRegistration;
-    Played;
-    GameFinished: struct { winner: actor_id };
-    StrategicError;
-    StrategicSuccess;
-    Step: struct { players: vec struct { actor_id, PlayerInfo }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }, current_player: actor_id, ownership: vec actor_id, current_step: u64 };
-    Jail: struct { in_jail: bool, position: u8 };
-    GasReserved;
+    /// Reply on `CreateGameSession` message
+    GameSessionCreated: struct { admin_id: actor_id };
+    /// Reply on `MakeReservation` message
+    ReservationMade;
+    /// Reply on `Register` message
+    StrategyRegistered;
+    /// Reply on `Play` message
+    /// in case of successful completion of the game
+    GameFinished: struct { admin_id: actor_id, winner: actor_id, participants: vec actor_id };
+    /// Reply on `AddGasToPlayerStrategy`
+    GasForPlayerStrategyAdded;
+    /// Reply on `CancelGame`
+    GameWasCancelled;
+    /// Reply on `ExitGame`
+    PlayerLeftGame;
+    /// Event for the front-end app
+    Step: struct { players: vec struct { actor_id, PlayerInfoState }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }, current_player: actor_id, ownership: vec actor_id, current_step: u64 };
+    /// Reply on `Play`` message, in case when the current gas runs out,
+    /// the next reservation is taken and the next game cycle is started from the new reservation
     NextRoundFromReservation;
-    AdminChanged;
+    /// Reply on `DeleteGame` message
+    GameDeleted;
+    /// Reply on `DeletePlayer` message
+    PlayerDeleted;
+    StrategicSuccess;
     Killed: struct { inheritor: actor_id };
+    WaitingForGasForGameContract;
   }
 };
 
