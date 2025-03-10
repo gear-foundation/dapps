@@ -4,16 +4,17 @@ import { HexString } from '@polkadot/util/types';
 import clsx from 'clsx';
 import { FunctionComponent, SVGProps, useState } from 'react';
 
+import { PlayerInfoState } from '@/app/utils';
 import GradeSVG from '@/assets/images/icons/grade.svg?react';
 import { useOutsideClick } from '@/hooks';
-import { CellValues, PlayerType, PlayerState, Properties } from '@/types';
+import { CellValues, PlayerType, Properties } from '@/types';
 
 import styles from '../Home.module.scss';
 import { Chip } from '../chip';
 
 type Props = {
   index: number;
-  players: (PlayerState & PlayerType)[];
+  players: (PlayerInfoState & PlayerType)[];
   Image: FunctionComponent<SVGProps<SVGSVGElement>> | string;
   ownership: { [key: number]: HexString } | undefined;
   properties: Properties | undefined;
@@ -60,6 +61,8 @@ function Cell({ index, players, ownership, properties, Image, card, type }: Prop
 
   const ownershipColor = ownership?.[index] ? getColor(ownership[index]) : undefined;
 
+  const grade = properties?.[index]?.[1]?.[0];
+
   return (
     <div
       ref={ref}
@@ -73,7 +76,7 @@ function Cell({ index, players, ownership, properties, Image, card, type }: Prop
 
       {isAnyChip && <div className={styles.chips}>{chips}</div>}
       {propertyValue && <div className={styles.propertyValue}>{propertyValue}</div>}
-      {properties?.[index]?.[1]?.[0] && <div className={styles.grade}>{getGrade(properties?.[index]?.[1]?.[0])}</div>}
+      {grade && <div className={styles.grade}>{getGrade(grade)}</div>}
 
       {isCardVisible && card && (
         <div className={styles.card}>
