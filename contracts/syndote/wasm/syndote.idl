@@ -101,7 +101,7 @@ service Syndote {
     StrategyRegistered;
     /// Reply on `Play` message
     /// in case of successful completion of the game
-    GameFinished: struct { admin_id: actor_id, winner: actor_id };
+    GameFinished: struct { admin_id: actor_id, winner: actor_id, participants: vec actor_id };
     /// Reply on `AddGasToPlayerStrategy`
     GasForPlayerStrategyAdded;
     /// Reply on `CancelGame`

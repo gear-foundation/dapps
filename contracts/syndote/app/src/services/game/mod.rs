@@ -67,6 +67,7 @@ pub enum Event {
     GameFinished {
         admin_id: AdminId,
         winner: ActorId,
+        participants: Vec<ActorId>,
     },
 
     /// Reply on `AddGasToPlayerStrategy`

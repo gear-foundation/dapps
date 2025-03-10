@@ -223,10 +223,12 @@ impl GameSessionActions for Game {
                         break;
                     }
                 }
+                
 
                 Ok(Event::GameFinished {
                     admin_id: self.admin_id,
                     winner: self.winner,
+                    participants: self.owners_to_strategy_ids.iter().map(|(id, _)| *id).collect(),
                 })
             }
             GameStatus::Wait | GameStatus::WaitingForGasForStrategy(_) => {
@@ -252,11 +254,13 @@ impl GameSessionActions for Game {
                 Ok(Event::GameFinished {
                     admin_id: self.admin_id,
                     winner: self.winner,
+                    participants: self.owners_to_strategy_ids.iter().map(|(id, _)| *id).collect(),
                 })
             }
             GameStatus::Finished => Ok(Event::GameFinished {
                 admin_id: self.admin_id,
                 winner: self.winner,
+                participants: self.owners_to_strategy_ids.iter().map(|(id, _)| *id).collect(),
             }),
             _ => Err(GameError::WrongGameStatus),
         }
