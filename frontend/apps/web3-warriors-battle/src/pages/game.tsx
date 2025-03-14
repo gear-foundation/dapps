@@ -283,7 +283,13 @@ export default function GamePage() {
           />
         )}
 
-        <BattleTabs battleState={battleState} participantsMap={participantsMap} isAlive={isAlive} tabsRef={tabsRef} />
+        <BattleTabs
+          battleState={battleState}
+          participantsMap={participantsMap}
+          isAlive={isAlive}
+          tabsRef={tabsRef}
+          isSpectating={isShowOtherBattle}
+        />
 
         {isOpenCancelTournamentModal && (
           <Modal

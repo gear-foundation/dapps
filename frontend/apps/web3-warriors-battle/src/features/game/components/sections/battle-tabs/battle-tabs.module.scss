@@ -8,6 +8,14 @@
   &.defeated {
     top: 642px;
   }
+
+  &.spectating {
+    top: 585px;
+  }
+}
+
+.backButton {
+  max-width: 580px;
 }
 
 .list {
