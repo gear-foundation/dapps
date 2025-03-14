@@ -25,6 +25,23 @@
   }
 }
 
+.scrollToHistoryButton {
+  padding: 0;
+  background-color: transparent;
+
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  color: #0ed3a3;
+
+  transition: 0.25s opacity;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}
+
 .prize {
   margin-top: 4px;
   background: #f7f9fa;

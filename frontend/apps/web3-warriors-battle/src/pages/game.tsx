@@ -2,7 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
@@ -52,6 +52,7 @@ export default function GamePage() {
   const { startNextFightMessage } = useStartNextFightMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
   const { exitGameMessage } = useExitGameMessage();
+  const tabsRef = useRef<HTMLDivElement>(null);
 
   const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
 
@@ -260,6 +261,7 @@ export default function GamePage() {
           participantsMap={participantsMap}
           isAlive={isAlive}
           isShowOtherBattle={isShowOtherBattle}
+          onScrollToHistoryClick={() => tabsRef.current?.scrollIntoView({ behavior: 'smooth' })}
         />
 
         {isAdmin ? (
@@ -281,7 +283,7 @@ export default function GamePage() {
           />
         )}
 
-        <BattleTabs battleState={battleState} participantsMap={participantsMap} isAlive={isAlive} />
+        <BattleTabs battleState={battleState} participantsMap={participantsMap} isAlive={isAlive} tabsRef={tabsRef} />
 
         {isOpenCancelTournamentModal && (
           <Modal

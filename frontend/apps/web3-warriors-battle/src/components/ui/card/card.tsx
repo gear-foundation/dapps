@@ -7,7 +7,7 @@ import { Text } from '../text';
 
 import styles from './card.module.scss';
 
-export const cardVariants = cva('', {
+const cardVariants = cva('', {
   variants: {
     size: {
       sm: styles.sm,

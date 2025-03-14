@@ -17,6 +17,7 @@ type GameOverCardProps = {
   participantsMap: Record<string, Player>;
   isAlive: boolean;
   isShowOtherBattle: boolean;
+  onScrollToHistoryClick: () => void;
   className?: string;
 };
 
@@ -40,6 +41,7 @@ const GameOverCard = ({
   participantsMap,
   isAlive,
   isShowOtherBattle,
+  onScrollToHistoryClick,
 }: GameOverCardProps) => {
   const { account } = useAccount();
   const currentPlayers = useAtomValue(currentPlayersAtom);
@@ -71,38 +73,43 @@ const GameOverCard = ({
         currentPlayers?.player.player_settings.health === 0
           ? currentPlayers?.opponent.user_name
           : currentPlayers?.player.user_name;
-      return `${
-        winnersName || 'Player 2'
-      } wins! Now you can watch other players' battles. Choose any battle from the list below.`;
+
+      return `${winnersName || 'Player 2'} wins! Now you can watch other players' battles.`;
     }
 
     const firstTournamentWinnerName = participantsMap[state.gameIsOver.winners[0]].user_name;
+
     if (isTournamentDraw && state.gameIsOver.winners[1]) {
       const secondTournamentWinnerName = participantsMap[state.gameIsOver.winners[1]].user_name;
+
       return `${firstTournamentWinnerName} and ${secondTournamentWinnerName} ended in a draw!`;
     } else {
       return `${firstTournamentWinnerName} wins!`;
     }
   };
 
+  if (!status) return;
+
   return (
-    status && (
-      <div className={clsx(styles.backdrop, status === STATUS.LOSS && styles.grayedOut, className)}>
-        {!isCurrentDraw && (
-          <Card title={STATUS_TEXT[status]} description={getDesctiptionText()} className={styles.card} size="md">
-            {isTournamentOver && (
-              <div className={styles.prize}>
-                <Text size="sm">Winner prize:</Text>
-                <VaraIcon className={styles.icon} />
-                <Text size="sm" weight="semibold">
-                  {isTournamentDraw ? prizeValue / 2 : prizeValue} VARA
-                </Text>
-              </div>
-            )}
-          </Card>
-        )}
-      </div>
-    )
+    <div className={clsx(styles.backdrop, status === STATUS.LOSS && styles.grayedOut, className)}>
+      {!isCurrentDraw && (
+        <Card title={STATUS_TEXT[status]} description={getDesctiptionText()} className={styles.card} size="md">
+          {isTournamentOver ? (
+            <div className={styles.prize}>
+              <Text size="sm">Winner prize:</Text>
+              <VaraIcon className={styles.icon} />
+              <Text size="sm" weight="semibold">
+                {isTournamentDraw ? prizeValue / 2 : prizeValue} VARA
+              </Text>
+            </div>
+          ) : (
+            <button type="button" className={styles.scrollToHistoryButton} onClick={onScrollToHistoryClick}>
+              Choose any battle from the list below
+            </button>
+          )}
+        </Card>
+      )}
+    </div>
   );
 };
 
