@@ -255,12 +255,12 @@ export default function GamePage() {
 
         <GameOverCard
           className={styles.gameOver}
-          bid={Number(bid)}
+          bid={Number(bid || 0)}
           totalParticipants={allParticipants.length}
           state={state}
           participantsMap={participantsMap}
           isAlive={isAlive}
-          isShowOtherBattle={isShowOtherBattle}
+          isSpectating={isShowOtherBattle}
           onScrollToHistoryClick={() => tabsRef.current?.scrollIntoView({ behavior: 'smooth' })}
         />
 

@@ -71,7 +71,7 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef, isS
       value: 'players',
     },
     {
-      label: 'Battle History ',
+      label: 'Battle History',
       value: 'history',
     },
   ];

@@ -12,7 +12,7 @@ import { HealthIndicator } from '../health-indicator';
 import styles from './character-stats.module.scss';
 import VectorIcon from './vector.svg?react';
 
-export const variants = cva('', {
+const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },
   defaultVariants: { align: 'left', status: 'alive' },
 });

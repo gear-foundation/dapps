@@ -16,7 +16,7 @@ type GameOverCardProps = {
   state: State;
   participantsMap: Record<string, Player>;
   isAlive: boolean;
-  isShowOtherBattle: boolean;
+  isSpectating: boolean;
   onScrollToHistoryClick: () => void;
   className?: string;
 };
@@ -40,60 +40,57 @@ const GameOverCard = ({
   totalParticipants,
   participantsMap,
   isAlive,
-  isShowOtherBattle,
+  isSpectating,
   onScrollToHistoryClick,
 }: GameOverCardProps) => {
   const { account } = useAccount();
   const currentPlayers = useAtomValue(currentPlayersAtom);
-  const battleHistory = useAtomValue(battleHistoryAtom);
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const isTournamentOver = 'gameIsOver' in state;
-  const prizeValue = Number(getFormattedBalanceValue(Number(bid) || 0)) * totalParticipants;
-  const isCurrentDraw =
-    !isTournamentOver && battleHistory?.[0].player.health === 0 && battleHistory?.[0].opponent.health === 0;
 
-  const isTournamentDraw = isTournamentOver && state.gameIsOver.winners[1];
+  const { getFormattedBalanceValue } = useBalanceFormat();
+  const prizeValue = getFormattedBalanceValue(bid).toNumber() * totalParticipants;
+
+  const isTournamentOver = 'gameIsOver' in state;
+  const { winners } = isTournamentOver ? state.gameIsOver : {};
+  const [firstWinner, secondWinner] = winners || [undefined, undefined];
+  const isTournamentDraw = isTournamentOver && Boolean(secondWinner);
+
+  const battleHistory = useAtomValue(battleHistoryAtom);
+  const [lastTurn] = battleHistory || [undefined];
+  const isBattleDraw = !isTournamentOver && lastTurn?.player.health === 0 && lastTurn?.opponent.health === 0;
 
   const getStatus = () => {
     if (!account) return;
 
-    if (isCurrentDraw || (isTournamentDraw && state.gameIsOver.winners.includes(account.decodedAddress)))
-      return STATUS.DRAW;
+    if (isBattleDraw || (isTournamentDraw && winners?.includes(account.decodedAddress))) return STATUS.DRAW;
 
-    if (!isAlive && (!isShowOtherBattle || isTournamentOver)) return STATUS.LOSS;
+    if (!isAlive && (!isSpectating || isTournamentOver)) return STATUS.LOSS;
 
-    if (isTournamentOver && state.gameIsOver.winners[0] === account.decodedAddress) return STATUS.WIN;
+    if (isTournamentOver && firstWinner === account.decodedAddress) return STATUS.WIN;
   };
 
   const status = getStatus();
 
-  const getDesctiptionText = () => {
+  const getDescription = () => {
     if (!isTournamentOver) {
-      const winnersName =
-        currentPlayers?.player.player_settings.health === 0
-          ? currentPlayers?.opponent.user_name
-          : currentPlayers?.player.user_name;
+      const { player, opponent } = currentPlayers || {};
+      const winnerName = player?.player_settings.health === 0 ? opponent?.user_name : player?.user_name;
 
-      return `${winnersName || 'Player 2'} wins! Now you can watch other players' battles.`;
+      return `${winnerName || 'Player 2'} wins! Now you can watch other players' battles.`;
     }
 
-    const firstTournamentWinnerName = participantsMap[state.gameIsOver.winners[0]].user_name;
+    const firstWinnerName = participantsMap[firstWinner!]?.user_name;
+    const secondWinnerName = participantsMap[secondWinner!]?.user_name;
 
-    if (isTournamentDraw && state.gameIsOver.winners[1]) {
-      const secondTournamentWinnerName = participantsMap[state.gameIsOver.winners[1]].user_name;
-
-      return `${firstTournamentWinnerName} and ${secondTournamentWinnerName} ended in a draw!`;
-    } else {
-      return `${firstTournamentWinnerName} wins!`;
-    }
+    if (isTournamentDraw) return `${firstWinnerName} and ${secondWinnerName} ended in a draw!`;
+    return `${firstWinnerName} wins!`;
   };
 
   if (!status) return;
 
   return (
     <div className={clsx(styles.backdrop, status === STATUS.LOSS && styles.grayedOut, className)}>
-      {!isCurrentDraw && (
-        <Card title={STATUS_TEXT[status]} description={getDesctiptionText()} className={styles.card} size="md">
+      {!isBattleDraw && (
+        <Card title={STATUS_TEXT[status]} description={getDescription()} className={styles.card} size="md">
           {isTournamentOver ? (
             <div className={styles.prize}>
               <Text size="sm">Winner prize:</Text>
