@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,20 +32,14 @@ import {
   GameSpinner,
 } from '@/features/game/components';
 import { useParticipants, usePending } from '@/features/game/hooks';
-import {
-  battleHistoryAtom,
-  battleHistoryStorage,
-  currentPlayersAtom,
-  currentPlayersStorage,
-  otherPairBattleWatchAtom,
-} from '@/features/game/store';
+import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
 
 import styles from './game.module.scss';
 
 export default function GamePage() {
   const navigate = useNavigate();
   const { account } = useAccount();
-  const { battleState, isFetching } = useMyBattleQuery();
+
   const { pending } = usePending();
   const { config } = useConfigQuery();
   const { cancelTournamentMessage } = useCancelTournamentMessage();
@@ -64,15 +58,13 @@ export default function GamePage() {
 
   const [isShowTurnEndCard, setIsShowTurnEndCard] = useState(false);
 
-  const [otherPairBattleWatch] = useAtom(otherPairBattleWatchAtom);
-  const isShowOtherBattle = Boolean(battleState?.pairs.some(([pairId]) => pairId === otherPairBattleWatch));
+  const { battleState, isFetching } = useMyBattleQuery();
+  const { admin, state, waiting_player, bid } = battleState || {};
 
   const { allParticipants, isAlive, hasPlayer, hasOpponent, participantsMap, pair, currentPlayers } =
     useParticipants(battleState);
-
   const { player, opponent } = currentPlayers || {};
-
-  const { admin, state, waiting_player, bid } = battleState || {};
+  const isShowOtherBattle = ![player?.owner, opponent?.owner].includes(account?.decodedAddress);
 
   useEffect(() => {
     if (!isFetching && !battleState) {
@@ -90,7 +82,6 @@ export default function GamePage() {
   };
 
   const setBattleHistory = useSetAtom(battleHistoryAtom);
-  const setCurrentPlayers = useSetAtom(currentPlayersAtom);
 
   if (!battleState || !config || !state || !account) {
     return <Loader />;
@@ -220,8 +211,7 @@ export default function GamePage() {
             onClick={() => {
               setBattleHistory(null);
               battleHistoryStorage.set(null);
-              setCurrentPlayers(null);
-              currentPlayersStorage.set(null);
+
               startNextFightMessage();
             }}
             disabled={pending}
@@ -254,11 +244,9 @@ export default function GamePage() {
           )}
 
         <GameOverCard
-          className={styles.gameOver}
           bid={Number(bid || 0)}
           totalParticipants={allParticipants.length}
-          state={state}
-          participantsMap={participantsMap}
+          isTournamentOver={isTournamentOver}
           isAlive={isAlive}
           isSpectating={isShowOtherBattle}
           onScrollToHistoryClick={() => tabsRef.current?.scrollIntoView({ behavior: 'smooth' })}

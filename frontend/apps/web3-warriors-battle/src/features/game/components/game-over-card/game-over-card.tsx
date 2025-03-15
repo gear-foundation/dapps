@@ -1,111 +1,85 @@
-import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
+import { useBalanceFormat } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 
-import { Player, State } from '@/app/utils';
 import { Card, Text } from '@/components';
 import { VaraIcon } from '@/components/layout';
 
-import { battleHistoryAtom, currentPlayersAtom } from '../../store';
+import { currentPlayersAtom } from '../../store';
 
 import styles from './game-over-card.module.scss';
 
 type GameOverCardProps = {
   bid: number;
   totalParticipants: number;
-  state: State;
-  participantsMap: Record<string, Player>;
+  isTournamentOver: boolean;
   isAlive: boolean;
   isSpectating: boolean;
   onScrollToHistoryClick: () => void;
-  className?: string;
 };
-
-const STATUS = {
-  WIN: 'win',
-  LOSS: 'loss',
-  DRAW: 'draw',
-} as const;
-
-const STATUS_TEXT = {
-  [STATUS.WIN]: 'You won',
-  [STATUS.LOSS]: 'You lost',
-  [STATUS.DRAW]: "It's a draw",
-} as const;
 
 const GameOverCard = ({
   bid,
-  className,
-  state,
+  isTournamentOver,
   totalParticipants,
-  participantsMap,
   isAlive,
   isSpectating,
   onScrollToHistoryClick,
 }: GameOverCardProps) => {
-  const { account } = useAccount();
   const currentPlayers = useAtomValue(currentPlayersAtom);
 
   const { getFormattedBalanceValue } = useBalanceFormat();
   const prizeValue = getFormattedBalanceValue(bid).toNumber() * totalParticipants;
 
-  const isTournamentOver = 'gameIsOver' in state;
-  const { winners } = isTournamentOver ? state.gameIsOver : {};
-  const [firstWinner, secondWinner] = winners || [undefined, undefined];
-  const isTournamentDraw = isTournamentOver && Boolean(secondWinner);
+  if (!currentPlayers) return;
 
-  const battleHistory = useAtomValue(battleHistoryAtom);
-  const [lastTurn] = battleHistory || [undefined];
-  const isBattleDraw = !isTournamentOver && lastTurn?.player.health === 0 && lastTurn?.opponent.health === 0;
+  const { player, opponent } = currentPlayers;
+  const playerStats = player.player_settings;
+  const opponentStats = opponent.player_settings;
+  const isBattleOver = playerStats.health === 0 || opponentStats.health === 0;
+  const isDraw = playerStats.health === 0 && opponentStats.health === 0;
+  const winnerName = playerStats.health === 0 ? opponent.user_name : player.user_name;
 
-  const getStatus = () => {
-    if (!account) return;
+  if (!isBattleOver || (isAlive && !isTournamentOver)) return;
 
-    if (isBattleDraw || (isTournamentDraw && winners?.includes(account.decodedAddress))) return STATUS.DRAW;
+  const getTitle = () => {
+    if (isDraw) return "It's a draw!";
+    if (isSpectating) return `${winnerName} wins!`;
 
-    if (!isAlive && (!isSpectating || isTournamentOver)) return STATUS.LOSS;
-
-    if (isTournamentOver && firstWinner === account.decodedAddress) return STATUS.WIN;
+    return isAlive ? 'You win' : 'You lose';
   };
-
-  const status = getStatus();
 
   const getDescription = () => {
-    if (!isTournamentOver) {
-      const { player, opponent } = currentPlayers || {};
-      const winnerName = player?.player_settings.health === 0 ? opponent?.user_name : player?.user_name;
+    if (isDraw) return `${player.user_name} and ${opponent.user_name} ended in a draw!`;
 
-      return `${winnerName || 'Player 2'} wins! Now you can watch other players' battles.`;
+    if (!isTournamentOver) {
+      if (isSpectating) return 'You can wait for the new battle here or choose another one from the battles list.';
+      if (!isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
     }
 
-    const firstWinnerName = participantsMap[firstWinner!]?.user_name;
-    const secondWinnerName = participantsMap[secondWinner!]?.user_name;
-
-    if (isTournamentDraw) return `${firstWinnerName} and ${secondWinnerName} ended in a draw!`;
-    return `${firstWinnerName} wins!`;
+    return isSpectating ? '' : `${winnerName} wins!`;
   };
 
-  if (!status) return;
-
   return (
-    <div className={clsx(styles.backdrop, status === STATUS.LOSS && styles.grayedOut, className)}>
-      {!isBattleDraw && (
-        <Card title={STATUS_TEXT[status]} description={getDescription()} className={styles.card} size="md">
-          {isTournamentOver ? (
-            <div className={styles.prize}>
-              <Text size="sm">Winner prize:</Text>
-              <VaraIcon className={styles.icon} />
-              <Text size="sm" weight="semibold">
-                {isTournamentDraw ? prizeValue / 2 : prizeValue} VARA
-              </Text>
-            </div>
-          ) : (
+    <div className={clsx(styles.backdrop, !isSpectating && !isAlive && styles.grayedOut)}>
+      <Card title={getTitle()} description={getDescription()} className={styles.card} size="md">
+        {isTournamentOver ? (
+          <div className={styles.prize}>
+            <Text size="sm">Winner prize:</Text>
+            <VaraIcon className={styles.icon} />
+            <Text size="sm" weight="semibold">
+              {isDraw ? prizeValue / 2 : prizeValue} VARA
+            </Text>
+          </div>
+        ) : (
+          !isSpectating &&
+          !isAlive && (
             <button type="button" className={styles.scrollToHistoryButton} onClick={onScrollToHistoryClick}>
               Choose any battle from the list below
             </button>
-          )}
-        </Card>
-      )}
+          )
+        )}
+      </Card>
     </div>
   );
 };
