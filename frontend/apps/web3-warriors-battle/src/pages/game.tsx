@@ -64,6 +64,7 @@ export default function GamePage() {
   const { allParticipants, isAlive, hasPlayer, hasOpponent, participantsMap, pair, currentPlayers } =
     useParticipants(battleState);
   const { player, opponent } = currentPlayers || {};
+  const isBattleOver = player?.player_settings.health === 0 || opponent?.player_settings.health === 0;
   const isShowOtherBattle = ![player?.owner, opponent?.owner].includes(account?.decodedAddress);
 
   useEffect(() => {
@@ -230,7 +231,7 @@ export default function GamePage() {
           opponent &&
           !isTournamentOver &&
           !isCurrentDraw &&
-          isAlive && (
+          !isBattleOver && (
             <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
               <BattleHistoryCard {...player.player_settings} {...lastTurnHistory.player} name={player.user_name} />
               <BattleHistoryCard
@@ -271,13 +272,7 @@ export default function GamePage() {
           />
         )}
 
-        <BattleTabs
-          battleState={battleState}
-          participantsMap={participantsMap}
-          isAlive={isAlive}
-          tabsRef={tabsRef}
-          isSpectating={isShowOtherBattle}
-        />
+        <BattleTabs battleState={battleState} participantsMap={participantsMap} isAlive={isAlive} tabsRef={tabsRef} />
 
         {isOpenCancelTournamentModal && (
           <Modal

@@ -1,4 +1,3 @@
-import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { RefObject, useEffect, useState } from 'react';
@@ -21,10 +20,9 @@ type BattleTabsProps = {
   participantsMap: Record<string, Player>;
   isAlive: boolean;
   tabsRef: RefObject<HTMLDivElement>;
-  isSpectating: boolean;
 };
 
-export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef, isSpectating }: BattleTabsProps) => {
+export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: BattleTabsProps) => {
   const { participants, defeated_participants, battle_name, state } = battleState;
   const [selectedTab, setSelectedTab] = useState<Tabs>('players');
   const [showCurrentBattle, setShowCurrentBattle] = useState(true);
@@ -153,54 +151,34 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef, isS
   };
 
   return (
-    <div className={clsx(styles.tabs, !isAlive && styles.defeated, isSpectating && styles.spectating)} ref={tabsRef}>
-      {isSpectating ? (
-        <>
-          <Button
-            text="Back to battles list"
-            color="dark"
-            className={styles.backButton}
-            onClick={() => setOtherPairBattleWatch(null)}
-            block
-          />
+    <div className={clsx(styles.tabs, !isAlive && styles.defeated)} ref={tabsRef}>
+      <Segmented options={segmentedOptions} value={selectedTab} onChange={(value) => setSelectedTab(value as Tabs)} />
 
-          <List className={styles.list} maxLength={6} items={renderCurrentBattleItems()} />
-        </>
-      ) : (
-        <>
-          <Segmented
-            options={segmentedOptions}
-            value={selectedTab}
-            onChange={(value) => setSelectedTab(value as Tabs)}
-          />
+      {selectedTab === 'players' && (
+        <PlayersList
+          bid={Number(battleState.bid)}
+          items={playersListItems}
+          className={styles.playersList}
+          tournamentName={battle_name}
+        />
+      )}
 
-          {selectedTab === 'players' && (
-            <PlayersList
-              bid={Number(battleState.bid)}
-              items={playersListItems}
-              className={styles.playersList}
-              tournamentName={battle_name}
+      {selectedTab === 'history' && (
+        <>
+          <div className={styles.switcher}>
+            <Switcher
+              size="small"
+              checked={showCurrentBattle}
+              onChange={(isChecked) => setShowCurrentBattle(isChecked)}
             />
-          )}
 
-          {selectedTab === 'history' && (
-            <>
-              <div className={styles.switcher}>
-                <Switcher
-                  size="small"
-                  checked={showCurrentBattle}
-                  onChange={(isChecked) => setShowCurrentBattle(isChecked)}
-                />
+            <Text size="sm">Show current battle</Text>
+          </div>
 
-                <Text size="sm">Show current battle</Text>
-              </div>
-
-              {showCurrentBattle ? (
-                <List className={styles.list} maxLength={6} items={renderCurrentBattleItems()} />
-              ) : (
-                <List className={styles.list} maxLength={7} items={renderBattleItems()} />
-              )}
-            </>
+          {showCurrentBattle ? (
+            <List className={styles.list} maxLength={6} items={renderCurrentBattleItems()} />
+          ) : (
+            <List className={styles.list} maxLength={7} items={renderBattleItems()} />
           )}
         </>
       )}
