@@ -33,7 +33,7 @@ export function Timer({ remainingTime, shouldGoOn, isYourTurn }: Props) {
         </>
       ) : (
         <Text size="xl" weight="bold" className={styles.title}>
-          Waiting for opponent’s turn.
+          Waiting for opponent&apos;s turn.
         </Text>
       )}
     </div>

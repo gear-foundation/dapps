@@ -50,14 +50,16 @@ const GameOverCard = ({
   };
 
   const getDescription = () => {
-    if (isDraw) return `${player.user_name} and ${opponent.user_name} ended in a draw!`;
+    if (isSpectating) {
+      if (!isTournamentOver) return 'You can wait for the new battle here or choose another one from the battles list.';
 
-    if (!isTournamentOver) {
-      if (isSpectating) return 'You can wait for the new battle here or choose another one from the battles list.';
-      if (!isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
+      return isDraw ? `${player.user_name} and ${opponent.user_name} ended in a draw!` : ``;
+    } else {
+      if (isDraw) return `${player.user_name} and ${opponent.user_name} ended in a draw!`;
+      if (!isTournamentOver && !isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
+
+      return `${winnerName} wins!`;
     }
-
-    return isSpectating ? '' : `${winnerName} wins!`;
   };
 
   return (
