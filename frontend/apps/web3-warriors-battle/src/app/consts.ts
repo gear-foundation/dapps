@@ -1,11 +1,11 @@
 export const ACCOUNT_ID_LOCAL_STORAGE_KEY = 'account';
 
 export const ADDRESS = {
-  NODE: import.meta.env.VITE_NODE_ADDRESS,
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS as string,
-  DNS_API_URL: import.meta.env.VITE_DNS_API_URL,
-  DNS_NAME: import.meta.env.VITE_DNS_NAME,
-  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_TTT,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_TTT as string,
 };
 
 export const MAX_PLAYERS_COUNT = 50;

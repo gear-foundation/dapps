@@ -1,5 +1,4 @@
-import './app.scss';
-import '@gear-js/vara-ui/dist/style.css';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 
 import { Container, Footer } from '@dapps-frontend/ui';
@@ -11,6 +10,7 @@ import { useAccountAvailableBalanceSync } from '@/features/wallet/hooks';
 
 import { useProgram } from './app/utils/sails';
 import { Routing } from './pages';
+import './app.scss';
 
 function Component() {
   const { isApiReady } = useApi();

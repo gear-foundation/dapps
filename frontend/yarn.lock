@@ -477,7 +477,7 @@ __metadata:
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
     "@gear-js/ui": "npm:0.5.26"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@gear-js/wallet-connect": "npm:0.2.3"
     "@headlessui/react": "npm:2.2.0"
     "@polkadot/react-identicon": "npm:3.12.1"
@@ -978,23 +978,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/vara-ui@npm:0.0.10":
-  version: 0.0.10
-  resolution: "@gear-js/vara-ui@npm:0.0.10"
+"@gear-js/vara-ui@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@gear-js/vara-ui@npm:0.1.1"
+  dependencies:
+    non.geist: "npm:1.0.4"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/f8cb7cbf1e6183085386752d86d3e4ad067d308545bfed0c27e22944e11cd74cc469c57e16a288f69b9c18077285825b25c899c630028caf408662bb366b5900
-  languageName: node
-  linkType: hard
-
-"@gear-js/vara-ui@npm:0.0.11":
-  version: 0.0.11
-  resolution: "@gear-js/vara-ui@npm:0.0.11"
-  peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
-  checksum: 10c0/0068ce6ac670a1ca012bbde982a81679a20f99a426d71bec564cd5d583b51dd68c7ad2a6eddb09654dce613af065eb02f3c14ea50f739c9c7aa50a1bde5a9ba0
+  checksum: 10c0/8dc4cf31c0f2021db620546773650cb30a30d228c5725fe0e2fbfd31a78144345ea97e874f65aa57368132a51c17dddc2548201d011b589cdbf941f516aaa422
   languageName: node
   linkType: hard
 
@@ -4719,7 +4711,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/react-identicon": "npm:3.12.1"
@@ -4750,7 +4742,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/react-identicon": "npm:3.12.1"
     "@polkadot/util": "npm:13.3.1"
@@ -7002,7 +6994,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/util": "npm:13.3.1"
@@ -7198,7 +7190,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "gear-ez-transactions@workspace:packages/ez-transactions"
   dependencies:
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@polkadot/keyring": "npm:13.3.1"
     "@polkadot/react-identicon": "npm:3.12.1"
     clsx: "npm:2.1.1"
@@ -9375,7 +9367,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/react-identicon": "npm:3.12.1"
@@ -9549,6 +9541,13 @@ __metadata:
     sails-js: "npm:0.3.1"
   languageName: unknown
   linkType: soft
+
+"non.geist@npm:1.0.4":
+  version: 1.0.4
+  resolution: "non.geist@npm:1.0.4"
+  checksum: 10c0/4bac031de3fdd09dd14d23a4c3d0767ac8e330ff56b53088dab4c71c77496ddf7e8af525d85a8641614d3de07ecfcc3e9428c9893a3dec6851236c5fdc27fd4f
+  languageName: node
+  linkType: hard
 
 "nopt@npm:^7.0.0":
   version: 7.2.1
@@ -11773,7 +11772,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/react-identicon": "npm:3.12.1"
@@ -11980,7 +11979,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/util": "npm:13.3.1"
     "@polkadot/util-crypto": "npm:13.3.1"
@@ -12538,7 +12537,7 @@ __metadata:
   dependencies:
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.10"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@gear-js/wallet-connect": "npm:0.2.3"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/react-identicon": "npm:3.12.1"
@@ -12580,7 +12579,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/util": "npm:13.3.1"
@@ -12972,7 +12971,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.0"
     "@gear-js/react-hooks": "npm:0.15.0"
-    "@gear-js/vara-ui": "npm:0.0.11"
+    "@gear-js/vara-ui": "npm:0.1.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.4.1"
     "@polkadot/util": "npm:13.3.1"

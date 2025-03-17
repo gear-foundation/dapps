@@ -2,7 +2,6 @@ import './app.scss';
 import { withProviders } from '@/app/hocs';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import { useInitGame, useInitGameSync } from '@/features/tic-tac-toe/hooks';
-import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
 
 function Component() {

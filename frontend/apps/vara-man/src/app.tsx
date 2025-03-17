@@ -1,5 +1,4 @@
-import './global.css';
-import './app.scss';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 
 import { useApi, useAccount } from '@gear-js/react-hooks';
 import { useLocation } from 'react-router-dom';
@@ -9,12 +8,13 @@ import { Container, Footer } from '@dapps-frontend/ui';
 import { withProviders } from '@/app/hocs';
 import { Header } from '@/components/layout';
 
-import '@gear-js/vara-ui/dist/style.css';
 import { MOBILE_BREAKPOINT } from './app/consts';
 import { useGame } from './app/context/ctx-game';
 import { ApiLoader } from './components/loaders/api-loader';
 import { useMediaQuery } from './hooks/use-mobile-device';
 import { Routing } from './pages';
+import './global.css';
+import './app.scss';
 
 const Component = () => {
   const { isApiReady } = useApi();
