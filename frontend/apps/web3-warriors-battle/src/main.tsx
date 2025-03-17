@@ -1,4 +1,4 @@
-import '@gear-js/vara-ui/dist/style.css';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 

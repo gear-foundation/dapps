@@ -18,3 +18,4 @@ export { Timer } from './timer';
 export * from './battle-history-card';
 export { BattleHistorySinc } from './battle-history-sync';
 export { GameCanceledModal } from './modals/game-canceled-modal';
+export { TournamentResultModal } from './tournament-result-modal';

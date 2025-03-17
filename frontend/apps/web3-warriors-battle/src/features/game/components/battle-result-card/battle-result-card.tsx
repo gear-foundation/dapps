@@ -1,35 +1,21 @@
-import { useBalanceFormat } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 
-import { Card, Text } from '@/components';
-import { VaraIcon } from '@/components/layout';
+import { Card } from '@/components';
 
 import { currentPlayersAtom } from '../../store';
 
 import styles from './battle-result-card.module.scss';
 
 type GameOverCardProps = {
-  bid: number;
-  totalParticipants: number;
   isTournamentOver: boolean;
   isAlive: boolean;
   isSpectating: boolean;
   onScrollToHistoryClick: () => void;
 };
 
-const BattleResultCard = ({
-  bid,
-  isTournamentOver,
-  totalParticipants,
-  isAlive,
-  isSpectating,
-  onScrollToHistoryClick,
-}: GameOverCardProps) => {
+const BattleResultCard = ({ isTournamentOver, isAlive, isSpectating, onScrollToHistoryClick }: GameOverCardProps) => {
   const currentPlayers = useAtomValue(currentPlayersAtom);
-
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const prizeValue = getFormattedBalanceValue(bid).toNumber() * totalParticipants;
 
   if (!currentPlayers) return;
 
@@ -50,36 +36,27 @@ const BattleResultCard = ({
   };
 
   const getDescription = () => {
+    const drawText = `${player.user_name} and ${opponent.user_name} ended in a draw!`;
+
     if (isSpectating) {
       if (!isTournamentOver) return 'You can wait for the new battle here or choose another one from the battles list.';
 
-      return isDraw ? `${player.user_name} and ${opponent.user_name} ended in a draw!` : ``;
-    } else {
-      if (isDraw) return `${player.user_name} and ${opponent.user_name} ended in a draw!`;
-      if (!isTournamentOver && !isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
-
-      return `${winnerName} wins!`;
+      return isDraw ? drawText : '';
     }
+
+    if (isDraw) return drawText;
+    if (!isTournamentOver && !isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
+
+    return `${winnerName} wins!`;
   };
 
   return (
     <div className={clsx(styles.backdrop, !isSpectating && !isAlive && styles.grayedOut)}>
       <Card title={getTitle()} description={getDescription()} className={styles.card} size="md">
-        {isTournamentOver ? (
-          <div className={styles.prize}>
-            <Text size="sm">Winner prize:</Text>
-            <VaraIcon className={styles.icon} />
-            <Text size="sm" weight="semibold">
-              {isDraw ? prizeValue / 2 : prizeValue} VARA
-            </Text>
-          </div>
-        ) : (
-          !isSpectating &&
-          !isAlive && (
-            <button type="button" className={styles.scrollToHistoryButton} onClick={onScrollToHistoryClick}>
-              Choose any battle from the list below
-            </button>
-          )
+        {!isTournamentOver && !isSpectating && !isAlive && (
+          <button type="button" className={styles.scrollToHistoryButton} onClick={onScrollToHistoryClick}>
+            Choose any battle from the list below
+          </button>
         )}
       </Card>
     </div>

@@ -30,6 +30,7 @@ import {
   SphereAnimation,
   FireballCanvas,
   GameSpinner,
+  TournamentResultModal,
 } from '@/features/game/components';
 import { useParticipants, usePending } from '@/features/game/hooks';
 import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
@@ -49,6 +50,7 @@ export function Game() {
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
+  const [isTournamentResultModalOpen, setIsTournamentResultModalOpen] = useState(false);
 
   const [tappedButton, setTappedButton] = useState<Move | null>(null);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -60,6 +62,7 @@ export function Game() {
 
   const { battleState, isFetching } = useMyBattleQuery();
   const { admin, state, waiting_player, bid } = battleState || {};
+  const isTournamentOver = state ? 'gameIsOver' in state : false;
 
   const { allParticipants, isAlive, hasPlayer, hasOpponent, participantsMap, pair, currentPlayers } =
     useParticipants(battleState);
@@ -72,6 +75,10 @@ export function Game() {
       navigate(ROUTES.HOME);
     }
   }, [isFetching, battleState, navigate]);
+
+  useEffect(() => {
+    if (isTournamentOver) setIsTournamentResultModalOpen(true);
+  }, [isTournamentOver]);
 
   const turnEndCallback = () => {
     setIsShowTurnEndCard(true);
@@ -91,7 +98,6 @@ export function Game() {
   const showStartNextBattle = !hasOpponent && waiting_player?.[0] !== account.decodedAddress && isAlive;
   const showWaitingForOpponent = waiting_player?.[0] === account.decodedAddress;
   const isAdmin = account.decodedAddress === admin;
-  const isTournamentOver = 'gameIsOver' in state;
   const isCurrentDraw =
     !isTournamentOver && battleHistory?.[0].player.health === 0 && battleHistory?.[0].opponent.health === 0;
 
@@ -112,14 +118,16 @@ export function Game() {
   const roundDuration = config.time_for_move_in_blocks * config.block_duration_ms;
   const timeLeft = round_start_time ? Number(round_start_time) + roundDuration - Date.now() : null;
 
-  const onCancelTournament = () => {
-    cancelTournamentMessage({ onSuccess: () => navigate(ROUTES.HOME) });
-  };
+  const cancelTournament = () => cancelTournamentMessage({ onSuccess: () => navigate(ROUTES.HOME) });
+  const exitTournament = () => exitGameMessage({ onSuccess: () => navigate(ROUTES.HOME) });
 
-  const onExitGame = () => {
-    exitGameMessage({
-      onSuccess: () => navigate(ROUTES.HOME),
-    });
+  const getTournamentWinnerNames = (): [string, string | undefined] => {
+    if (!('gameIsOver' in state)) return ['', undefined];
+
+    const { winners } = state.gameIsOver;
+    const [firstWinner, secondWinner] = winners;
+
+    return [participantsMap[firstWinner].user_name, secondWinner ? participantsMap[secondWinner].user_name : undefined];
   };
 
   return (
@@ -245,8 +253,6 @@ export function Game() {
           )}
 
         <BattleResultCard
-          bid={Number(bid || 0)}
-          totalParticipants={allParticipants.length}
           isTournamentOver={isTournamentOver}
           isAlive={isAlive}
           isSpectating={isShowOtherBattle}
@@ -258,7 +264,7 @@ export function Game() {
             text="Cancel tournament"
             size="small"
             className={clsx(styles.cancelTournament, styles.redButton, !isAlive && styles.defeated)}
-            onClick={() => (isTournamentOver ? onCancelTournament() : setIsOpenCancelTournamentModal(true))}
+            onClick={() => (isTournamentOver ? cancelTournament() : setIsOpenCancelTournamentModal(true))}
             disabled={pending}
           />
         ) : (
@@ -267,7 +273,7 @@ export function Game() {
             size="small"
             icon={ExitIcon}
             className={clsx(styles.exit, styles.redButton, !isAlive && styles.defeated)}
-            onClick={onExitGame}
+            onClick={exitTournament}
             disabled={pending}
           />
         )}
@@ -284,7 +290,7 @@ export function Game() {
             onClose={() => setIsOpenCancelTournamentModal(false)}
             buttons={
               <>
-                <Button color="grey" text="End tournament" onClick={onCancelTournament} disabled={pending} />
+                <Button color="grey" text="End tournament" onClick={cancelTournament} disabled={pending} />
                 <Button
                   color="primary"
                   text="Continue tournament"
@@ -296,6 +302,16 @@ export function Game() {
           />
         )}
       </Background>
+
+      {isTournamentResultModalOpen && (
+        <TournamentResultModal
+          bid={Number(bid || 0)}
+          participantsCount={allParticipants.length}
+          winnerNames={getTournamentWinnerNames()}
+          close={() => setIsTournamentResultModalOpen(false)}
+          startOverButton={{ onClick: isAdmin ? cancelTournament : exitTournament, isLoading: pending }}
+        />
+      )}
     </>
   );
 }
