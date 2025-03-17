@@ -7,7 +7,7 @@ import { VaraIcon } from '@/components/layout';
 
 import { currentPlayersAtom } from '../../store';
 
-import styles from './game-over-card.module.scss';
+import styles from './battle-result-card.module.scss';
 
 type GameOverCardProps = {
   bid: number;
@@ -18,7 +18,7 @@ type GameOverCardProps = {
   onScrollToHistoryClick: () => void;
 };
 
-const GameOverCard = ({
+const BattleResultCard = ({
   bid,
   isTournamentOver,
   totalParticipants,
@@ -86,4 +86,4 @@ const GameOverCard = ({
   );
 };
 
-export { GameOverCard };
+export { BattleResultCard };

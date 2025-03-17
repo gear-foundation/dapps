@@ -10,7 +10,7 @@ import { Loader, NotAuthorized } from '@/components';
 
 import CreateGamePage from './create-game';
 import FindGamePage from './find-game';
-import GamePage from './game';
+import { Game } from './game';
 import GenerateCharacterPage from './generate-character';
 import Home from './home';
 import ImportCharacterPage from './import-character';
@@ -26,7 +26,7 @@ const routes = [
   { path: ROUTES.CREATE_GAME, Page: CreateGamePage },
   { path: ROUTES.FIND_GAME, Page: FindGamePage },
   { path: ROUTES.WAITING, Page: WaitingPage },
-  { path: ROUTES.GAME, Page: GamePage },
+  { path: ROUTES.GAME, Page: Game },
   { path: ROUTES.ONBOARDING, Page: OnboardingPage },
 ];
 

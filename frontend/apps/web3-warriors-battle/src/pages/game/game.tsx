@@ -25,7 +25,7 @@ import {
   CharacterStats,
   BattleHistoryCard,
   GameButton,
-  GameOverCard,
+  BattleResultCard,
   Timer,
   SphereAnimation,
   FireballCanvas,
@@ -36,7 +36,7 @@ import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
 
 import styles from './game.module.scss';
 
-export default function GamePage() {
+export function Game() {
   const navigate = useNavigate();
   const { account } = useAccount();
 
@@ -244,7 +244,7 @@ export default function GamePage() {
             </div>
           )}
 
-        <GameOverCard
+        <BattleResultCard
           bid={Number(bid || 0)}
           totalParticipants={allParticipants.length}
           isTournamentOver={isTournamentOver}

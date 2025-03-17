@@ -7,7 +7,7 @@ export { CharacterStatsForm } from './character-stats-form';
 export { WaitList } from './wait-list';
 export { List } from './list';
 export { GameButton } from './game-button';
-export { GameOverCard } from './game-over-card';
+export { BattleResultCard } from './battle-result-card';
 export { BattleCard } from './battle-card';
 export { HealthIndicator } from './health-indicator';
 export { PlayerStatus } from './player-status';
