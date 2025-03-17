@@ -1,28 +1,23 @@
+import { useApi, useAccount } from '@gear-js/react-hooks';
 import { PropsWithChildren } from 'react';
 
 import { Footer } from '@dapps-frontend/ui';
 
-import { useIsAppReady, useIsAppReadySync } from '@/app/hooks/use-is-app-ready';
 import { ApiLoader, Header } from '@/components';
-import { useAuthSync } from '@/features/auth/hooks';
 
 import { Container } from '../ui/container';
 
 type MainLayoutProps = PropsWithChildren;
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isAppReady } = useIsAppReady();
-
-  useIsAppReadySync();
-  useAuthSync();
+  const { isApiReady } = useApi();
+  const { isAccountReady } = useAccount();
 
   return (
     <>
       <Header />
-      <main>
-        {!isAppReady && <ApiLoader />}
-        {isAppReady && children}
-      </main>
+
+      <main>{isApiReady && isAccountReady ? children : <ApiLoader />}</main>
 
       <Container>
         <Footer vara />

@@ -4,6 +4,7 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import { Alert, alertStyles } from '@gear-js/vara-ui';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
@@ -15,7 +16,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 import { ADDRESS } from '@/app/consts';
-import { Alert, alertStyles } from '@/components/ui/alert';
 
 import { useProgram } from '../utils';
 
@@ -78,8 +78,8 @@ const providers = [
   EzTransactionsProvider,
 ];
 
-function withProviders(Component: ComponentType) {
+function WithProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
-export { withProviders };
+export { WithProviders };

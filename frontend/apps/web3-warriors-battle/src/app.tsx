@@ -1,5 +1,5 @@
 import './app.scss';
-import { withProviders } from '@/app/hocs';
+import { WithProviders } from '@/app/hocs';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
@@ -28,4 +28,4 @@ function Component() {
   );
 }
 
-export const App = withProviders(Component);
+export const App = WithProviders(Component);

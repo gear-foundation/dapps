@@ -14,13 +14,13 @@ import GamePage from './game';
 import GenerateCharacterPage from './generate-character';
 import Home from './home';
 import ImportCharacterPage from './import-character';
-import NotFoundPage from './not-found';
+import { NotFound } from './not-found';
 import OnboardingPage from './onboarding';
 import WaitingPage from './waiting';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
-  { path: ROUTES.NOTFOUND, Page: NotFoundPage },
+  { path: ROUTES.NOTFOUND, Page: NotFound },
   { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacterPage },
   { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacterPage },
   { path: ROUTES.CREATE_GAME, Page: CreateGamePage },
