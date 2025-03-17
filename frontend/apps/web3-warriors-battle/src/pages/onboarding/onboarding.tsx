@@ -71,11 +71,11 @@ const steps = [
     ),
   },
   {
-    title: 'Players list and battle history',
+    title: 'Players list and active battles',
     children: (
       <Text>
-        At the bottom of the screen, you can view the list of active and eliminated players, as well as the history of
-        the battle with all the moves you and your opponent made.
+        At the bottom of the screen, you can view the list of active and eliminated players, as well as active battles
+        with all the moves you and your opponent made.
       </Text>
     ),
   },
@@ -114,8 +114,8 @@ export function Onboarding() {
       value: 'players',
     },
     {
-      label: 'Battle History ',
-      value: 'history',
+      label: 'Active Battles',
+      value: 'battles',
     },
   ];
 
@@ -171,7 +171,7 @@ export function Onboarding() {
             </div>
           )}
           {step === 3 && (
-            <Segmented className={styles.segmented} options={segmentedOptions} value="history" onChange={() => {}} />
+            <Segmented className={styles.segmented} options={segmentedOptions} value="battles" onChange={() => {}} />
           )}
         </Modal>
       </Background>

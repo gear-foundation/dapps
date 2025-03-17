@@ -13,7 +13,7 @@ import { PlayerStatus } from '@/features/game/types';
 
 import styles from './battle-tabs.module.scss';
 
-type Tabs = 'players' | 'history';
+type Tabs = 'players' | 'battles';
 
 type BattleTabsProps = {
   battleState: BattleState;
@@ -35,7 +35,7 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: B
 
   useEffect(() => {
     if (!isAlive && !isTournamentOver) {
-      setSelectedTab('history');
+      setSelectedTab('battles');
       setShowCurrentBattle(false);
     }
   }, [isAlive, isTournamentOver]);
@@ -69,8 +69,8 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: B
       value: 'players',
     },
     {
-      label: 'Battle History',
-      value: 'history',
+      label: 'Active Battles',
+      value: 'battles',
     },
   ];
 
@@ -163,7 +163,7 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: B
         />
       )}
 
-      {selectedTab === 'history' && (
+      {selectedTab === 'battles' && (
         <>
           <div className={styles.switcher}>
             <Switcher
