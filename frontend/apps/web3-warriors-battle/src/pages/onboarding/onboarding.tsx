@@ -35,11 +35,11 @@ const steps = [
       <>
         <Text>
           Press <span className={styles.attack}>Attack</span> to deal damage to your opponent. The more attack points
-          you have, the harder you'll hit.
+          you have, the harder you&apos;ll hit.
         </Text>
         <Text>
-          <span className={styles.reflect}>Reflect</span> returns a part of the enemy's attack damage equal to your
-          defenсe. It can only be used once every few turns.
+          <span className={styles.reflect}>Reflect</span> returns a part of the enemy&apos;s attack damage equal to your
+          defence. It can only be used once every few turns.
         </Text>
         <Text>
           <span className={styles.ultimate}>Ultimate</span> doubles your attack damage and is also active once every few
@@ -56,7 +56,8 @@ const steps = [
           <span className={styles.attack}>Attack</span> points show the strength of the damage you deal to the opponent.
         </Text>
         <Text>
-          <span className={styles.reflect}>Defence</span> indicates how efficiently opponent's attack can be reflected.
+          <span className={styles.reflect}>Defence</span> indicates how efficiently opponent&apos;s attack can be
+          reflected.
         </Text>
         <Text>
           <span className={styles.dodge}>Dodge</span> chance: the probability of fully evading the opponent’s attack.
@@ -65,7 +66,7 @@ const steps = [
           You can also track the damage dealt to you by the opponent, which will affect your{' '}
           <span className={styles.ultimate}>Health</span> stat.
         </Text>
-        <Text>If it's your turn, your character's image will be highlighted in green.</Text>
+        <Text>If it&apos;s your turn, your character&apos;s image will be highlighted in green.</Text>
       </>
     ),
   },
@@ -80,7 +81,7 @@ const steps = [
   },
 ];
 
-export default function OnboardingPage() {
+export function Onboarding() {
   const navigate = useNavigate();
   const characterView = characterAppearanceStorage.get() || mockCharacterView;
   const characterStats = characterStatsStorage.get();

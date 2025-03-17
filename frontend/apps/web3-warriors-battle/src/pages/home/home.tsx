@@ -10,7 +10,7 @@ import { useResetCharacterStats } from '@/features/game/hooks';
 
 import styles from './home.module.scss';
 
-export default function Home() {
+export function Home() {
   const navigate = useNavigate();
   useResetCharacterStats();
 

@@ -20,7 +20,7 @@ import { generateRandomCharacterView } from '@/features/game/utils';
 
 import styles from './generate-character.module.scss';
 
-export default function GenerateCharacter() {
+export function GenerateCharacter() {
   const navigate = useNavigate();
   const [characterView, setCharacterView] = useState<CharacterView>(
     characterAppearanceStorage.get() || generateRandomCharacterView(),

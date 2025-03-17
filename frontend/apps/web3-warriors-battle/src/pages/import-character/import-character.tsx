@@ -19,7 +19,7 @@ import { CharacterStatsFormValues } from '@/features/game/types';
 
 import styles from './import-character.module.scss';
 
-export default function ImportCharacter() {
+export function ImportCharacter() {
   const navigate = useNavigate();
   const [address, setAddress] = useState<string>('');
 

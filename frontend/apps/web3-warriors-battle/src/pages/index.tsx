@@ -8,26 +8,26 @@ import { ROUTES } from '@/app/consts';
 import { useMyBattleQuery } from '@/app/utils';
 import { Loader, NotAuthorized } from '@/components';
 
-import CreateGamePage from './create-game';
-import FindGamePage from './find-game';
+import { CreateGame } from './create-game';
+import { FindGame } from './find-game';
 import { Game } from './game';
-import GenerateCharacterPage from './generate-character';
-import Home from './home';
-import ImportCharacterPage from './import-character';
+import { GenerateCharacter } from './generate-character';
+import { Home } from './home';
+import { ImportCharacter } from './import-character';
 import { NotFound } from './not-found';
-import OnboardingPage from './onboarding';
-import WaitingPage from './waiting';
+import { Onboarding } from './onboarding';
+import { Waiting } from './waiting';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
   { path: ROUTES.NOTFOUND, Page: NotFound },
-  { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacterPage },
-  { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacterPage },
-  { path: ROUTES.CREATE_GAME, Page: CreateGamePage },
-  { path: ROUTES.FIND_GAME, Page: FindGamePage },
-  { path: ROUTES.WAITING, Page: WaitingPage },
+  { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacter },
+  { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacter },
+  { path: ROUTES.CREATE_GAME, Page: CreateGame },
+  { path: ROUTES.FIND_GAME, Page: FindGame },
+  { path: ROUTES.WAITING, Page: Waiting },
   { path: ROUTES.GAME, Page: Game },
-  { path: ROUTES.ONBOARDING, Page: OnboardingPage },
+  { path: ROUTES.ONBOARDING, Page: Onboarding },
 ];
 
 export function Routing() {

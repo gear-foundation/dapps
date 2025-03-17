@@ -20,7 +20,7 @@ import { usePending, useResetGameState } from '@/features/game/hooks';
 
 import styles from './waiting.module.scss';
 
-export default function WaitingPage() {
+export function Waiting() {
   const navigate = useNavigate();
   const { account } = useAccount();
 
@@ -60,7 +60,7 @@ export default function WaitingPage() {
 
   const { appearance, player_settings, user_name } = player;
 
-  const items = participants?.map(([address, { user_name }]) => ({ name: user_name, address }));
+  const items = participants?.map(([address, participant]) => ({ name: participant.user_name, address }));
   const isAdmin = account.decodedAddress === admin;
 
   const onStartTournament = () => {
