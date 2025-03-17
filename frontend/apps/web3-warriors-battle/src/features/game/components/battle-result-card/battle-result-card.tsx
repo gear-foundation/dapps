@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 
+import { useMyBattleQuery } from '@/app/utils';
 import { Card } from '@/components';
 
 import { currentPlayersAtom } from '../../store';
@@ -15,9 +16,13 @@ type GameOverCardProps = {
 };
 
 const BattleResultCard = ({ isTournamentOver, isAlive, isSpectating, onScrollToHistoryClick }: GameOverCardProps) => {
+  const { battleState } = useMyBattleQuery();
   const currentPlayers = useAtomValue(currentPlayersAtom);
 
-  if (!currentPlayers) return;
+  if (!battleState || !currentPlayers) return;
+
+  const { pairs } = battleState;
+  const isAnyActiveBattle = pairs.some(([, { player_2 }]) => !player_2.startsWith('0x00'));
 
   const { player, opponent } = currentPlayers;
   const playerStats = player.player_settings;
@@ -39,13 +44,20 @@ const BattleResultCard = ({ isTournamentOver, isAlive, isSpectating, onScrollToH
     const drawText = `${player.user_name} and ${opponent.user_name} ended in a draw!`;
 
     if (isSpectating) {
-      if (!isTournamentOver) return 'You can wait for the new battle here or choose another one from the battles list.';
+      if (!isTournamentOver)
+        return isAnyActiveBattle
+          ? 'You can wait for the new battle here or choose another one from the battles list.'
+          : "As soon as the remaining players start their battles, you'll be able to watch them.";
 
       return isDraw ? drawText : '';
     }
 
     if (isDraw) return drawText;
-    if (!isTournamentOver && !isAlive) return `${winnerName} wins! Now you can watch other players' battles.`;
+
+    if (!isTournamentOver && !isAlive)
+      return isAnyActiveBattle
+        ? `${winnerName} wins! Now you can watch other players' battles.`
+        : `${winnerName} wins! As soon as the remaining players start their battles, you'll be able to watch them.`;
 
     return `${winnerName} wins!`;
   };
@@ -53,7 +65,7 @@ const BattleResultCard = ({ isTournamentOver, isAlive, isSpectating, onScrollToH
   return (
     <div className={clsx(styles.backdrop, !isSpectating && !isAlive && styles.grayedOut)}>
       <Card title={getTitle()} description={getDescription()} className={styles.card} size="md">
-        {!isTournamentOver && !isSpectating && !isAlive && (
+        {isAnyActiveBattle && !isTournamentOver && !isSpectating && !isAlive && (
           <button type="button" className={styles.scrollToHistoryButton} onClick={onScrollToHistoryClick}>
             Choose any battle from the list below
           </button>
