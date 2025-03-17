@@ -1,3 +1,4 @@
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Route, Routes } from 'react-router-dom';
 
@@ -10,10 +11,9 @@ import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { useScrollToTop, cx } from '@/utils';
 
 import styles from './App.module.scss';
+import { useGetStateQuery } from './app/utils';
 import { Loader } from './components/Loader';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
-import '@gear-js/vara-ui/dist/style.css';
-import { useGetStateQuery } from './app/utils';
 
 function AppComponent() {
   useScrollToTop();

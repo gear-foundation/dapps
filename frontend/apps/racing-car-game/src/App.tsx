@@ -1,5 +1,6 @@
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Route, Routes } from 'react-router-dom';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Container, Footer } from '@dapps-frontend/ui';
@@ -17,7 +18,6 @@ import { useAuth, useAuthSync } from './features/Auth/hooks';
 import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 import { useLoginByParams } from './hooks';
 import { LoginPage } from './pages/LoginPage';
-import '@gear-js/vara-ui/dist/style.css';
 
 function AppComponent() {
   const { isApiReady } = useApi();

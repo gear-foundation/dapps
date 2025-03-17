@@ -1,11 +1,11 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 
 import { Footer } from '@dapps-frontend/ui';
 
 import { Header, ApiLoader } from '@/components';
 import { withProviders } from '@/hocs';
 import { Routing } from '@/pages';
-import '@gear-js/vara-ui/dist/style.css';
 import './App.scss';
 
 function Component() {
