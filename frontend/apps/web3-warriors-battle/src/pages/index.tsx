@@ -1,12 +1,11 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { Suspense, useEffect } from 'react';
-import { Route, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Route, useNavigate, useLocation, Navigate, Outlet } from 'react-router-dom';
 
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 
 import { ROUTES } from '@/app/consts';
 import { useMyBattleQuery } from '@/app/utils';
-import { Loader, NotAuthorized } from '@/components';
 
 import { CreateGame } from './create-game';
 import { FindGame } from './find-game';
@@ -21,18 +20,25 @@ import { Waiting } from './waiting';
 const routes = [
   { path: ROUTES.HOME, Page: Home },
   { path: ROUTES.NOTFOUND, Page: NotFound },
+  { path: ROUTES.ONBOARDING, Page: Onboarding },
+];
+
+const privateRoutes = [
   { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacter },
   { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacter },
   { path: ROUTES.CREATE_GAME, Page: CreateGame },
   { path: ROUTES.FIND_GAME, Page: FindGame },
   { path: ROUTES.WAITING, Page: Waiting },
   { path: ROUTES.GAME, Page: Game },
-  { path: ROUTES.ONBOARDING, Page: Onboarding },
 ];
 
-export function Routing() {
+function PrivateRoute() {
   const { account } = useAccount();
 
+  return account ? <Outlet /> : <Navigate to={ROUTES.HOME} />;
+}
+
+export function Routing() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,21 +59,15 @@ export function Routing() {
     }
   }, [battleState, isFetching, navigate, location.pathname]);
 
-  return account ? (
+  const renderRoutes = (items: typeof routes) =>
+    items.map(({ path, Page }) => {
+      return <Route key={path} path={path} element={<Page />} />;
+    });
+
+  return (
     <ErrorTrackingRoutes>
-      {routes.map(({ path, Page }) => (
-        <Route
-          key={path}
-          path={path}
-          element={
-            <Suspense fallback={<Loader />}>
-              <Page />
-            </Suspense>
-          }
-        />
-      ))}
+      {renderRoutes(routes)}
+      <Route element={<PrivateRoute />}>{renderRoutes(privateRoutes)}</Route>
     </ErrorTrackingRoutes>
-  ) : (
-    <NotAuthorized />
   );
 }

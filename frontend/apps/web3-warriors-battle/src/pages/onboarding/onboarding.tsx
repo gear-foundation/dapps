@@ -1,8 +1,9 @@
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { NavigationType, useNavigate, useNavigationType } from 'react-router-dom';
 
+import { ROUTES } from '@/app/consts';
 import { Modal, Segmented, Text } from '@/components';
 import {
   AttackButtonIcon,
@@ -19,7 +20,7 @@ import { characterAppearanceStorage, characterStatsStorage } from '@/features/ga
 
 import styles from './onboarding.module.scss';
 
-const steps = [
+const STEPS = [
   {
     title: 'This is your character',
     children: (
@@ -60,7 +61,8 @@ const steps = [
           reflected.
         </Text>
         <Text>
-          <span className={styles.dodge}>Dodge</span> chance: the probability of fully evading the opponent’s attack.
+          <span className={styles.dodge}>Dodge</span> chance: the probability of fully evading the opponent&apos;s
+          attack.
         </Text>
         <Text>
           You can also track the damage dealt to you by the opponent, which will affect your{' '}
@@ -79,47 +81,47 @@ const steps = [
       </Text>
     ),
   },
+] as const;
+
+const SEGMENTED_OPTIONS = [
+  {
+    label: (
+      <div className={styles.players}>
+        <span>Players:</span>
+        <div>
+          12 <UserSmileIcon />
+        </div>
+        <div>
+          36 <UserSkullIcon />
+        </div>
+      </div>
+    ),
+    value: 'players',
+  },
+  {
+    label: 'Active Battles',
+    value: 'battles',
+  },
 ];
 
 export function Onboarding() {
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
+
   const characterView = characterAppearanceStorage.get() || mockCharacterView;
   const characterStats = characterStatsStorage.get();
 
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, []);
+  const goBack = () => {
+    const hasPreviousPath = navigationType !== NavigationType.Pop;
 
-  const onClose = () => {
-    navigate(-1);
+    return hasPreviousPath ? navigate(-1) : navigate(ROUTES.HOME);
   };
 
   const [step, setStep] = useState(0);
 
-  const timeLeft = 12000;
-
-  const segmentedOptions = [
-    {
-      label: (
-        <div className={styles.players}>
-          <span>Players:</span>
-          <div>
-            12 <UserSmileIcon />
-          </div>
-          <div>
-            36 <UserSkullIcon />
-          </div>
-        </div>
-      ),
-      value: 'players',
-    },
-    {
-      label: 'Active Battles',
-      value: 'battles',
-    },
-  ];
-
-  const { title, children } = steps[step];
+  const { title, children } = STEPS[step];
+  const isFirstStep = step === 0;
+  const isLastStep = step === STEPS.length - 1;
 
   return (
     <>
@@ -132,13 +134,15 @@ export function Onboarding() {
           className={clsx(step === 2 && styles.highlighted)}
           isActive
         />
+
         <div className={clsx(styles.character, styles.left)}>
           <Character {...characterView} />
         </div>
 
-        {<Timer remainingTime={timeLeft} shouldGoOn={false} />}
+        <Timer remainingTime={12000} shouldGoOn={false} />
 
         <CharacterStats align="right" {...mockPlayer2} characterView={mockCharacterView2} />
+
         <div className={clsx(styles.character, styles.right)}>
           <Character {...mockCharacterView2} />
         </div>
@@ -147,19 +151,21 @@ export function Onboarding() {
           title={title}
           className={styles.modal}
           modalClassName={styles.backdrop}
-          onClose={onClose}
+          onClose={goBack}
           size="sm"
           closeOnBackdrop={false}>
           {children}
+
           <div className={styles.modalButtons}>
-            {step !== 0 && <Button text="Back" color="grey" onClick={() => setStep(step - 1)} />}
-            {step === steps.length - 1 ? (
-              <Button text={'Got it!'} onClick={onClose} />
-            ) : (
-              <Button text={'Continue'} onClick={() => setStep(step + 1)} />
-            )}
+            {!isFirstStep && <Button text="Back" color="grey" onClick={() => setStep(step - 1)} />}
+
+            <Button
+              text={isLastStep ? 'Got it!' : 'Continue'}
+              onClick={() => (isLastStep ? goBack() : setStep(step + 1))}
+            />
+
             <Text size="md">
-              {step + 1}/{steps.length}
+              {step + 1}/{STEPS.length}
             </Text>
           </div>
 
@@ -170,14 +176,15 @@ export function Onboarding() {
               <GameButton color="cyan" text="Ultimate" icon={<UltimateButtonIcon />} />
             </div>
           )}
+
           {step === 3 && (
-            <Segmented className={styles.segmented} options={segmentedOptions} value="battles" onChange={() => {}} />
+            <Segmented className={styles.segmented} options={SEGMENTED_OPTIONS} value="battles" onChange={() => {}} />
           )}
         </Modal>
       </Background>
 
-      <div className={styles['blur-backdrop']}>
-        {step === 0 && (
+      <div className={styles.blurBackdrop}>
+        {isFirstStep && (
           <div className={styles.characterCircle}>
             <Background>
               <div className={clsx(styles.character, styles.left)}>
