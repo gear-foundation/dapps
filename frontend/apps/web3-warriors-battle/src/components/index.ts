@@ -1,4 +1,4 @@
-export { Header, NotAuthorized, MainLayout } from './layout';
+export { Header } from './layout';
 export { ApiLoader, Loader, LoadingError } from './loaders';
 export { Modal } from './ui/modal';
 export { Card } from './ui/card';

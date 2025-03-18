@@ -1,5 +1,8 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { useNavigate } from 'react-router-dom';
+
+import { Wallet } from '@dapps-frontend/ui';
 
 import { ALLOWED_SIGNLESS_ACTIONS, ROUTES } from '@/app/consts';
 import { Card } from '@/components';
@@ -11,8 +14,22 @@ import { useResetCharacterStats } from '@/features/game/hooks';
 import styles from './home.module.scss';
 
 export function Home() {
+  const { account } = useAccount();
   const navigate = useNavigate();
   useResetCharacterStats();
+
+  if (!account)
+    return (
+      <Background>
+        <Card
+          size="lg"
+          title="Web3 Warriors Battle"
+          description="Create your Warrior character and engage in battles with other players."
+          className={styles.authCard}>
+          <Wallet />
+        </Card>
+      </Background>
+    );
 
   return (
     <Background>
