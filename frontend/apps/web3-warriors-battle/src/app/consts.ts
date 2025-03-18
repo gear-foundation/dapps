@@ -1,3 +1,5 @@
+import { ONBOARDING_ROUTE } from '@/features/onboarding';
+
 export const ACCOUNT_ID_LOCAL_STORAGE_KEY = 'account';
 
 export const ADDRESS = {
@@ -19,7 +21,7 @@ export const ROUTES = {
   WAITING: '/waiting',
 
   GAME: '/game',
-  ONBOARDING: '/onboarding',
+  ONBOARDING: ONBOARDING_ROUTE,
 
   NOTFOUND: '*',
 };
