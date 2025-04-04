@@ -3,13 +3,13 @@
 
 use sails_rs::prelude::*;
 pub mod services;
-use services::game::GameService;
+use services::game::{Config, GameService};
 pub struct Program(());
 
 #[program]
 impl Program {
-    pub async fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
-        GameService::init(dns_id_and_name).await;
+    pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        GameService::init(config, dns_id_and_name).await;
         Self(())
     }
 

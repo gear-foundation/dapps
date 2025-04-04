@@ -1,9 +1,8 @@
 #![no_std]
-
-use sails_rs::{
-    gstd::{exec, msg},
-    prelude::*,
-};
+use gstd::ReservationId;
+use sails_rs::collections::BTreeSet;
+use sails_rs::gstd::{exec, msg};
+use sails_rs::prelude::*;
 
 pub const COST_FOR_UPGRADE: u32 = 500;
 pub const FINE: u32 = 1_000;
@@ -11,18 +10,35 @@ pub type Price = u32;
 pub type Rent = u32;
 pub type Gears = Vec<Gear>;
 
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct GameInfo {
+    pub admin_id: ActorId,
+    pub properties_in_bank: Vec<u8>,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub players_queue: Vec<ActorId>,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+}
+
 #[derive(Default, Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct PlayerInfo {
+    pub owner_id: ActorId,
+    pub name: String,
     pub position: u8,
     pub balance: u32,
     pub debt: u32,
     pub in_jail: bool,
     pub round: u128,
-    pub cells: Vec<u8>,
+    pub cells: BTreeSet<u8>,
     pub penalty: u8,
     pub lost: bool,
+    pub reservation_id: Option<ReservationId>,
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
@@ -32,37 +48,6 @@ pub enum Gear {
     Bronze,
     Silver,
     Gold,
-}
-
-#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum Event {
-    Registered,
-    StartRegistration,
-    Played,
-    GameFinished {
-        winner: ActorId,
-    },
-    StrategicError,
-    StrategicSuccess,
-    Step {
-        players: Vec<(ActorId, PlayerInfo)>,
-        properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
-        current_player: ActorId,
-        ownership: Vec<ActorId>,
-        current_step: u64,
-    },
-    Jail {
-        in_jail: bool,
-        position: u8,
-    },
-    GasReserved,
-    NextRoundFromReservation,
-    AdminChanged,
-    Killed {
-        inheritor: ActorId,
-    },
 }
 
 struct PlayerService(());
@@ -78,13 +63,11 @@ impl PlayerService {
     pub fn new() -> Self {
         Self(())
     }
-    pub async fn your_turn(
-        &self,
-        players: Vec<(ActorId, PlayerInfo)>,
-        properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
-    ) -> bool {
+    pub fn your_turn(&self, game_info: GameInfo) {
         let monopoly_id = msg::source();
-        let (_, mut player_info) = players
+
+        let (_, player_info) = game_info
+            .players
             .iter()
             .find(|(player, _player_info)| player == &exec::program_id())
             .expect("Can't find my address")
@@ -95,111 +78,95 @@ impl PlayerService {
                 let request = [
                     "Syndote".encode(),
                     "ThrowRoll".to_string().encode(),
-                    (false, None::<Vec<u8>>).encode(),
+                    (game_info.admin_id, false, None::<Vec<u8>>).encode(),
                 ]
                 .concat();
 
-                let reply: Event = msg::send_bytes_for_reply_as(monopoly_id, request, 0, 0)
-                    .expect("Error in sending a message `ThrowRoll`")
-                    .await
-                    .expect("Unable to decode `Event`");
-
-                if let Event::Jail { in_jail, position } = reply {
-                    if !in_jail {
-                        player_info.position = position;
-                    } else {
-                        return true;
-                    }
-                }
+                msg::send_bytes(monopoly_id, request, 0)
+                    .expect("Error in sending a message `ThrowRoll`");
+                return;
             } else {
                 let request = [
                     "Syndote".encode(),
                     "ThrowRoll".to_string().encode(),
-                    (true, None::<Vec<u8>>).encode(),
+                    (game_info.admin_id, true, None::<Vec<u8>>).encode(),
                 ]
                 .concat();
 
-                msg::send_bytes_for_reply(monopoly_id, request, 0, 0)
-                    .expect("Error in sending a message `ThrowRoll`")
-                    .await
-                    .expect("Unable to decode `Event`");
-
-                return true;
+                msg::send_bytes(monopoly_id, request, 0)
+                    .expect("Error in sending a message `ThrowRoll`");
+                return;
             }
         }
 
         let position = player_info.position;
 
-        let (my_cell, free_cell, gears) =
-            if let Some((account, gears, _, _)) = &properties[position as usize] {
-                let my_cell = account == &exec::program_id();
-                let free_cell = account == &ActorId::zero();
-                (my_cell, free_cell, gears)
-            } else {
-                return true;
-            };
+        let (my_cell, free_cell, gears, price) = if let Some((account, gears, price, _)) =
+            &game_info.properties[position as usize]
+        {
+            let my_cell = account == &exec::program_id();
+            let free_cell = account == &ActorId::zero();
+            (my_cell, free_cell, gears, price)
+        } else {
+            let request = [
+                "Syndote".encode(),
+                "Skip".to_string().encode(),
+                (game_info.admin_id).encode(),
+            ]
+            .concat();
 
+            msg::send_bytes(monopoly_id, request, 0).expect("Error in sending a message `Skip`");
+            return;
+        };
         if my_cell {
             if gears.len() < 3 {
-                let request = [
-                    "Syndote".encode(),
-                    "AddGear".to_string().encode(),
-                    (None::<Vec<u8>>).encode(),
-                ]
-                .concat();
-
-                msg::send_bytes_for_reply(monopoly_id, request, 0, 0)
-                    .expect("Error in sending a message `ThrowRoll`")
-                    .await
-                    .expect("Unable to decode `Event`");
-
-                return true;
+                send_request(monopoly_id, "AddGear".to_string(), game_info.admin_id);
+                return;
             } else {
-                let request = [
-                    "Syndote".encode(),
-                    "Upgrade".to_string().encode(),
-                    (None::<Vec<u8>>).encode(),
-                ]
-                .concat();
-
-                msg::send_bytes_for_reply(monopoly_id, request, 0, 0)
-                    .expect("Error in sending a message `ThrowRoll`")
-                    .await
-                    .expect("Unable to decode `Event`");
-
-                return true;
+                send_request(monopoly_id, "Upgrade".to_string(), game_info.admin_id);
+                return;
             }
         }
         if free_cell {
-            //debug!("BUY CELL");
+            if player_info.balance >= *price && player_info.balance >= 1_000 {
+                send_request(monopoly_id, "BuyCell".to_string(), game_info.admin_id);
+                return;
+            } else {
+                let request = [
+                    "Syndote".encode(),
+                    "Skip".to_string().encode(),
+                    (game_info.admin_id).encode(),
+                ]
+                .concat();
 
-            let request = [
-                "Syndote".encode(),
-                "BuyCell".to_string().encode(),
-                (None::<Vec<u8>>).encode(),
-            ]
-            .concat();
-
-            msg::send_bytes_for_reply(monopoly_id, request, 0, 0)
-                .expect("Error in sending a message `ThrowRoll`")
-                .await
-                .expect("Unable to decode `Event`");
+                msg::send_bytes(monopoly_id, request, 0)
+                    .expect("Error in sending a message `Skip`");
+                return;
+            }
         } else if !my_cell {
-            //debug!("PAY RENT");
-            let request = [
-                "Syndote".encode(),
-                "PayRent".to_string().encode(),
-                (None::<Vec<u8>>).encode(),
-            ]
-            .concat();
-
-            msg::send_bytes_for_reply(monopoly_id, request, 0, 0)
-                .expect("Error in sending a message `ThrowRoll`")
-                .await
-                .expect("Unable to decode `Event`");
+            send_request(monopoly_id, "PayRent".to_string(), game_info.admin_id);
+            return;
         }
-        true
+        let request = [
+            "Syndote".encode(),
+            "Skip".to_string().encode(),
+            (game_info.admin_id).encode(),
+        ]
+        .concat();
+
+        msg::send_bytes(monopoly_id, request, 0).expect("Error in sending a message `Skip`");
     }
+}
+
+fn send_request(program_id: ActorId, action: String, admin_id: ActorId) {
+    let request = [
+        "Syndote".encode(),
+        action.encode(),
+        (admin_id, None::<Vec<u8>>).encode(),
+    ]
+    .concat();
+
+    msg::send_bytes(program_id, request, 0).expect("Error in sending a message");
 }
 
 pub struct PlayerProgram(());
