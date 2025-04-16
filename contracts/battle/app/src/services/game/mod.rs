@@ -29,9 +29,12 @@ pub enum Event {
     NewBattleCreated {
         battle_id: ActorId,
         bid: u128,
+        user_id: ActorId,
+        user_name: String,
     },
     PlayerRegistered {
         admin_id: ActorId,
+        user_id: ActorId,
         user_name: String,
         bid: u128,
     },
