@@ -69,9 +69,9 @@ jobs:
         with:
           name: wasm
           path: |
-            contracts/target/wasm32-unknown-unknown/release/*.wasm
-            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
-            contracts/target/wasm32-unknown-unknown/release/*.idl
+            contracts/target/wasm32-gear/release/*.wasm
+            contracts/target/wasm32-gear/release/*.meta.txt
+            contracts/target/wasm32-gear/release/*.idl
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -91,7 +91,7 @@ jobs:
             docker pull ghcr.io/${{ github.repository }}-rust-build-image:${{ inputs.version }}
             ```
           files: |
-            contracts/target/wasm32-unknown-unknown/release/*.wasm
-            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
-            contracts/target/wasm32-unknown-unknown/release/*.idl
+            contracts/target/wasm32-gear/release/*.wasm
+            contracts/target/wasm32-gear/release/*.meta.txt
+            contracts/target/wasm32-gear/release/*.idl
             image.tar
