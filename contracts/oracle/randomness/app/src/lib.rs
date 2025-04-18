@@ -85,7 +85,7 @@ impl RandomnessService {
             panic!("Unable to update existing value!");
         }
 
-        self.notify_on(Event::NewRandomValue { round, value })
+        self.emit_event(Event::NewRandomValue { round, value })
             .expect("Notification Error");
     }
 
@@ -94,7 +94,7 @@ impl RandomnessService {
         let round = randomness_oracle.last_round;
         let random_value = self.get_random_value(round);
 
-        self.notify_on(Event::LastRoundWithRandomValue {
+        self.emit_event(Event::LastRoundWithRandomValue {
             round,
             random_value,
         })
@@ -106,7 +106,7 @@ impl RandomnessService {
         let randomness_oracle = self.get_mut();
         self.assert_owner();
         randomness_oracle.manager = new_manager;
-        self.notify_on(Event::NewManager(new_manager))
+        self.emit_event(Event::NewManager(new_manager))
             .expect("Notification Error");
     }
 

@@ -12,10 +12,7 @@ use sails_rs::{
 pub const USER_ID: u64 = 10;
 
 fn init_fungible_token(sys: &System) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
-    );
+    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vft.send_bytes(USER_ID, encoded_request);
@@ -60,7 +57,7 @@ async fn test_add_liquidity() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/dex.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
 
     // Create a new factory and initialize two fungible token contracts
     let dex_factory = Factory::new(program_space.clone());
@@ -105,11 +102,23 @@ async fn test_add_liquidity() {
 
     // Verify the state after adding liquidity
     let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(total_liquidity, 9_000.into(), "Total liquidity should match initial addition");
+    assert_eq!(
+        total_liquidity,
+        9_000.into(),
+        "Total liquidity should match initial addition"
+    );
     let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_a, 10_000.into(), "Reserve A should match initial addition");
+    assert_eq!(
+        reserve_a,
+        10_000.into(),
+        "Reserve A should match initial addition"
+    );
     let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_b, 10_000.into(), "Reserve B should match initial addition");
+    assert_eq!(
+        reserve_b,
+        10_000.into(),
+        "Reserve B should match initial addition"
+    );
 
     // Add more liquidity to the DEX pool
     client
@@ -120,11 +129,23 @@ async fn test_add_liquidity() {
 
     // Verify the updated state
     let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(total_liquidity, 27_000.into(), "Total liquidity should match after second addition");
+    assert_eq!(
+        total_liquidity,
+        27_000.into(),
+        "Total liquidity should match after second addition"
+    );
     let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_a, 30_000.into(), "Reserve A should match after second addition");
+    assert_eq!(
+        reserve_a,
+        30_000.into(),
+        "Reserve A should match after second addition"
+    );
     let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(reserve_b, 30_000.into(), "Reserve B should match after second addition");
+    assert_eq!(
+        reserve_b,
+        30_000.into(),
+        "Reserve B should match after second addition"
+    );
 }
 
 /// Test for the `swap` functionality
@@ -136,7 +157,7 @@ async fn test_swap() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/dex.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
 
     let dex_factory = Factory::new(program_space.clone());
     let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
@@ -229,7 +250,7 @@ async fn test_remove_liquidity() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/dex.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
 
     let dex_factory = Factory::new(program_space.clone());
     let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());

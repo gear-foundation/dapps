@@ -126,7 +126,10 @@ impl DexService {
             panic!("Swap status is incorrect");
         }
         if exec::gas_available() < storage.liquidity_action_gas {
-            panic!("Not enough gas; requires a least: {:?}", storage.liquidity_action_gas);
+            panic!(
+                "Not enough gas; requires a least: {:?}",
+                storage.liquidity_action_gas
+            );
         }
 
         let sender = msg::source();
@@ -136,7 +139,7 @@ impl DexService {
             panic!("Amounts must be greater than zero");
         }
         let first_time = storage.reserve_a.is_zero() && storage.reserve_b.is_zero();
-    
+
         let liquidity = if first_time {
             // Initial liquidity
             let liquidity = (amount_a * amount_b).integer_sqrt();
@@ -148,46 +151,53 @@ impl DexService {
             // Ensure tokens are added in correct proportions
             let expected_b = (amount_a * storage.reserve_b) / storage.reserve_a;
             let expected_a = (amount_b * storage.reserve_a) / storage.reserve_b;
-    
+
             if amount_b != expected_b && amount_a != expected_a {
                 panic!("Tokens must be provided in correct proportions");
             }
-    
+
             let liquidity = U256::min(
                 (amount_a * storage.total_liquidity) / storage.reserve_a,
                 (amount_b * storage.total_liquidity) / storage.reserve_b,
             );
-    
+
             if liquidity.is_zero() {
                 panic!("Insufficient liquidity minted");
             }
             liquidity
         };
 
-        storage.swap_status = SwapStatus::Paused; 
+        storage.swap_status = SwapStatus::Paused;
 
         // Transfer tokens to contract
         let request_a = vft_io::TransferFrom::encode_call(sender, program_id, amount_a);
-        msg::send_bytes_with_gas_for_reply(storage.token_a, request_a, 5_000_000_000, 0, 5_000_000_000)
-            .expect("Error in async message to vft contract")
-            .up_to(Some(5))
-            .expect("Reply timeout")
-            .handle_reply(|| {
-                let reply_bytes = msg::load_bytes().expect("Unable to load bytes");
-                let result = vft_io::TransferFrom::decode_reply(reply_bytes);
-                if result.is_err() {
-                    let storage = unsafe { STORAGE.as_mut().expect("Dex is not initialized") };
-                    storage.swap_status = SwapStatus::Ready;
-                }
-            })
-            .expect("Reply hook error")
-            .await
-            .expect("Error getting answer from the vft contract");
-    
+        msg::send_bytes_with_gas_for_reply(
+            storage.token_a,
+            request_a,
+            5_000_000_000,
+            0,
+            5_000_000_000,
+        )
+        .expect("Error in async message to vft contract")
+        .up_to(Some(5))
+        .expect("Reply timeout")
+        .handle_reply(|| {
+            let reply_bytes = msg::load_bytes().expect("Unable to load bytes");
+            let result = vft_io::TransferFrom::decode_reply(reply_bytes);
+            if result.is_err() {
+                let storage = unsafe { STORAGE.as_mut().expect("Dex is not initialized") };
+                storage.swap_status = SwapStatus::Ready;
+            }
+        })
+        .expect("Reply hook error")
+        .await
+        .expect("Error getting answer from the vft contract");
+
         let request_b = vft_io::TransferFrom::encode_call(sender, program_id, amount_b);
-        if let Err(_e) = msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
-            .expect("Error in async message to vft contract")
-            .await
+        if let Err(_e) =
+            msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
+                .expect("Error in async message to vft contract")
+                .await
         {
             let request = vft_io::Transfer::encode_call(sender, amount_a);
             msg::send_bytes_with_gas_for_reply(storage.token_a, request, 5_000_000_000, 0, 0)
@@ -202,7 +212,9 @@ impl DexService {
                 storage.reserve_a = amount_a;
                 storage.reserve_b = amount_b;
                 storage.total_liquidity = liquidity_to_mint;
-                storage.liquidity_providers.insert(sender, liquidity_to_mint);
+                storage
+                    .liquidity_providers
+                    .insert(sender, liquidity_to_mint);
             } else {
                 storage.reserve_a += amount_a;
                 storage.reserve_b += amount_b;
@@ -214,9 +226,9 @@ impl DexService {
                 *user_liquidity += liquidity;
             }
             storage.k_last = storage.reserve_a * storage.reserve_b;
-            storage.swap_status = SwapStatus::Ready; 
-    
-            self.notify_on(Event::AddedLiquidity {
+            storage.swap_status = SwapStatus::Ready;
+
+            self.emit_event(Event::AddedLiquidity {
                 sender,
                 amount_a,
                 amount_b,
@@ -225,7 +237,7 @@ impl DexService {
             .expect("Notification Error");
             true
         }
-    }    
+    }
 
     /// Removes liquidity from the pool.
     /// Transfers proportional token amounts back to the user.
@@ -237,7 +249,10 @@ impl DexService {
         }
 
         if exec::gas_available() < storage.liquidity_action_gas {
-            panic!("Not enough gas; requires a least: {:?}", storage.liquidity_action_gas);
+            panic!(
+                "Not enough gas; requires a least: {:?}",
+                storage.liquidity_action_gas
+            );
         }
         let sender = msg::source();
 
@@ -279,7 +294,7 @@ impl DexService {
         storage.k_last = storage.reserve_a * storage.reserve_b;
         storage.swap_status = SwapStatus::Ready;
 
-        self.notify_on(Event::RemovedLiquidity {
+        self.emit_event(Event::RemovedLiquidity {
             sender,
             amount_a,
             amount_b,
@@ -352,14 +367,18 @@ impl DexService {
             .expect("Reply hook error")
             .await
             .expect("Error getting answer from the vft contract");
-        
+
         // Transfer the output tokens to the user
         let request_out = vft_io::TransferFrom::encode_call(program_id, sender, out_amount);
         msg::send_bytes_with_gas_for_reply(out_token, request_out, 5_000_000_000, 0, 5_000_000_000)
             .expect("Error in async message to vft contract")
             .up_to(Some(5))
             .expect("Reply timeout")
-            .handle_reply(move || handle_reply_hook_for_output_tokens(out_token, sender, in_amount, out_amount, out_is_a))
+            .handle_reply(move || {
+                handle_reply_hook_for_output_tokens(
+                    out_token, sender, in_amount, out_amount, out_is_a,
+                )
+            })
             .expect("Reply hook error")
             .await
             .expect("Error getting answer from the vft contract");
@@ -368,7 +387,7 @@ impl DexService {
         *out_reserve -= out_amount;
         storage.swap_status = SwapStatus::Ready;
 
-        self.notify_on(Event::Swap {
+        self.emit_event(Event::Swap {
             kind: if out_is_a {
                 SwapKind::AForB
             } else {
@@ -385,18 +404,29 @@ impl DexService {
         let storage = self.get_mut();
 
         let (to, in_amount, out_amount, out_is_a) = match storage.swap_status {
-            SwapStatus::TokenTransferError { out_token, to, in_amount, out_amount, out_is_a } => {
+            SwapStatus::TokenTransferError {
+                out_token,
+                to,
+                in_amount,
+                out_amount,
+                out_is_a,
+            } => {
                 // Transfer the output tokens to the user
-                let request_out = vft_io::TransferFrom::encode_call(exec::program_id(), to, out_amount);
+                let request_out =
+                    vft_io::TransferFrom::encode_call(exec::program_id(), to, out_amount);
                 msg::send_bytes_with_gas_for_reply(out_token, request_out, 5_000_000_000, 0, 0)
                     .expect("Error in async message to vft contract")
                     .await
                     .expect("Error getting answer from the vft contract");
                 (to, in_amount, out_amount, out_is_a)
             }
-            SwapStatus::TokenTransferOk { to, in_amount, out_amount, out_is_a } => (to, in_amount, out_amount, out_is_a),
-            _ => panic!("Swap status is incorrect")
-
+            SwapStatus::TokenTransferOk {
+                to,
+                in_amount,
+                out_amount,
+                out_is_a,
+            } => (to, in_amount, out_amount, out_is_a),
+            _ => panic!("Swap status is incorrect"),
         };
         if out_is_a {
             storage.reserve_b += in_amount;
@@ -408,7 +438,7 @@ impl DexService {
 
         storage.swap_status = SwapStatus::Ready;
 
-        self.notify_on(Event::Swap {
+        self.emit_event(Event::Swap {
             kind: if out_is_a {
                 SwapKind::AForB
             } else {
@@ -447,7 +477,7 @@ impl DexService {
         storage.reserve_a = balances_a;
         storage.reserve_b = balances_b;
 
-        self.notify_on(Event::Sync {
+        self.emit_event(Event::Sync {
             reserve_a: storage.reserve_a,
             reserve_b: storage.reserve_b,
         })
@@ -468,7 +498,7 @@ impl DexService {
                 .expect("Error in `AddNewProgram`");
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }
@@ -509,19 +539,34 @@ impl DexService {
     pub fn liquidity_action_gas(&self) -> u64 {
         self.get().liquidity_action_gas
     }
-    
 }
 
-fn handle_reply_hook_for_output_tokens(out_token: ActorId, to: ActorId, in_amount: U256, out_amount: U256, out_is_a: bool) {
+fn handle_reply_hook_for_output_tokens(
+    out_token: ActorId,
+    to: ActorId,
+    in_amount: U256,
+    out_amount: U256,
+    out_is_a: bool,
+) {
     let reply_bytes = msg::load_bytes().expect("Unable to load bytes");
     let result = vft_io::TransferFrom::decode_reply(reply_bytes);
     let storage = unsafe { STORAGE.as_mut().expect("Dex is not initialized") };
     if result.is_err() {
-        storage.swap_status = SwapStatus::TokenTransferError { out_token, to, in_amount, out_amount, out_is_a };
+        storage.swap_status = SwapStatus::TokenTransferError {
+            out_token,
+            to,
+            in_amount,
+            out_amount,
+            out_is_a,
+        };
     } else {
-        storage.swap_status = SwapStatus::TokenTransferOk { to, in_amount, out_amount, out_is_a };
+        storage.swap_status = SwapStatus::TokenTransferOk {
+            to,
+            in_amount,
+            out_amount,
+            out_is_a,
+        };
     }
-
 }
 
 pub struct DexProgram(());

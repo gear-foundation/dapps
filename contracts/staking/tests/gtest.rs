@@ -10,10 +10,7 @@ use staking_client::traits::*;
 const ACTOR_IDS: &[u64] = &[40, 41, 42];
 
 fn init_fungible_token(sys: &System) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
-    );
+    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vft.send_bytes(ACTOR_IDS[0], encoded_request);

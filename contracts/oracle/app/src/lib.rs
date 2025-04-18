@@ -77,7 +77,7 @@ impl OracleService {
             .expect("Unable to decode reply payload from `manager`.");
         let (_, value) =
             randomness_io::GetLastRoundWithRandomValue::decode_reply(bytes_reply).unwrap();
-        self.notify_on(Event::NewValue { value })
+        self.emit_event(Event::NewValue { value })
             .expect("Notification Error");
         value
     }
@@ -85,7 +85,7 @@ impl OracleService {
     pub fn change_manager(&mut self, new_manager: ActorId) {
         let oracle = self.get_mut();
         oracle.manager = new_manager;
-        self.notify_on(Event::NewManager(new_manager))
+        self.emit_event(Event::NewManager(new_manager))
             .expect("Notification Error");
     }
 

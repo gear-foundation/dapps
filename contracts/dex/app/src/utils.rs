@@ -33,6 +33,5 @@ pub enum SwapStatus {
         in_amount: U256,
         out_amount: U256,
         out_is_a: bool,
-    }
+    },
 }
-
