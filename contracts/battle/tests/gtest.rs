@@ -593,6 +593,6 @@ fn check_result(result: Result<(), Error>, error: &[u8]) {
         Err(sails_rs::errors::Error::Rtl(RtlError::ReplyHasError(
             ErrorReplyReason::Execution(SimpleExecutionError::UserspacePanic),
             message
-        ))) if message == error.to_owned()
+        ))) if message == *error
     ));
 }
