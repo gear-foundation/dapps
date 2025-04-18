@@ -14,10 +14,7 @@ pub const ADMIN_ID: u64 = 10;
 pub const USER_ID: u64 = 11;
 
 fn init_fungible_token(sys: &System, vara_man_id: ActorId) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
-    );
+    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vft.send_bytes(ADMIN_ID, encoded_request);
@@ -52,7 +49,7 @@ async fn test_play_game() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -120,7 +117,7 @@ async fn test_play_game_with_fungible_token() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -182,7 +179,7 @@ async fn test_play_tournament() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {

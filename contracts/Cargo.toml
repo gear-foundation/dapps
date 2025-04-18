@@ -7,7 +7,7 @@ resolver = "2"
 members = [
     "battle",
     "battle/warrior/wasm",
-    "battleship",
+    #"battleship",
     "car-races/car-1",
     "car-races/car-2",
     "car-races/car-3",
@@ -23,18 +23,18 @@ members = [
     "ping-pong",
     "upgrade-proxy/counter",
     "upgrade-proxy/upgrade-proxy",
-    "rmrk",
-    "rmrk/catalog",
-    "rmrk/resource",
-    "rmrk/state",
+    #"rmrk",
+    #"rmrk/catalog",
+    #"rmrk/resource",
+    #"rmrk/state",
     "staking",
     "syndote/wasm",
     "syndote/player/wasm",
-    "tamagotchi",
-    "tamagotchi/state",
-    "tamagotchi-battle",
-    "tamagotchi-battle/state",
-    "tequila-train",
+    #"tamagotchi",
+    #"tamagotchi/state",
+    #"tamagotchi-battle",
+    #"tamagotchi-battle/state",
+    #"tequila-train",
     "varatube",
     "tic-tac-toe",
     "vara-man",
@@ -55,26 +55,26 @@ publish = false
 # Local contracts
 # Keep in the lexicographic order!
 
-battleship-bot.path = "battleship/bot"
-rmrk-catalog.path = "rmrk/catalog"
-tamagotchi.path = "tamagotchi"
+#battleship-bot.path = "battleship/bot"
+#rmrk-catalog.path = "rmrk/catalog"
+#tamagotchi.path = "tamagotchi"
 
 # Local states
 # Keep in the lexicographic order!
 
-rmrk-state.path = "rmrk/state"
-tamagotchi-battle-state.path = "tamagotchi-battle/state"
+#rmrk-state.path = "rmrk/state"
+#tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 # Local IO-crates
 # Keep in the lexicographic order!
 
-battleship-io.path = "battleship/io"
-rmrk-catalog-io.path = "rmrk/catalog/io"
-rmrk-io.path = "rmrk/io"
-rmrk-resource-io.path = "rmrk/resource/io"
-tamagotchi-io.path = "tamagotchi/io"
-tamagotchi-battle-io.path = "tamagotchi-battle/io"
-tequila-train-io.path = "tequila-train/io"
+#battleship-io.path = "battleship/io"
+#rmrk-catalog-io.path = "rmrk/catalog/io"
+#rmrk-io.path = "rmrk/io"
+#rmrk-resource-io.path = "rmrk/resource/io"
+#tamagotchi-io.path = "tamagotchi/io"
+#tamagotchi-battle-io.path = "tamagotchi-battle/io"
+#tequila-train-io.path = "tequila-train/io"
 
 # Local libraries
 # Keep in the lexicographic order!
@@ -83,15 +83,14 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.7.1"
-gear-wasm-builder = "1.7.1"
-gmeta = "1.7.1"
-gclient = "1.7.1"
-gtest = "1.6.1"
-gear-core = "1.7.1"
-sails-idl-gen = "0.7.3"
-sails-rs = "0.7.3"
-sails-client-gen = "0.7.3"
+gstd = "1.8.0"
+gear-wasm-builder = "1.8.0"
+gclient = "1.8.0"
+gtest = "1.8.0"
+gear-core = "1.8.0"
+sails-idl-gen = "0.8.0"
+sails-rs = "0.8.0"
+sails-client-gen = "0.8.0"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
