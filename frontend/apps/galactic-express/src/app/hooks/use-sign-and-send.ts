@@ -2,6 +2,7 @@ import { useAlert } from '@gear-js/react-hooks';
 import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 
 import { useCheckBalance } from '@dapps-frontend/hooks';
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { usePending } from './';
 
@@ -29,13 +30,11 @@ export const useSignAndSend = () => {
           await response();
           onSuccess?.();
           setPending(false);
-        } catch (e) {
-          onError?.(e as Error);
+        } catch (error) {
+          onError?.(error as Error);
           setPending(false);
-          console.error(e);
-          if (typeof e === 'string') {
-            alert.error(e);
-          }
+          console.error(error);
+          alert.error(getErrorMessage(error));
         }
       },
       onError,

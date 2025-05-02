@@ -67,7 +67,7 @@ export const useProofShipHit = () => {
       const proofData = await res.json();
 
       return proofData;
-    } catch (err: any) {
+    } catch (_error) {
       throw new Error('Failed to fetch proof data');
     }
   };
