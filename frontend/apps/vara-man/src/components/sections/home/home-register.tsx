@@ -3,7 +3,7 @@ import { EzTransactionsSwitch, useEzTransactions } from 'gear-ez-transactions';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate, NavigateFunction } from 'react-router-dom';
 
-import { Wallet } from '@dapps-frontend/ui/';
+import { getErrorMessage, Wallet } from '@dapps-frontend/ui/';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import IntroImage from '@/assets/images/welcome.png';
@@ -46,7 +46,7 @@ export function HomeRegister() {
     if (account) {
       if (!gasless.isEnabled || gasless.voucherId || signless.isActive) return onClick;
 
-      gasless.requestVoucher(account.address).catch(({ message }: Error) => alert.error(message));
+      gasless.requestVoucher(account.address).catch((error) => alert.error(getErrorMessage(error)));
     }
   };
 
