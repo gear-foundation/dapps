@@ -3,6 +3,8 @@ import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
 import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { useMintMessage } from '@/app/utils/sails/messages/use-mint-message';
 import PlusSVG from '@/assets/images/form/plus.svg?react';
 import { getMintDetails, uploadToIpfs } from '@/utils';
@@ -73,7 +75,10 @@ function Create() {
       .then(async ([imageCid, detailsCid]) => {
         mintMessage({ name, description, media: imageCid, reference: detailsCid || '' }, { onSuccess: resetForm });
       })
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        console.error(e);
+        alert.error(getErrorMessage(e));
+      });
   };
 
   return (
