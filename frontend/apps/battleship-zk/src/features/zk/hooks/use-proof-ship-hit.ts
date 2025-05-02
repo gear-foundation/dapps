@@ -68,7 +68,7 @@ export const useProofShipHit = () => {
 
       return proofData;
     } catch (err: any) {
-      throw new Error(err);
+      throw new Error('Failed to fetch proof data');
     }
   };
 

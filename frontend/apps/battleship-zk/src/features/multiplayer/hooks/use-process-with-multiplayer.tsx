@@ -1,6 +1,8 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { ROUTES } from '@/app/consts';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
@@ -16,6 +18,7 @@ export const useProcessWithMultiplayer = () => {
   const { game, triggerGame, resetGameState } = useMultiplayerGame();
   const { leaveGameMessage } = useLeaveGameMessage();
   const navigate = useNavigate();
+  const alert = useAlert();
   const { cancelGameMessage } = useCancelGameMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
   const moveTransaction = useMoveTransaction('multi', makeMoveMessage, triggerGame);
@@ -62,7 +65,9 @@ export const useProcessWithMultiplayer = () => {
       const { response } = await transaction.signAndSend();
 
       await response();
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }

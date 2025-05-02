@@ -1,9 +1,11 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from 'gear-ez-transactions';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransactionBuilder } from 'sails-js';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { ROUTES } from '@/app/consts';
 import { Heading } from '@/components/ui/heading';
@@ -31,6 +33,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
   const { account } = useAccount();
   const navigate = useNavigate();
   const { gasless } = useEzTransactions();
+  const alert = useAlert();
   const { setPlayerShips, setBoard, createPlayerHits } = useShips();
   const { pending, setPending } = usePending();
   const { requestZKProof } = useProofShipArrangement();
@@ -83,7 +86,8 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
 
       await triggerGame();
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }

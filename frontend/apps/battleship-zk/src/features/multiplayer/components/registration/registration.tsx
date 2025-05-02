@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { ROUTES } from '@/app/consts';
 import { copyToClipboard } from '@/app/utils/utils';
 import { VaraIcon } from '@/components/layout/vara-svg';
@@ -90,8 +92,9 @@ export function Registration() {
 
       await response();
       resetGameState();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }
@@ -106,8 +109,9 @@ export function Registration() {
 
       await response();
       await triggerGame();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }
