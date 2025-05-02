@@ -13,12 +13,12 @@
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.41.0",
-    "@gear-js/react-hooks": "0.15.0",
+    "@gear-js/api": "0.41.1",
+    "@gear-js/react-hooks": "0.16.0",
     "@gear-js/vara-ui": "0.1.1",
     "@mantine/form": "7.16.2",
-    "@polkadot/api": "15.4.1",
-    "@polkadot/util": "13.3.1",
+    "@polkadot/api": "15.9.1",
+    "@polkadot/util": "13.4.3",
     "@polkadot/util-crypto": "13.3.1",
     "@radix-ui/react-dialog": "1.1.5",
     "@radix-ui/react-tabs": "1.1.2",
@@ -32,7 +32,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.28.0",
-    "sails-js": "0.3.1"
+    "sails-js": "0.4.0"
   },
   "devDependencies": {
     "tailwindcss-radix": "3.0.5"
