@@ -4,6 +4,8 @@ import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
 import { useEffect, useState } from 'react';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { useLessons, useTamagotchi } from '@/app/context';
 import type { TamagotchiState } from '@/app/types/lessons';
 import { sleep } from '@/app/utils';
@@ -61,7 +63,7 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
         setState(result as unknown as T);
         if (!isReadOnError) setIsStateRead(true);
       })
-      .catch(({ message }: Error) => setError(message))
+      .catch((error) => setError(getErrorMessage(error)))
       .finally(() => {
         if (isReadOnError) setIsStateRead(true);
       });
