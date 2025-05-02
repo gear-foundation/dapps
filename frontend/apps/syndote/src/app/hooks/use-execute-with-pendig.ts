@@ -1,6 +1,6 @@
 import { useAlert } from '@gear-js/react-hooks';
 
-import { getPanicType } from '@/utils';
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { usePending } from './use-pending';
 
@@ -21,13 +21,7 @@ export function useExecuteWithPending() {
     } catch (error) {
       console.error(error);
       options?.onError?.(error);
-
-      const panicType = getPanicType(error);
-      const alertError = typeof error === 'string' ? error : panicType;
-
-      if (alertError) {
-        alert.error(alertError);
-      }
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }
