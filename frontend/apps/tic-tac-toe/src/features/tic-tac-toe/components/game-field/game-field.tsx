@@ -44,8 +44,10 @@ export function GameField({ game }: GameFieldProps) {
     try {
       await turnMessage(step);
     } catch (error) {
-      console.log(error);
-      alert.error((error instanceof Error && error.message) || 'Game turn error');
+      console.error(error);
+      alert.error(
+        (error instanceof Error && error.message) || (typeof error === 'string' && error) || 'Game turn error',
+      );
       setIsLoading(false);
     }
   };
