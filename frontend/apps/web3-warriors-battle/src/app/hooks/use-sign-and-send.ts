@@ -3,6 +3,7 @@ import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hook
 import { useEzTransactions } from 'gear-ez-transactions';
 
 import { useCheckBalance } from '@dapps-frontend/hooks';
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { usePending } from '@/features/game/hooks';
 
@@ -36,13 +37,11 @@ export const useSignAndSend = () => {
           await response();
           onSuccess?.();
           setPending(false);
-        } catch (e) {
+        } catch (error) {
           onError?.();
           setPending(false);
-          console.error(e);
-          if (typeof e === 'string') {
-            alert.error(e);
-          }
+          console.error(error);
+          alert.error(getErrorMessage(error));
         }
       },
       onError,
