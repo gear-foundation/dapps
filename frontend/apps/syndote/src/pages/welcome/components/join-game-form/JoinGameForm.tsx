@@ -69,8 +69,8 @@ function JoinGameForm({ onCancel }: Props) {
       }
 
       setGameNotFoundModal(true);
-    } catch (err: any) {
-      console.error(err?.message);
+    } catch (error) {
+      console.error(error);
       setGameNotFoundModal(true);
     }
   };

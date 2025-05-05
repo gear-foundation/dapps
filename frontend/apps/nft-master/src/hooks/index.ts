@@ -6,6 +6,8 @@ import { useAtom } from 'jotai';
 import { useState, useEffect } from 'react';
 import { useQuery } from 'urql';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { IS_BALANCE_LOW_ATOM, isPendingUI } from '@/consts';
 import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
 import { GetAccountNFTQuery } from '@/features/nfts/queries';
@@ -63,7 +65,7 @@ export function useProgramMetadata(source: string) {
       .then((response) => response.text())
       .then((raw) => ProgramMetadata.from(`0x${raw}`))
       .then((result) => setMetadata(result))
-      .catch(({ message }: Error) => alert.error(message));
+      .catch((error) => alert.error(getErrorMessage(error)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

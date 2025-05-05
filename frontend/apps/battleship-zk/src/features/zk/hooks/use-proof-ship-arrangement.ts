@@ -9,16 +9,20 @@ export const useProofShipArrangement = () => {
     const hash = await getHash(shipsField.flat());
     const payload = { ...ships, hash };
 
-    const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/placement`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
+    try {
+      const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/placement`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
         'Content-Type': 'application/json',
       },
     });
     const proofData = await res.json();
 
-    return proofData;
+      return proofData;
+    } catch (error) {
+      throw new Error('Failed to fetch proof data');
+    }
   };
 
   return { requestZKProof };

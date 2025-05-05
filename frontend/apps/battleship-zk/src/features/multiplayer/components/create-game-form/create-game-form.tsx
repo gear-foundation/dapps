@@ -3,11 +3,14 @@ import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { TextField } from '@/components/layout/text-field';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
+
 import { usePending } from '@/features/game/hooks';
 
 import { useMultiplayerGame } from '../../hooks';
@@ -64,11 +67,9 @@ function CreateGameForm({ onCancel }: Props) {
 
       await response();
       await triggerGame();
-    } catch (err) {
-      const { message, docs } = err as Error & { docs: string };
-      const errorText = message || docs || 'Create game error';
-      alert.error(errorText);
-      console.log(err);
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }

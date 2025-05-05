@@ -75,7 +75,7 @@ function FindGameForm() {
       }
 
       setGameNotFoundModal(true);
-    } catch (err: any) {
+    } catch (_error) {
       setGameNotFoundModal(true);
     }
   };

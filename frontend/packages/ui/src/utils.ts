@@ -95,3 +95,15 @@ export function useRootModalRef() {
 export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
   navigator.userAgent,
 );
+
+export const getErrorMessage = (error: unknown) => {
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return String(error) || 'Unknown error';
+};

@@ -2,6 +2,8 @@ import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useGaslessTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { BaseComponentProps } from '@/app/types';
 import { Button } from '@/components/ui/button';
 
@@ -28,8 +30,8 @@ export function GameStartButton({ children }: GameStartButtonProps) {
     try {
       await startGameMessage();
     } catch (error) {
-      console.log(error);
-      alert.error((error instanceof Error && error.message) || 'Game start error');
+      console.error(error);
+      alert.error(getErrorMessage(error));
       setIsLoading(false);
     }
   };
