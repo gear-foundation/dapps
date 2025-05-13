@@ -1,5 +1,7 @@
-import { GameBoard } from '@/components';
+import { GameBoard, GameButtons } from '@/components';
 import { Card, PlayerStatus } from '@/types';
+
+import styles from './game.module.scss';
 
 export default function GamePage() {
   const commonCardsFields = new Array(5).fill(null);
@@ -65,12 +67,18 @@ export default function GamePage() {
     // },
   ];
 
+  const isMyTurn = true;
+
   return (
-    <GameBoard
-      totalPot={totalPot}
-      commonCardsFields={commonCardsFields}
-      playerSlots={playerSlots}
-      playerCards={playerCards}
-    />
+    <div className={styles.content}>
+      {isMyTurn && <div className={styles.bottomGlow} />}
+      <GameBoard
+        totalPot={totalPot}
+        commonCardsFields={commonCardsFields}
+        playerSlots={playerSlots}
+        playerCards={playerCards}
+      />
+      {isMyTurn && <GameButtons />}
+    </div>
   );
 }

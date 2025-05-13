@@ -15,8 +15,15 @@ export { default as CopyDecoded } from './icons/copy-decoded.svg?react';
 export { default as EditIcon } from './icons/edit.svg?react';
 export { default as BurgerMenuIcon } from './icons/burger-menu.svg?react';
 export { default as DefaultAvatar } from './icons/default-avatar.svg';
+export { default as AllInIcon } from './icons/button-all-in.svg?react';
+export { default as CallIcon } from './icons/button-call.svg?react';
+export { default as FoldIcon } from './icons/button-fold.svg?react';
+export { default as Chips2xIcon } from './icons/chips-2x.svg?react';
+export { default as Chips3xIcon } from './icons/chips-3x.svg?react';
+export { default as Chips5xIcon } from './icons/chips-5x.svg?react';
 export { default as BannerLock } from './banner-lock.svg?react';
 export { default as BannerSuits } from './banner-suits.png';
 export { default as CreateGameIllustration } from './create-game-illustration.png';
 export { default as JoinGameIllustration } from './join-game-illustration.png';
+
 export * from './icons/cards';
