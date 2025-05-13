@@ -1,0 +1,28 @@
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #3e3b48;
+  background: #18171c;
+  border-radius: 12px;
+  padding: 10px;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  line-height: 150%;
+  color: #6b6581;
+}
+
+.statValue {
+  font-size: 12px;
+  line-height: 150%;
+  color: #ffffff;
+}

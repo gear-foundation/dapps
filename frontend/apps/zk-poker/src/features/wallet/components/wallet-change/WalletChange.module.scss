@@ -1,0 +1,56 @@
+.changeAccount {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #fff;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+
+  .item-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.2px;
+  }
+}
+
+.menuOptionsItem {
+  color: #fff;
+
+  & svg path {
+    fill: #fff
+  }
+}
+
+hr {
+  border: 1px solid rgba(114, 112, 125, 0.2);
+  margin: 1px;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0px 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+
+  button {
+    padding: 7px 16px;
+    font-size: 1rem;
+    width: 100%;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}

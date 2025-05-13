@@ -44,13 +44,13 @@ export default tseslint.config(
 
     settings: {
       react: { version: 'detect' },
-      'import/resolver': { typescript: true },
+      'import/resolver': { typescript: { project: ['./apps/*/tsconfig.json', './packages/*/tsconfig.json'] } },
     },
 
     rules: {
       // plugins
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': 'off',
 
       // import sort
       'import/order': [
