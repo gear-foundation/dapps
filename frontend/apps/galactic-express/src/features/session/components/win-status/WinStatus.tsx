@@ -31,9 +31,9 @@ function WinStatus({ type, userRank, winners, admin }: Props) {
 
   const handleCreateNewSession = () => {
     if (isAdmin) {
-      cancelGameMessage({ onSuccess });
+      void cancelGameMessage({ onSuccess });
     } else {
-      leaveGameMessage({ onSuccess });
+      void leaveGameMessage({ onSuccess });
     }
   };
 

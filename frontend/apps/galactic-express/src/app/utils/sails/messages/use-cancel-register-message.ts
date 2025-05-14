@@ -1,6 +1,6 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 
-import { Options, useSignAndSend } from '@/app/hooks';
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
 import { useProgram } from '@/app/utils';
 
 export const useCancelRegisterMessage = () => {
@@ -11,14 +11,16 @@ export const useCancelRegisterMessage = () => {
     functionName: 'cancelRegister',
   });
   const { signAndSend } = useSignAndSend();
+  const { executeWithPending } = useExecuteWithPending();
 
-  const cancelRegisterMessage = async (options: Options) => {
-    const { transaction } = await prepareTransactionAsync({
-      args: [],
-      gasLimit: { increaseGas: 10 },
-    });
-    signAndSend(transaction, options);
-  };
+  const cancelRegisterMessage = async (options: Options) =>
+    executeWithPending(async () => {
+      const { transaction } = await prepareTransactionAsync({
+        args: [],
+        gasLimit: { increaseGas: 10 },
+      });
+      return signAndSend(transaction);
+    }, options);
 
   return { cancelRegisterMessage };
 };

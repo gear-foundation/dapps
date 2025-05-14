@@ -67,10 +67,7 @@ export function Game({ game }: GameProps) {
         {!game_result ? (
           <>
             {countdown?.isActive ? (
-              <>
-                <GameSkipButton />
-                <GameCountdown game={game} className={styles.game__countdown} />
-              </>
+              <GameCountdown game={game} className={styles.game__countdown} />
             ) : (
               <GameSkipButton />
             )}

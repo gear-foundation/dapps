@@ -1,6 +1,6 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 
-import { Options, useSignAndSend } from '@/app/hooks';
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
 import { useProgram } from '@/app/utils';
 
 type Params = {
@@ -16,15 +16,17 @@ export const useCreateNewSessionMessage = () => {
     functionName: 'createNewSession',
   });
   const { signAndSend } = useSignAndSend();
+  const { executeWithPending } = useExecuteWithPending();
 
-  const createNewSessionMessage = async ({ value, name }: Params, options: Options) => {
-    const { transaction } = await prepareTransactionAsync({
-      args: [name],
-      gasLimit: { increaseGas: 10 },
-      value,
-    });
-    signAndSend(transaction, options);
-  };
+  const createNewSessionMessage = async ({ value, name }: Params, options?: Options) =>
+    executeWithPending(async () => {
+      const { transaction } = await prepareTransactionAsync({
+        args: [name],
+        gasLimit: { increaseGas: 10 },
+        value,
+      });
+      return signAndSend(transaction);
+    }, options);
 
   return { createNewSessionMessage };
 };
