@@ -1,6 +1,9 @@
 .content {
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
 }
 
 .bottomGlow {
@@ -16,5 +19,5 @@
   background-position: center 50px;
   background-repeat: no-repeat;
 
-  opacity: 0.50;
+  opacity: 0.5;
 }

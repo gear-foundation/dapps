@@ -12,7 +12,8 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+// import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ADDRESS } from '@/app/consts';
@@ -37,13 +38,13 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-function DnsProvider({ children }: ProviderProps) {
-  return (
-    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
-      {children}
-    </SharedDnsProvider>
-  );
-}
+// function DnsProvider({ children }: ProviderProps) {
+//   return (
+//     <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+//       {children}
+//     </SharedDnsProvider>
+//   );
+// }
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
@@ -73,7 +74,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   QueryProvider,
-  DnsProvider,
+  // DnsProvider,
   GaslessTransactionsProvider,
   // SignlessTransactionsProvider,
   EzTransactionsProvider,

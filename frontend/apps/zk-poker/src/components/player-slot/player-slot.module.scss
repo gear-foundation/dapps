@@ -5,6 +5,18 @@
   align-items: center;
   justify-content: center;
   width: 85px;
+
+  &.left {
+    left: -23px;
+  }
+
+  &.right {
+    right: -23px;
+  }
+
+  &.center {
+    left: 115px;
+  }
 }
 
 .playerStatus {
@@ -40,7 +52,7 @@
 
 .playerName {
   font-family: 'Urbanist', sans-serif;
-  line-height: 1.5; 
+  line-height: 1.5;
   font-size: 8px;
 }
 
@@ -49,4 +61,30 @@
   font-weight: 700;
   line-height: 1.5;
   margin-top: -2px;
+}
+
+.highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 303px;
+  height: 159px;
+  background: radial-gradient(rgba(249, 200, 136, 0.5) 30%, transparent 70%),
+    radial-gradient(rgba(122, 85, 30, 0.7) 30%, transparent 70%),
+    radial-gradient(rgba(176, 127, 52, 0.9) 0%, transparent 70%),
+    radial-gradient(rgba(249, 200, 136, 0.7) 0%, transparent 75%);
+  background-blend-mode: overlay, normal;
+  opacity: 0.9;
+
+  &.left {
+    transform: translate(-50%, -20%);
+  }
+
+  &.right {
+    transform: translate(-24%, -20%);
+  }
+
+  &.center {
+    transform: translate(-36%, -50%);
+  }
 }

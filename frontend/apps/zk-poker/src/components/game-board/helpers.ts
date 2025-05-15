@@ -1,7 +1,4 @@
-type SlotPositions = {
-  player: { top: number; left?: number; right?: number };
-  cards: { top: number; left?: number; right?: number };
-};
+type Side = 'left' | 'right' | 'center';
 
 // [playerTopOffset, cardsTopOffset]
 const topOffsetConfig: Record<number, [number, number][]> = {
@@ -58,40 +55,28 @@ const topOffsetConfig: Record<number, [number, number][]> = {
   ],
 };
 
-const getHorizontalOffset = (
-  slotsCount: number,
-  index: number,
-): Record<'player' | 'cards', { left?: number; right?: number }> => {
+const getPositionSide = (slotsCount: number, index: number): Side => {
   const isEven = slotsCount % 2 === 0;
-  const isLeft = index < slotsCount / 2;
-  const isCenter = !isEven && index === Math.floor(slotsCount / 2);
 
-  if (isCenter) {
-    return { player: { left: 115 }, cards: { left: 208 } };
+  if (!isEven && index === Math.floor(slotsCount / 2)) {
+    return 'center';
   }
 
-  if (isLeft) {
-    return { player: { left: -23 }, cards: { left: 70 } };
+  if (index < slotsCount / 2) {
+    return 'left';
   }
 
-  return { player: { right: -23 }, cards: { right: 67 } };
+  return 'right';
 };
 
-const getSlotPositions = (totalPositions: number): SlotPositions[] => {
+const getSlotPositions = (totalPositions: number): [number, number][] => {
   const slotPositions = topOffsetConfig[totalPositions];
 
   if (!slotPositions) {
     throw new Error('Invalid number of positions');
   }
 
-  return slotPositions.map(([playerTopOffset, cardsTopOffset], index) => {
-    const side = getHorizontalOffset(totalPositions, index);
-
-    return {
-      player: { top: playerTopOffset, ...side.player },
-      cards: { top: cardsTopOffset, ...side.cards },
-    };
-  });
+  return slotPositions;
 };
 
 const commonCardsMarginTop: Record<number, number> = {
@@ -115,4 +100,4 @@ const getCommonCardsMarginTop = (totalPositions: number): number => {
   return marginTop;
 };
 
-export { getSlotPositions, getCommonCardsMarginTop };
+export { getSlotPositions, getCommonCardsMarginTop, getPositionSide };

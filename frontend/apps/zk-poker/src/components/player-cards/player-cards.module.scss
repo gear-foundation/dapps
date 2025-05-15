@@ -4,6 +4,18 @@
   > div:not(:last-child) {
     margin-right: -8px;
   }
+
+  &.left {
+    left: 70px;
+  }
+
+  &.right {
+    right: 67px;
+  }
+
+  &.center {
+    left: 208px;
+  }
 }
 
 .back {

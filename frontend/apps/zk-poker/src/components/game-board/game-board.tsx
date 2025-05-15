@@ -4,7 +4,7 @@ import { GameCard, PlayerSlot, PlayerCards } from '@/components';
 import { Card, PlayerStatus } from '@/types';
 
 import styles from './game-board.module.scss';
-import { getCommonCardsMarginTop, getSlotPositions } from './helpers';
+import { getCommonCardsMarginTop, getPositionSide, getSlotPositions } from './helpers';
 
 type PlayerSlot = {
   avatar: string;
@@ -60,12 +60,17 @@ const GameBoard = ({ totalPot, commonCardsFields, playerCards, playerSlots }: Pr
           </div>
         </div>
         <div className={styles.playerSlots}>
-          {playerSlots.map(({ isDiller, cards, ...playerSlot }, index) => (
-            <>
-              <PlayerSlot key={index} {...playerSlot} position={slotPositions[index].player} />
-              <PlayerCards isDiller={isDiller} cards={cards} position={slotPositions[index].cards} />
-            </>
-          ))}
+          {playerSlots.map(({ isDiller, cards, ...playerSlot }, index) => {
+            const side = getPositionSide(playerSlots.length, index);
+            const [playerTopOffset, cardsTopOffset] = slotPositions[index];
+
+            return (
+              <>
+                <PlayerSlot key={index} {...playerSlot} top={playerTopOffset} side={side} />
+                <PlayerCards isDiller={isDiller} cards={cards} top={cardsTopOffset} side={side} />
+              </>
+            );
+          })}
         </div>
       </div>
     </div>

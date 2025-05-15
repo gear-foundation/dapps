@@ -11,3 +11,5 @@ export { GameBoard } from './game-board';
 export { PlayerSlot } from './player-slot';
 export { PlayerCards } from './player-cards';
 export { GameButtons } from './game-buttons';
+export { YourTurn } from './your-turn';
+export { GameTimer } from './game-timer';

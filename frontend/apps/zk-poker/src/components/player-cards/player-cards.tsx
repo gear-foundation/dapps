@@ -10,16 +10,13 @@ import styles from './player-cards.module.scss';
 type Props = {
   cards: [Card, Card] | null;
   isDiller?: boolean;
-  position: {
-    top?: number;
-    left?: number;
-    right?: number;
-  };
+  top: number;
+  side: 'left' | 'right' | 'center';
 };
 
-const PlayerCards = ({ isDiller, cards, position }: Props) => {
+const PlayerCards = ({ isDiller, cards, top, side }: Props) => {
   return (
-    <div className={clsx(styles.playerCards, !cards && styles.back)} style={{ ...position }}>
+    <div className={clsx(styles.playerCards, styles[side], !cards && styles.back)} style={{ top }}>
       <GameCard value={cards?.[0] ?? null} size="sm" isBack={!cards?.[0]} />
       <GameCard value={cards?.[1] ?? null} size="sm" isBack={!cards?.[1]} />
       {isDiller && (

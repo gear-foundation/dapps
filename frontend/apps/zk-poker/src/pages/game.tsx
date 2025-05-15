@@ -1,4 +1,4 @@
-import { GameBoard, GameButtons } from '@/components';
+import { GameBoard, GameButtons, YourTurn } from '@/components';
 import { Card, PlayerStatus } from '@/types';
 
 import styles from './game.module.scss';
@@ -33,31 +33,31 @@ export default function GamePage() {
     {
       avatar: 'https://avatar.iran.liara.run/public/29',
       name: 'John Doe 4',
-      status: 'waiting' as PlayerStatus,
+      status: 'thinking' as PlayerStatus,
       chips: 10000,
       cards: ['4c', 'Jc'] as [Card, Card],
     },
-    // {
-    //   avatar: 'https://avatar.iran.liara.run/public/30',
-    //   name: 'John Doe 5',
-    //   status: 'waiting' as PlayerStatus,
-    //   chips: 10000,
-    //   cards: ['5c', 'Jc'] as [Card, Card],
-    // },
-    // {
-    //   avatar: 'https://avatar.iran.liara.run/public/31',
-    //   name: 'John Doe 6',
-    //   status: 'waiting' as PlayerStatus,
-    //   chips: 10000,
-    //   cards: ['6c', 'Jc'] as [Card, Card],
-    // },
-    // {
-    //   avatar: 'https://avatar.iran.liara.run/public/32',
-    //   name: 'John Doe 7',
-    //   status: 'waiting' as PlayerStatus,
-    //   chips: 10000,
-    //   cards: ['7c', 'Jc'] as [Card, Card],
-    // },
+    {
+      avatar: 'https://avatar.iran.liara.run/public/30',
+      name: 'John Doe 5',
+      status: 'waiting' as PlayerStatus,
+      chips: 10000,
+      cards: ['5c', 'Jc'] as [Card, Card],
+    },
+    {
+      avatar: 'https://avatar.iran.liara.run/public/31',
+      name: 'John Doe 6',
+      status: 'waiting' as PlayerStatus,
+      chips: 10000,
+      cards: ['6c', 'Jc'] as [Card, Card],
+    },
+    {
+      avatar: 'https://avatar.iran.liara.run/public/32',
+      name: 'John Doe 7',
+      status: 'thinking' as PlayerStatus,
+      chips: 10000,
+      cards: ['7c', 'Jc'] as [Card, Card],
+    },
     // {
     //   avatar: 'https://avatar.iran.liara.run/public/33',
     //   name: 'John Doe 8',
@@ -67,18 +67,21 @@ export default function GamePage() {
     // },
   ];
 
-  const isMyTurn = true;
+  const isMyTurn = false;
 
   return (
-    <div className={styles.content}>
+    <>
       {isMyTurn && <div className={styles.bottomGlow} />}
-      <GameBoard
-        totalPot={totalPot}
-        commonCardsFields={commonCardsFields}
-        playerSlots={playerSlots}
-        playerCards={playerCards}
-      />
-      {isMyTurn && <GameButtons />}
-    </div>
+      <div className={styles.content}>
+        <GameBoard
+          totalPot={totalPot}
+          commonCardsFields={commonCardsFields}
+          playerSlots={playerSlots}
+          playerCards={playerCards}
+        />
+        {isMyTurn && <GameButtons />}
+        {isMyTurn && <YourTurn />}
+      </div>
+    </>
   );
 }
