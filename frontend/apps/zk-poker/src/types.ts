@@ -15,6 +15,6 @@ type HandRank =
   | 'one-pair'
   | 'high-card';
 
-type PlayerStatus = 'active' | 'folded' | 'all-in' | 'winner' | 'waiting' | 'thinking';
+type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'waiting' | 'thinking';
 
 export type { Card, HandRank, Rank, Suit, PlayerStatus };

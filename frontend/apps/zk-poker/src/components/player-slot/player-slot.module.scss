@@ -34,6 +34,31 @@
   background-image: linear-gradient(180deg, #494856 0%, #393945 100%), linear-gradient(180deg, #868595 0%, #454551 100%);
   background-origin: border-box;
   background-clip: padding-box, border-box;
+
+  &.fold {
+    background-image: linear-gradient(180deg, #f54b3c 0%, #951f18 100%),
+      linear-gradient(180deg, #ff9e91 0%, #863737 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  &.winner {
+    background-image: linear-gradient(90deg, #f9c888 0%, #7a551e 100%),
+      linear-gradient(90deg, rgba(176, 127, 52, 0.5) 52.5%, rgba(249, 200, 136, 0.5) 100%);
+    background-origin: unset;
+    background-clip: unset;
+    border: 1px solid #ffdaa4;
+    font-weight: 700;
+  }
+
+  &.bet {
+    background-image: linear-gradient(180deg, #57ab18 0%, #32790f 100%),
+      linear-gradient(180deg, #a4f165 0%, #3d8306 100%);
+
+    > span {
+      font-weight: 700;
+    }
+  }
 }
 
 .playerInfo {
