@@ -1,0 +1,152 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  background-color: #19181d;
+  padding: 10px;
+  color: #fff;
+}
+
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  border: 1px solid #2c2b31;
+  border-radius: 40px;
+}
+
+.logo {
+  margin-top: 10px;
+
+  svg {
+    height: 40px;
+  }
+}
+
+.imageContainer {
+  margin-top: 168px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.content {
+  position: absolute;
+  bottom: 37px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.description {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b6581;
+  max-width: 280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.paginationTrack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.step0 .paginationTrack {
+  transform: translateX(0);
+}
+
+.step1 .paginationTrack {
+  transform: translateX(24px);
+}
+
+.step2 .paginationTrack {
+  transform: translateX(48px);
+}
+
+.paginationItem {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #6b6581;
+}
+
+.spadeIcon {
+  width: 14px;
+  height: 14px;
+  path {
+    fill: #00ffc4;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.glow {
+  position: absolute;
+  top: 251px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(#2a8776 0%, transparent 70%), radial-gradient(rgba(33, 24, 10, 0) 0%, transparent 70%);
+  background-blend-mode: overlay;
+  opacity: 0.15;
+
+  &.bottom {
+    top: auto;
+    bottom: 30px;
+    transform: translate(-50%, 50%);
+  }
+}
+
+.shadow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, transparent 0%, rgba(115, 115, 115, 0) 82.97%);
+}

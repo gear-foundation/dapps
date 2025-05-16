@@ -5,10 +5,10 @@ import styles from './button.module.scss';
 
 export type ButtonProps = VaraButtonProps;
 
-export function Button({ className, color = 'primary', ...props }: ButtonProps) {
+export function Button({ className, color = 'primary', size = 'default', ...props }: ButtonProps) {
   return (
-    <div className={clsx(styles.wrapper, className)}>
-      <VaraButton className={clsx(styles.button, styles[color])} {...props} />
+    <div className={clsx(color !== 'transparent' && styles.wrapper, className)}>
+      <VaraButton className={clsx(styles.button, styles[color], styles[size])} {...props} size={size} color={color} />
     </div>
   );
 }

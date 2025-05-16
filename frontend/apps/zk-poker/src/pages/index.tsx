@@ -10,6 +10,8 @@ import { Loader } from '@/components';
 const routes = [
   { path: ROUTES.HOME, Page: lazy(() => import('./home')) },
   { path: ROUTES.GAME, Page: lazy(() => import('./game')), isPrivate: true },
+  { path: ROUTES.ONBOARDING, Page: lazy(() => import('./onboarding')) },
+  { path: ROUTES.LOGIN, Page: lazy(() => import('./login')) },
   { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')) },
 ];
 

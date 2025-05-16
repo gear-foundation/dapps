@@ -1,12 +1,10 @@
-.avatar {
+.image {
   border-radius: 50%;
   overflow: hidden;
-}
-
-.image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  vertical-align: baseline;
 }
 
 .sm {

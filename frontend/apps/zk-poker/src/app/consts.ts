@@ -12,7 +12,9 @@ export const ADDRESS = {
 
 export const ROUTES = {
   HOME: '/',
+  LOGIN: '/login',
   GAME: '/game',
+  ONBOARDING: '/onboarding',
   CREATE_GAME: '/create-game',
   NOTFOUND: '*',
 };

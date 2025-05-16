@@ -15,11 +15,16 @@
 .welcome {
   font-size: 20px;
   font-weight: 600;
+  line-height: 150%;
   color: #ffffff;
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: center;
+}
+
+.avatar {
+  margin-top: 4px;
 }
 
 .claim {

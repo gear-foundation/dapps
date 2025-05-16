@@ -27,3 +27,7 @@ export { default as CreateGameIllustration } from './create-game-illustration.pn
 export { default as JoinGameIllustration } from './join-game-illustration.png';
 
 export * from './icons/cards';
+
+export { default as OnboardingLockIcon } from './onboarding-lock.svg';
+export { default as OnboardingCardsIcon } from './onboarding-cards.svg';
+export { default as OnboardingBlackjackIcon } from './onboarding-blackjack.png';

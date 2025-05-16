@@ -58,7 +58,7 @@ export default function Home() {
           </div>
 
           <h3 className={styles.welcome}>
-            Welcome, <Avatar size="sm" /> {userName}{' '}
+            Welcome, <Avatar size="sm" className={styles.avatar} /> {userName}{' '}
             <VaraButton color="transparent" icon={EditIcon} onClick={onEditProfile} />
           </h3>
 

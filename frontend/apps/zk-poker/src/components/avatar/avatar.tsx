@@ -7,11 +7,12 @@ import styles from './avatar.module.scss';
 type Props = {
   avatar?: string;
   size?: 'sm' | 'md' | 'lg';
+  className?: string;
 };
 
-const Avatar = ({ avatar = DefaultAvatar, size = 'md' }: Props) => {
+const Avatar = ({ avatar = DefaultAvatar, size = 'md', className }: Props) => {
   return (
-    <div className={clsx(styles.avatar, styles[size])}>
+    <div className={clsx(styles[size], className)}>
       <img src={avatar} alt="avatar" className={styles.image} />
     </div>
   );
