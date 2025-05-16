@@ -1,9 +1,7 @@
-@use '@/assets/styles/utils' as *;
-
 .container {
   flex: 1;
   display: grid;
-  @include gap(60px);
+  gap: 60px;
   width: 100%;
 }
 
@@ -41,6 +39,6 @@
 }
 
 .header {
-  @include gap(24px);
   text-align: center;
+  font-size: 24px;
 }

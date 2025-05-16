@@ -1,11 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Button as VaraButton } from '@gear-js/vara-ui';
-import { Footer } from '@ui/components';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration } from '@/assets/images';
-import { Avatar, Button, Banner, MenuButton, Stats } from '@/components';
+import { Avatar, Button, Banner, Footer, MenuButton, Stats } from '@/components';
 
 import styles from './home.module.scss';
 import Login from './login';
@@ -69,7 +68,7 @@ export default function Home() {
             Claim your free PTS
           </Button>
 
-          <Footer isAlwaysMobile className={styles.footer} />
+          <Footer />
         </div>
       )}
     </>

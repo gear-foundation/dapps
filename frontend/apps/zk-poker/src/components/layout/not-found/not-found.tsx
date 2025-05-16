@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { buttonStyles } from '@/components';
-import { Heading } from '@/components/ui/heading';
 
 import ImageBase from './assets/images/404.jpg';
 import ImageWebp from './assets/images/404.webp';
@@ -21,7 +20,7 @@ export function NotFound() {
           </picture>
         </div>
         <div className={styles.header}>
-          <Heading size="lg">Page not found</Heading>
+          <h2>Page not found</h2>
         </div>
         <Link to={ROUTES.HOME} className={clsx(buttonStyles.button, buttonStyles.border)}>
           Back To Home

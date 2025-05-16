@@ -26,6 +26,8 @@ export const textVariants = cva('', {
 
 export interface TextProps extends BaseHTMLAttributes<HTMLParagraphElement>, VariantProps<typeof textVariants> {}
 
+// ! TODO:
+// @deprecated
 export function Text({ children, className, size, weight, ...props }: TextProps) {
   return (
     <p className={textVariants({ size, weight, className })} {...props}>

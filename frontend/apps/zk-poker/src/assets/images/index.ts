@@ -31,3 +31,5 @@ export * from './icons/cards';
 export { default as OnboardingLockIcon } from './onboarding-lock.svg';
 export { default as OnboardingCardsIcon } from './onboarding-cards.svg';
 export { default as OnboardingBlackjackIcon } from './onboarding-blackjack.png';
+export { default as LoginImage } from './login-image.svg?react';
+export { default as LoginLogo } from './login-logo.svg?react';

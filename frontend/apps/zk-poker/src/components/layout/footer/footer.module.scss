@@ -1,0 +1,13 @@
+.footer {
+  margin-top: 11px;
+  border-top: none;
+  flex-direction: column-reverse;
+
+  path {
+    fill: #ffffff;
+  }
+
+  small {
+    font-family: 'Urbanist', sans-serif;
+  }
+}
