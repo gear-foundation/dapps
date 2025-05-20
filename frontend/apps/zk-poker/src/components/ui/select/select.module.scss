@@ -1,0 +1,56 @@
+.selectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.selectTrigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-right: 17px;
+  color: #b3b0be;
+}
+
+.caret {
+  transition: transform 0.2s;
+
+  .open & {
+    transform: rotate(180deg);
+  }
+}
+
+.options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: #2c2b31;
+  border: 1px solid #3b3848;
+  border-radius: 8px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.option {
+  padding: 13px 16px;
+  color: #fff;
+  text-align: left;
+  background-color: #2c2b31;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #3b3848;
+  }
+
+  &.selected {
+    background-color: rgba(0, 255, 196, 0.1);
+    color: #00ffc4;
+  }
+}

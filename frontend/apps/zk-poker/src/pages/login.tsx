@@ -1,6 +1,9 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
+import { ROUTES } from '@/app/consts';
 import { LoginImage, LoginLogo, VaraLogoIcon } from '@/assets/images';
 import { Button, Footer } from '@/components';
 import { WalletConnect } from '@/features/wallet';
@@ -11,6 +14,12 @@ export default function Login() {
   const [isOpen, setIsOpen] = useState(false);
   const openWallet = () => setIsOpen(true);
   const closeWallet = () => setIsOpen(false);
+
+  const { account } = useAccount();
+
+  if (account) {
+    return <Navigate to={ROUTES.HOME} />;
+  }
 
   return (
     <div className={styles.container}>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
+import { useOnboarding } from '@/app/hooks';
 import {
   OnboardingLockIcon,
   VaraLogoIcon,
@@ -35,8 +36,10 @@ const config = [
 const OnboardingPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
+  const { setOnboardingPassed } = useOnboarding();
 
   const handleSkip = () => {
+    setOnboardingPassed();
     navigate(ROUTES.LOGIN);
   };
 
@@ -44,6 +47,7 @@ const OnboardingPage = () => {
     if (currentStep < config.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      setOnboardingPassed();
       navigate(ROUTES.LOGIN);
     }
   };

@@ -5,14 +5,16 @@ import { Navigate, Route, useLocation } from 'react-router-dom';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 
 import { ROUTES } from '@/app/consts';
+import { useOnboarding } from '@/app/hooks';
 import { Loader } from '@/components';
 
 const routes = [
-  { path: ROUTES.HOME, Page: lazy(() => import('./home')) },
+  { path: ROUTES.HOME, Page: lazy(() => import('./home')), isPrivate: true },
   { path: ROUTES.GAME, Page: lazy(() => import('./game')), isPrivate: true },
   { path: ROUTES.ONBOARDING, Page: lazy(() => import('./onboarding')) },
   { path: ROUTES.LOGIN, Page: lazy(() => import('./login')) },
-  { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')) },
+  { path: ROUTES.CREATE_GAME, Page: lazy(() => import('./create-game')), isPrivate: true },
+  { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')), isPrivate: true },
 ];
 
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -20,11 +22,19 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
 
   if (!account) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they log in, which is a nicer user experience
-    // than dropping them off on the home page.
-    return <Navigate to={ROUTES.HOME} state={{ from: location }} replace />;
+    return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
+  }
+
+  return children;
+}
+
+function RequireOnboarding({ children }: { children: JSX.Element }) {
+  const { account } = useAccount();
+  const location = useLocation();
+  const { isOnboardingPassed } = useOnboarding();
+
+  if (!account && !isOnboardingPassed && location.pathname !== ROUTES.ONBOARDING) {
+    return <Navigate to={ROUTES.ONBOARDING} />;
   }
 
   return children;
@@ -39,13 +49,15 @@ export function Routing() {
           path={path}
           element={
             <Suspense fallback={<Loader />}>
-              {isPrivate ? (
-                <RequireAuth>
+              <RequireOnboarding>
+                {isPrivate ? (
+                  <RequireAuth>
+                    <Page />
+                  </RequireAuth>
+                ) : (
                   <Page />
-                </RequireAuth>
-              ) : (
-                <Page />
-              )}
+                )}
+              </RequireOnboarding>
             </Suspense>
           }
         />

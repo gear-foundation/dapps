@@ -1,9 +1,14 @@
-import { GameBoard, GameButtons, YourTurn } from '@/components';
+import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
+import { BackIcon } from '@/assets/images';
+import { Button, GameBoard, GameButtons, Header, YourTurn } from '@/components';
 import { Card, PlayerStatus } from '@/types';
 
 import styles from './game.module.scss';
 
 export default function GamePage() {
+  const navigate = useNavigate();
   const commonCardsFields = new Array(5).fill(null);
   const totalPot = 28.592;
   const playerCards = ['Ah', 'Ks'] as [Card, Card];
@@ -72,6 +77,11 @@ export default function GamePage() {
 
   return (
     <>
+      <Header>
+        <Button color="dark" rounded onClick={() => navigate(ROUTES.HOME)}>
+          <BackIcon />
+        </Button>
+      </Header>
       {isMyTurn && <div className={styles.bottomGlow} />}
       <div className={styles.content}>
         <GameBoard

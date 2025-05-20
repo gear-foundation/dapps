@@ -3,6 +3,11 @@
 .wrapper {
   display: flex;
   align-items: center;
+  gap: 34.5px;
+
+  &.open {
+    gap: 20px;
+  }
 
   .points {
     @include gap(4px, right);
@@ -11,8 +16,6 @@
 }
 
 .balance {
-  margin-right: 20px;
-
   b {
     font-size: 20px;
     line-height: 22px;

@@ -1,4 +1,7 @@
+export { default as CoinIcon } from './icons/coin.svg?react';
+export { default as PointsIcon } from './icons/points.svg?react';
 export { default as CrossIcon } from './icons/cross.svg?react';
+export { default as BackIcon } from './icons/back.svg?react';
 export { default as GearIcon } from './icons/gear.svg?react';
 export { default as TwitterIcon } from './icons/twitter.svg?react';
 export { default as GithubIcon } from './icons/github.svg?react';
@@ -25,6 +28,8 @@ export { default as BannerLock } from './banner-lock.svg?react';
 export { default as BannerSuits } from './banner-suits.png';
 export { default as CreateGameIllustration } from './create-game-illustration.png';
 export { default as JoinGameIllustration } from './join-game-illustration.png';
+export { default as ShowPasswordIcon } from './icons/show-password.svg?react';
+export { default as HidePasswordIcon } from './icons/hide-password.svg?react';
 
 export * from './icons/cards';
 

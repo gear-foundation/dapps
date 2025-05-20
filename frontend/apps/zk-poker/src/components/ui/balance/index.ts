@@ -1,3 +1,3 @@
-import { VaraBalance, PointsBalance } from './Balance';
+import { Balance } from './Balance';
 
-export { VaraBalance, PointsBalance };
+export { Balance };

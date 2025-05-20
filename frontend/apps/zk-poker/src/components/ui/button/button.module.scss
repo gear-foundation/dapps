@@ -1,5 +1,6 @@
 .wrapper {
   width: fit-content;
+  height: fit-content;
   border-radius: 40px;
   border: 1px solid #3b3848;
   padding: 3px;
@@ -10,7 +11,6 @@
   font-family: 'Urbanist', sans-serif;
   font-weight: 700;
   line-height: 150%;
-  letter-spacing: 0%;
   border-radius: 40px;
   padding: 10px 40px;
 
@@ -27,6 +27,10 @@
 
 .default {
   font-size: 16px;
+}
+
+.rounded {
+  padding: 10px;
 }
 
 .primary {
@@ -47,5 +51,5 @@
 .transparent {
   background-color: transparent;
   color: #00ffc4;
-  padding: 0
+  padding: 0;
 }

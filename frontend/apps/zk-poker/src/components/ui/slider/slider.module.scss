@@ -1,0 +1,105 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #18171c;
+  border-radius: 12px;
+}
+
+.label {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  &.dragging {
+    cursor: grabbing;
+  }
+}
+
+.track {
+  position: relative;
+  height: 4px;
+  background-color: rgba(62, 59, 72, 0.5);
+  border-radius: 2px;
+  margin-top: 2px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.progress {
+  position: absolute;
+  height: 100%;
+  background-color: #eab671;
+  border-radius: 2px;
+}
+
+.thumb {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background-color: #fbecd6;
+  border: 3px solid #edb258;
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+.values {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.valueItem {
+  font-family: 'Urbanist', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  background: none;
+  border: none;
+  padding: 0;
+
+  &:hover .valueLabel {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.dragging .valueItem {
+  cursor: grabbing;
+}
+
+.valueLabel {
+  font-size: 12px;
+  color: #6b6581;
+  transition: color 0.2s ease;
+}
+
+.selected .valueLabel {
+  color: #fff;
+}

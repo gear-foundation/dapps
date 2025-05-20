@@ -1,11 +1,12 @@
 .container {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
-  background-color: #19181d;
   padding: 10px;
   color: #fff;
+  overflow: hidden;
 }
 
 .wrapper {
