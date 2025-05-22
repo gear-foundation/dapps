@@ -96,7 +96,7 @@ export default function CreateLobby() {
     <>
       <div className={styles.container}>
         <div className={styles.header}>
-          <Button color="dark" rounded className={styles.backButton} onClick={() => navigate(ROUTES.HOME)}>
+          <Button color="contrast" rounded className={styles.backButton} onClick={handleCancel}>
             <BackIcon />
           </Button>
           <h1 className={styles.title}>Create lobby</h1>
@@ -148,7 +148,7 @@ export default function CreateLobby() {
           />
 
           <div className={styles.actions}>
-            <Button color="dark" onClick={handleCancel}>
+            <Button color="contrast" onClick={handleCancel}>
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>

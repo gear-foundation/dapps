@@ -16,6 +16,7 @@ export const ROUTES = {
   GAME: '/game',
   ONBOARDING: '/onboarding',
   CREATE_GAME: '/create-game',
+  ROOMS: '/rooms',
   NOTFOUND: '*',
 };
 

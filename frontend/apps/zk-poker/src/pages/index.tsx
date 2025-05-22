@@ -14,6 +14,7 @@ const routes = [
   { path: ROUTES.ONBOARDING, Page: lazy(() => import('./onboarding')) },
   { path: ROUTES.LOGIN, Page: lazy(() => import('./login')) },
   { path: ROUTES.CREATE_GAME, Page: lazy(() => import('./create-game')), isPrivate: true },
+  { path: ROUTES.ROOMS, Page: lazy(() => import('./rooms')), isPrivate: true },
   { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')), isPrivate: true },
 ];
 

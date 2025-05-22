@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { Fragment } from 'react';
 
 import { GameCard, PlayerSlot, PlayerCards } from '@/components';
 import { Card, PlayerStatus } from '@/types';
@@ -65,10 +66,10 @@ const GameBoard = ({ totalPot, commonCardsFields, playerCards, playerSlots }: Pr
             const [playerTopOffset, cardsTopOffset] = slotPositions[index];
 
             return (
-              <>
-                <PlayerSlot key={index} {...playerSlot} top={playerTopOffset} side={side} />
+              <Fragment key={`${playerSlot.name}-${index}`}>
+                <PlayerSlot {...playerSlot} top={playerTopOffset} side={side} />
                 <PlayerCards isDiller={isDiller} cards={cards} top={cardsTopOffset} side={side} />
-              </>
+              </Fragment>
             );
           })}
         </div>

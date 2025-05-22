@@ -1025,6 +1025,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gear-js/vara-ui@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@gear-js/vara-ui@npm:0.3.1"
+  dependencies:
+    non.geist: "npm:1.0.4"
+  peerDependencies:
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10c0/613f559050bbbafaa0e639bd9f72ef89972d7b38cfa6909551c8754aabbd7c1351ff3c80893721c25b0185c8eecd9f4137a8987ca773d8823c7fae8b433ca307
+  languageName: node
+  linkType: hard
+
 "@gear-js/wallet-connect@npm:0.2.3":
   version: 0.2.3
   resolution: "@gear-js/wallet-connect@npm:0.2.3"
@@ -15217,7 +15229,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.41.1"
     "@gear-js/react-hooks": "npm:0.16.0"
-    "@gear-js/vara-ui": "npm:0.1.1"
+    "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:15.9.1"
     "@polkadot/react-identicon": "npm:3.12.1"

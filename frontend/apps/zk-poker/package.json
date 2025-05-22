@@ -14,7 +14,7 @@
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.41.1",
     "@gear-js/react-hooks": "0.16.0",
-    "@gear-js/vara-ui": "0.1.1",
+    "@gear-js/vara-ui": "0.3.1",
     "@mantine/form": "7.16.2",
     "@polkadot/api": "15.9.1",
     "@polkadot/react-identicon": "3.12.1",

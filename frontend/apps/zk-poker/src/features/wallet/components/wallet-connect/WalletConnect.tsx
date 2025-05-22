@@ -48,7 +48,7 @@ export function WalletConnect({ onClose }: Props) {
       return (
         <li key={id}>
           <Button
-            color="light"
+            color="grey"
             className={styles.walletButton}
             onClick={() => (isConnected ? setWalletId(id) : connect?.())}
             disabled={!isEnabled}>
@@ -90,7 +90,7 @@ export function WalletConnect({ onClose }: Props) {
         <li key={address}>
           <div className={styles.account}>
             <Button
-              color={isActive ? 'primary' : 'light'}
+              color={isActive ? 'primary' : 'grey'}
               className={styles.accountButton}
               onClick={handleClick}
               disabled={isActive}>

@@ -66,7 +66,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
 
         <div className={styles.buttons}>
           <Button onClick={handleChangeButtonClick}>Change account</Button>
-          <Button color="dark" onClick={handleLogoutButtonClick}>
+          <Button color="contrast" onClick={handleLogoutButtonClick}>
             Disconnect
           </Button>
         </div>

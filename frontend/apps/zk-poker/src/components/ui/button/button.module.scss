@@ -13,11 +13,15 @@
   line-height: 150%;
   border-radius: 40px;
   padding: 10px 40px;
-
+  transition: opacity 0.3s ease;
   &:disabled {
     background: #3b3848;
     color: #6b6581;
     opacity: 1;
+  }
+
+  &:hover {
+    opacity: 0.8;
   }
 }
 
@@ -30,7 +34,19 @@
 }
 
 .rounded {
-  padding: 10px;
+  &.x-small {
+    padding: 0;
+    height: 30px;
+    width: 30px;
+  }
+
+  &.small {
+    padding: 8px;
+  }
+
+  &.default {
+    padding: 10px;
+  }
 }
 
 .primary {
@@ -40,16 +56,23 @@
   background-blend-mode: color;
 }
 
-.dark {
+.contrast {
   background-color: #3b3848;
 }
 
 .danger {
   background-color: #ea534b;
+  color: #000000;
 }
 
 .transparent {
   background-color: transparent;
   color: #00ffc4;
   padding: 0;
+}
+
+.plain {
+  background-color: transparent;
+  color: #00ffc4;
+  border: 1px solid #00ffc4;
 }

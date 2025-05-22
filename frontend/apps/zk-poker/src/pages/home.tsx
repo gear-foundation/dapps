@@ -40,7 +40,7 @@ export default function Home() {
             title="Join game"
             subtitle="12 rooms"
             onClick={() => {
-              navigate(ROUTES.GAME);
+              navigate(ROUTES.ROOMS);
             }}
             illustration={JoinGameIllustration}
           />

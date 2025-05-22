@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, GameBoard, GameButtons, Header, YourTurn } from '@/components';
+import { StartGameModal } from '@/features/game/components';
 import { Card, PlayerStatus } from '@/types';
 
 import styles from './game.module.scss';
@@ -78,7 +79,7 @@ export default function GamePage() {
   return (
     <>
       <Header>
-        <Button color="dark" rounded onClick={() => navigate(ROUTES.HOME)}>
+        <Button color="contrast" rounded onClick={() => navigate(ROUTES.HOME)}>
           <BackIcon />
         </Button>
       </Header>
@@ -93,6 +94,8 @@ export default function GamePage() {
         {isMyTurn && <GameButtons />}
         {isMyTurn && <YourTurn />}
       </div>
+
+      <StartGameModal totalPlayers={9} currentPlayers={5} buyIn={10000} />
     </>
   );
 }
