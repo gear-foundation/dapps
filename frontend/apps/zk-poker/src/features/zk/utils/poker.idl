@@ -1,0 +1,158 @@
+type Config = struct {
+  admin_id: actor_id,
+  admin_name: str,
+  lobby_name: str,
+  small_blind: u128,
+  big_blind: u128,
+  number_of_participants: u16,
+  starting_bank: u128,
+};
+
+type PublicKey = struct {
+  x: [u8, 32],
+  y: [u8, 32],
+  z: [u8, 32],
+};
+
+type VerifyingKeyBytes = struct {
+  alpha_g1_beta_g2: vec u8,
+  gamma_g2_neg_pc: vec u8,
+  delta_g2_neg_pc: vec u8,
+  ic: vec vec u8,
+};
+
+type Card = struct {
+  value: u8,
+  suit: Suit,
+};
+
+type Suit = enum {
+  Spades,
+  Hearts,
+  Diamonds,
+  Clubs,
+};
+
+type EncryptedCard = struct {
+  c0: [vec u8, 3],
+  c1: [vec u8, 3],
+};
+
+type VerificationVariables = struct {
+  proof_bytes: ProofBytes,
+  public_input: vec vec u8,
+};
+
+type ProofBytes = struct {
+  a: vec u8,
+  b: vec u8,
+  c: vec u8,
+};
+
+type Action = enum {
+  Fold,
+  Call,
+  Raise: struct {
+    bet: u128
+  },
+  Check,
+  AllIn,
+};
+
+type TurnManagerForActorId = struct {
+  active_ids: vec actor_id,
+  turn_index: u64,
+};
+
+type BettingStage = struct {
+  turn: actor_id,
+  last_active_time: opt u64,
+  current_bet: u128,
+  acted_players: vec actor_id,
+};
+
+type Participant = struct {
+  name: str,
+  balance: u128,
+  card_1: opt u32,
+  card_2: opt u32,
+  pk: PublicKey,
+};
+
+type Status = enum {
+  Registration,
+  WaitingShuffleVerification,
+  WaitingStart,
+  WaitingPartialDecryptionsForPlayersCards,
+  Play: struct {
+    stage: Stage
+  },
+  WaitingForCardsToBeDisclosed,
+  Finished: struct {
+    winners: vec actor_id,
+    cash_prize: vec u128,
+  },
+};
+
+type Stage = enum {
+  PreFlop,
+  WaitingTableCardsAfterPreFlop,
+  Flop,
+  WaitingTableCardsAfterFlop,
+  Turn,
+  WaitingTableCardsAfterTurn,
+  River,
+};
+
+constructor {
+  New : (config: Config, pts_actor_id: actor_id, pk: PublicKey, vk_shuffle_bytes: VerifyingKeyBytes, vk_decrypt_bytes: VerifyingKeyBytes);
+};
+
+service Poker {
+  CancelGame : () -> null;
+  CardDisclosure : (id_to_cards: vec struct { actor_id, struct { Card, Card } }, table_cards: vec Card) -> null;
+  Register : (player_name: str, pk: PublicKey) -> null;
+  ShuffleDeck : (encrypted_deck: vec EncryptedCard, instances: vec VerificationVariables) -> null;
+  StartGame : () -> null;
+  SubmitAllPartialDecryptions : (cards_by_player: vec struct { actor_id, [EncryptedCard, 2] }, proofs: vec VerificationVariables) -> null;
+  SubmitRevealedTableCards : (new_cards: vec Card, proofs: vec VerificationVariables) -> null;
+  SubmitTablePartialDecryptions : (decryptions: vec struct { EncryptedCard, [vec u8, 3] }, proofs: vec VerificationVariables) -> null;
+  Turn : (action: Action) -> null;
+  query ActiveParticipants : () -> TurnManagerForActorId;
+  query AllInPlayers : () -> vec actor_id;
+  query AlreadyInvestedInTheCircle : () -> vec struct { actor_id, u128 };
+  query Betting : () -> opt BettingStage;
+  query BettingBank : () -> vec struct { actor_id, u128 };
+  query Config : () -> Config;
+  query EncryptedTableCards : () -> vec EncryptedCard;
+  query Participants : () -> vec struct { actor_id, Participant };
+  query PlayerCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
+  query RevealedTableCards : () -> vec Card;
+  query Round : () -> u32;
+  query Status : () -> Status;
+
+  events {
+    Registered: struct {
+      participant_id: actor_id,
+      pk: PublicKey,
+      all_registered: bool,
+    };
+    GameStarted;
+    CardsDealtToPlayers: vec struct { actor_id, [EncryptedCard, 2] };
+    CardsDealtToTable: vec EncryptedCard;
+    GameCanceled: struct {
+      status: Status
+    };
+    SmallBlindIsSet;
+    BigBlindIsSet;
+    TurnIsMade: struct {
+      action: Action
+    };
+    NextStage: Stage;
+    Finished: struct {
+      winners: vec actor_id,
+      cash_prize: vec u128,
+    };
+  }
+};
+
