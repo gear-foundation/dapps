@@ -353,10 +353,8 @@ export function decompressDeck(
 export function printArray(arr: bigint[]) {
   let str = '[';
   for (let i = 0; i < arr.length; i++) {
-    // eslint-disable-next-line quotes
     str += '"' + String(arr[i]);
     if (i < arr.length - 1) {
-      // eslint-disable-next-line quotes
       str += '", ';
     }
   }

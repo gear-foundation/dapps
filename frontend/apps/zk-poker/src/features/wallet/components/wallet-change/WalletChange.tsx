@@ -1,4 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import { Identicon } from '@polkadot/react-identicon';
 import { motion } from 'framer-motion';
 import { EzSignlessTransactions, EzGaslessTransactions } from 'gear-ez-transactions';
@@ -7,7 +8,6 @@ import { Suspense } from 'react';
 import { MenuOptions } from '@dapps-frontend/ui';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 
 import { useWallet } from '../../hooks';
@@ -33,9 +33,9 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
         <li key={address}>
           <div className={styles.account}>
             <Suspense>
-              <Identicon value={address} size={34} theme="polkadot" className={styles.accountIcon} />
+              <Identicon value={address} size={30} theme="polkadot" className={styles.accountIcon} />
             </Suspense>
-            <Text weight="semibold">{meta.name}</Text>
+            <Text>{meta.name}</Text>
           </div>
         </li>
       );

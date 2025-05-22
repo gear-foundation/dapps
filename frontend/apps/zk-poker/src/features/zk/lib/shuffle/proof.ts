@@ -5,8 +5,6 @@ import { groth16 } from 'snarkjs';
 
 //export { packToSolidityProof, SolidityProof };
 
-type Contract = any;
-
 export type Proof = {
   pi_a: [string, string];
   pi_b: [[string, string], [string, string]];

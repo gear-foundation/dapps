@@ -25,7 +25,6 @@ const decryptWasmFile = './decrypt.wasm';
 const decryptZkeyFile = './decrypt.zkey';
 
 const q = BigInt('52435875175126190479447740508185965837690552500527637822603658699938581184513'); // BLS12-381 scalar field
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const F = new F1Field(q);
 const a = BigInt(-5);
 const d = 45022363124591815672509500913686876175488063829319466900776701791074614335719n;
@@ -35,6 +34,7 @@ const base = {
   Z: 1n,
 };
 
+// @ts-ignore
 function bigintToBytes32BE(x: bigint): Uint8Array {
   const hex = BigInt(x).toString(16).padStart(64, '0');
   return Uint8Array.from(Buffer.from(hex, 'hex'));
@@ -125,6 +125,7 @@ async function main() {
   const permutation = generatePermutation(numCards);
   const shuffled = permuteMatrix(encrypted, permutation);
 
+  // @ts-ignore
   const getFullProof = async () => {
     // prove
     const input = {

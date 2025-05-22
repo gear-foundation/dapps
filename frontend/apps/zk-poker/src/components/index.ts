@@ -18,3 +18,4 @@ export { YourTurn } from './your-turn';
 export { GameTimer } from './game-timer';
 export { Slider } from './ui/slider';
 export { Room } from './room';
+export { EditProfileModal } from './edit-profile-modal';
