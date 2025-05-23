@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
-import { BackIcon, ShowPasswordIcon, HidePasswordIcon } from '@/assets/images';
+import { BackIcon } from '@/assets/images';
 import { Button, Input, Select, Slider } from '@/components';
 
 import styles from './create-game.module.scss';
 
 type FormData = {
   name: string;
-  password: string;
   players: number;
   time: number;
   buyIn: number;
@@ -17,7 +16,6 @@ type FormData = {
 
 const initialFormData: FormData = {
   name: '',
-  password: '',
   players: 9,
   time: 60,
   buyIn: 15000,
@@ -53,7 +51,6 @@ const timeOptions = [
 export default function CreateLobby() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +107,8 @@ export default function CreateLobby() {
         <form className={styles.form} onSubmit={handleSubmit}>
           <Input name="name" value={formData.name} onChange={handleInputChange} placeholder="Lobby name" required />
 
-          <div className={styles.passwordContainer}>
+          {/* TODO: add password in next iterations */}
+          {/* <div className={styles.passwordContainer}>
             <Input
               name="password"
               value={formData.password}
@@ -124,7 +122,7 @@ export default function CreateLobby() {
               className={styles.showPasswordButton}>
               {showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon />}
             </Button>
-          </div>
+          </div> */}
 
           <Select
             name="players"

@@ -15,6 +15,8 @@ type Props = {
   totalPlayers: number;
   currentPlayers: number;
   buyIn: number;
+  onClose: () => void;
+  onStartGame: () => void;
 };
 
 const DRAG_THRESHOLD = 50;
@@ -38,7 +40,7 @@ const players = [
   },
 ];
 
-const StartGameModal = ({ totalPlayers, currentPlayers, buyIn }: Props) => {
+const StartGameModal = ({ totalPlayers, currentPlayers, buyIn, onClose, onStartGame }: Props) => {
   const alert = useAlert();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -156,10 +158,10 @@ const StartGameModal = ({ totalPlayers, currentPlayers, buyIn }: Props) => {
         </div>
 
         <div className={styles.buttons}>
-          <Button color="danger" onClick={() => {}}>
+          <Button color="danger" onClick={onClose}>
             Cancel game
           </Button>
-          <Button color="primary" onClick={() => {}}>
+          <Button color="primary" onClick={onStartGame}>
             Start game
           </Button>
         </div>
