@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useEffect } from 'react';
 
 import { GameCard, Modal } from '@/components';
 import { Card, HandRank } from '@/types';
@@ -18,6 +19,14 @@ const GameEndModal = ({ onClose, winner, pot, winnersHand, handRank, isWinner }:
   console.log(onClose);
   const rank = handRank.replace('-', ' ');
   const potText = `+${pot}`;
+
+  useEffect(() => {
+    setTimeout(() => {
+      onClose();
+    }, 3000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Modal heading="" className={{ modal: styles.modal, wrapper: clsx(styles.wrapper, isWinner && styles.win) }}>
       {isWinner ? (

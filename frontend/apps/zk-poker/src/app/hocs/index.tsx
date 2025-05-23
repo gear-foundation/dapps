@@ -40,7 +40,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 // function DnsProvider({ children }: ProviderProps) {
 //   return (
-//     <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+//     <SharedDnsProvider names={{ pokerProgramId: ADDRESS.DNS_NAME, ptsProgramId: }} dnsApiUrl={ADDRESS.DNS_API_URL}>
 //       {children}
 //     </SharedDnsProvider>
 //   );

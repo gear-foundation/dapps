@@ -1,4 +1,5 @@
 import { useAlert, useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import { Identicon } from '@polkadot/react-identicon';
 import { Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +8,6 @@ import { copyToClipboard } from '@dapps-frontend/ui';
 
 import { ROUTES } from '@/app/consts';
 import { CopyDecoded } from '@/assets/images/';
-import { Button } from '@/components/ui/button';
 import { ModalBottom } from '@/components/ui/modal';
 
 import { WALLETS } from '../../consts';

@@ -4,12 +4,16 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } from '@/assets/images';
-import { Avatar, Banner, Button, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
+import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
+import { useGetBalanceQuery } from '@/features/game/sails';
+import { ClaimPtsButton } from '@/features/pts';
 
 import styles from './home.module.scss';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { balance, refetch: refetchPtsBalance } = useGetBalanceQuery();
+
   // ! TODO: save in local storage on change
   const [userName, setUserName] = useState('Player');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
@@ -24,19 +28,17 @@ export default function Home() {
     { value: 0, label: 'Hands Played Today' },
   ];
 
-  const claimFreePTS = () => {
-    console.log('claim free PTS');
-  };
-
   const handleProfileSave = (name: string) => {
     setUserName(name);
     setIsEditProfileModalOpen(false);
   };
 
+  const formattedBalance = balance?.toLocaleString('en-US') || '0';
+
   return (
     <>
       <Header>
-        <Balance value="52,582" unit="PTS" SVG={PointsIcon} />
+        <Balance value={formattedBalance} unit="PTS" SVG={PointsIcon} />
       </Header>
 
       <div className={styles.container}>
@@ -52,7 +54,7 @@ export default function Home() {
           />
           <MenuButton
             title="Create game"
-            subtitle="~15 VARA gas."
+            subtitle="~15 VARA"
             onClick={() => {
               navigate(ROUTES.CREATE_GAME);
             }}
@@ -70,10 +72,8 @@ export default function Home() {
           />
         </h3>
         <Stats items={stats} />
-        {/* TODO: move to separate feature */}
-        <Button className={styles.claim} onClick={claimFreePTS}>
-          Claim your free PTS
-        </Button>
+
+        <ClaimPtsButton onSuccess={refetchPtsBalance} className={styles.claim} />
 
         <Footer />
 

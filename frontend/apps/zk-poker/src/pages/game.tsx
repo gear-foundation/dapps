@@ -80,7 +80,7 @@ export default function GamePage() {
   const isMyTurn = false;
 
   const [showStartGameModal, setShowStartGameModal] = useState(false);
-  const [showGameEndModal, setShowGameEndModal] = useState(true);
+  const [showGameEndModal, setShowGameEndModal] = useState(false);
 
   return (
     <>
