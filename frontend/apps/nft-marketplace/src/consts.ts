@@ -1,6 +1,6 @@
 import { HexString } from '@gear-js/api';
 
-const ADDRESS = {
+const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   IPFS: import.meta.env.VITE_IPFS_ADDRESS as string,
   IPFS_GATEWAY: import.meta.env.VITE_IPFS_GATEWAY_ADDRESS as string,
@@ -14,4 +14,4 @@ const LOCAL_STORAGE = {
 
 const MIN_PRICE = 1000000000000;
 
-export { ADDRESS, LOCAL_STORAGE, MIN_PRICE };
+export { ENV, LOCAL_STORAGE, MIN_PRICE };

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { useGetMarketQuery, useOwnerOfQuery, useTokenMetadataByIdQuery } from '@/app/utils';
 import { Loader } from '@/components';
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 import { useMarketplaceActions } from '@/hooks';
 import { NFTDetails } from '@/types';
 import { getAuctionDate, getIpfsAddress, getListingProps } from '@/utils';
@@ -29,7 +29,7 @@ function Listing() {
 
   const owner = marketNft?.owner || nftOwner;
   const isOwner = account?.decodedAddress === owner;
-  const isMarketOwner = nftOwner === ADDRESS.MARKETPLACE_CONTRACT;
+  const isMarketOwner = nftOwner === ENV.MARKETPLACE_CONTRACT;
   const baseNft = tokenMetadata && owner ? { ...tokenMetadata, owner } : null;
 
   const { reference } = tokenMetadata || {};
