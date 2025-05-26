@@ -3,7 +3,7 @@ import { isHex } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
 import { Client, cacheExchange, fetchExchange } from 'urql';
 
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 
 export const copyToClipboard = async ({
   alert,
@@ -54,7 +54,7 @@ export const copyToClipboard = async ({
 export const isProgramIdValid = (value: string): value is HexString => isHex(value, 256);
 
 export const urqlClient = new Client({
-  url: ADDRESS.EXPLORER_URL || 'https://nft-explorer.vara-network.io/graphql',
+  url: ENV.EXPLORER_URL || 'https://nft-explorer.vara-network.io/graphql',
   exchanges: [cacheExchange, fetchExchange],
 });
 

@@ -6,7 +6,7 @@ export const LOCAL_STORAGE = {
   CONTRACT_ADDRESS: 'straming-contract-address',
 };
 
-export const ADDRESS = {
+export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   NODES: import.meta.env.VITE_NODES_API_URL as string,
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,

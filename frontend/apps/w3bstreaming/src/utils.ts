@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 
-import { ADDRESS } from './consts';
+import { ENV } from './consts';
 
 export const cx = (...styles: string[]) => clsx(...styles);
 
@@ -54,7 +54,7 @@ export const copyToClipboard = async ({
   }
 };
 
-export const socket: Socket = io(ADDRESS.SIGNALING_SERVER);
+export const socket: Socket = io(ENV.SIGNALING_SERVER);
 
 export function useScrollToTop() {
   const { pathname } = useLocation();

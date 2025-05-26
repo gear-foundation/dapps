@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useGetStateQuery } from '@/app/utils';
 import StreamSignalSVG from '@/assets/icons/signal-stream-icon.svg';
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 import { Button } from '@/ui';
 import { cx } from '@/utils';
 
@@ -43,7 +43,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const [streamType, setStreamType] = useState<StreamType>('camera');
 
   const handleGetIsAlreadyHaveStream = async (address: string) => {
-    const res = await fetch(`${ADDRESS.BACKEND_SERVER}/is-already-having-stream?address=${address}`);
+    const res = await fetch(`${ENV.BACKEND_SERVER}/is-already-having-stream?address=${address}`);
     const isHave = await res.json();
 
     return isHave;

@@ -15,14 +15,14 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 
-import { ADDRESS } from '@/app/consts';
+import { ENV } from '@/app/consts';
 
 import { useProgram } from '../utils';
 
 import { QueryProvider } from './query-provider';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {
@@ -39,7 +39,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );
@@ -49,7 +49,10 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
 
   return (
-    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider
+      programId={programId}
+      backendAddress={ENV.GASLESS_BACKEND}
+      voucherLimit={Number(ENV.VOUCHER_LIMIT)}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
