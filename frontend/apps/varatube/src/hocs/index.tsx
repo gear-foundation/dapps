@@ -11,10 +11,10 @@ import { BrowserRouter } from 'react-router-dom';
 import { AvailableBalanceProvider } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {

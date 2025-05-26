@@ -1,6 +1,6 @@
 import { HexString } from '@gear-js/api';
 
-const ADDRESS = {
+const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   IPFS_GATEWAY: import.meta.env.VITE_IPFS_GATEWAY_ADDRESS as string,
   CONTRACT: import.meta.env.VITE_CONTRACT_ADDRESS as HexString,
@@ -24,4 +24,4 @@ const initialValues = { isRenewal: true, period: periods[0].value };
 
 const VOUCHER_MIN_LIMIT = 18;
 
-export { ADDRESS, LOCAL_STORAGE, periods, initialValues, VOUCHER_MIN_LIMIT };
+export { ENV, LOCAL_STORAGE, periods, initialValues, VOUCHER_MIN_LIMIT };

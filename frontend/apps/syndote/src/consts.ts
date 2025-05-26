@@ -34,7 +34,7 @@ import unique from '@/assets/images/logos/unique.png';
 import VaraSVG from '@/assets/images/logos/vara.svg?react';
 import { PlayerType } from '@/types';
 
-const ADDRESS = {
+const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
@@ -407,4 +407,4 @@ const INIT_PLAYERS = [
   { color: 'green' as PlayerType['color'] },
 ];
 
-export { ADDRESS, LocalStorage, fields, INIT_PLAYERS };
+export { ENV, LocalStorage, fields, INIT_PLAYERS };

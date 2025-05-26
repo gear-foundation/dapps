@@ -1,6 +1,6 @@
 import { useProgram as useGearJsProgram } from '@gear-js/react-hooks';
 
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 
 import { Program as VftProgram } from './extended_vft';
 import { Program as VaratubeProgram } from './varatube';
@@ -8,7 +8,7 @@ import { Program as VaratubeProgram } from './varatube';
 const useVaratubeProgram = () => {
   const { data: program } = useGearJsProgram({
     library: VaratubeProgram,
-    id: ADDRESS.CONTRACT,
+    id: ENV.CONTRACT,
   });
 
   return program;
@@ -17,7 +17,7 @@ const useVaratubeProgram = () => {
 const useVftProgram = () => {
   const { data: program } = useGearJsProgram({
     library: VftProgram,
-    id: ADDRESS.FT_CONTRACT,
+    id: ENV.FT_CONTRACT,
   });
 
   return program;
