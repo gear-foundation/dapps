@@ -75,6 +75,7 @@ jobs:
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_TIC_TAC }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_TIC_TAC }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_TICTACTOE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
