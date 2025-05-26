@@ -10,6 +10,7 @@ export const ENV = {
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL,
   DNS_NAME: import.meta.env.VITE_DNS_NAME,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
+  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT,
 };
 
 export type IRegisterForm = {

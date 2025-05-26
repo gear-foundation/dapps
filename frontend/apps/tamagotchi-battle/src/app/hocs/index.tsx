@@ -34,7 +34,10 @@ function DnsProvider({ children }: ProviderProps) {
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
   return (
-    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider
+      programId={programId}
+      backendAddress={ENV.GASLESS_BACKEND}
+      voucherLimit={Number(ENV.VOUCHER_LIMIT)}>
       {children}
     </SharedGaslessTransactionsProvider>
   );

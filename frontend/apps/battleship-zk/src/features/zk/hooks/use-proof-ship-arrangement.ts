@@ -1,4 +1,4 @@
-import { ADDRESS } from '@/app/consts';
+import { ENV } from '@/app/consts';
 import { getArrangementShips, getHash } from '@/features/zk/utils';
 
 import { ZkProofData } from '../types';
@@ -10,7 +10,7 @@ export const useProofShipArrangement = () => {
     const payload = { ...ships, hash };
 
     try {
-      const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/placement`, {
+      const res = await fetch(`${ENV.ZK_PROOF_BACKEND}/api/proof/placement`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
