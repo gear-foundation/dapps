@@ -4,41 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/app/consts';
 import { BackIcon, PlusIcon, SearchIcon } from '@/assets/images';
 import { Button, Input, Room } from '@/components';
+import { useLobbiesQuery } from '@/features/game/sails';
 
 import styles from './rooms.module.scss';
 
 export default function Rooms() {
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
-  const rooms = [
-    {
-      name: 'Room 1',
-      totalPlayers: 10,
-      currentPlayers: 5,
-      buyIn: 15000,
-      adminName: 'John Doe',
-      time: 60,
-    },
-    {
-      name: 'Room 2',
-      totalPlayers: 8,
-      currentPlayers: 8,
-      buyIn: 50000,
-      adminName: 'John Doe',
-      time: 120,
-    },
-  ];
-
-  const privateRooms = [
-    {
-      name: 'Room 1',
-      totalPlayers: 6,
-      currentPlayers: 6,
-      buyIn: 15000,
-      adminName: 'John Doe',
-      time: 60,
-    },
-  ];
+  const { lobbies } = useLobbiesQuery();
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,18 +40,20 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {rooms.map((room) => (
-            <Room key={room.name} {...room} />
+          {lobbies?.map(([address, { admin_name, lobby_name, number_of_participants, starting_bank }]) => (
+            <Room
+              key={address}
+              name={lobby_name}
+              adminName={admin_name}
+              totalPlayers={number_of_participants}
+              // ! TODO: add
+              currentPlayers={1}
+              buyIn={Number(starting_bank)}
+              // ! TODO: add
+              time={60}
+              id={address}
+            />
           ))}
-
-          {privateRooms.length > 0 && (
-            <>
-              <h2 className={styles.title}>Private rooms</h2>
-              {privateRooms.map((room) => (
-                <Room key={room.name} {...room} />
-              ))}
-            </>
-          )}
         </div>
       </div>
     </>

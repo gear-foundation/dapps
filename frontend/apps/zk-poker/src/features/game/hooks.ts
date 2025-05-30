@@ -1,8 +1,18 @@
 import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 import { useCallback, useRef } from 'react';
 
 import { pendingAtom } from './store';
 
+const USER_NAME_KEY = 'user_name';
+const userNameAtom = atomWithStorage(USER_NAME_KEY, 'Player');
+
+export function useUserName() {
+  const [userName, setUserName] = useAtom(userNameAtom);
+  return { userName, setUserName };
+}
+
+// ! TODO: @deprecated
 export function usePending() {
   const [pending, setPending] = useAtom(pendingAtom);
 

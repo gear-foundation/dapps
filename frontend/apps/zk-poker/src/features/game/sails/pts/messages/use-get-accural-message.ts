@@ -18,7 +18,6 @@ export const useGetAccuralMessage = () => {
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
     const result = await sendTransactionAsync({ args: [], ...params });
-    console.log('fetch end');
     return result.awaited;
   };
 

@@ -1,9 +1,13 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, Input, Select, Slider } from '@/components';
+import { useUserName } from '@/features/game/hooks';
+import { LobbyCreatedPayload, useCreateLobbyMessage, useEventLobbyCreatedSubscription } from '@/features/game/sails';
+import { useKeys } from '@/features/zk/hooks';
 
 import styles from './create-game.module.scss';
 
@@ -51,7 +55,20 @@ const timeOptions = [
 export default function CreateLobby() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
+  const { account } = useAccount();
   const navigate = useNavigate();
+  const { userName } = useUserName();
+
+  const { pk } = useKeys();
+
+  const onLobbyCreated = (payload: LobbyCreatedPayload) => {
+    console.log('payload', payload);
+    setIsLoading(false);
+    navigate(ROUTES.GAME.replace(':gameId', payload.lobby_address));
+  };
+
+  useEventLobbyCreatedSubscription({ onData: onLobbyCreated });
+  const { createLobbyMessage } = useCreateLobbyMessage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -68,21 +85,38 @@ export default function CreateLobby() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!account) return;
+
     setIsLoading(true);
 
-    try {
-      console.log('Creating game with settings:', formData);
+    // ! TODO: check if this is correct
+    const small_blind = 5;
+    const big_blind = 10;
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      navigate(ROUTES.GAME);
-    } catch (error) {
-      console.error('Error creating game:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    void createLobbyMessage(
+      {
+        config: {
+          // ! TODO: add
+          // time_per_move: formData.time,
+          admin_id: account.decodedAddress,
+          admin_name: userName,
+          big_blind,
+          lobby_name: formData.name,
+          number_of_participants: formData.players,
+          small_blind,
+          starting_bank: formData.buyIn,
+        },
+        pk,
+      },
+      {
+        onError: (error) => {
+          console.error('Error creating game:', error);
+          setIsLoading(false);
+        },
+      },
+    );
   };
 
   const handleCancel = () => {

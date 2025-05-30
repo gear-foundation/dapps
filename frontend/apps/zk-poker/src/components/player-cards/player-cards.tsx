@@ -8,10 +8,10 @@ import { GameCard } from '../game-card';
 import styles from './player-cards.module.scss';
 
 type Props = {
-  cards: [Card, Card] | null;
+  cards?: [Card, Card] | null;
   isDiller?: boolean;
   top: number;
-  side: 'left' | 'right' | 'center';
+  side: 'left' | 'right' | 'top';
 };
 
 const PlayerCards = ({ isDiller, cards, top, side }: Props) => {

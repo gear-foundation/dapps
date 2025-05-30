@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 import { GearApi, HexString, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import {
@@ -134,35 +133,106 @@ export class Program {
 export class Poker {
   constructor(private _program: Program) {}
 
-  public cancelGame(): TransactionBuilder<null> {
+  /**
+   * Cancels player registration and refunds their balance via PTS contract.
+   *
+   * Panics if:
+   * - current status is invalid for cancellation;
+   * - caller is not a registered player.
+   *
+   * Sends a transfer request to PTS contract to return points to the player.
+   * Removes player data and emits `RegistrationCanceled` event on success.
+   */
+  public cancelRegistration(): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CancelGame'],
+      ['Poker', 'CancelRegistration'],
       '(String, String)',
       'Null',
       this._program.programId,
     );
   }
 
-  public cardDisclosure(
-    id_to_cards: Array<[ActorId, [Card, Card]]>,
-    table_cards: Array<Card>,
-  ): TransactionBuilder<null> {
+  public cardDisclosure(id_to_cards: Array<[ActorId, [Card, Card]]>): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CardDisclosure', id_to_cards, table_cards],
-      '(String, String, Vec<([u8;32], (Card, Card))>, Vec<Card>)',
+      ['Poker', 'CardDisclosure', id_to_cards],
+      '(String, String, Vec<([u8;32], (Card, Card))>)',
       'Null',
       this._program.programId,
     );
   }
 
+  /**
+   * Admin-only function to forcibly remove a player and refund their balance.
+   *
+   * Panics if:
+   * - caller is not admin or tries to delete themselves
+   * - wrong game status (not Registration/WaitingShuffleVerification)
+   * - player doesn't exist
+   *
+   * Performs:
+   * 1. Transfers player's balance back to user via PTS contract
+   * 2. Removes player from all participant lists
+   * 3. Resets status to Registration
+   * 4. Emits PlayerDeleted event
+   */
+  public deletePlayer(player_id: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Poker', 'DeletePlayer', player_id],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  /**
+   * Admin-only function to terminate the lobby and refund all players.
+   *
+   * Panics if:
+   * - caller is not admin
+   * - wrong game status (not Registration/WaitingShuffleVerification/Finished)
+   *
+   * Performs:
+   * 1. Batch transfer of all player balances via PTS contract
+   * 2. Sends DeleteLobby request to PokerFactory
+   * 3. Emits Killed event and transfers remaining funds to inheritor
+   *
+   * WARNING: Irreversible operation
+   */
+  public kill(inheritor: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Poker', 'Kill', inheritor],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  /**
+   * Registers a player by sending a transfer request to the PTS contract (starting_bank points).
+   *
+   * Panics if:
+   * - status is not `Registration`;
+   * - player is already registered.
+   *
+   * Sends a message to the PTS contract (pts_actor_id) to transfer points to this contract.
+   * On success, updates participant data and emits a `Registered` event.
+   */
   public register(player_name: string, pk: PublicKey): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -171,6 +241,25 @@ export class Poker {
       'send_message',
       ['Poker', 'Register', player_name, pk],
       '(String, String, String, PublicKey)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  /**
+   * Restarts the game, resetting status and refunding bets (if not Finished).
+   * Panics if caller is not admin.
+   * Resets game to WaitingShuffleVerification (if full) or Registration status.
+   * Emits GameRestarted event with new status.
+   */
+  public restartGame(): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Poker', 'RestartGame'],
+      '(String, String)',
       'Null',
       this._program.programId,
     );
@@ -192,6 +281,21 @@ export class Poker {
     );
   }
 
+  /**
+   * Admin-only function to start the poker game after setup.
+   *
+   * Panics if:
+   * - caller is not admin
+   * - wrong status (not WaitingStart)
+   *
+   * Performs:
+   * 1. Deals cards to players and table
+   * 2. Processes small/big blinds (handles all-in cases)
+   * 3. Initializes betting stage
+   * 4. Updates game status and emits GameStarted event
+   *
+   * Note: Handles edge cases where players can't cover blinds
+   */
   public startGame(): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -253,6 +357,22 @@ export class Poker {
     );
   }
 
+  /**
+   * Processes player actions during betting rounds.
+   *
+   * Panics if:
+   * - Wrong game status
+   * - Not player's turn
+   * - Invalid action (e.g. check when bet exists)
+   *
+   * Handles:
+   * - Fold/Call/Check/Raise/AllIn actions
+   * - Turn timers and skips
+   * - Game end conditions (single player left)
+   * - Stage transitions
+   *
+   * Emits TurnIsMade and NextStage events
+   */
   public turn(action: Action): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -401,6 +521,25 @@ export class Poker {
     return result[2].toJSON() as unknown as Array<EncryptedCard>;
   }
 
+  public async factoryActorId(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<ActorId> {
+    const payload = this._program.registry.createType('(String, String)', ['Poker', 'FactoryActorId']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
+    return result[2].toJSON() as unknown as ActorId;
+  }
+
   public async participants(
     originAddress?: string,
     value?: number | string | bigint,
@@ -440,6 +579,25 @@ export class Poker {
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
     const result = this._program.registry.createType('(String, String, Option<[EncryptedCard; 2]>)', reply.payload);
     return result[2].toJSON() as unknown as Array<EncryptedCard> | null;
+  }
+
+  public async ptsActorId(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<ActorId> {
+    const payload = this._program.registry.createType('(String, String)', ['Poker', 'PtsActorId']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
+    return result[2].toJSON() as unknown as ActorId;
   }
 
   public async revealedTableCards(
@@ -521,6 +679,44 @@ export class Poker {
     });
   }
 
+  public subscribeToPlayerDeletedEvent(
+    callback: (data: { player_id: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'PlayerDeleted') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"player_id":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { player_id: ActorId },
+        );
+      }
+    });
+  }
+
+  public subscribeToRegistrationCanceledEvent(
+    callback: (data: { player_id: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'RegistrationCanceled') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"player_id":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { player_id: ActorId },
+        );
+      }
+    });
+  }
+
   public subscribeToGameStartedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -572,7 +768,7 @@ export class Poker {
     });
   }
 
-  public subscribeToGameCanceledEvent(
+  public subscribeToGameRestartedEvent(
     callback: (data: { status: Status }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
@@ -581,7 +777,7 @@ export class Poker {
       }
 
       const payload = message.payload.toHex();
-      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'GameCanceled') {
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'GameRestarted') {
         callback(
           this._program.registry
             .createType('(String, String, {"status":"Status"})', message.payload)[2]
@@ -663,6 +859,23 @@ export class Poker {
           this._program.registry
             .createType('(String, String, {"winners":"Vec<[u8;32]>","cash_prize":"Vec<u128>"})', message.payload)[2]
             .toJSON() as unknown as { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> },
+        );
+      }
+    });
+  }
+
+  public subscribeToKilledEvent(callback: (data: { inheritor: ActorId }) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'Killed') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"inheritor":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { inheritor: ActorId },
         );
       }
     });

@@ -1,6 +1,24 @@
-import { ActorId } from 'sails-js';
+import { CodeId, ActorId } from 'sails-js';
 
 declare global {
+  // poker_factory
+  export interface PokerFactoryConfig {
+    lobby_code_id: CodeId;
+    gas_for_program: number | string | bigint;
+    gas_for_reply_deposit: number | string | bigint;
+  }
+
+  export interface LobbyConfig {
+    admin_id: ActorId;
+    admin_name: string;
+    lobby_name: string;
+    small_blind: number | string | bigint;
+    big_blind: number | string | bigint;
+    number_of_participants: number;
+    starting_bank: number | string | bigint;
+  }
+
+  // poker
   export interface Config {
     admin_id: ActorId;
     admin_name: string;
@@ -12,9 +30,9 @@ declare global {
   }
 
   export interface PublicKey {
-    x: Array<number>;
-    y: Array<number>;
-    z: Array<number>;
+    x: Uint8Array;
+    y: Uint8Array;
+    z: Uint8Array;
   }
 
   export interface VerifyingKeyBytes {

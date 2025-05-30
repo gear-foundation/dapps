@@ -39,12 +39,10 @@ async function connectWallet() {
       void walletConnectModal.openModal({ uri });
 
       const walletConnectSession = await approval();
-      console.log('🚀 ~ connectWallet ~ walletConnectSession :', walletConnectSession);
 
       const walletConnectAccount = Object.values(walletConnectSession.namespaces)
         .map((namespace) => namespace.accounts)
         .flat();
-      console.log('🚀 ~ connectWallet ~ walletConnectAccount:', walletConnectAccount);
 
       // grab account addresses from CAIP account formatted accounts
       const accounts = walletConnectAccount.map((wcAccount) => {

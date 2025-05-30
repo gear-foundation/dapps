@@ -8,26 +8,33 @@ import styles from './game-board.module.scss';
 import { getCommonCardsMarginTop, getPositionSide, getSlotPositions } from './helpers';
 
 type PlayerSlot = {
-  avatar: string;
+  avatar?: string;
   name: string;
   status: PlayerStatus;
   chips: number;
-  cards: [Card, Card] | null;
+  cards?: [Card, Card] | null;
   isDiller?: boolean;
+  isMe?: boolean;
 };
 
 type Props = {
   totalPot: number;
-  commonCardsFields: Card[];
-  playerCards?: [Card, Card];
+  commonCardsFields: (Card | null)[];
   playerSlots: PlayerSlot[];
 };
 
-const GameBoard = ({ totalPot, commonCardsFields, playerCards, playerSlots }: Props) => {
+const GameBoard = ({ totalPot, commonCardsFields, playerSlots }: Props) => {
   const isMovedTotalPot = playerSlots.length === 1 || playerSlots.length === 2;
 
-  const commonCardsMarginTop = getCommonCardsMarginTop(playerSlots.length);
-  const slotPositions = getSlotPositions(playerSlots.length);
+  const myIndex = playerSlots.findIndex((playerSlot) => playerSlot.isMe);
+  const mySlot = myIndex !== -1 ? playerSlots[myIndex] : null;
+
+  const slotsAfterMe = playerSlots.slice(myIndex + 1);
+  const slotsBeforeMe = playerSlots.slice(0, myIndex);
+  const reorderedSlots = mySlot ? [...slotsAfterMe, ...slotsBeforeMe] : playerSlots;
+
+  const commonCardsMarginTop = getCommonCardsMarginTop(reorderedSlots.length);
+  const slotPositions = getSlotPositions(reorderedSlots.length);
 
   return (
     <div className={styles.boardWrapper}>
@@ -47,9 +54,10 @@ const GameBoard = ({ totalPot, commonCardsFields, playerCards, playerSlots }: Pr
                       <GameCard value={card} size="md" isDashed key={index} />
                     ))}
 
-                    {playerCards && (
-                      <div className={styles.playerCards}>
-                        {playerCards.map((card, index) => (
+                    {mySlot && <PlayerSlot {...mySlot} side="bottom" hideAvatar={!!mySlot?.cards} />}
+                    {mySlot?.cards && (
+                      <div className={styles.myCards}>
+                        {mySlot.cards.map((card, index) => (
                           <GameCard value={card} size="lg" key={index} />
                         ))}
                       </div>
@@ -61,14 +69,15 @@ const GameBoard = ({ totalPot, commonCardsFields, playerCards, playerSlots }: Pr
           </div>
         </div>
         <div className={styles.playerSlots}>
-          {playerSlots.map(({ isDiller, cards, ...playerSlot }, index) => {
-            const side = getPositionSide(playerSlots.length, index);
+          {reorderedSlots.map(({ isDiller, cards, ...playerSlot }, index) => {
+            const side = getPositionSide(reorderedSlots.length, index);
             const [playerTopOffset, cardsTopOffset] = slotPositions[index];
+            const hasCards = cards !== undefined;
 
             return (
               <Fragment key={`${playerSlot.name}-${index}`}>
                 <PlayerSlot {...playerSlot} top={playerTopOffset} side={side} />
-                <PlayerCards isDiller={isDiller} cards={cards} top={cardsTopOffset} side={side} />
+                {hasCards && <PlayerCards isDiller={isDiller} cards={cards} top={cardsTopOffset} side={side} />}
               </Fragment>
             );
           })}

@@ -1,4 +1,4 @@
-type Side = 'left' | 'right' | 'center';
+type Side = 'left' | 'right' | 'top';
 
 // [playerTopOffset, cardsTopOffset]
 const topOffsetConfig: Record<number, [number, number][]> = {
@@ -59,7 +59,7 @@ const getPositionSide = (slotsCount: number, index: number): Side => {
   const isEven = slotsCount % 2 === 0;
 
   if (!isEven && index === Math.floor(slotsCount / 2)) {
-    return 'center';
+    return 'top';
   }
 
   if (index < slotsCount / 2) {
@@ -80,6 +80,7 @@ const getSlotPositions = (totalPositions: number): [number, number][] => {
 };
 
 const commonCardsMarginTop: Record<number, number> = {
+  0: 143.3,
   1: 143.3,
   2: 176.3,
   3: 143.3,
@@ -93,7 +94,7 @@ const commonCardsMarginTop: Record<number, number> = {
 const getCommonCardsMarginTop = (totalPositions: number): number => {
   const marginTop = commonCardsMarginTop[totalPositions];
 
-  if (!marginTop) {
+  if (marginTop === undefined) {
     throw new Error('Invalid number of positions');
   }
 

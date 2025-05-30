@@ -2,59 +2,51 @@ import { useAlert } from '@gear-js/react-hooks';
 import { copyToClipboard } from '@ui/utils';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { Copy } from '@/assets/images';
 import { Button, Modal } from '@/components';
 
 import { useThrottle } from '../../hooks';
+import { useKillMessage, useStartGameMessage } from '../../sails';
 import { PlayersList } from '../players-list';
 
 import styles from './start-game-modal.module.scss';
 
 type Props = {
-  totalPlayers: number;
-  currentPlayers: number;
-  buyIn: number;
-  onClose: () => void;
-  onStartGame: () => void;
+  participants: [`0x${string}`, Participant][];
+  maxPlayers: number;
+  isAdmin: boolean;
 };
 
 const DRAG_THRESHOLD = 50;
 const MAX_HEIGHT = 350;
 
-const players = [
-  {
-    name: 'Player 1',
-    avatar: 'https://avatar.iran.liara.run/public/27',
-    isHost: true,
-  },
-  {
-    name: 'Player 2',
-    avatar: 'https://avatar.iran.liara.run/public/14',
-  },
-  {
-    name: 'Player 3',
-  },
-  {
-    name: 'Player 4',
-  },
-];
-
-const StartGameModal = ({ totalPlayers, currentPlayers, buyIn, onClose, onStartGame }: Props) => {
+const StartGameModal = ({ participants, maxPlayers, isAdmin }: Props) => {
   const alert = useAlert();
+  const { gameId } = useParams();
+  const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
+  const { killMessage, isPending: isKillPending } = useKillMessage();
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const players = participants.map(([address, { name, balance }]) => ({
+    address,
+    name,
+    avatar: undefined,
+    balance: Number(balance),
+  }));
+
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const playersRef = useRef<HTMLDivElement>(null);
 
-  const heading = `Players ${currentPlayers}/${totalPlayers}`;
-  const gameLink = 't.me/botname/bot?start=2765123';
+  const heading = `Players ${participants.length}/${maxPlayers}`;
+  // ! TODO: move to env
+  const tgBotName = 'zk-poker-bot';
+  const gameLink = `t.me/${tgBotName}/bot?start=${gameId}`;
 
-  const seats = useMemo(() => Array.from({ length: totalPlayers }, (_, index) => index), [totalPlayers]);
-  const isAdmin = true;
-  const isSpectator = true;
+  const seats = useMemo(() => Array.from({ length: maxPlayers }, (_, index) => index), [maxPlayers]);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
@@ -147,24 +139,29 @@ const StartGameModal = ({ totalPlayers, currentPlayers, buyIn, onClose, onStartG
 
       <div className={clsx(isExpanded && styles.expanded)}>
         <div className={styles.gameId}>
-          <span>{gameLink}</span>
+          <span className={styles.gameIdLink}>{gameLink}</span>
           <Button color="plain" rounded size="small" className={styles.copyButton} onClick={onCopy}>
             <Copy />
           </Button>
         </div>
 
         <div className={clsx(styles.playersContainer, isExpanded && styles.visible)} ref={playersRef}>
-          <PlayersList seats={seats} players={players} buyIn={buyIn} isAdmin={isAdmin} isSpectator={isSpectator} />
+          <PlayersList seats={seats} players={players} isAdmin={isAdmin} />
         </div>
 
-        <div className={styles.buttons}>
-          <Button color="danger" onClick={onClose}>
-            Cancel game
-          </Button>
-          <Button color="primary" onClick={onStartGame}>
-            Start game
-          </Button>
-        </div>
+        {isAdmin && (
+          <div className={styles.buttons}>
+            <Button color="danger" onClick={() => killMessage()} disabled={isKillPending}>
+              Cancel game
+            </Button>
+            <Button
+              color="primary"
+              onClick={() => startGameMessage()}
+              disabled={participants.length < 2 || isStartGamePending}>
+              Start game
+            </Button>
+          </div>
+        )}
       </div>
     </Modal>
   );

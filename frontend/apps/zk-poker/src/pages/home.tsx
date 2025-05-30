@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } from '@/assets/images';
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
+import { useUserName } from '@/features/game/hooks';
 import { useGetBalanceQuery } from '@/features/game/sails';
 import { ClaimPtsButton } from '@/features/pts';
 
@@ -13,9 +14,8 @@ import styles from './home.module.scss';
 export default function Home() {
   const navigate = useNavigate();
   const { balance, refetch: refetchPtsBalance } = useGetBalanceQuery();
+  const { userName, setUserName } = useUserName();
 
-  // ! TODO: save in local storage on change
-  const [userName, setUserName] = useState('Player');
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const onEditProfile = () => {

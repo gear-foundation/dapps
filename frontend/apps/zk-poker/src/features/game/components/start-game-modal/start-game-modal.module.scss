@@ -16,14 +16,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #ffffff;
   padding: 10px;
   border: 1px solid #00ffc4;
   border-radius: 12px;
   gap: 10px;
-  font-family: 'Urbanist', sans-serif;
   background-color: #18171c;
+}
+
+.gameIdLink {
+  font-family: 'Urbanist', sans-serif;
+  text-decoration: none;
+  color: #ffffff;
   font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .copyButton {

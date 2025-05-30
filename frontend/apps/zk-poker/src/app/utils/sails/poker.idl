@@ -109,14 +109,88 @@ constructor {
 };
 
 service Poker {
-  CancelGame : () -> null;
-  CardDisclosure : (id_to_cards: vec struct { actor_id, struct { Card, Card } }, table_cards: vec Card) -> null;
+  /// Cancels player registration and refunds their balance via PTS contract.
+  /// 
+  /// Panics if:
+  /// - current status is invalid for cancellation;
+  /// - caller is not a registered player.
+  /// 
+  /// Sends a transfer request to PTS contract to return points to the player.
+  /// Removes player data and emits `RegistrationCanceled` event on success.
+  CancelRegistration : () -> null;
+  CardDisclosure : (id_to_cards: vec struct { actor_id, struct { Card, Card } }) -> null;
+  /// Admin-only function to forcibly remove a player and refund their balance.
+  /// 
+  /// Panics if:
+  /// - caller is not admin or tries to delete themselves
+  /// - wrong game status (not Registration/WaitingShuffleVerification)
+  /// - player doesn't exist
+  /// 
+  /// Performs:
+  /// 1. Transfers player's balance back to user via PTS contract
+  /// 2. Removes player from all participant lists
+  /// 3. Resets status to Registration
+  /// 4. Emits PlayerDeleted event
+  DeletePlayer : (player_id: actor_id) -> null;
+  /// Admin-only function to terminate the lobby and refund all players.
+  /// 
+  /// Panics if:
+  /// - caller is not admin
+  /// - wrong game status (not Registration/WaitingShuffleVerification/Finished)
+  /// 
+  /// Performs:
+  /// 1. Batch transfer of all player balances via PTS contract
+  /// 2. Sends DeleteLobby request to PokerFactory
+  /// 3. Emits Killed event and transfers remaining funds to inheritor
+  /// 
+  /// WARNING: Irreversible operation
+  Kill : (inheritor: actor_id) -> null;
+  /// Registers a player by sending a transfer request to the PTS contract (starting_bank points).
+  /// 
+  /// Panics if:
+  /// - status is not `Registration`;
+  /// - player is already registered.
+  /// 
+  /// Sends a message to the PTS contract (pts_actor_id) to transfer points to this contract.
+  /// On success, updates participant data and emits a `Registered` event.
   Register : (player_name: str, pk: PublicKey) -> null;
+  /// Restarts the game, resetting status and refunding bets (if not Finished).
+  /// Panics if caller is not admin.
+  /// Resets game to WaitingShuffleVerification (if full) or Registration status.
+  /// Emits GameRestarted event with new status.
+  RestartGame : () -> null;
   ShuffleDeck : (encrypted_deck: vec EncryptedCard, instances: vec VerificationVariables) -> null;
+  /// Admin-only function to start the poker game after setup.
+  /// 
+  /// Panics if:
+  /// - caller is not admin
+  /// - wrong status (not WaitingStart)
+  /// 
+  /// Performs:
+  /// 1. Deals cards to players and table
+  /// 2. Processes small/big blinds (handles all-in cases)
+  /// 3. Initializes betting stage
+  /// 4. Updates game status and emits GameStarted event
+  /// 
+  /// Note: Handles edge cases where players can't cover blinds
   StartGame : () -> null;
   SubmitAllPartialDecryptions : (cards_by_player: vec struct { actor_id, [EncryptedCard, 2] }, proofs: vec VerificationVariables) -> null;
   SubmitRevealedTableCards : (new_cards: vec Card, proofs: vec VerificationVariables) -> null;
   SubmitTablePartialDecryptions : (decryptions: vec struct { EncryptedCard, [vec u8, 3] }, proofs: vec VerificationVariables) -> null;
+  /// Processes player actions during betting rounds.
+  /// 
+  /// Panics if:
+  /// - Wrong game status
+  /// - Not player's turn
+  /// - Invalid action (e.g. check when bet exists)
+  /// 
+  /// Handles:
+  /// - Fold/Call/Check/Raise/AllIn actions
+  /// - Turn timers and skips
+  /// - Game end conditions (single player left)
+  /// - Stage transitions
+  /// 
+  /// Emits TurnIsMade and NextStage events
   Turn : (action: Action) -> null;
   query ActiveParticipants : () -> TurnManagerForActorId;
   query AllInPlayers : () -> vec actor_id;
@@ -125,8 +199,10 @@ service Poker {
   query BettingBank : () -> vec struct { actor_id, u128 };
   query Config : () -> Config;
   query EncryptedTableCards : () -> vec EncryptedCard;
+  query FactoryActorId : () -> actor_id;
   query Participants : () -> vec struct { actor_id, Participant };
   query PlayerCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
+  query PtsActorId : () -> actor_id;
   query RevealedTableCards : () -> vec Card;
   query Round : () -> u32;
   query Status : () -> Status;
@@ -137,10 +213,16 @@ service Poker {
       pk: PublicKey,
       all_registered: bool,
     };
+    PlayerDeleted: struct {
+      player_id: actor_id
+    };
+    RegistrationCanceled: struct {
+      player_id: actor_id
+    };
     GameStarted;
     CardsDealtToPlayers: vec struct { actor_id, [EncryptedCard, 2] };
     CardsDealtToTable: vec EncryptedCard;
-    GameCanceled: struct {
+    GameRestarted: struct {
       status: Status
     };
     SmallBlindIsSet;
@@ -153,6 +235,8 @@ service Poker {
       winners: vec actor_id,
       cash_prize: vec u128,
     };
+    Killed: struct {
+      inheritor: actor_id
+    };
   }
 };
-

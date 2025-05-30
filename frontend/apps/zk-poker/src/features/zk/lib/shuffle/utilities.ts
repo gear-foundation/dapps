@@ -37,10 +37,10 @@ export function scalarMul(
   n: bigint,
 ): { X: bigint; Y: bigint; Z: bigint } {
   if (n === 0n) {
-    return { X: 0n, Y: 1n, Z: 1n }; // Нейтральный элемент
+    return { X: 0n, Y: 1n, Z: 1n };
   }
-  let R = { X: 0n, Y: 1n, Z: 1n }; // Нейтральный аккумулятор
-  let Q = { ...P }; // Копия P для итеративного удвоения
+  let R = { X: 0n, Y: 1n, Z: 1n };
+  let Q = { ...P };
 
   while (n > 0n) {
     if (n & 1n) {
