@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useAlert, useApi, withoutCommas } from '@gear-js/react-hooks';
-import { useLessons, useTamagotchi } from '@/app/context';
-import { useStateMetadata } from './use-metadata';
-import { sleep } from '@/app/utils';
-import type { TamagotchiState } from '@/app/types/lessons';
-import state2 from '@/assets/meta/state2.meta.wasm?url';
-import { useLessonAssets } from '../utils/get-lesson-assets';
-
 import { MessagesDispatched, ProgramMetadata, getStateMetadata } from '@gear-js/api';
+import { useAlert, useApi, withoutCommas } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
+import { useEffect, useState } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
+import { useLessons, useTamagotchi } from '@/app/context';
+import type { TamagotchiState } from '@/app/types/lessons';
+import { sleep } from '@/app/utils';
+import state2 from '@/assets/meta/state2.meta.wasm?url';
+
+import { useLessonAssets } from '../utils/get-lesson-assets';
+
+import { useStateMetadata } from './use-metadata';
 
 type StateWasmResponse = {
   fed: string;
@@ -59,7 +63,7 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
         setState(result as unknown as T);
         if (!isReadOnError) setIsStateRead(true);
       })
-      .catch(({ message }: Error) => setError(message))
+      .catch((error) => setError(getErrorMessage(error)))
       .finally(() => {
         if (isReadOnError) setIsStateRead(true);
       });
@@ -113,7 +117,7 @@ export function useThrottleWasmState() {
   const [, meta] = useLessonAssets();
   const { tamagotchi, setTamagotchi } = useTamagotchi();
 
-  const { state, readWasmState } = useReadWasmState<StateWasmResponse>({
+  const { state } = useReadWasmState<StateWasmResponse>({
     programId: lesson?.programId,
     wasm: stateMeta?.buffer,
     programMetadata: meta,

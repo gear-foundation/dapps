@@ -1,8 +1,11 @@
 import clsx from 'clsx';
-import { AlertProps } from './alert.types';
-import styles from './alert.module.scss';
-import { Button } from '../button';
+
 import { Sprite } from '@/components/ui/sprite';
+
+import { Button } from '../button';
+
+import styles from './alert.module.scss';
+import { AlertProps } from './alert.types';
 
 export function Alert({ alert, close }: AlertProps) {
   const { content, options } = alert;

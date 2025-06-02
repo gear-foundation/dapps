@@ -1,20 +1,23 @@
-import { useEffect, useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from 'gear-ez-transactions';
+import { useEffect, useState } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
-import styles from './GameProcess.module.scss';
-import { MapEnemy } from '../map';
-import { usePending } from '../../hooks';
-import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { getFormattedTime } from '../../utils';
-import { SHIP_LENGTHS } from '../../consts';
-import { GameType, RenderShips } from '../../types';
-import { Timer } from '../timer';
 import { VerificationModal } from '@/features/game/components/verification-modal';
+import { useShips } from '@/features/zk/hooks/use-ships';
+import { SHIP_LENGTHS } from '../../consts';
+import { usePending } from '../../hooks';
+import { GameType, RenderShips } from '../../types';
+import { getFormattedTime } from '../../utils';
+import { MapEnemy } from '../map';
+import { Timer } from '../timer';
 import YourTurnModal from '../your-turn-modal/your-turn-modal';
+
+import styles from './GameProcess.module.scss';
 
 type GameUpdatedEvent = {
   turn: string;
@@ -55,15 +58,12 @@ export default function GameProcess({
   resetGameState,
 }: Props) {
   const { account } = useAccount();
-  const { signless, gasless } = useEzTransactions();
+  const alert = useAlert();
+  const { gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [enemiesDeadShips, setEnemiesDeadShips] = useState<number[]>([]);
   const { setPending, pending } = usePending();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
   const { getBoard, checkIsStepOnShip } = useShips();
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
@@ -90,7 +90,8 @@ export default function GameProcess({
         .then(() => setPlayerLastHit(indexCell))
         .catch((error) => {
           setPending(false);
-          console.log(error);
+          console.error(error);
+          alert.error(getErrorMessage(error));
         });
     }
   };
@@ -98,8 +99,9 @@ export default function GameProcess({
   const onVerifyHit = () => {
     setPending(true);
     onVerifyOponentsHit().catch((error) => {
-      console.log(error);
       setPending(false);
+      console.error(error);
+      alert.error(getErrorMessage(error));
     });
   };
 

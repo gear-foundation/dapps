@@ -1,4 +1,4 @@
-import { Calendar } from '@ui';
+import { Calendar } from '@/ui';
 
 function DayPicker() {
   <Calendar />;

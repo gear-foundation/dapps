@@ -1,8 +1,10 @@
-import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
-import styles from './logo.module.scss';
-import { VaraLogoIcon } from '@/assets/images';
+import { NavLink } from 'react-router-dom';
+
 import { ROUTES } from '@/app/consts';
+import { VaraLogoIcon } from '@/assets/images';
+
+import styles from './logo.module.scss';
 
 export function Logo({ className }: BaseComponentProps) {
   return (

@@ -6,9 +6,9 @@ license.workspace = true
 
 [dependencies]
 gstd = { workspace = true, features = ["debug"] }
-sails-rs = { workspace = true, features = ["gtest"] }
+sails-rs.workspace = true
 
 [dev-dependencies]
 gclient.workspace = true
 syndote = { path = "../wasm" }
-tokio = "1"
+tokio.workspace = true

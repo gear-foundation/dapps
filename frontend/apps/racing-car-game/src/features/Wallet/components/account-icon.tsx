@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react';
-import { IdentityProps } from '@polkadot/react-identicon/types';
 
 const Identicon = lazy(() => import('@polkadot/react-identicon'));
 

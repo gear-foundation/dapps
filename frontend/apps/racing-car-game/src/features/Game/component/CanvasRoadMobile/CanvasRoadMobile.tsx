@@ -1,19 +1,19 @@
-import { LegacyRef, Ref, memo, useCallback, useEffect, useRef } from 'react';
 import isEqual from 'lodash.isequal';
-import styles from './CanvasRoadMobile.module.scss';
-import { cx } from '@/utils';
-import startSVG from '@/assets/icons/game-start-icon-vertical.svg';
+import { LegacyRef, Ref, memo, useCallback, useEffect, useRef } from 'react';
+
+import ContractCarSVG from '@/assets/icons/contract-car-icon.svg?react';
+import fireGIF from '@/assets/icons/fire.gif';
 import finishSVG from '@/assets/icons/game-finish-icon-vertical.svg';
+import startSVG from '@/assets/icons/game-start-icon-vertical.svg';
+import speedGIF from '@/assets/icons/gif-speed.gif';
+import PlayerCarSVG from '@/assets/icons/player-car-icon.svg?react';
 import roadLineSVG from '@/assets/icons/road-line-vertical.svg';
 import sectionEndLineSVG from '@/assets/icons/section-end-line-vertical.svg';
-
-import { ReactComponent as PlayerCarSVG } from '@/assets/icons/player-car-icon.svg';
-import { ReactComponent as ContractCarSVG } from '@/assets/icons/contract-car-icon.svg';
-
 import smokeGIF from '@/assets/icons/smoke.gif';
-import fireGIF from '@/assets/icons/fire.gif';
-import speedGIF from '@/assets/icons/gif-speed.gif';
+import { cx } from '@/utils';
+
 import { CanvasRoadProps } from './CanvasRoadMobile.interface';
+import styles from './CanvasRoadMobile.module.scss';
 
 function CanvasRoadMobileComponent({ cars, carIds, imagesCollection }: CanvasRoadProps) {
   const roadDistanceToStart = 300;

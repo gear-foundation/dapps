@@ -1,8 +1,10 @@
 import { useProgramEvent } from '@gear-js/react-hooks';
 import { useSetAtom } from 'jotai';
+
 import { GameInstance, useProgram } from '@/app/utils';
-import { stateChangeLoadingAtom } from '../../store';
+
 import { useGame } from '../../hooks';
+import { stateChangeLoadingAtom } from '../../store';
 
 export type GameStartedEvent = { game: GameInstance };
 

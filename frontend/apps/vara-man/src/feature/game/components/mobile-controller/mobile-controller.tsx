@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { GameEngine } from '../../models/Game';
-import { useMediaQuery } from '@/hooks/use-mobile-device';
+
 import { MOBILE_BREAKPOINT } from '@/app/consts';
+import { useMediaQuery } from '@/hooks/use-mobile-device';
+
 import MoveControlImg from '../../assets/images/move-control.png';
 import MoveShiftImg from '../../assets/images/move-shift.png';
+import { GameEngine } from '../../models/Game';
 
 interface MobileControllerProps {
   gameInstanceRef: React.RefObject<GameEngine | null>;

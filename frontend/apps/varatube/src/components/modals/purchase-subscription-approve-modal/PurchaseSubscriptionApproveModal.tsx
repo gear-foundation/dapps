@@ -1,4 +1,5 @@
 import { Button, Modal } from '@gear-js/ui';
+
 import styles from './PurchaseSubscriptionApproveModal.module.scss';
 
 type Props = { disabledSubmitButton: boolean; amount: string; close: () => void; onSubmit: () => void };

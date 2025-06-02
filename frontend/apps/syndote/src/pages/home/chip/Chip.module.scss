@@ -1,7 +1,7 @@
-@use '@gear-js/ui/mixins' as *;
-
 .chip {
-  @include circle(24px);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   box-shadow: 1px 1px 3px 0px #000;
   border: 2px solid #e0f2f0;
 }

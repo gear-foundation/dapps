@@ -1,9 +1,11 @@
 import { Wallet } from '@dapps-frontend/ui';
-import styles from './IntrodutionInfo.module.scss';
+
+import courtain from '@/assets/icons/courtain.png';
 import mainFrame from '@/assets/icons/main-page-frame.png';
 import animImg from '@/assets/icons/main-page-wara-anim.png';
-import courtain from '@/assets/icons/courtain.png';
 import { cx } from '@/utils';
+
+import styles from './IntrodutionInfo.module.scss';
 
 function IntrodutionInfo() {
   return (

@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+
 import { IGameCoins } from '@/app/types/game';
 
 export const COINS = atom<IGameCoins>({

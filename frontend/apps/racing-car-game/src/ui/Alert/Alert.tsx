@@ -1,8 +1,10 @@
+import CrossIcon from '@/assets/icons/cross-icon.svg';
 import { cx } from '@/utils';
+
+import { Button } from '../Button';
+
 import { AlertProps } from './Alert.interfaces';
 import styles from './Alert.module.scss';
-import { Button } from '../Button';
-import CrossIcon from '@/assets/icons/cross-icon.svg';
 
 function Alert({ alert, close }: AlertProps) {
   const { content, options } = alert;

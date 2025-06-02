@@ -1,0 +1,47 @@
+.content {
+  margin-bottom: 32px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  text-align: center;
+}
+
+.heading {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 120%;
+  letter-spacing: 2%;
+}
+
+.text {
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+
+  color: #555756;
+}
+
+.prize {
+  padding: 16px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #eee;
+  border-radius: 4px;
+
+  svg {
+    height: 32px;
+    width: 32px;
+    margin: 0 10px 0 16px;
+  }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}

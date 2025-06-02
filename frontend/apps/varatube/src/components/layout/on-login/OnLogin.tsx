@@ -1,7 +1,7 @@
-import { useGetSubscriberQuery } from 'app/utils/sails/queries';
-import { Loader } from 'components';
-
 import { ReactNode } from 'react';
+
+import { useGetSubscriberQuery } from '@/app/utils/sails/queries';
+import { Loader } from '@/components';
 
 type Props = {
   children: ReactNode;

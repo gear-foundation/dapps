@@ -1,15 +1,18 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useNavigate } from 'react-router-dom';
-import { copyToClipboard, isMobileDevice } from 'utils';
-import { Button, Modal, ScrollArea, Sprite } from 'components';
-import { usePendingUI } from 'hooks';
-import clsx from 'clsx';
 import Identicon from '@polkadot/react-identicon';
+import clsx from 'clsx';
+import { useNavigate } from 'react-router-dom';
+
+import { Button, Modal, ScrollArea, Sprite } from '@/components';
+import { usePendingUI } from '@/hooks';
+import { copyToClipboard, isMobileDevice } from '@/utils';
+
+import { useAuth } from '../../../auth/hooks';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
+
 import styles from './WalletModal.module.scss';
-import { useAuth } from '../../../auth/hooks';
 
 type Props = {
   onClose: () => void;

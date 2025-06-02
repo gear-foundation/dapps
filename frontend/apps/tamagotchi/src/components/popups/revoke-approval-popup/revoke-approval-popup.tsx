@@ -1,6 +1,7 @@
 import { Button, Modal } from '@gear-js/ui';
-import { useTamagotchiMessage } from '@/app/hooks/use-tamagotchi';
+
 import { useApp } from '@/app/context';
+import { useTamagotchiMessage } from '@/app/hooks/use-tamagotchi';
 
 export const RevokeApprovalPopup = ({ close }: { close: () => void }) => {
   const { isPending } = useApp();

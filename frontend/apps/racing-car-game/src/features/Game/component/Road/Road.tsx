@@ -1,21 +1,24 @@
-import { MutableRefObject, memo, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash.isequal';
-import styles from './Road.module.scss';
-import { cx } from '@/utils';
-import startSVG from '@/assets/icons/game-start-icon.svg';
-import finishSVG from '@/assets/icons/game-finish-icon.svg';
-import roadLineSVG from '@/assets/icons/road-line-svg.svg';
-import sectionEndLineSVG from '@/assets/icons/section-end-line.svg';
-import startVerticalSVG from '@/assets/icons/game-start-icon-vertical.svg';
+import { MutableRefObject, memo, useEffect, useRef, useState } from 'react';
+
 import finishVerticalSVG from '@/assets/icons/game-finish-icon-vertical.svg';
+import finishSVG from '@/assets/icons/game-finish-icon.svg';
+import startVerticalSVG from '@/assets/icons/game-start-icon-vertical.svg';
+import startSVG from '@/assets/icons/game-start-icon.svg';
+import roadLineSVG from '@/assets/icons/road-line-svg.svg';
 import roadLineVerticalSVG from '@/assets/icons/road-line-vertical.svg';
 import sectionEndLineVerticalSVG from '@/assets/icons/section-end-line-vertical.svg';
-import { CarEffect, CarsState, RoadProps } from './Road.interface';
-import { Cars } from '@/types';
+import sectionEndLineSVG from '@/assets/icons/section-end-line.svg';
 import { Loader } from '@/components';
 import { useMediaQuery } from '@/hooks';
+import { Cars } from '@/types';
+import { cx } from '@/utils';
+
 import { CanvasRoad } from '../CanvasRoad';
 import { CanvasRoadMobile } from '../CanvasRoadMobile';
+
+import { CarEffect, CarsState, RoadProps } from './Road.interface';
+import styles from './Road.module.scss';
 
 function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
   const isMobile = useMediaQuery(768);

@@ -1,10 +1,12 @@
-import { useProgram } from '@/app/utils/sails';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
-import { SERVICE_NAME } from '../../consts';
 import { useAtomValue } from 'jotai';
-import { gameEndResultAtom } from '../../atoms';
 import { useEffect } from 'react';
+
+import { useProgram } from '@/app/utils/sails';
 import { usePending } from '@/features/game/hooks';
+
+import { gameEndResultAtom } from '../../atoms';
+import { SERVICE_NAME } from '../../consts';
 
 export const useRemainingTimeQuery = () => {
   const { account } = useAccount();

@@ -279,7 +279,7 @@ impl Display for Ships {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let ships = self.to_vec();
         for (index, inner_vec) in ships.iter().enumerate() {
-            f.write_str(&format!("Ship {}: ", index + 1))?;
+            f.write_str(format!("Ship {}: ", index + 1))?;
 
             for &value in inner_vec {
                 f.write_str(&value.to_string())?;

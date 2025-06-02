@@ -1,13 +1,17 @@
-import { useEffect } from 'react';
-import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
+import { useAccount, useAlert, useProgramEvent } from '@gear-js/react-hooks';
 import { isNull } from '@polkadot/util';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
-import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
+import { useEffect } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { useProgram } from '@/app/utils/sails';
-import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
 import { usePending } from '@/features/game/hooks';
+import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
+import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
+import { useShips } from '@/features/zk/hooks/use-ships';
+
 import { EVENT_NAME, SERVICE_NAME } from '../../consts';
 
 type MoveMadeEvent = {
@@ -21,6 +25,7 @@ export function useEventMoveMadeSubscription() {
   const program = useProgram();
   const gameType = 'single';
   const { account } = useAccount();
+  const alert = useAlert();
   const { game, triggerGame } = useSingleplayerGame();
   const { setPending } = usePending();
   const { getPlayerShips, updatePlayerHits, getPlayerHits, updateEnemyBoard, updatePlayerBoard } = useShips();
@@ -68,8 +73,9 @@ export function useEventMoveMadeSubscription() {
 
       triggerGame();
       setPending(false);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     }
   };
 

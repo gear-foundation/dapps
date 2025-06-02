@@ -1,15 +1,18 @@
+import type { UserMessageSent } from '@gear-js/api';
+import { useAccount, useApi, useSendMessage } from '@gear-js/react-hooks';
+import type { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount, useApi, useSendMessage } from '@gear-js/react-hooks';
-import { useProgramMetadata } from 'app/hooks/api';
-import { useBattle } from '../context';
-import meta from '../assets/meta/battle.meta.txt';
-import type { HexString, UserMessageSent } from '@gear-js/api';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import type { BattleStatePlayer } from '../types/battles';
-import type { BattleCurrentStateVariants, RoundDamageType } from '../types/battles';
-import { useFullState } from './use-full-state';
+
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { useProgramMetadata } from '@/app/hooks/api';
+
+import meta from '../assets/meta/battle.meta.txt';
+import { useBattle } from '../context';
+import type { BattleStatePlayer, BattleCurrentStateVariants, RoundDamageType } from '../types/battles';
+
+import { useFullState } from './use-full-state';
 
 export function useInitBattleData() {
   const { api } = useApi();
@@ -32,12 +35,6 @@ export function useInitBattleData() {
 
   const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
   const metadata = useProgramMetadata(meta);
-
-  useEffect(() => {
-    if (window) {
-      (window as any).BattleAddress = process.env.REACT_APP_CONTRACT_ADDRESS as HexString;
-    }
-  }, []);
 
   useEffect(() => {
     setBattle(state);

@@ -1,11 +1,13 @@
-import { useNavigate } from 'react-router-dom';
-import { useProgram } from '@/app/utils/sails';
-import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
-import { clearZkData } from '@/features/zk/utils';
-import { ROUTES } from '@/app/consts';
-import { EVENT_NAME, SERVICE_NAME } from '../consts';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
+import { useProgram } from '@/app/utils/sails';
+import { clearZkData } from '@/features/zk/utils';
+
+import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
+import { EVENT_NAME, SERVICE_NAME } from '../consts';
 
 type PlayerDeletedEvent = {
   game_id: string;

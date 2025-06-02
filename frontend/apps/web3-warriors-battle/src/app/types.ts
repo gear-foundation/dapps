@@ -25,9 +25,3 @@ export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType exten
 export type ContractError = {
   message?: string;
 };
-
-declare global {
-  interface Window {
-    walletExtension?: { isNovaWallet: boolean };
-  }
-}

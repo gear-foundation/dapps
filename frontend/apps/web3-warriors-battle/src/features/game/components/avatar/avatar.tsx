@@ -1,9 +1,11 @@
-import styles from './avatar.module.scss';
 import { VariantProps, cva } from 'class-variance-authority';
-import { CharacterView } from '../character/character';
-import { getLazySvg } from '../../utils';
 import { Suspense, memo } from 'react';
+
 import { BodyColor } from '../../assets/images';
+import { getLazySvg } from '../../utils';
+import { CharacterView } from '../character/character';
+
+import styles from './avatar.module.scss';
 
 export const variants = cva('', {
   variants: { size: { md: styles.md, sm: styles.sm } },

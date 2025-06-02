@@ -1,28 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
-import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { HexString } from '@polkadot/util/types';
-import { ADDRESS, fields, INIT_PLAYERS } from 'consts';
-import { MessageHandlePayload, MessagePayload, PlayerState, PlayersByStrategyAddress, Step } from 'types';
-import meta from 'assets/meta/syndote_meta.txt';
-import { UnsubscribePromise } from '@polkadot/api/types';
-import { Loader } from 'components';
-import { Bytes } from '@polkadot/types';
-import { useProgramMetadata, useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
-import { Roll } from './roll';
-import styles from './Home.module.scss';
-import { Players } from './players/Players';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { Cell } from './cell';
-import { RequestGame } from 'pages/welcome/components/request-game';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
-import { SessionInfo } from './session-info';
+import { HexString } from '@polkadot/util/types';
 import clsx from 'clsx';
-import { TextModal } from './text-modal';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useRef, useState } from 'react';
+
+import {
+  PlayerInfoState,
+  useAddGasToPlayerStrategyMessage,
+  useEventGameCanceledSubscription,
+  useEventStepSubscription,
+  useExitGameMessage,
+  useGetGameSessionQuery,
+  usePlayMessage,
+  useRegisterMessage,
+} from '@/app/utils';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
+import { Loader } from '@/components';
+import { fields, INIT_PLAYERS } from '@/consts';
+import { PlayersByStrategyAddress, Step } from '@/types';
+
+import { RequestGame } from '../welcome/components/request-game';
+
+import styles from './Home.module.scss';
+import { Cell } from './cell';
 import { ContinueGameModal } from './continue-game-modal';
-import { ReserveModal } from './reserve-modal';
 import { GameFinishedModal } from './game-finished-modal';
+import { Players } from './players/Players';
+import { ReserveModal } from './reserve-modal';
+import { Roll } from './roll';
+import { SessionInfo } from './session-info';
+import { TextModal } from './text-modal';
 
 type ModalContract = 'contractRequresGas' | 'adminReservesGas' | null;
 type ModalStrategy = 'strategyRequresGas' | 'playerReservesGas' | null;
@@ -30,27 +38,30 @@ type ModalGameStatus = 'gameCancelled' | 'gameFinished' | null;
 
 function Home() {
   const { account } = useAccount();
-  const { api } = useApi();
-  const metadata = useProgramMetadata(meta);
-  const { programId } = useDnsProgramIds();
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const isLoading = useAtomValue(IS_LOADING);
   const playerName = useAtomValue(PLAYER_NAME_ATOM);
   const [modalContract, setModalContract] = useState<ModalContract>(null);
   const [modalStrategy, setModalStrategy] = useState<ModalStrategy>(null);
   const [modalGameStatus, setModalGameStatus] = useState<ModalGameStatus>(null);
-  const admin = useRef<null | HexString>(null);
+  const adminRef = useRef<null | HexString>(null);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
-  const { state, isStateRead } = useReadGameSessionState();
-  const { isMeta, sendMessage, sendPlayMessage } = useSyndoteMessage();
-  const { checkBalance } = useCheckBalance();
+
+  const { playMessage } = usePlayMessage();
+  const { registerMessage } = useRegisterMessage();
+  const { exitGameMessage } = useExitGameMessage();
+  const { addGasToPlayerStrategyMessage } = useAddGasToPlayerStrategyMessage();
+
+  const { state, isFetched } = useGetGameSessionQuery();
   const strategyId = useAtomValue(CURRENT_STRATEGY_ID_ATOM);
   const [steps, setSteps] = useState<Step[]>([]);
   const [step, setStep] = useState(0);
-  const { adminId, winner, gameStatus, entryFee, prizePool } = state || {};
-  const isAdmin = account?.decodedAddress === adminId;
+
+  const { admin_id, winner, game_status, entry_fee, prize_pool } = state || {};
+  const isAdmin = account?.decodedAddress === admin_id;
   const isGameStarted = steps.length > 0;
   const roll = steps[step];
-  const strategyNeedsGas = gameStatus?.WaitingForGasForStrategy;
+  const strategyNeedsGas =
+    game_status && 'waitingForGasForStrategy' in game_status ? game_status.waitingForGasForStrategy : null;
   const { properties, ownership } = roll || {};
   const playersArray = state?.players || [];
 
@@ -61,7 +72,7 @@ function Home() {
   const players = playersArray.map(([address], index) => ({
     ...INIT_PLAYERS[index],
     address,
-    ...(findPlayer(address) as PlayerState),
+    ...(findPlayer(address) as PlayerInfoState),
   }));
   const playersByStrategyAddress = players.reduce((acc, item) => {
     return {
@@ -70,80 +81,54 @@ function Home() {
     };
   }, {}) as PlayersByStrategyAddress;
   const isAnyPlayer = players.length > 0;
-  const playerStrategyId = players.find((player) => player.ownerId === account?.decodedAddress)?.address;
+  const playerStrategyId = players.find((player) => player.owner_id === account?.decodedAddress)?.address;
 
   const register = () => {
-    const payload = { Register: { adminId, strategyId, name: playerName } };
+    if (!playerName || !admin_id) {
+      return;
+    }
 
-    const onInBlock = () => {
-      setCurrentGame('');
-      setIsLoading(false);
+    const onSuccess = () => {
+      setCurrentGame(null);
     };
-    const onError = () => setIsLoading(false);
-
-    setIsLoading(true);
-    sendMessage({
-      payload,
-      value: entryFee ? Number(withoutCommas(entryFee || '')) : undefined,
-      onInBlock,
-      onError,
-    });
-  };
-
-  const startGame = () => {
-    const payload = {
-      Play: {
-        adminId,
+    registerMessage(
+      {
+        value: entry_fee ? BigInt(entry_fee) : undefined,
+        adminId: admin_id,
+        strategyId: strategyId as HexString,
+        name: playerName,
       },
-    };
-
-    const onInBlock = () => setIsLoading(false);
-    const onError = () => setIsLoading(false);
-
-    setIsLoading(true);
-
-    checkBalance(
-      730000000000,
-      () => {
-        sendPlayMessage({
-          payload,
-          gasLimit: 730000000000,
-          onInBlock,
-          onError,
-        });
-      },
-      onError,
+      { onSuccess },
     );
   };
 
-  const exitGame = () => {
-    const payload = {
-      ExitGame: {
-        adminId,
-      },
-    };
+  const startGame = () => {
+    if (!admin_id) return;
+    playMessage({ adminId: admin_id });
+  };
 
-    sendMessage({
-      payload,
-      onInBlock: () => {
-        admin.current = null;
+  const exitGame = () => {
+    if (!admin_id) return;
+    exitGameMessage(
+      { adminId: admin_id },
+      {
+        onSuccess: () => {
+          adminRef.current = null;
+        },
       },
-    });
+    );
   };
 
   const addGasToPlayerStrategy = () => {
-    const payload = {
-      AddGasToPlayerStrategy: {
-        adminId,
+    if (!admin_id) return;
+    addGasToPlayerStrategyMessage(
+      { adminId: admin_id },
+      {
+        onSuccess: () => {
+          setModalStrategy(null);
+        },
       },
-    };
-
-    sendMessage({
-      payload,
-      onInBlock: () => {
-        setModalStrategy(null);
-      },
-    });
+    );
   };
 
   const continueGame = () => {
@@ -151,14 +136,23 @@ function Home() {
     startGame();
   };
 
-  useEffect(() => {
-    if (adminId) {
-      admin.current = adminId;
-    }
-  }, [adminId]);
+  const handleCloseModal = () => {
+    setModalGameStatus(null);
+    setModalContract(null);
+    setModalStrategy(null);
+  };
 
   useEffect(() => {
-    if (gameStatus !== 'WaitingForGasForGameContract') {
+    if (admin_id) {
+      adminRef.current = admin_id;
+    }
+    if (isFetched && !admin_id) {
+      adminRef.current = null;
+    }
+  }, [admin_id]);
+
+  useEffect(() => {
+    if (!game_status || !('waitingForGasForGameContract' in game_status)) {
       setModalContract(null);
       return;
     }
@@ -169,7 +163,7 @@ function Home() {
     }
 
     setModalContract('adminReservesGas');
-  }, [gameStatus, isAdmin]);
+  }, [game_status, isAdmin]);
 
   useEffect(() => {
     if (!strategyNeedsGas) {
@@ -186,34 +180,18 @@ function Home() {
   }, [strategyNeedsGas, playerStrategyId]);
 
   useEffect(() => {
-    if (gameStatus === 'Finished') {
+    if (game_status && 'finished' in game_status) {
       setModalGameStatus('gameFinished');
     }
-  }, [gameStatus]);
+  }, [game_status]);
 
-  const getDecodedPayload = (payload: Bytes) => {
-    if (!metadata) return;
-
-    try {
-      if (metadata?.types.others.output) {
-        return metadata.createType(metadata?.types.others.output, payload).toHuman();
-      }
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (!state) {
+      handleCloseModal();
+      setSteps([]);
+      setStep(0);
     }
-  };
-
-  const getDecodedPayloadHandle = (payload: Bytes) => {
-    if (!metadata) return;
-
-    try {
-      if (metadata?.types.handle.output) {
-        return metadata.createType(metadata?.types.handle.output, payload).toHuman();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [state]);
 
   useEffect(() => {
     if (steps.length > 0) {
@@ -226,42 +204,18 @@ function Home() {
   const firstStep = () => setStep(0);
   const lastStep = () => setStep(steps.length - 1);
 
-  useEffect(() => {
-    let unsub: UnsubscribePromise | undefined;
-
-    if (metadata) {
-      unsub = api?.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }) => {
-        const { message } = data;
-        const { source, payload, destination } = message;
-
-        if (source.toHex() === programId && destination.toHex() === admin.current) {
-          const decodedPayload = getDecodedPayload(payload) as MessagePayload;
-
-          if (typeof decodedPayload === 'object' && decodedPayload !== null) {
-            if (decodedPayload.Step) {
-              setSteps((prevSteps) => [...prevSteps, decodedPayload.Step]);
-            }
-          }
-
-          const decodedPayloadHandle = getDecodedPayloadHandle(payload) as MessageHandlePayload;
-
-          if (decodedPayloadHandle?.Ok && ['GameDeleted', 'GameWasCancelled'].includes(decodedPayloadHandle.Ok)) {
-            if (admin.current !== account?.decodedAddress) {
-              setModalGameStatus('gameCancelled');
-            }
-
-            admin.current = null;
-            setSteps([]);
-          }
-        }
-      });
+  useEventGameCanceledSubscription(() => {
+    if (adminRef.current && adminRef.current !== account?.decodedAddress) {
+      setModalGameStatus('gameCancelled');
     }
 
-    return () => {
-      if (unsub) unsub.then((unsubCallback) => unsubCallback());
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metadata]);
+    adminRef.current = null;
+    setSteps([]);
+  });
+
+  useEventStepSubscription((step) => {
+    setSteps((prevSteps) => [...prevSteps, step]);
+  });
 
   const getColor = (address: HexString) => players?.find((player) => player.address === address)?.color;
 
@@ -283,17 +237,16 @@ function Home() {
     if (!winner || winner.startsWith('0x00')) return;
 
     setSteps((prevSteps) =>
-      [...prevSteps].sort(({ currentStep }, { currentStep: anotherStep }) => +currentStep - +anotherStep),
+      [...prevSteps].sort(
+        ({ current_step }, { current_step: anotherStep }) => Number(current_step) - Number(anotherStep),
+      ),
     );
   }, [winner]);
 
-  const handleCloseModal = () => {
-    setModalGameStatus(null);
-    setModalContract(null);
-    setModalStrategy(null);
-  };
+  const entryFee = entry_fee ? String(entry_fee) : null;
+  if (!isFetched) return <Loader />;
 
-  return isStateRead ? (
+  return (
     <>
       {!!state && (
         <>
@@ -305,12 +258,12 @@ function Home() {
               <div
                 className={clsx(
                   styles.controller,
-                  gameStatus === 'Registration' ? styles.controllerWhite : styles.controllerWithInnerBorder,
+                  'registration' in state.game_status ? styles.controllerWhite : styles.controllerWithInnerBorder,
                 )}>
                 {isGameStarted && roll ? (
                   <Roll
-                    color={getColor(roll.currentPlayer)}
-                    player={roll.currentPlayer}
+                    color={getColor(roll.current_player)}
+                    player={roll.current_player}
                     currentTurn={step + 1}
                     turnsAmount={steps.length}
                     onPrevClick={prevStep}
@@ -320,7 +273,7 @@ function Home() {
                   />
                 ) : (
                   <div className={clsx(styles.syndoteContainer, isAdmin && styles.syndoteContainerAdmin)}>
-                    {gameStatus === 'Registration' && (
+                    {'registration' in state.game_status && (
                       <>
                         <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
                           <h1 className={styles.heading}>Registration...</h1>
@@ -338,7 +291,7 @@ function Home() {
                         </div>
                         {!isAdmin && (
                           <>
-                            {playersArray.map((item) => item[1].ownerId).includes(account?.decodedAddress || '0x') ? (
+                            {playersArray.map((item) => item[1].owner_id).includes(account?.decodedAddress || '0x') ? (
                               <Button text="Cancel" color="grey" onClick={exitGame} />
                             ) : (
                               <Button text="Register" onClick={register} isLoading={isLoading} />
@@ -347,7 +300,7 @@ function Home() {
                         )}
                         {isAdmin && (
                           <>
-                            <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
+                            <SessionInfo entryFee={entryFee} players={state.players} adminId={state.admin_id} />
                             {players.length === 4 && (
                               <div className={styles.mainButtons}>
                                 <Button
@@ -362,14 +315,14 @@ function Home() {
                         )}
                       </>
                     )}
-                    {gameStatus === 'Play' && (
+                    {'play' in state.game_status && (
                       <>
                         <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
                           <h1 className={styles.heading}>Registration...</h1>
                         </div>
                         {isAdmin && (
                           <>
-                            <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
+                            <SessionInfo entryFee={entryFee} players={state.players} adminId={state.admin_id} />
                             <div className={styles.mainButtons}>
                               <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
                             </div>
@@ -378,7 +331,7 @@ function Home() {
                         {!isAdmin && <span className={styles.subheading}>Waiting for admin to start the game...</span>}
                       </>
                     )}
-                    {gameStatus === 'Finished' && (
+                    {'finished' in state.game_status && (
                       <>
                         {state.winner === playerStrategyId ? (
                           <p className={clsx(styles.heading, styles.headingWinner)}>You're Winner!</p>
@@ -416,7 +369,7 @@ function Home() {
             <GameFinishedModal
               winnerAddress={winner}
               isAdmin={isAdmin}
-              prizePool={prizePool}
+              prizePool={String(prize_pool)}
               players={playersByStrategyAddress}
               onClose={handleCloseModal}
             />
@@ -440,7 +393,8 @@ function Home() {
               </a>
               <a
                 target="_blank"
-                href="https://wiki.gear-tech.io/docs/examples/Gaming/monopoly/#%EF%B8%8F-build-master-and-player-programs">
+                href="https://wiki.gear-tech.io/docs/examples/Gaming/monopoly/#%EF%B8%8F-build-master-and-player-programs"
+                rel="noreferrer">
                 <Button color="transparent" text="How does it work?" />
               </a>
             </div>
@@ -455,8 +409,6 @@ function Home() {
         />
       )}
     </>
-  ) : (
-    <Loader />
   );
 }
 

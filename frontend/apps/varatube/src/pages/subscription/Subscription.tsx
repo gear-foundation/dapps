@@ -1,22 +1,24 @@
 import { useAlert, useApi } from '@gear-js/react-hooks';
 import { Button, checkboxStyles } from '@gear-js/ui';
-import { useState } from 'react';
-import { Heading, Loader, PurchaseSubscriptionModal } from 'components';
-import pic from 'assets/images/pic.png';
 import clsx from 'clsx';
-import { ADDRESS, periods } from 'consts';
-import styles from './Subscription.module.scss';
-import { PurchaseSubscriptionApproveModal } from 'components/modals/purchase-subscription-approve-modal';
-import { FormValues } from 'types';
+import { useState } from 'react';
+
 import {
   useBalanceOfQuery,
   useCancelSubscriptionMessage,
   useGetSubscriberQuery,
   useRegisterSubscriptionMessage,
-} from 'app/utils';
-import { useApproveMessage } from 'app/utils/sails/messages/use-approve-message';
-import { Period } from 'app/utils/sails/varatube';
-import { useCurrenciesQuery } from 'app/utils/sails/queries/use-currencies-query';
+} from '@/app/utils';
+import { useApproveMessage } from '@/app/utils/sails/messages/use-approve-message';
+import { useCurrenciesQuery } from '@/app/utils/sails/queries/use-currencies-query';
+import { Period } from '@/app/utils/sails/varatube';
+import pic from '@/assets/images/pic.png';
+import { Heading, Loader, PurchaseSubscriptionModal } from '@/components';
+import { PurchaseSubscriptionApproveModal } from '@/components/modals/purchase-subscription-approve-modal';
+import { ENV, periods } from '@/consts';
+import { FormValues } from '@/types';
+
+import styles from './Subscription.module.scss';
 
 function Subscription() {
   const { currencies } = useCurrenciesQuery();
@@ -72,7 +74,7 @@ function Subscription() {
     if (valuesToTransfer) {
       registerSubscriptionMessage(
         {
-          currency_id: ADDRESS.FT_CONTRACT,
+          currency_id: ENV.FT_CONTRACT,
           period: valuesToTransfer.period as Period,
           with_renewal: valuesToTransfer.isRenewal,
         },
@@ -118,7 +120,7 @@ function Subscription() {
     if (amountToTransfer) {
       approveMessage(
         {
-          spender: ADDRESS.CONTRACT,
+          spender: ENV.CONTRACT,
           value: amountToTransfer,
         },
         {

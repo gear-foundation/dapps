@@ -1,6 +1,7 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { Options, useExecuteWithPending, useSignAndSend } from 'app/hooks';
+
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
+import { useProgram } from '@/app/utils';
 
 type Params = {
   title: string;

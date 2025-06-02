@@ -1,4 +1,6 @@
-# Sails W3bstreaming
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=w3bstreaming/https://github.com/gear-foundation/dapps)
+
+# W3bstreaming
 
 A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Infra/w3bstreaming).
 
