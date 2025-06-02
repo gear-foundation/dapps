@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 
-import { Options, useSignAndSend } from '@/app/hooks';
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
 import { Participant, useProgram } from '@/app/utils';
 
 type Params = {
@@ -18,20 +18,17 @@ export const useRegisterMessage = () => {
     functionName: 'register',
   });
   const { signAndSend } = useSignAndSend();
+  const { executeWithPending } = useExecuteWithPending();
 
-  const registerMessage = async ({ value, creator, participant }: Params, options?: Options) => {
-    try {
+  const registerMessage = async ({ value, creator, participant }: Params, options?: Options) =>
+    executeWithPending(async () => {
       const { transaction } = await prepareTransactionAsync({
         args: [creator, participant],
         gasLimit: { increaseGas: 10 },
         value,
       });
-      signAndSend(transaction, options);
-    } catch (error) {
-      console.error(error);
-      options?.onError?.(error as Error);
-    }
-  };
+      return signAndSend(transaction);
+    }, options);
 
   return { registerMessage };
 };
