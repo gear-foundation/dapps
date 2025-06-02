@@ -81,6 +81,7 @@ jobs:
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_BATTLE }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_ZK_PROOF_BACKEND_ADDRESS=${{ secrets.VITE_ZK_PROOF_BACKEND_ADDRESS_BATTLE }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_BATTLESHIP_ZK }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

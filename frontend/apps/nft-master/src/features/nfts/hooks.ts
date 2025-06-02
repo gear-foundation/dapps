@@ -9,7 +9,7 @@ import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import metaMasterNFT from '@/assets/master_nft.meta.txt';
 import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from '@/hooks';
 
-import { ADDRESS } from '../../consts';
+import { ENV } from '../../consts';
 
 import { IS_MINTING_ATOM, NFTS_ATOM, USER_NFT_QUERY_ATOM } from './consts';
 import { IUserNFTRequest, NFT } from './types';
@@ -47,7 +47,7 @@ export function useNFTs() {
   const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
   const [userNftQuery, setUserNftQuery] = useAtom(USER_NFT_QUERY_ATOM);
 
-  const getIpfsAddress = (cid: string) => `${ADDRESS.IPFS_GATEWAY}/${cid}`;
+  const getIpfsAddress = (cid: string) => `${ENV.IPFS_GATEWAY}/${cid}`;
 
   const getImageUrl = (value: string) => (value.startsWith('https://') ? value : getIpfsAddress(value));
 

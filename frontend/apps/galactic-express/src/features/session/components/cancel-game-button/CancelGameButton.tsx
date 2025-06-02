@@ -17,7 +17,7 @@ type Props = {
 
 function CancelGameButton({ isAdmin, participants }: Props) {
   const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const { account } = useAccount();
 
   const { cancelGameMessage } = useCancelGameMessage();
@@ -27,22 +27,16 @@ function CancelGameButton({ isAdmin, participants }: Props) {
     ? participants.map((participant) => participant[0]).includes(account.decodedAddress)
     : false;
 
-  const onError = () => {
-    setIsLoading(false);
-  };
-
   const onSuccess = () => {
-    setIsLoading(false);
     setRegistrationStatus('registration');
   };
 
   const handleClick = () => {
-    setIsLoading(true);
     if (isAdmin) {
-      cancelGameMessage({ onError, onSuccess });
+      void cancelGameMessage({ onSuccess });
     }
     if (!isAdmin && isRegistered) {
-      cancelRegisterMessage({ onError, onSuccess });
+      void cancelRegisterMessage({ onSuccess });
     }
   };
 

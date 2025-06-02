@@ -96,13 +96,29 @@ export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobil
   navigator.userAgent,
 );
 
-export const getErrorMessage = (error: unknown) => {
+export const getErrorMessage = (error: unknown): string => {
+
   if (typeof error === 'string') {
     return error;
   }
 
-  if (error instanceof Error && error.message) {
+  if (error instanceof Error && typeof error.message === 'string') {
+    const isPascalCaseWord = /^[A-Z][a-z]+(?:[A-Z][a-z]+)*$/.test(error.message);
+
+    if (isPascalCaseWord) {
+      const humanReadableMessage = error.message
+        .replace(/([A-Z])/g, ' $1')
+        .trim()
+        .toLowerCase()
+        .replace(/^\w/, (c) => c.toUpperCase());
+      return humanReadableMessage;
+    }
+
     return error.message;
+  }
+
+  if (typeof error === 'object' && error !== null && 'docs' in error && typeof error.docs === 'string') {
+    return error.docs;
   }
 
   return String(error) || 'Unknown error';
