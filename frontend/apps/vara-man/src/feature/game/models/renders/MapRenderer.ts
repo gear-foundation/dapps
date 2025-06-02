@@ -1,5 +1,5 @@
-import { TileMap } from "../../types";
-import { Vec2 } from "../Vec2";
+import { TileMap } from '../../types';
+import { Vec2 } from '../Vec2';
 
 class Tileset {
   image: HTMLImageElement;
@@ -119,9 +119,7 @@ export class MapRenderer {
   }
 
   private static getTilesetForTile(tileIndex: number): Tileset | undefined {
-    return this.tilesets.find(
-      (ts) => tileIndex >= ts.firstgid && tileIndex < ts.firstgid + ts.tilecount,
-    );
+    return this.tilesets.find((ts) => tileIndex >= ts.firstgid && tileIndex < ts.firstgid + ts.tilecount);
   }
 
   public static renderCoins(context: CanvasRenderingContext2D, mapData: TileMap) {

@@ -1,6 +1,6 @@
-import { createContext, useEffect, useState, ReactNode, PropsWithChildren } from 'react';
-import { useAlert } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { useAlert } from '@gear-js/react-hooks';
+import { createContext, useEffect, useState, ReactNode, PropsWithChildren } from 'react';
 
 export type DnsContextValue = Record<string, HexString>;
 

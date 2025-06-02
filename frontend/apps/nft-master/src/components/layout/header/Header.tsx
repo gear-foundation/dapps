@@ -1,15 +1,18 @@
-import { useState } from 'react';
-import { Wallet } from 'features/wallet';
-import { Search } from 'features/nfts';
-import { useResizeEffect } from 'hooks';
-import { Button, Sprite } from 'components';
-import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
-import { Container } from '../container';
-import { Logo } from './logo';
-import styles from './Header.module.scss';
-import { AccountBalance } from '../../ui/balance/Balance';
+import clsx from 'clsx';
+import { useState } from 'react';
+
+import { Button, Sprite } from '@/components';
+import { Search } from '@/features/nfts';
+import { Wallet } from '@/features/wallet';
+import { useResizeEffect } from '@/hooks';
+
 import { useIsAppReady } from '../../../app/hooks/use-is-app-ready';
+import { AccountBalance } from '../../ui/balance/Balance';
+import { Container } from '../container';
+
+import styles from './Header.module.scss';
+import { Logo } from './logo';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

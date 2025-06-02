@@ -1,11 +1,13 @@
+import { Button } from '@gear-js/vara-ui';
 import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
-import { Button } from '../button';
-import { Sprite } from '@/components/ui/sprite';
+import { MouseEvent, useEffect, useRef } from 'react';
+
 import type { BaseComponentProps } from '@/app/types';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+import { Sprite } from '@/components/ui/sprite';
+
 import styles from './Modal.module.scss';
 
 const variants = cva('', {
@@ -84,7 +86,8 @@ export function Modal({
               <h2 className={styles.title}>{title}</h2>
               {description && <p className={styles.description}>{description}</p>}
             </div>
-            <Button variant="text" onClick={onClose} className={styles['modal-close']}>
+
+            <Button color="transparent" onClick={onClose} className={styles['modal-close']}>
               <Sprite name="close" width={25} height={24} />
             </Button>
           </div>

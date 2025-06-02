@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
 import { atom, useAtom, useSetAtom } from 'jotai';
-import { BattleHistory } from './types';
-import { useEventRoundActionSubscription } from '@/app/utils/sails/events';
+import { useEffect, useRef, useState } from 'react';
+
 import { BattleState, Pair, Player } from '@/app/utils';
+import { useEventRoundActionSubscription } from '@/app/utils/sails/events';
+
+import { MAX_HEALTH, TIME_LEFT_GAP } from './consts';
 import {
   battleHistoryAtom,
   battleHistoryStorage,
@@ -13,8 +16,7 @@ import {
   otherPairBattleWatchAtom,
   warriorIdStorage,
 } from './store';
-import { MAX_HEALTH, TIME_LEFT_GAP } from './consts';
-import { useAccount } from '@gear-js/react-hooks';
+import { BattleHistory } from './types';
 
 const pendingAtom = atom<boolean>(false);
 
@@ -41,7 +43,6 @@ export function useResetCharacterStats() {
   useEffect(() => {
     characterStatsStorage.set(null);
     warriorIdStorage.set(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 

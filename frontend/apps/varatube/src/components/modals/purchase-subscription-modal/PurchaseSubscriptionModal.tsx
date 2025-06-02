@@ -1,10 +1,11 @@
 import { Button, Checkbox, Modal, Select } from '@gear-js/ui';
-import { useForm as useMantineForm } from '@mantine/form';
-import { UseFormInput } from '@mantine/form/lib/use-form';
+import { useForm as useMantineForm, UseFormInput } from '@mantine/form';
 import { ChangeEvent } from 'react';
+
+import { initialValues, periods } from '@/consts';
+import { FormValues } from '@/types';
+
 import styles from './PurchaseSubscriptionModal.module.scss';
-import { initialValues, periods } from 'consts';
-import { FormValues } from 'types';
 
 type Props = { disabledSubmitButton: boolean; close: () => void; onSubmit: (values: FormValues) => void };
 

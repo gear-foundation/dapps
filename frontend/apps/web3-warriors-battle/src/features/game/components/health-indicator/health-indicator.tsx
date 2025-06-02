@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+
 import styles from './health-indicator.module.scss';
 
 type HealthIndicatorProps = {
@@ -22,14 +23,14 @@ const HealthIndicator = ({ health, maxHealth = 100, prevHealth, size = 'md' }: H
     const currentFillPercent = isCurrentPartiallyFilled
       ? ((health - segmentHealthStart) / healthPerSegment) * 100
       : health >= segmentHealthEnd
-      ? 100
-      : 0;
+        ? 100
+        : 0;
 
     const damageFillPercent = isPrevPartiallyFilled
       ? ((prevHealth - segmentHealthStart) / healthPerSegment) * 100 - currentFillPercent
       : prevHealth && prevHealth >= segmentHealthEnd && health < segmentHealthEnd
-      ? 100 - currentFillPercent
-      : 0;
+        ? 100 - currentFillPercent
+        : 0;
 
     return (
       <div key={i} className={clsx(styles.segment, size === 'sm' && styles.small)}>

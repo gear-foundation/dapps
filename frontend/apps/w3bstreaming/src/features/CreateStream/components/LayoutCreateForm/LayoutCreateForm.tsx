@@ -1,19 +1,22 @@
-import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAlert } from '@gear-js/react-hooks';
+import { useForm, isNotEmpty } from '@mantine/form';
 import { useAtom } from 'jotai';
 import moment, { Moment } from 'moment';
-import { useForm, isNotEmpty } from '@mantine/form';
-import { useAlert } from '@gear-js/react-hooks';
-import { Button, Calendar, TextField, InputArea } from '@/ui';
-import styles from './LayoutCreateForm.module.scss';
-import { cx } from '@/utils';
-import { FormValues, SectionProps } from './LayoutCreateForm.interface';
-import { TimePicker } from '@/ui/TimePicker';
-import CreateSVG from '@/assets/icons/correct-icon.svg';
-import { PictureDropzone } from '../PictureDropzone';
-import { IS_CREATING_STREAM } from '../../atoms';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { STREAMS } from '@/App.routes';
 import { useGetStateQuery, useNewStreamMessage } from '@/app/utils';
+import CreateSVG from '@/assets/icons/correct-icon.svg';
+import { Button, Calendar, TextField, InputArea } from '@/ui';
+import { TimePicker } from '@/ui/TimePicker';
+import { cx } from '@/utils';
+
+import { IS_CREATING_STREAM } from '../../atoms';
+import { PictureDropzone } from '../PictureDropzone';
+
+import { FormValues, SectionProps } from './LayoutCreateForm.interface';
+import styles from './LayoutCreateForm.module.scss';
 
 function Section({ title, children }: SectionProps) {
   return (

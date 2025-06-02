@@ -1,5 +1,6 @@
 import { Input } from '@gear-js/ui';
 import { InputHTMLAttributes } from 'react';
+
 import styles from './Range.module.scss';
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'color'> & {

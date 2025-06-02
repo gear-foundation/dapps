@@ -1,13 +1,16 @@
-import { Modal } from 'components/layout/modal';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useApi } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/text-field';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { ReactComponent as UserSVG } from 'assets/images/icons/ic-user-small-24.svg';
-import styles from './GameFoundModal.module.scss';
+
+import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { Modal } from '@/components/layout/modal';
+import { TextField } from '@/components/layout/text-field';
+
 import { GameDetails } from '../../../components/layout/game-details/GameDetails';
+
+import styles from './GameFoundModal.module.scss';
 
 type Props = {
   entryFee: number | string;

@@ -1,4 +1,4 @@
-export const AUTH_API_ADDRESS = process.env.REACT_APP_AUTH_API_ADDRESS || 'https://cb-campaign.vara-network.io';
+export const AUTH_API_ADDRESS = import.meta.env.VITE_AUTH_API_ADDRESS as string;
 
 export const AUTH_MESSAGE = 'VARA';
 

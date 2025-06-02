@@ -1,16 +1,16 @@
 import { Button } from '@gear-js/vara-ui';
 import { useState } from 'react';
 
-import styles from './start-secrtion.module.scss'
 import { CreateGame } from './create-game';
 import { FindGame } from './find-game';
+import styles from './start-secrtion.module.scss';
 
 export const StartSection = () => {
-  const [isFindGame, setIsFindGame] = useState(false)
-  const [isCreateGame, setIsCreateGame] = useState(false)
+  const [isFindGame, setIsFindGame] = useState(false);
+  const [isCreateGame, setIsCreateGame] = useState(false);
 
   if (isCreateGame) {
-    return <CreateGame closeCreateGame={() => setIsCreateGame(false)} />
+    return <CreateGame closeCreateGame={() => setIsCreateGame(false)} />;
   }
 
   return (
@@ -28,18 +28,30 @@ export const StartSection = () => {
             />
           </div>
         </div>
-        {!isFindGame &&
+        {!isFindGame && (
           <div className="basis-[540px] grow lg:grow-0">
             <h2 className="text-[32px] leading-none font-bold text-black">Welcome to Tequila Train </h2>
             <p className="mt-3 text-[#555756]">
-              To begin, choose whether you want to join an existing game or become an administrator and create a new game.
+              To begin, choose whether you want to join an existing game or become an administrator and create a new
+              game.
             </p>
 
             <div className="mt-6 flex gap-5">
-              <Button text="Find game" color="primary" className={styles.connectButton} onClick={() => setIsFindGame(true)} />
-              <Button text="Create game" color="dark" className={styles.connectButton} onClick={() => setIsCreateGame(true)} />
+              <Button
+                text="Find game"
+                color="primary"
+                className={styles.connectButton}
+                onClick={() => setIsFindGame(true)}
+              />
+              <Button
+                text="Create game"
+                color="dark"
+                className={styles.connectButton}
+                onClick={() => setIsCreateGame(true)}
+              />
             </div>
-          </div>}
+          </div>
+        )}
 
         {isFindGame && <FindGame closeFindGame={() => setIsFindGame(false)} />}
       </div>

@@ -1,13 +1,12 @@
+import { useApi, useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 
-import { useApi, useAccount } from '@gear-js/react-hooks';
-
+import { BurgerMenuIcon, CrossIcon } from '@/assets/images';
 import { VaraBalance } from '@/components/ui/balance';
 import { Button } from '@/components/ui/button';
-import { BurgerMenuIcon, CrossIcon } from '@/assets/images';
+import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 import styles from './account-info.module.scss';
-import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 type AccountInfoProps = BaseComponentProps & {
   openWallet: () => void;

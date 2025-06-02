@@ -1,5 +1,6 @@
-import { HexString } from '@polkadot/util/types';
-import { HaltReason, Participant as ProgramParticipant, Turn } from 'app/utils';
+import { HexString } from '@gear-js/api';
+
+import { HaltReason, Participant as ProgramParticipant, Turn } from '@/app/utils';
 
 type Session = {
   altitude: string;

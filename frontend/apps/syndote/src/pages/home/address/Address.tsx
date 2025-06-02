@@ -2,9 +2,10 @@ import { useApi } from '@gear-js/react-hooks';
 import { useForm } from '@mantine/form';
 import { isHex } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
+
 import { Button } from '../button';
-import commonStyles from '../connect/Connect.module.scss';
 import { Input } from '../input';
+
 import styles from './Address.module.scss';
 
 type Props = {
@@ -30,8 +31,8 @@ function Address({ onSubmit, onBack }: Props) {
   });
 
   return (
-    <div className={commonStyles.overlay}>
-      <h2 className={commonStyles.heading}>Fill data to continue</h2>
+    <div>
+      <h2>Fill data to continue</h2>
 
       <form onSubmit={handleSubmit} id="address-form">
         <Input {...getInputProps('programId')} />

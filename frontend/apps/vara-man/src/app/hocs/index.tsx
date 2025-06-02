@@ -1,5 +1,3 @@
-import type { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
@@ -11,12 +9,17 @@ import {
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from 'gear-ez-transactions';
+import type { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
+
 import { ENV } from '@/app/consts';
 import { AppProvider } from '@/app/context/ctx-app';
 import { GameProvider } from '@/app/context/ctx-game';
 import { Alert, alertStyles } from '@/components/ui/alert';
+
 import { useProgram } from '../utils';
 
 const ApiProvider = ({ children }: ProviderProps) => (
@@ -47,7 +50,10 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
 
   return (
-    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider
+      programId={programId}
+      backendAddress={ENV.GASLESS_BACKEND}
+      voucherLimit={Number(ENV.VOUCHER_LIMIT)}>
       {children}
     </SharedGaslessTransactionsProvider>
   );

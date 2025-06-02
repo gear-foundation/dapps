@@ -1,36 +1,44 @@
-import { Suspense, useEffect } from 'react';
-import { Route, useNavigate, useLocation } from 'react-router-dom';
-import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { ROUTES } from '@/app/consts';
-import { Loader, NotAuthorized } from '@/components';
 import { useAccount } from '@gear-js/react-hooks';
+import { useEffect } from 'react';
+import { Route, useNavigate, useLocation, Navigate, Outlet } from 'react-router-dom';
 
-import Home from './home';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
+
+import { ROUTES } from '@/app/consts';
 import { useMyBattleQuery } from '@/app/utils';
-import ImportCharacterPage from './import-character';
-import GenerateCharacterPage from './generate-character';
-import CreateGamePage from './create-game';
-import FindGamePage from './find-game';
-import NotFoundPage from './not-found';
-import WaitingPage from './waiting';
-import GamePage from './game';
-import OnboardingPage from './onboarding';
+
+import { CreateGame } from './create-game';
+import { FindGame } from './find-game';
+import { Game } from './game';
+import { GenerateCharacter } from './generate-character';
+import { Home } from './home';
+import { ImportCharacter } from './import-character';
+import { NotFound } from './not-found';
+import { Onboarding } from './onboarding';
+import { Waiting } from './waiting';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
-  { path: ROUTES.NOTFOUND, Page: NotFoundPage },
-  { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacterPage },
-  { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacterPage },
-  { path: ROUTES.CREATE_GAME, Page: CreateGamePage },
-  { path: ROUTES.FIND_GAME, Page: FindGamePage },
-  { path: ROUTES.WAITING, Page: WaitingPage },
-  { path: ROUTES.GAME, Page: GamePage },
-  { path: ROUTES.ONBOARDING, Page: OnboardingPage },
+  { path: ROUTES.NOTFOUND, Page: NotFound },
+  { path: ROUTES.ONBOARDING, Page: Onboarding },
 ];
 
-export function Routing() {
+const privateRoutes = [
+  { path: ROUTES.IMPORT_CHARACTER, Page: ImportCharacter },
+  { path: ROUTES.GENERATE_CHARACTER, Page: GenerateCharacter },
+  { path: ROUTES.CREATE_GAME, Page: CreateGame },
+  { path: ROUTES.FIND_GAME, Page: FindGame },
+  { path: ROUTES.WAITING, Page: Waiting },
+  { path: ROUTES.GAME, Page: Game },
+];
+
+function PrivateRoute() {
   const { account } = useAccount();
 
+  return account ? <Outlet /> : <Navigate to={ROUTES.HOME} />;
+}
+
+export function Routing() {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,21 +59,15 @@ export function Routing() {
     }
   }, [battleState, isFetching, navigate, location.pathname]);
 
-  return account ? (
+  const renderRoutes = (items: typeof routes) =>
+    items.map(({ path, Page }) => {
+      return <Route key={path} path={path} element={<Page />} />;
+    });
+
+  return (
     <ErrorTrackingRoutes>
-      {routes.map(({ path, Page }) => (
-        <Route
-          key={path}
-          path={path}
-          element={
-            <Suspense fallback={<Loader />}>
-              <Page />
-            </Suspense>
-          }
-        />
-      ))}
+      {renderRoutes(routes)}
+      <Route element={<PrivateRoute />}>{renderRoutes(privateRoutes)}</Route>
     </ErrorTrackingRoutes>
-  ) : (
-    <NotAuthorized />
   );
 }

@@ -1,14 +1,16 @@
-import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
-import { ReactComponent as PlusSVG } from 'assets/images/form/plus.svg';
-
-import { getMintDetails, uploadToIpfs } from 'utils';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { useEffect, useState } from 'react';
 import { useAlert } from '@gear-js/react-hooks';
-import { Attributes } from './attributes';
+import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
+import { useEffect, useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
+import { useMintMessage } from '@/app/utils/sails/messages/use-mint-message';
+import PlusSVG from '@/assets/images/form/plus.svg?react';
+import { getMintDetails, uploadToIpfs } from '@/utils';
 
 import styles from './Create.module.scss';
-import { useMintMessage } from 'app/utils/sails/messages/use-mint-message';
+import { Attributes } from './attributes';
 
 type AttributesValue = { key: string; value: string };
 type Values = { name: string; description: string; attributes: AttributesValue[]; rarity: string };
@@ -73,7 +75,10 @@ function Create() {
       .then(async ([imageCid, detailsCid]) => {
         mintMessage({ name, description, media: imageCid, reference: detailsCid || '' }, { onSuccess: resetForm });
       })
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        console.error(e);
+        alert.error(getErrorMessage(e));
+      });
   };
 
   return (

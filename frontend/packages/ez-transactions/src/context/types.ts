@@ -1,5 +1,5 @@
-import { GaslessContext } from '@/features/gasless-transactions';
-import { SignlessContext } from '@/features/signless-transactions';
+import { GaslessContext } from '@ez/features/gasless-transactions';
+import { SignlessContext } from '@ez/features/signless-transactions';
 
 type Value = {
   gasless: GaslessContext;
