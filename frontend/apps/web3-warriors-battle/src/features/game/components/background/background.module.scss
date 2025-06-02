@@ -11,7 +11,6 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  border-bottom: 3px solid #000;
 }
 
 .image {
@@ -22,4 +21,5 @@
   object-fit: cover;
   overflow: visible;
   z-index: -1;
+  border-bottom: 3px solid #000;
 }

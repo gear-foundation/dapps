@@ -1,11 +1,14 @@
-import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
+import { useState } from 'react';
+
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { Button } from '@/ui';
 import { cx } from '@/utils';
 
-import { WalletInfoProps } from './WalletInfo.interfaces';
-import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
+
+import { WalletInfoProps } from './WalletInfo.interfaces';
 import styles from './WalletInfo.module.scss';
 
 function WalletInfo({ account, buttonClassName }: WalletInfoProps) {

@@ -1,3 +1,4 @@
+import { decodeAddress } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 
 export const copyToClipboard = async ({
@@ -44,4 +45,15 @@ export const copyToClipboard = async ({
   } else {
     unsecuredCopyToClipboard(value);
   }
+};
+
+export const getSafeDecodedAddress = (address?: string) => {
+  if (address) {
+    try {
+      return decodeAddress(address.trim());
+    } catch (error) {
+      // empty
+    }
+  }
+  return null;
 };

@@ -7,6 +7,9 @@ COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
+COPY /frontend/vite.apps.config.ts .
+COPY /frontend/tsconfig.json .
+COPY /frontend/tsconfig.node.json .
 
 COPY ./frontend/apps/non-fungible-token ./apps/non-fungible-token
 COPY ./frontend/packages ./packages
@@ -15,16 +18,16 @@ RUN apk update
 
 RUN apk add xsel
 
-ARG REACT_APP_NODE_ADDRESS  \
-    REACT_APP_IPFS_ADDRESS  \
-    REACT_APP_CONTRACT_ADDRESS  \
-    REACT_APP_IPFS_GATEWAY_ADDRESS \
-    REACT_APP_SENTRY_DSN
-ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
-    REACT_APP_CONTRACT_ADDRESS=${REACT_APP_CONTRACT_ADDRESS} \
-    REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
-    REACT_APP_SENTRY_DSN=${REACT_APP_SENTRY_DSN} \
+ARG VITE_NODE_ADDRESS  \
+    VITE_IPFS_ADDRESS  \
+    VITE_CONTRACT_ADDRESS  \
+    VITE_IPFS_GATEWAY_ADDRESS \
+    VITE_SENTRY_DSN
+ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
+    VITE_IPFS_ADDRESS=${VITE_IPFS_ADDRESS} \
+    VITE_CONTRACT_ADDRESS=${VITE_CONTRACT_ADDRESS} \
+    VITE_IPFS_GATEWAY_ADDRESS=${VITE_IPFS_GATEWAY_ADDRESS} \
+    VITE_SENTRY_DSN=${VITE_SENTRY_DSN} \
     DISABLE_ESLINT_PLUGIN=true
 
 

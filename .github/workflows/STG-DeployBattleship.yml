@@ -80,6 +80,7 @@ jobs:
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_BATTLE }}
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_BATTLE }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_BATTLESHIP }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

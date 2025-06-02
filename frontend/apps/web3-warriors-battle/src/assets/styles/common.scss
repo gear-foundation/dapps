@@ -1,14 +1,6 @@
 body {
-  font-family: 'Anuphan', sans-serif;
   color: #000;
   background-color: #fff;
-  font-variant-numeric: lining-nums proportional-nums;
-
-  @supports not (font-variation-settings: 'wdth' 115) {
-    & {
-      font-family: 'Anuphan-Fallback', sans-serif;
-    }
-  }
 
   &.modal-open {
     overflow-y: hidden;
@@ -36,5 +28,24 @@ main {
 
   @media screen and (max-width: 767px) {
     padding: 0;
+  }
+}
+
+*,
+::before,
+::after {
+  border: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+
+  // underline only if link is a part of paragraph
+  &:not(p &) {
+    text-decoration: none;
   }
 }

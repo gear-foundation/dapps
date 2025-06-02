@@ -4,35 +4,21 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "vite dev -p 6006",
-    "build": "tsc && vite build",
+    "start": "npx vite dev -p 6006",
+    "build": "npx tsc && npx vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "npx vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.39.0",
-    "@gear-js/react-hooks": "0.14.1",
-    "@polkadot/types": "11.0.2",
-    "@polkadot/util": "12.3.2",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14",
-    "@typescript-eslint/eslint-plugin": "6.0.0",
-    "@typescript-eslint/parser": "6.0.0",
-    "@vitejs/plugin-react": "4.0.3",
-    "eslint": "8.45.0",
-    "eslint-plugin-react-hooks": "4.6.0",
-    "eslint-plugin-react-refresh": "0.4.3",
-    "typescript": "5.0.2",
-    "vite": "4.4.5",
-    "vite-plugin-dts": "3.5.1"
+    "@gear-js/api": "0.41.0",
+    "@gear-js/react-hooks": "0.15.0",
+    "@polkadot/types": "15.9.1",
+    "@polkadot/util": "13.4.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "files": [
     "dist"
   ],
-  "main": "dist/hooks.js",
-  "types": "dist/index.d.ts"
+  "main": "src/index.ts"
 }

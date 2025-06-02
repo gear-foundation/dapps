@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
+
 import BackgroundMapImg from '@/assets/images/border.png';
-import MobileController from '../mobile-controller/mobile-controller';
+
 import { GameEngine } from '../../models/Game';
+import MobileController from '../mobile-controller/mobile-controller';
 
 type GameCanvasProps = {
   canvasRef: React.RefObject<HTMLCanvasElement>;

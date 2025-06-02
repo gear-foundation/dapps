@@ -2,7 +2,7 @@ use self::storage::SessionsStorage;
 use crate::services;
 use core::fmt::Debug;
 use gstd::{msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
-use sails_rs::{format, gstd::service, Box};
+use sails_rs::gstd::service;
 
 pub use utils::*;
 
@@ -46,7 +46,7 @@ impl SessionService {
                 signature,
             )
         });
-        self.notify_on(Event::SessionCreated)
+        self.emit_event(Event::SessionCreated)
             .expect("Notification Error");
     }
 
@@ -54,14 +54,14 @@ impl SessionService {
         services::utils::panicking(move || {
             funcs::delete_session_from_program(SessionsStorage::as_mut(), session_for_account)
         });
-        self.notify_on(Event::SessionDeleted)
+        self.emit_event(Event::SessionDeleted)
             .expect("Notification Error");
     }
     pub fn delete_session_from_account(&mut self) {
         services::utils::panicking(move || {
             funcs::delete_session_from_account(SessionsStorage::as_mut(), msg::source())
         });
-        self.notify_on(Event::SessionDeleted)
+        self.emit_event(Event::SessionDeleted)
             .expect("Notification Error");
     }
     pub fn sessions(&self) -> Vec<(ActorId, Session)> {

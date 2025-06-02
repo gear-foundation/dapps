@@ -1,15 +1,17 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { NFTDetails } from 'types';
-import { getAuctionDate, getIpfsAddress, getListingProps } from 'utils';
-import { Loader } from 'components';
-import { useMarketplaceActions } from 'hooks';
+
+import { useGetMarketQuery, useOwnerOfQuery, useTokenMetadataByIdQuery } from '@/app/utils';
+import { Loader } from '@/components';
+import { ENV } from '@/consts';
+import { useMarketplaceActions } from '@/hooks';
+import { NFTDetails } from '@/types';
+import { getAuctionDate, getIpfsAddress, getListingProps } from '@/utils';
+
 import { AuctionListing } from './auction-listing';
 import { OwnerListing } from './owner-listing';
 import { SaleListing } from './sale-listing';
-import { useGetMarketQuery, useOwnerOfQuery, useTokenMetadataByIdQuery } from 'app/utils';
-import { ADDRESS } from 'consts';
 
 type Params = {
   id: string;
@@ -27,7 +29,7 @@ function Listing() {
 
   const owner = marketNft?.owner || nftOwner;
   const isOwner = account?.decodedAddress === owner;
-  const isMarketOwner = nftOwner === ADDRESS.MARKETPLACE_CONTRACT;
+  const isMarketOwner = nftOwner === ENV.MARKETPLACE_CONTRACT;
   const baseNft = tokenMetadata && owner ? { ...tokenMetadata, owner } : null;
 
   const { reference } = tokenMetadata || {};

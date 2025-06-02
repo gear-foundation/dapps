@@ -1,2 +1,6 @@
 @import '@/assets/styles';
-@import 'global.css';
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

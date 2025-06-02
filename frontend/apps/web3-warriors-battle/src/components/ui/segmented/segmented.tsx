@@ -1,6 +1,7 @@
 import clsx from 'clsx';
-import styles from './segmented.module.scss';
 import { HTMLAttributes } from 'react';
+
+import styles from './segmented.module.scss';
 
 type SegmentedOption = {
   label: React.ReactNode;

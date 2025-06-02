@@ -1,9 +1,11 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
-import { useMultiGameQuery } from '../sails/queries';
+
 import { usePending } from '@/features/game/hooks';
+
+import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
+import { useMultiGameQuery } from '../sails/queries/use-multi-game-query';
 
 export function useMultiplayerGame() {
   const { account } = useAccount();

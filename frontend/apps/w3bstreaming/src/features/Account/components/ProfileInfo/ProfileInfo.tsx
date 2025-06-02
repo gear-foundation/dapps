@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
-import moment from 'moment-timezone';
 import { useAccount } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
-import styles from './ProfileInfo.module.scss';
-import { FormValues } from './ProfileInfo.interfaces';
-import { cx } from '@/utils';
-import { Button, TextField } from '@/ui';
-import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
-import SuccessIcon from '@/assets/icons/success-icon.svg';
+import moment from 'moment-timezone';
+import { useEffect, useState } from 'react';
+
+import { usePending } from '@/app/hooks';
+import { Profile, useEditProfileMessage, useGetStateQuery } from '@/app/utils';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
+import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
+import SuccessIcon from '@/assets/icons/success-icon.svg';
 import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
 import picImage from '@/assets/icons/picture.png';
+import { Button, TextField } from '@/ui';
 import { Select } from '@/ui/Select';
-import { Profile, useEditProfileMessage, useGetStateQuery } from '@/app/utils';
-import { usePending } from '@/app/hooks';
+import { cx } from '@/utils';
+
+import { FormValues } from './ProfileInfo.interfaces';
+import styles from './ProfileInfo.module.scss';
 
 function ProfileInfo() {
   const { account } = useAccount();

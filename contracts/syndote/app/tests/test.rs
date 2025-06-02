@@ -15,12 +15,12 @@ pub const USER_ID: u64 = 11;
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/syndote.opt.wasm");
+        .submit_code_file("../../target/wasm32-gear/release/syndote.opt.wasm");
 
     let syndote_factory = Factory::new(program_space.clone());
 
@@ -35,19 +35,19 @@ async fn test_play_game() {
     // upload player program
     let player_1 = Program::from_file(
         program_space.system(),
-        "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
+        "../../target/wasm32-gear/release/syndote_player.opt.wasm",
     );
     let player_2 = Program::from_file(
         program_space.system(),
-        "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
+        "../../target/wasm32-gear/release/syndote_player.opt.wasm",
     );
     let player_3 = Program::from_file(
         program_space.system(),
-        "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
+        "../../target/wasm32-gear/release/syndote_player.opt.wasm",
     );
     let player_4 = Program::from_file(
         program_space.system(),
-        "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
+        "../../target/wasm32-gear/release/syndote_player.opt.wasm",
     );
     let request = ["New".encode(), ().encode()].concat();
     check_send(

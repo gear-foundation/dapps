@@ -1,12 +1,14 @@
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Routing } from 'pages';
-import { ApiLoader } from 'components';
-import { withProviders } from 'hocs';
-import 'simplebar-react/dist/simplebar.min.css';
-import '@gear-js/vara-ui/dist/style.css';
-import 'App.scss';
-import { Header } from 'components/layout/header';
+
 import { Container, Footer } from '@dapps-frontend/ui';
+
+import { ApiLoader } from '@/components';
+import { Header } from '@/components/layout/header';
+import { withProviders } from '@/hocs';
+import { Routing } from '@/pages';
+
+import './App.scss';
 
 function Component() {
   const { isApiReady } = useApi();

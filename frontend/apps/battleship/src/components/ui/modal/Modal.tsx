@@ -1,7 +1,9 @@
-import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { MouseEvent, useEffect, useRef } from 'react';
+
 import { CrossIcon } from '@/assets/images';
 import { variantsOverlay, variantsPanel } from '@/components/ui/modal/Modal.variants';
+
 import { Button } from '../button';
 
 import styles from './Modal.module.scss';

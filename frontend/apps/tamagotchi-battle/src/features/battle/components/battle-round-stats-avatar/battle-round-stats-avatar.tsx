@@ -1,9 +1,11 @@
-import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { BattleStatePlayer } from '../../types/battles';
-import { SpriteIcon } from 'components/ui/sprite-icon';
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { cn, toNumber } from 'app/utils';
+import { useEffect, useState } from 'react';
+
+import { cn, toNumber } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+
+import { BattleStatePlayer } from '../../types/battles';
+import { TamagotchiAvatar } from '../tamagotchi-avatar';
 
 type Props = {
   tamagotchi: BattleStatePlayer;

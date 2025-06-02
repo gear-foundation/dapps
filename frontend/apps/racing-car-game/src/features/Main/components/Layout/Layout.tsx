@@ -1,14 +1,16 @@
-import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
-import { Button } from '@/ui';
+import { useNavigate } from 'react-router-dom';
+
 import { START } from '@/App.routes';
-import { Welcome } from '@/features/Main/components';
-import styles from './Layout.module.scss';
-import { cx } from '@/utils';
-import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/consts';
 import { useGameQuery } from '@/features/Game/sails';
+import { Welcome } from '@/features/Main/components';
+import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import styles from './Layout.module.scss';
 
 function Layout() {
   const navigate = useNavigate();

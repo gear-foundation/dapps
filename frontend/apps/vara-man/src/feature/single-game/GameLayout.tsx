@@ -1,16 +1,19 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Game } from './Game';
-import { useGame } from '@/app/context/ctx-game';
-import { Icons } from '@/components/ui/icons';
-import { GameTimer } from './components/timer';
-import { Level } from '@/app/utils';
-import { calculatePoints } from '../game/utils/calculatePoints';
-import { COINS, gameLevels } from '../game/consts';
-import { useMediaQuery } from '@/hooks/use-mobile-device';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { MOBILE_BREAKPOINT } from '@/app/consts';
+import { useGame } from '@/app/context/ctx-game';
+import { Level } from '@/app/utils';
+import { Icons } from '@/components/ui/icons';
+import { useMediaQuery } from '@/hooks/use-mobile-device';
+
+import { COINS, gameLevels } from '../game/consts';
+import { calculatePoints } from '../game/utils/calculatePoints';
+
+import { Game } from './Game';
+import { GameTimer } from './components/timer';
 
 export const GameLayout = () => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);

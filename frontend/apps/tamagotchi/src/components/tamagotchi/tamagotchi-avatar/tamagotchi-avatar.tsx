@@ -1,11 +1,12 @@
+import { withoutCommas } from '@gear-js/react-hooks';
 import { useEffect, useRef, useState } from 'react';
-import { TamagotchiAvatarAge, TamagotchiAvatarEmotions } from '@/app/types/tamagotchi';
-import { StoreItemsNames } from '@/app/types/ft-store';
+
 import { useLessons, useTamagotchi } from '@/app/context';
+import { StoreItemsNames } from '@/app/types/ft-store';
+import { TamagotchiAvatarAge, TamagotchiAvatarEmotions } from '@/app/types/tamagotchi';
+import { cn } from '@/app/utils';
 import { getTamagotchiAgeDiff } from '@/app/utils/get-tamagotchi-age';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { withoutCommas } from '@gear-js/react-hooks';
-import { cn } from '@/app/utils';
 
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;
@@ -26,7 +27,6 @@ export const TamagotchiAvatar = ({
   age = 'baby',
   isDead,
   hasItem = [],
-  color,
   isActive,
   isWinner,
   energy,
@@ -84,12 +84,13 @@ export const TamagotchiAvatar = ({
           dead
             ? 'scared'
             : isWinner
-            ? 'hello'
-            : 4000 > Math.min.apply(null, [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)])
-            ? 'crying'
-            : 6000 > Math.min.apply(null, [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)])
-            ? 'angry'
-            : emotion,
+              ? 'hello'
+              : 4000 > Math.min.apply(null, [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)])
+                ? 'crying'
+                : 6000 >
+                    Math.min.apply(null, [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)])
+                  ? 'angry'
+                  : emotion,
         );
       }
     }

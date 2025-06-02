@@ -1,6 +1,7 @@
 import { cx } from '@/utils';
-import styles from './Button.module.scss';
+
 import { ButtonProps } from './Button.interfaces';
+import styles from './Button.module.scss';
 
 function Button({
   variant,

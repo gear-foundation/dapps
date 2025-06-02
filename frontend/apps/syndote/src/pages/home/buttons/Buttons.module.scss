@@ -1,5 +1,3 @@
-@use '@gear-js/ui/mixins' as *;
-
 .mainButtons {
   display: inline-block;
   margin: 0 24px;
@@ -10,7 +8,9 @@
 }
 
 .button {
-  @include circle(40px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   background-color: #00ff38;
 }
 

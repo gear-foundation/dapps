@@ -13,7 +13,7 @@ fn test() {
 
     let battleship = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
+        "../target/wasm32-gear/release/battleship_bot.opt.wasm",
     );
 
     let mid = battleship.send(USER_ID, 0);

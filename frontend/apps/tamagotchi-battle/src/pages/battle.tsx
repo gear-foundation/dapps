@@ -1,9 +1,9 @@
-import { BattlePlayersQueue } from 'features/battle/components/battle-players-queue';
-import { BattleWaitRegistration } from 'features/battle/components/battle-wait-registration';
-import { useBattle } from 'features/battle/context';
-import { BattleWaitAdmin } from 'features/battle/components/battle-wait-admin';
-import { BattleRound } from 'features/battle/components/battle-round';
-import { BattleWinner } from 'features/battle/components/battle-winner';
+import { BattlePlayersQueue } from '@/features/battle/components/battle-players-queue';
+import { BattleRound } from '@/features/battle/components/battle-round';
+import { BattleWaitAdmin } from '@/features/battle/components/battle-wait-admin';
+import { BattleWaitRegistration } from '@/features/battle/components/battle-wait-registration';
+import { BattleWinner } from '@/features/battle/components/battle-winner';
+import { useBattle } from '@/features/battle/context';
 
 export const Battle = () => {
   const { battle, rivals, currentPairIdx, isAdmin } = useBattle();

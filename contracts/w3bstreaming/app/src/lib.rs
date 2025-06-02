@@ -102,7 +102,7 @@ impl W3bstreamingService {
                 description,
             },
         );
-        self.notify_on(Event::StreamIsScheduled { id: stream_id })
+        self.emit_event(Event::StreamIsScheduled { id: stream_id })
             .expect("Notification Error");
     }
 
@@ -126,7 +126,7 @@ impl W3bstreamingService {
         } else {
             panic!("You are not broadcaster");
         }
-        self.notify_on(Event::StreamDeleted { id: stream_id })
+        self.emit_event(Event::StreamDeleted { id: stream_id })
             .expect("Notification Error");
     }
     pub fn edit_stream(
@@ -163,7 +163,7 @@ impl W3bstreamingService {
             panic!("Id is not exist");
         }
 
-        self.notify_on(Event::StreamEdited)
+        self.emit_event(Event::StreamEdited)
             .expect("Notification Error");
     }
 
@@ -191,7 +191,7 @@ impl W3bstreamingService {
             })
         });
 
-        self.notify_on(Event::Subscribed)
+        self.emit_event(Event::Subscribed)
             .expect("Notification Error");
     }
 
@@ -218,7 +218,7 @@ impl W3bstreamingService {
                 .retain(|sub| sub.account_id != account_id)
         });
 
-        self.notify_on(Event::Unsubscribed)
+        self.emit_event(Event::Unsubscribed)
             .expect("Notification Error");
     }
 
@@ -250,7 +250,7 @@ impl W3bstreamingService {
                 subscriptions: Vec::new(),
             });
 
-        self.notify_on(Event::ProfileEdited)
+        self.emit_event(Event::ProfileEdited)
             .expect("Notification Error");
     }
     pub fn add_admin(&mut self, new_admin_id: ActorId) {
@@ -259,7 +259,7 @@ impl W3bstreamingService {
             panic!("Not Admin");
         }
         storage.admins.push(new_admin_id);
-        self.notify_on(Event::AdminAdded { new_admin_id })
+        self.emit_event(Event::AdminAdded { new_admin_id })
             .expect("Notification Error");
     }
     pub async fn kill(&mut self, inheritor: ActorId) {
@@ -276,7 +276,7 @@ impl W3bstreamingService {
                 .expect("Error in `AddNewProgram`");
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }

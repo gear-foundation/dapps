@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useRef, MouseEvent } from 'react';
+
 import styles from './Modal.module.scss';
 
 type Props = {
@@ -30,7 +31,6 @@ function Modal({ heading, children, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   const handleClick = ({ target }: MouseEvent) => {
     const isBackdropClick = target === ref.current;
 
@@ -41,9 +41,7 @@ function Modal({ heading, children, onClose }: Props) {
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <dialog ref={ref} onClick={handleClick} className={styles.modal}>
       <div className={styles.wrapper}>
-        <header className={styles.header}>
-          {heading && <h2>{heading}</h2>}
-        </header>
+        <header className={styles.header}>{heading && <h2>{heading}</h2>}</header>
 
         {children}
       </div>

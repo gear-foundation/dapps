@@ -1,10 +1,12 @@
-import { ModalBottom } from '@/components/ui/modal';
 import { Button } from '@gear-js/vara-ui';
+import { useNavigate } from 'react-router-dom';
+
+import { ModalBottom } from '@/components/ui/modal';
 import { Text } from '@/components/ui/text';
 
-import styles from './GameEndModal.module.scss';
 import { useGame } from '../../hooks';
-import { useNavigate } from 'react-router-dom';
+
+import styles from './GameEndModal.module.scss';
 
 type Props = {
   onClose: () => void;

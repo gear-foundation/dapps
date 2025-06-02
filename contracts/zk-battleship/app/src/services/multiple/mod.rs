@@ -5,7 +5,7 @@ use crate::{
 };
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::{format, gstd::service, Box};
+use sails_rs::gstd::service;
 
 pub use utils::*;
 
@@ -101,7 +101,7 @@ impl MultipleService {
             )
         });
 
-        self.notify_on(Event::GameCreated { player_id })
+        self.emit_event(Event::GameCreated { player_id })
             .expect("Notification Error");
     }
     /// Joins an existing game with the specified game ID for a player and updates the game storage.
@@ -133,7 +133,7 @@ impl MultipleService {
                 value,
             )
         });
-        self.notify_on(Event::JoinedTheGame { player_id, game_id })
+        self.emit_event(Event::JoinedTheGame { player_id, game_id })
             .expect("Notification Error");
     }
     /// Allows a player to leave a game and updates the game storage accordingly.
@@ -156,7 +156,7 @@ impl MultipleService {
             )
         });
 
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
     /// Cancels an existing game for a player and updates the game storage accordingly.
     ///
@@ -177,7 +177,7 @@ impl MultipleService {
                 player,
             )
         });
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     /// Verifies the placement of ships in a multiplayer game using zero-knowledge proofs.
@@ -234,7 +234,7 @@ impl MultipleService {
                 exec::block_timestamp(),
             )
         });
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
     /// Executes a player's move in the game, including verification of the move if required.
     ///
@@ -336,7 +336,7 @@ impl MultipleService {
                 )
             })
         };
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     /// Deletes an existing game from the storage based on the game ID and creation time.
@@ -360,7 +360,7 @@ impl MultipleService {
                 create_time,
             )
         });
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     /// Checks the timing of a game and updates the game state accordingly.
@@ -386,7 +386,7 @@ impl MultipleService {
         });
 
         if let Some(event) = possible_event {
-            self.notify_on(event).expect("Notification Error");
+            self.emit_event(event).expect("Notification Error");
         }
     }
 
@@ -410,7 +410,7 @@ impl MultipleService {
                 removable_player,
             )
         });
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     pub fn games(&self) -> Vec<(ActorId, MultipleGameState)> {

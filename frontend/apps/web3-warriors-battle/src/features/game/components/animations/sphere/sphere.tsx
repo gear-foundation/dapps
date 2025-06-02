@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
-import styles from './sphere.module.scss';
+
 import { Move } from '@/app/utils';
+
+import styles from './sphere.module.scss';
 
 const PARTICLE_RADIUS = 20;
 

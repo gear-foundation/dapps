@@ -4,8 +4,8 @@ use self::storage::{
 };
 use crate::{services, VerifyingKeyBytes};
 use core::fmt::Debug;
-use gstd::{exec, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::{format, gstd::service, Box};
+use gstd::{exec, msg, ActorId, Decode, Encode, TypeInfo, Vec};
+use sails_rs::gstd::service;
 use storage::configuration::ConfigurationStorage;
 
 pub mod storage;
@@ -56,7 +56,7 @@ impl AdminService {
     pub fn delete_single_game(&mut self, player_address: ActorId) {
         Self::check_admin(msg::source());
         services::single::storage::SingleGamesStorage::as_mut().remove(&player_address);
-        self.notify_on(Event::GameDeleted)
+        self.emit_event(Event::GameDeleted)
             .expect("Notification Error");
     }
     pub fn delete_single_games(&mut self, time: u64) {
@@ -64,14 +64,14 @@ impl AdminService {
         let games = services::single::storage::SingleGamesStorage::as_mut();
         let current_time = exec::block_timestamp();
         games.retain(|_id, game| (current_time - game.start_time) <= time);
-        self.notify_on(Event::GamesDeleted)
+        self.emit_event(Event::GamesDeleted)
             .expect("Notification Error");
     }
     pub fn delete_multiple_game(&mut self, game_id: ActorId) {
         Self::check_admin(msg::source());
         services::multiple::storage::MultipleGamesStorage::as_mut().remove(&game_id);
         services::multiple::storage::GamePairsStorage::as_mut().retain(|_, &mut id| id != game_id);
-        self.notify_on(Event::GameDeleted)
+        self.emit_event(Event::GameDeleted)
             .expect("Notification Error");
     }
     pub fn delete_multiple_games_by_time(&mut self, time: u64) {
@@ -96,7 +96,7 @@ impl AdminService {
         for id in ids_to_remove {
             game_pairs.retain(|_, &mut game_id| game_id != id);
         }
-        self.notify_on(Event::GamesDeleted)
+        self.emit_event(Event::GamesDeleted)
             .expect("Notification Error");
     }
 
@@ -120,28 +120,28 @@ impl AdminService {
         for id in ids_to_remove {
             game_pairs.retain(|_, &mut game_id| game_id != id);
         }
-        self.notify_on(Event::GamesDeleted)
+        self.emit_event(Event::GamesDeleted)
             .expect("Notification Error");
     }
     pub fn change_admin(&mut self, new_admin: ActorId) {
         Self::check_admin(msg::source());
         let admin = AdminStorage::get_mut();
         *admin = new_admin;
-        self.notify_on(Event::AdminChanged)
+        self.emit_event(Event::AdminChanged)
             .expect("Notification Error");
     }
     pub fn change_builtin_address(&mut self, new_builtin_address: ActorId) {
         Self::check_admin(msg::source());
         let builtin = BuiltinStorage::get_mut();
         *builtin = new_builtin_address;
-        self.notify_on(Event::BuiltinAddressChanged)
+        self.emit_event(Event::BuiltinAddressChanged)
             .expect("Notification Error");
     }
     pub fn change_configuration(&mut self, configuration: Configuration) {
         Self::check_admin(msg::source());
         let config = ConfigurationStorage::get_mut();
         *config = configuration;
-        self.notify_on(Event::ConfigurationChanged)
+        self.emit_event(Event::ConfigurationChanged)
             .expect("Notification Error");
     }
     pub fn change_verification_key(
@@ -158,13 +158,13 @@ impl AdminService {
             let vk_for_move = VerificationKeyStorage::get_mut_vk_for_move();
             *vk_for_move = new_vk;
         }
-        self.notify_on(Event::VerificationKeyChanged)
+        self.emit_event(Event::VerificationKeyChanged)
             .expect("Notification Error");
     }
 
     pub fn kill(&mut self, inheritor: ActorId) {
         Self::check_admin(msg::source());
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }

@@ -1,13 +1,16 @@
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useLocation } from 'react-router-dom';
 import { TransactionBuilder } from 'sails-js';
-import { useAccount, useApi } from '@gear-js/react-hooks';
-import { VerificationVariables } from '@/app/utils/sails/lib/lib';
+
 import { ROUTES } from '@/app/consts';
-import { gameModeAtom, pendingAtom } from './store';
+import { VerificationVariables } from '@/app/utils/sails/lib/lib';
+
 import { useProofShipHit } from '../zk/hooks/use-proof-ship-hit';
-import { GameType } from './types';
 import { getVerificationVariables } from '../zk/utils';
+
+import { gameModeAtom, pendingAtom } from './store';
+import { GameType } from './types';
 
 export function usePending() {
   const [pending, setPending] = useAtom(pendingAtom);

@@ -1,6 +1,7 @@
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
-import { Move, Pair, useProgram } from '@/app/utils';
 import { useRef, useState } from 'react';
+
+import { Move, Pair, useProgram } from '@/app/utils';
 
 type RoundData = {
   round: number;

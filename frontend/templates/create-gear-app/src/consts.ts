@@ -1,5 +1,5 @@
-const ADDRESS = {
+const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
 };
 
-export { ADDRESS };
+export { ENV };

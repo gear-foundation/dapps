@@ -1,5 +1,5 @@
-import { EzTransactionsProvider, useEzTransactions } from './context';
 import { EzTransactionsSwitch, EzSignlessTransactions, EzGaslessTransactions } from './components';
+import { EzTransactionsProvider, useEzTransactions } from './context';
 import { usePrepareEzTransactionParams } from './hooks';
 
 export * from './features/gasless-transactions';

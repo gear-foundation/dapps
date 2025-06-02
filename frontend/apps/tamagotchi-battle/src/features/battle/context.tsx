@@ -1,6 +1,7 @@
-import { createContext, useContext, useState } from 'react';
-import { BattleStatePlayer, BattleStateResponse, RoundDamageType } from './types/battles';
 import { HexString } from '@polkadot/util/types';
+import { createContext, useContext, useState } from 'react';
+
+import { BattleStatePlayer, BattleStateResponse, RoundDamageType } from './types/battles';
 
 const useProgram = () => {
   const [isPending, setIsPending] = useState<boolean>(false);
