@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
+
 import { getFormattedTime } from '../../utils';
+
 import styles from './timer.module.scss';
 
 type Props = {
@@ -19,7 +21,7 @@ export function Timer({ remainingTime, shouldGoOn, redOnLast }: Props) {
     if (remainingTime === undefined) {
       setTimeLeft(null);
       startTimeRef.current = null;
-    } else if (remainingTime === 0 ) {
+    } else if (remainingTime === 0) {
       setTimeLeft(0);
     } else {
       const updateTimer = () => {

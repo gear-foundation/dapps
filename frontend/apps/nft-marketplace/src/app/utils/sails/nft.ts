@@ -15,7 +15,10 @@ export class Program {
   public readonly registry: TypeRegistry;
   public readonly vnft: Vnft;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
       TokenMetadata: { name: 'String', description: 'String', media: 'String', reference: 'String' },
     };

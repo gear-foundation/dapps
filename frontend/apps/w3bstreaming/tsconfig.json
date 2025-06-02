@@ -1,26 +1,21 @@
 {
-  "extends": "./tsconfig.path.json",
+  "extends": "../../tsconfig.json",
+
+  // each package has its own @ alias, cuz vite doesn't support single alias for multiple paths
+  // sources:
+  // https://github.com/vercel/turborepo/discussions/620
+  // https://github.com/vitejs/vite/issues/5370
+
+  // TODO: replace with configDir in the root config,
+  // once https://github.com/import-js/eslint-import-resolver-typescript/issues/299 is resolved
   "compilerOptions": {
-    "target": "es2015",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@ez/*": ["../../packages/ez-transactions/src/*"],
+      "gear-ez-transactions": ["../../packages/ez-transactions/src/index.ts"]
+    }
   },
-  "files":[
-    "index.d.ts"
-  ],
-  "include": ["src", "react-app-env.d.ts", "./.eslintrc.js"],
-  "exclude": ["node_modules", "dist"],
+
+  "include": ["src"]
 }

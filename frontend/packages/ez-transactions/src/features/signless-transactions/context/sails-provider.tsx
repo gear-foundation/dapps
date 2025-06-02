@@ -2,8 +2,9 @@ import { HexString } from '@gear-js/api';
 import { ReactNode } from 'react';
 
 import { useCreateSailsSession } from '../hooks';
-import { usePair, useSailsSession } from './hooks';
+
 import { SignlessTransactionsContext } from './context';
+import { usePair, useSailsSession } from './hooks';
 import { BaseProgram } from './types';
 
 type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {

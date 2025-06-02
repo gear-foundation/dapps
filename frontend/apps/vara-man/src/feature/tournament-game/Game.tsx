@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
+import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 
-import { useGame } from '@/app/context/ctx-game';
-
-import { Registration } from './components/registration';
-import { GamePlayers } from './components/game-players';
-import { GameOverModal } from './components/modals/game-over';
-import { GameCanceledModal } from './components/modals/game-canceled';
-
-import { calculatePoints } from '../game/utils/calculatePoints';
-import { COINS, GAME_OVER } from '../game/consts';
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GameInfoCanvas } from './components/game-canvas/game-canvas';
-import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { MOBILE_BREAKPOINT } from '@/app/consts';
+import { useGame } from '@/app/context/ctx-game';
 import { Level } from '@/app/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useMediaQuery } from '@/hooks/use-mobile-device';
+
+import { COINS, GAME_OVER } from '../game/consts';
+import { calculatePoints } from '../game/utils/calculatePoints';
+
+import { GameInfoCanvas } from './components/game-canvas/game-canvas';
+import { GamePlayers } from './components/game-players';
+import { GameCanceledModal } from './components/modals/game-canceled';
+import { GameOverModal } from './components/modals/game-over';
+import { Registration } from './components/registration';
 
 export const Game = () => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);

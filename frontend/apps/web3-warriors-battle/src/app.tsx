@@ -1,30 +1,50 @@
 import './app.scss';
-import { withProviders } from '@/app/hocs';
-import { Loader, LoadingError, MainLayout } from '@/components';
-import '@gear-js/vara-ui/dist/style.css';
+import { useApi, useAccount } from '@gear-js/react-hooks';
+import { Container, Footer } from '@ui/components';
+
+import { WithProviders } from '@/app/hocs';
+import { ApiLoader, Header, Loader, LoadingError } from '@/components';
 import { Routing } from '@/pages';
+
 import { useMyBattleQuery, useProgram } from './app/utils';
 
 function Component() {
-  const program = useProgram();
-
+  const { isApiReady } = useApi();
+  const { isAccountReady } = useAccount();
   const { error } = useMyBattleQuery();
+
+  const program = useProgram();
   const isGameReady = !!program;
 
   return (
-    <MainLayout>
-      {!!error && (
-        <LoadingError>
-          <p>Error in the Game contract :(</p>
-          <pre>
-            <small>Error message:</small> <code>{error.message}</code>
-          </pre>
-        </LoadingError>
-      )}
-      {!error && isGameReady && <Routing />}
-      {!error && !isGameReady && <Loader />}
-    </MainLayout>
+    <>
+      <Header />
+
+      <main>
+        {isApiReady && isAccountReady ? (
+          <>
+            {!!error && (
+              <LoadingError>
+                <p>Error in the Game contract :(</p>
+                <pre>
+                  <small>Error message:</small> <code>{error.message}</code>
+                </pre>
+              </LoadingError>
+            )}
+
+            {!error && isGameReady && <Routing />}
+            {!error && !isGameReady && <Loader />}
+          </>
+        ) : (
+          <ApiLoader />
+        )}
+      </main>
+
+      <Container>
+        <Footer vara />
+      </Container>
+    </>
   );
 }
 
-export const App = withProviders(Component);
+export const App = WithProviders(Component);

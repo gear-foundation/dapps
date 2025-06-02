@@ -5,14 +5,16 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
-import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { ADDRESS } from 'consts';
-import { IPFSProvider } from 'context';
+
+import { QueryProvider } from '@dapps-frontend/ui';
+
+import { ENV } from '@/consts';
+import { IPFSProvider } from '@/context';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {

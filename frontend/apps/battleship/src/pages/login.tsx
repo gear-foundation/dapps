@@ -1,16 +1,18 @@
+import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { AnimatePresence } from 'framer-motion';
+import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from 'gear-ez-transactions';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
+
 import styles from './login.module.scss';
-import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from 'gear-ez-transactions';
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -60,7 +62,7 @@ export default function Login() {
             {account ? 'Start the Game' : 'Connect wallet'}
           </Button>
 
-          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS}/>
+          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
         </div>
       </div>
 

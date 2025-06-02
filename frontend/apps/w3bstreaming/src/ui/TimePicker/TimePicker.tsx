@@ -1,9 +1,11 @@
-import { useState } from 'react';
 import moment, { Moment } from 'moment';
 import ReactTimePicker from 'rc-time-picker';
-import { cx } from '@/utils';
-import { TimePickerProps } from './TimePicker.interface';
+import { useState } from 'react';
+
 import SelectArrowSVG from '@/assets/icons/select-arrow.svg';
+import { cx } from '@/utils';
+
+import { TimePickerProps } from './TimePicker.interface';
 import styles from './TimePicker.module.scss';
 
 import 'rc-time-picker/assets/index.css';

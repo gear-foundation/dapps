@@ -1,14 +1,17 @@
-import { PlayerTrackSection } from '../player-track-section';
+import clsx from 'clsx';
+import { useEffect } from 'react';
+
+import { useApp, useGame } from '@/app/context';
+
+import { convertFormattedTileToNumbers, findTile, getBgColors } from '../../../app/utils';
+import { DominoItem } from '../../common/domino-item';
+import { Icon } from '../../ui/icon';
 import { PlayerCardSection } from '../player-card-section';
 import { PlayerConsSection } from '../player-cons-section';
-import { useApp, useGame } from 'app/context';
-import clsx from 'clsx';
-import { convertFormattedTileToNumbers, findTile, getBgColors } from '../../../app/utils';
-import { Icon } from '../../ui/icon';
-import { DominoItem } from '../../common/domino-item';
+import { PlayerTrackSection } from '../player-track-section';
+
 import { CanceledSection } from './canceled-modal';
 import { FinishedSection } from './finished-modal';
-import { useEffect } from 'react';
 
 export const GameSection = () => {
   const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup } = useApp();
@@ -16,14 +19,14 @@ export const GameSection = () => {
 
   useEffect(() => {
     if (state && state.state.Winners) {
-      setOpenWinnerPopup(true)
+      setOpenWinnerPopup(true);
     } else {
-      setOpenWinnerPopup(false)
+      setOpenWinnerPopup(false);
     }
-  }, [state])
+  }, [state]);
 
-  const stateStartTile = state?.gameState?.startTile
-  const startTile = state && stateStartTile && findTile(stateStartTile, state.gameState.tiles)
+  const stateStartTile = state?.gameState?.startTile;
+  const startTile = state && stateStartTile && findTile(stateStartTile, state.gameState.tiles);
 
   return (
     <div className="container-xl flex flex-col grow">
@@ -42,20 +45,16 @@ export const GameSection = () => {
             </div>
 
             <div className="relative flex overflow-auto max-w-full">
-              <div className="flex items-center gap-0.5 ">
-                {startTile &&
-                  <DominoItem row tile={startTile} />
-                }
-              </div>
+              <div className="flex items-center gap-0.5 ">{startTile && <DominoItem row tile={startTile} />}</div>
             </div>
           </div>
         </li>
         {state?.gameState?.tracks.map((p, i) => {
-          const tiles = p.tiles.map(t => {
-            const tileId = convertFormattedTileToNumbers(t)
+          const tiles = p.tiles.map((t) => {
+            const tileId = convertFormattedTileToNumbers(t);
 
-            return tileId
-          })
+            return tileId;
+          });
 
           return (
             <li key={i}>
@@ -66,16 +65,19 @@ export const GameSection = () => {
                 tiles={tiles}
               />
             </li>
-          )
+          );
         })}
       </ul>
       <div className="grid gap-4 mt-auto">
         {isAllowed && <PlayerConsSection />}
 
         <ul className="flex gap-4 justify-center">
-          {players.map((p, i) => (
+          {players.map((_p, i) => (
             <li key={i}>
-              <PlayerCardSection index={i} active={isAllowed && Boolean(state && +state.gameState.currentPlayer === i)} />
+              <PlayerCardSection
+                index={i}
+                active={isAllowed && Boolean(state && +state.gameState.currentPlayer === i)}
+              />
             </li>
           ))}
         </ul>

@@ -6,11 +6,11 @@ use car_races_app::services::{
 use gtest::{Program, System};
 use sails_rs::{prelude::*, ActorId};
 const PATH_TO_STRATEGIES: [&str; 2] = [
-    "../target/wasm32-unknown-unknown/release/car_strategy_1.opt.wasm",
-    "../target/wasm32-unknown-unknown/release/car_strategy_2.opt.wasm",
+    "../target/wasm32-gear/release/car_strategy_1.opt.wasm",
+    "../target/wasm32-gear/release/car_strategy_2.opt.wasm",
 ];
 
-const PATH_TO_CAR_RACES: &str = "../target/wasm32-unknown-unknown/release/car_races.opt.wasm";
+const PATH_TO_CAR_RACES: &str = "../target/wasm32-gear/release/car_races.opt.wasm";
 
 #[test]
 fn test_car_races_without_session() {

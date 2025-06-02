@@ -1,4 +1,5 @@
 import { Buttons } from '../buttons';
+
 import styles from './Start.module.scss';
 
 function Start() {

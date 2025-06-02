@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
+import { useEffect, useState } from 'react';
+
 import { WALLET } from './consts';
 import { IWalletId } from './types';
 

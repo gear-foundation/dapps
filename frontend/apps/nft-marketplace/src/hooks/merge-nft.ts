@@ -1,8 +1,11 @@
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { MarketNFT, NFT } from 'types';
-import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from 'app/utils';
-import { MarketState } from 'app/utils/sails/nft_marketplace';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
+import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from '@/app/utils';
+import { MarketState } from '@/app/utils/sails/nft_marketplace';
+import { MarketNFT, NFT } from '@/types';
 
 function useMergedNFTs(items?: MarketState['items']) {
   const { api } = useApi();
@@ -27,7 +30,7 @@ function useMergedNFTs(items?: MarketState['items']) {
         setNFTs(result);
         setIsEachNFTRead(true);
       })
-      .catch(({ message }: Error) => alert.error(message));
+      .catch((error) => alert.error(getErrorMessage(error)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, items, nftProgram]);

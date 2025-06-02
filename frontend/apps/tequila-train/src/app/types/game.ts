@@ -43,16 +43,16 @@ export type IGamePhase = Partial<IPhaseWinners & IPhaseOther>;
 
 export type IState = {
   config: {
-    timeToMove: string
+    timeToMove: string;
   };
   games: [HexString, GameType[]];
   playersToGameCreator: [HexString, HexString][];
-}
+};
 
 export type PlayersGame = {
   id: HexString;
   lose: boolean;
-}
+};
 
 export type IGameState = {
   currentPlayer: string;
@@ -86,4 +86,4 @@ export type GameType = {
 
 export type IGame = {
   Game: [GameType | null, null | string];
-}
+};

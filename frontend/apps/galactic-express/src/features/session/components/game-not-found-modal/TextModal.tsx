@@ -1,5 +1,7 @@
-import { Modal } from 'components/layout/modal';
 import { Button } from '@gear-js/vara-ui';
+
+import { Modal } from '@/components/layout/modal';
+
 import styles from './TextModal.module.scss';
 
 type Props = {

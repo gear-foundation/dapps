@@ -1,7 +1,7 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { ISubmittableResult } from '@polkadot/types/types';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { ISubmittableResult } from '@polkadot/types/types';
 
 import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 

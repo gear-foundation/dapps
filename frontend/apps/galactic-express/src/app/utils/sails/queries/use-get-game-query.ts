@@ -1,6 +1,7 @@
-import { useProgram } from 'app/utils';
-import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
+import { useProgram } from '@/app/utils';
 
 export const useGetGameQuery = (gameAddress?: HexString) => {
   const program = useProgram();

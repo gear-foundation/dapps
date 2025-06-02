@@ -1,11 +1,14 @@
-import { useApi, useBalanceFormat, useAccount, withoutCommas } from '@gear-js/react-hooks';
-import { Modal } from 'components/layout/modal';
+import { useBalanceFormat, useAccount, withoutCommas } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { GameDetails } from 'components/layout/game-details';
-import styles from './GameFinishedModal.module.scss';
+
+import { GameDetails } from '@/components/layout/game-details';
+import { Modal } from '@/components/layout/modal';
+import { useQuitGame } from '@/hooks/useQuitGame';
+import { PlayersByStrategyAddress } from '@/types';
+
 import { VaraIcon } from '../vara-icon';
-import { PlayersByStrategyAddress } from 'types';
-import { useQuitGame } from 'hooks/useQuitGame';
+
+import styles from './GameFinishedModal.module.scss';
 
 type Props = {
   winnerAddress: `0x${string}`;
@@ -20,7 +23,7 @@ function GameFinishedModal({ winnerAddress, isAdmin, players, prizePool = '0', o
   const { getFormattedBalanceValue } = useBalanceFormat();
   const { deleteGame, exitGame } = useQuitGame();
 
-  const isWinner = account?.decodedAddress === players[winnerAddress].ownerId;
+  const isWinner = account?.decodedAddress === players[winnerAddress].owner_id;
   const winnerName = players[winnerAddress].name;
 
   const items = [

@@ -1,8 +1,9 @@
 import { CreateType } from '@gear-js/api';
 import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
 import { formatBalance } from '@polkadot/util';
-import { useEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+
 import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET } from './consts';
 import { SystemAccount, WalletId } from './types';
 

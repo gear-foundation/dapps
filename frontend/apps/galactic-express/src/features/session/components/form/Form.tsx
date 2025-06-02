@@ -1,18 +1,21 @@
-import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { Card } from 'components';
+import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import { RegistrationStatus } from 'features/session/types';
-import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
+
+import { useStartGameMessage, useRegisterMessage } from '@/app/utils';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from '@/atoms';
+import { Card } from '@/components';
+import { RegistrationStatus } from '@/features/session/types';
+import { getPanicType } from '@/utils';
+
+import RocketSVG from '../../assets/rocket.svg?react';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
-import { Range } from '../range';
 import { Probability } from '../probability';
+import { Range } from '../range';
+
 import styles from './Form.module.scss';
-import { useStartGameMessage, useRegisterMessage } from 'app/utils';
-import { getPanicType } from 'utils';
 
 type Props = {
   weather: string;
@@ -23,7 +26,7 @@ type Props = {
 
 function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   const { account } = useAccount();
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
     initialValues: { ...INITIAL_VALUES },
@@ -55,9 +58,7 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
 
   const handleSubmit = () => {
     if (!isAdmin && account?.decodedAddress && currentGameAddress && playerName) {
-      setIsLoading(true);
-
-      registerMessage(
+      void registerMessage(
         {
           creator: currentGameAddress,
           participant: { fuel_amount: fuel, payload_amount: payload, name: playerName, id: account.decodedAddress },
@@ -67,11 +68,8 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
           onSuccess: () => {
             setRegistrationStatus('success');
             setCurrentGame(null);
-            setIsLoading(false);
           },
           onError: (error) => {
-            setIsLoading(false);
-
             const panicType = getPanicType(error);
             if (panicType === 'SessionFull') {
               setRegistrationStatus('MaximumPlayersReached');
@@ -82,7 +80,7 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
     }
 
     if (isAdmin) {
-      startGameMessage(
+      void startGameMessage(
         { fuel: fuel, payload: payload },
         {
           onError: (error) => {

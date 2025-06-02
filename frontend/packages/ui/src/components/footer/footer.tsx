@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import cx from 'clsx';
 
-import { ReactComponent as UserSVG } from './assets/user.svg';
+import UserSVG from './assets/user.svg?react';
 import { SOCIALS } from './consts';
 import styles from './footer.module.css';
 

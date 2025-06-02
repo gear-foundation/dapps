@@ -1,7 +1,10 @@
-import { ZkProofData } from '@/features/zk/types';
 import { useAccount } from '@gear-js/react-hooks';
-import { useMultiplayerGame } from './use-multiplayer-game';
+
+import { ZkProofData } from '@/features/zk/types';
+
 import { useVerifyPlacementMessage } from '../sails/messages';
+
+import { useMultiplayerGame } from './use-multiplayer-game';
 
 type GameType = 'single' | 'multi';
 
