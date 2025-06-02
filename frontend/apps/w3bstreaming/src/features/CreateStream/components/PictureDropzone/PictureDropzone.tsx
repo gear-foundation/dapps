@@ -1,12 +1,12 @@
-import { DropzoneUploader } from '@ui';
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
+import { DropzoneUploader } from '@/ui';
 
 function PictureDropzone({ ...props }: any) {
   return (
     <DropzoneUploader
       uploadConfig={{
-        address: ADDRESS.IPFS_NODE,
-        gateway: ADDRESS.IPFS_GATEWAY,
+        address: ENV.IPFS_NODE,
+        gateway: ENV.IPFS_GATEWAY,
       }}
       {...props}
     />

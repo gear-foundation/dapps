@@ -1,16 +1,18 @@
 import { useProgram as useGearJsProgram } from '@gear-js/react-hooks';
-import { Program as MarketplaceProgram } from './nft_marketplace';
+
+import { ENV } from '@/consts';
+
 import { Program as NftProgram } from './nft';
-import { ADDRESS } from 'consts';
+import { Program as MarketplaceProgram } from './nft_marketplace';
 
 const useMarketplaceProgram = () => {
-  const { data: program } = useGearJsProgram({ library: MarketplaceProgram, id: ADDRESS.MARKETPLACE_CONTRACT });
+  const { data: program } = useGearJsProgram({ library: MarketplaceProgram, id: ENV.MARKETPLACE_CONTRACT });
 
   return program;
 };
 
 const useNftProgram = () => {
-  const { data: program } = useGearJsProgram({ library: NftProgram, id: ADDRESS.NFT_CONTRACT });
+  const { data: program } = useGearJsProgram({ library: NftProgram, id: ENV.NFT_CONTRACT });
 
   return program;
 };

@@ -8,7 +8,6 @@ const EVENT_NAME = {
   SUBSCRIBE_TO_GAME_CANCELED_EVENT: 'subscribeToGameCanceledEvent',
   SUBSCRIBE_TO_GAME_LEFT_EVENT: 'subscribeToGameLeftEvent',
   SUBSCRIBE_TO_PLAYER_DELETED_EVENT: 'subscribeToPlayerDeletedEvent',
-  
 } as const;
 
 export { SERVICE_NAME, EVENT_NAME };

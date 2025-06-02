@@ -1,5 +1,6 @@
-import type { IconProps } from '.';
 import { FC } from 'react';
+
+import type { IconProps } from '.';
 
 export const Icon: FC<IconProps> = ({ name, className, section = 'icons', ...props }) => {
   return (

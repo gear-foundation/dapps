@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { useQuery } from 'urql';
-import { AnyJson } from '@polkadot/types/types';
-import { stringShorten } from '@polkadot/util';
-import { IS_BALANCE_LOW_ATOM, isPendingUI } from 'consts';
 import { ProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
-import { useAccountAvailableBalance } from 'features/available-balance/hooks';
-import { GetAccountNFTQuery } from 'features/nfts/queries';
+import { AnyJson } from '@polkadot/types/types';
+import { stringShorten } from '@polkadot/util';
+import { useAtom } from 'jotai';
+import { useState, useEffect } from 'react';
+import { useQuery } from 'urql';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
+import { IS_BALANCE_LOW_ATOM, isPendingUI } from '@/consts';
+import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
+import { GetAccountNFTQuery } from '@/features/nfts/queries';
 
 export function usePendingUI() {
   const [isPending, setIsPending] = useAtom(isPendingUI);
@@ -50,9 +53,7 @@ export function useReadStateFromApi<T = AnyJson>() {
 }
 
 // Set value in seconds
-export const sleep = (s: number) =>
-  // eslint-disable-next-line no-promise-executor-return
-  new Promise((resolve) => setTimeout(resolve, s * 1000));
+export const sleep = (s: number) => new Promise((resolve) => setTimeout(resolve, s * 1000));
 
 export function useProgramMetadata(source: string) {
   const alert = useAlert();
@@ -64,7 +65,7 @@ export function useProgramMetadata(source: string) {
       .then((response) => response.text())
       .then((raw) => ProgramMetadata.from(`0x${raw}`))
       .then((result) => setMetadata(result))
-      .catch(({ message }: Error) => alert.error(message));
+      .catch((error) => alert.error(getErrorMessage(error)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -85,7 +86,7 @@ export const useResizeEffect = (callback: () => void) => {
 
 export function useCheckBalance() {
   const { account } = useAccount();
-  const { availableBalance, isAvailableBalanceReady } = useAccountAvailableBalance();
+  const { availableBalance } = useAccountAvailableBalance();
   const alert = useAlert();
   const [isLowBalance, setIsLowBalance] = useAtom(IS_BALANCE_LOW_ATOM);
 

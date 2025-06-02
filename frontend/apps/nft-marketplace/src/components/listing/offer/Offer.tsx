@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { HexString } from '@gear-js/api';
 import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { HexString } from '@polkadot/util/types';
-import { ConfirmationModal } from 'components/modals';
-import { useAcceptOfferMessage } from 'app/utils';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+
+import { useAcceptOfferMessage } from '@/app/utils';
+import { ConfirmationModal } from '@/components/modals';
+
 import styles from './Offer.module.scss';
 
 type Props = {

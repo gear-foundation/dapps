@@ -13,7 +13,7 @@ fn init_battleship(sys: &System) {
     let battleship = Program::current(sys);
     let bot = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
+        "../target/wasm32-gear/release/battleship_bot.opt.wasm",
     );
     let mid = bot.send_bytes(3, []);
     let res = sys.run_next_block();
@@ -242,7 +242,7 @@ fn failures_test() {
                     battleship.send(
                         USER_ID[0],
                         BattleshipAction::Turn {
-                            step: 25,
+                            step: 24,
                             session_for_account: None,
                         },
                     );
@@ -675,8 +675,9 @@ fn complete_session_game() {
                     session_for_account: Some(USER_ID[0].into()),
                 },
             );
-            let res = system.run_next_block();
+
             let game = get_game(&battleship, USER_ID[0]);
+            let res = system.run_next_block();
             if game.game_over {
                 assert!(res.contains(&(
                     USER_ID[1],

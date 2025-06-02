@@ -1,5 +1,6 @@
-import { useNftProgram } from 'app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
+import { useNftProgram } from '@/app/utils';
 
 type Params = {
   tokenId: string;

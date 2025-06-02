@@ -1,9 +1,7 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import styles from './Select.module.scss';
 import { SelectProps } from './Select.interfaces';
+import styles from './Select.module.scss';
 
-function Select({ label, size, placeholder, options, ...props }: SelectProps) {
+function Select({ label, size, options, ...props }: SelectProps) {
   return (
     <div className={styles.select}>
       <select className={styles['select-text']} required {...props}>

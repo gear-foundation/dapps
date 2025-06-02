@@ -1,7 +1,8 @@
-import { Modal } from '@/components/ui/modal/modal2';
-import { COINS } from '@/feature/game/consts';
 import { Button } from '@gear-js/vara-ui';
 import { useSetAtom } from 'jotai';
+
+import { Modal } from '@/components/ui/modal/modal2';
+import { COINS } from '@/feature/game/consts';
 
 type GamePlayAgainModalProps = {
   setIsOpenPlayAgain: (_: boolean) => void;

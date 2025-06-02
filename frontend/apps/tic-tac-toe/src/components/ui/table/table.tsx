@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import styles from './table.module.scss';
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(({ ...props }, ref) => (

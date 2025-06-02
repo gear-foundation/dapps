@@ -1,9 +1,11 @@
 import { useAccount, useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
-import { ADDRESS } from 'consts';
-import { Params, Token } from 'types';
 import { useParams } from 'react-router-dom';
-import stateMetaWasm from 'assets/wasm/state.meta.wasm';
-import metaTxt from 'assets/meta/meta.txt';
+
+import metaTxt from '@/assets/meta/meta.txt';
+import stateMetaWasm from '@/assets/wasm/state.meta.wasm?url';
+import { ENV } from '@/consts';
+import { Params, Token } from '@/types';
+
 import { useMetadata, useWasmMetadata } from './useMetadata';
 
 function useNFTMetadata() {
@@ -15,7 +17,7 @@ function useNFTState<T>(functionName: string, argument?: any) {
   const programMetadata = useNFTMetadata();
 
   const result = useReadWasmState<T>({
-    programId: ADDRESS.CONTRACT_ADDRESS,
+    programId: ENV.CONTRACT_ADDRESS,
     wasm: buffer,
     programMetadata,
     functionName,
@@ -57,7 +59,7 @@ function useApprovedNFTs() {
 
 function useSendNFTMessage() {
   const meta = useNFTMetadata();
-  return useSendMessageWithGas(ADDRESS.CONTRACT_ADDRESS, meta);
+  return useSendMessageWithGas(ENV.CONTRACT_ADDRESS, meta);
 }
 
 export { useNFT, useNFTs, useOwnerNFTs, useApprovedNFTs, useSendNFTMessage };

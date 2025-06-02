@@ -1,4 +1,5 @@
 import { cx } from '@/utils';
+
 import styles from './ApiLoader.module.scss';
 
 function ApiLoader() {

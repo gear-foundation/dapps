@@ -74,7 +74,7 @@ impl Service {
     pub fn add_token_data(&mut self, token_id: ActorId, price: Price) {
         let storage = self.get_mut();
         let event = panicking(|| funcs::add_token_data(storage, token_id, price));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub async fn register_subscription(
         &mut self,
@@ -89,7 +89,7 @@ impl Service {
             Err(e) => panic(e),
         };
 
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub async fn update_subscription(&mut self, subscriber: ActorId) {
@@ -100,13 +100,13 @@ impl Service {
             Err(e) => panic(e),
         };
 
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn cancel_subscription(&mut self) {
         let storage = self.get_mut();
         let event = panicking(|| funcs::cancel_subscription(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub async fn manage_pending_subscription(&mut self, enable: bool) {
@@ -117,7 +117,7 @@ impl Service {
             Err(e) => panic(e),
         };
 
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn update_config(
@@ -135,7 +135,7 @@ impl Service {
                 block_duration,
             )
         });
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub async fn kill(&mut self, inheritor: ActorId) {
@@ -153,7 +153,7 @@ impl Service {
             panic(VaraTubeError::NotAdmin);
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }

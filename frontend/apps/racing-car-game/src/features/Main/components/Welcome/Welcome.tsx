@@ -1,8 +1,9 @@
+import carsImgPng from '@/assets/icons/introdution-cars-img.png';
+import carsImg from '@/assets/icons/introdution-cars-img.webp';
+import { cx } from '@/utils';
+
 import { WelcomeProps } from './Welcome.interface';
 import styles from './Welcome.module.scss';
-import { cx } from '@/utils';
-import carsImg from '@/assets/icons/introdution-cars-img.webp';
-import carsImgPng from '@/assets/icons/introdution-cars-img.png';
 
 function Welcome({ children }: WelcomeProps) {
   return (

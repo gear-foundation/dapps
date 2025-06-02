@@ -1,7 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { ReactComponent as GaslessSVG } from '@/assets/icons/gas-station-line.svg';
-import { EnableGaslessSession } from '../enable-gasless-session';
+
+import GaslessSVG from '@ez/assets/icons/gas-station-line.svg?react';
+
 import { useGaslessTransactions } from '../../context';
+import { EnableGaslessSession } from '../enable-gasless-session';
+
 import styles from './gasless-transactions.module.css';
 
 type Props = {

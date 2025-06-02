@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
 import { UseQueryExecute } from 'urql';
+
 import { NFT } from './types';
 
 const NFTS_ATOM = atom<NFT[] | null>(null);

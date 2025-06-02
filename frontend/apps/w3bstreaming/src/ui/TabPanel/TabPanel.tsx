@@ -1,7 +1,9 @@
 import { useState } from 'react';
+
+import { cx } from '@/utils';
+
 import styles from './TabPanel.module.scss';
 import { TabPanelProps, TabProps } from './TabsPanel.interfaces';
-import { cx } from '@/utils';
 
 function Tab({ name, isActive, onClick }: TabProps) {
   const handleTabClick = () => {

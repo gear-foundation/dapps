@@ -45,14 +45,14 @@ impl MarketService {
         let market = self.get_mut();
         market.check_admin();
         market.approved_nft_contracts.insert(nft_contract_id);
-        self.notify_on(MarketEvent::NftContractAdded(nft_contract_id))
+        self.emit_event(MarketEvent::NftContractAdded(nft_contract_id))
             .expect("Notification Error");
     }
     pub fn add_ft_contract(&mut self, ft_contract_id: ContractId) {
         let market = self.get_mut();
         market.check_admin();
         market.approved_ft_contracts.insert(ft_contract_id);
-        self.notify_on(MarketEvent::FtContractAdded(ft_contract_id))
+        self.emit_event(MarketEvent::FtContractAdded(ft_contract_id))
             .expect("Notification Error");
     }
     /// Adds data on market item.
@@ -74,7 +74,7 @@ impl MarketService {
     ) {
         let market = self.get_mut();
         add_market_data(market, nft_contract_id, ft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::MarketDataAdded {
+        self.emit_event(MarketEvent::MarketDataAdded {
             nft_contract_id,
             token_id,
             price,
@@ -92,7 +92,7 @@ impl MarketService {
         let market = self.get_mut();
         let msg_src = msg::source();
         remove_market_data(market, &nft_contract_id, token_id, msg_src).await;
-        self.notify_on(MarketEvent::MarketDataRemoved {
+        self.emit_event(MarketEvent::MarketDataRemoved {
             owner: msg_src,
             nft_contract_id,
             token_id,
@@ -112,7 +112,7 @@ impl MarketService {
         let market = self.get_mut();
         let msg_src = msg::source();
         buy_item(market, &nft_contract_id, token_id, msg_src).await;
-        self.notify_on(MarketEvent::ItemSold {
+        self.emit_event(MarketEvent::ItemSold {
             owner: msg_src,
             nft_contract_id,
             token_id,
@@ -128,7 +128,7 @@ impl MarketService {
     ) {
         let market = self.get_mut();
         add_offer(market, &nft_contract_id, ft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::OfferAdded {
+        self.emit_event(MarketEvent::OfferAdded {
             nft_contract_id,
             ft_contract_id,
             token_id,
@@ -146,7 +146,7 @@ impl MarketService {
         let market = self.get_mut();
         let new_owner =
             accept_offer(market, &nft_contract_id, ft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::OfferAccepted {
+        self.emit_event(MarketEvent::OfferAccepted {
             nft_contract_id,
             token_id,
             new_owner,
@@ -163,7 +163,7 @@ impl MarketService {
     ) {
         let market = self.get_mut();
         withdraw(market, &nft_contract_id, ft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::Withdraw {
+        self.emit_event(MarketEvent::Withdraw {
             nft_contract_id,
             token_id,
             price,
@@ -198,7 +198,7 @@ impl MarketService {
             duration,
         )
         .await;
-        self.notify_on(MarketEvent::AuctionCreated {
+        self.emit_event(MarketEvent::AuctionCreated {
             nft_contract_id,
             token_id,
             price: min_price,
@@ -218,7 +218,7 @@ impl MarketService {
     pub async fn add_bid(&mut self, nft_contract_id: ContractId, token_id: TokenId, price: u128) {
         let market = self.get_mut();
         add_bid(market, &nft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::BidAdded {
+        self.emit_event(MarketEvent::BidAdded {
             nft_contract_id,
             token_id,
             price,
@@ -229,7 +229,7 @@ impl MarketService {
     pub async fn settle_auction(&mut self, nft_contract_id: ContractId, token_id: TokenId) {
         let market = self.get_mut();
         let event = settle_auction(market, &nft_contract_id, token_id).await;
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     pub fn get_market(&self) -> MarketState {

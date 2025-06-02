@@ -1,8 +1,10 @@
-import { useAtom } from 'jotai';
-import { useSearchParams } from 'react-router-dom';
 import { useAccount, Account, useAlert } from '@gear-js/react-hooks';
+import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { useWallet } from 'features/wallet/hooks';
+import { useSearchParams } from 'react-router-dom';
+
+import { useWallet } from '@/features/wallet/hooks';
+
 import { IS_AUTH_READY_ATOM } from './consts';
 
 function useAuth() {

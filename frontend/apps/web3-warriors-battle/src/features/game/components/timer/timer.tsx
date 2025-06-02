@@ -1,7 +1,10 @@
 import clsx from 'clsx';
+
 import { Text } from '@/components';
-import styles from './timer.module.scss';
+
 import { UseTimerParams, useTimer } from '../../hooks';
+
+import styles from './timer.module.scss';
 
 type Props = UseTimerParams & {
   isYourTurn?: boolean;
@@ -30,7 +33,7 @@ export function Timer({ remainingTime, shouldGoOn, isYourTurn }: Props) {
         </>
       ) : (
         <Text size="xl" weight="bold" className={styles.title}>
-          Waiting for opponent’s turn.
+          Waiting for opponent&apos;s turn.
         </Text>
       )}
     </div>

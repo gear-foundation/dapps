@@ -1,8 +1,7 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { cx } from '@/utils';
-import styles from './TextField.module.scss';
+
 import { TextFieldProps } from './TextField.interfaces';
+import styles from './TextField.module.scss';
 
 function TextField({ label, size, placeholder, ...props }: TextFieldProps) {
   return (

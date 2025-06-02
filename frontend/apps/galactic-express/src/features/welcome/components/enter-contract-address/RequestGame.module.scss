@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use '@/utils' as *;
 
 .button {
   width: 180px;
@@ -38,7 +38,7 @@
 
 .input {
   position: relative;
-  margin-bottom: 10px 
+  margin-bottom: 10px;
 }
 
 .field-error {

@@ -1,4 +1,6 @@
-# Sails Syndote
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=syndote/https://github.com/gear-foundation/dapps)
+
+# Syndote
 
 Sails Syndote is a Monopoly-inspired game where the players are automated programs that compete and strategize to dominate the game board. Each player represents a program, creating a unique experience as they navigate the game autonomously. A sample player program is available at this [link](https://github.com/gear-foundation/dapps/tree/master/contracts/syndote/player).
 

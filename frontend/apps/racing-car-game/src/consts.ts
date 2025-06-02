@@ -8,14 +8,15 @@ export const LOCAL_STORAGE = {
   CONTRACT_ADDRESS: 'simple-nft-contract-address',
 };
 
-export const ADDRESS = {
-  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
-  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
-  GASLESS_BACKEND: process.env.REACT_APP_GASLESS_BACKEND_ADDRESS as string,
-  BASE_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
-  STAGING_NODES: process.env.REACT_APP_STAGING_NODES_URL as string,
-  SENTRY_DSN: process.env.REACT_APP_SENTRY_DSN_CARS as string,
+export const ENV = {
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
+  GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS as string,
+  BASE_NODES: import.meta.env.VITE_DEFAULT_NODES_URL as string,
+  STAGING_NODES: import.meta.env.VITE_STAGING_NODES_URL as string,
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_CARS as string,
+  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT as string,
 };
 
 export const SEARCH_PARAMS = {

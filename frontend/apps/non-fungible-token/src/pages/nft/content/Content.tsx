@@ -1,10 +1,12 @@
-import { HexString } from '@polkadot/util/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
+import { HexString } from '@polkadot/util/types';
 import clsx from 'clsx';
+
 import { Addresses } from '../addresses';
 import { Attributes } from '../attributes';
 import { Card } from '../card';
+
 import styles from './Content.module.scss';
 
 type Props = {

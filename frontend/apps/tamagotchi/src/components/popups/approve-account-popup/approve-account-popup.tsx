@@ -1,4 +1,5 @@
 import { Modal } from '@gear-js/ui';
+
 import { ApproveAccountForm } from '@/components/forms/approve-account-form';
 
 export const ApproveAccountPopup = ({ close }: { close: () => void }) => {

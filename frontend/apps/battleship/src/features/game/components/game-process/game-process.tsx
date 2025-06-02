@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
 import { useEzTransactions } from 'gear-ez-transactions';
+import { useEffect, useState } from 'react';
+
+import { useCheckBalance } from '@dapps-frontend/hooks';
+
+import { Loader } from '@/components';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
-import styles from './GameProcess.module.scss';
-import { MapEnemy } from '../map';
+
 import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
-import { Loader } from '@/components';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { MapEnemy } from '../map';
+
+import styles from './GameProcess.module.scss';
 
 export default function GameProcess() {
   const { signless, gasless } = useEzTransactions();

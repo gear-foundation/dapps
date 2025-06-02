@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { ROUTES } from '@/app/consts';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
+
 import { useEventGameEndSubscription } from '../sails/events';
 import { useMakeMoveMessage } from '../sails/messages';
-import { useSingleplayerGame } from './use-singleplayer-game';
 import { useRemainingTimeQuery } from '../sails/queries';
+
+import { useSingleplayerGame } from './use-singleplayer-game';
 
 export const useProcessWithSingleplayer = () => {
   const navigate = useNavigate();

@@ -1,11 +1,12 @@
 import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+
 import { useApp, useLessons, useTamagotchi } from '@/app/context';
 import { useLesson5 } from '@/app/hooks/use-lesson-5';
 import { useTamagotchiMessage } from '@/app/hooks/use-tamagotchi';
 import { NotificationResponseTypes } from '@/app/types/lessons';
 import { cn, getNotificationTypeValue } from '@/app/utils';
-import { AccountActionsMenu } from '@/components/menus/account-actions-menu';
 import { getTamagotchiAge } from '@/app/utils/get-tamagotchi-age';
+import { AccountActionsMenu } from '@/components/menus/account-actions-menu';
 import { TamagotchiInfoCardRow } from '@/components/tamagotchi/tamagotchi-info-card-row';
 
 export const TamagotchiInfoCard = () => {

@@ -1,5 +1,6 @@
-import { useProgram } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
+
+import { useProgram } from '@/app/utils/sails';
 
 export const useMultiGameQuery = () => {
   const { account } = useAccount();
