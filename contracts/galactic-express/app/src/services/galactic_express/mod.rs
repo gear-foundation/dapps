@@ -98,38 +98,38 @@ impl GameService {
     pub fn create_new_session(&mut self, name: String) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::create_new_session(storage, name));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn cancel_game(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::cancel_game(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn leave_game(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::leave_game(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn register(&mut self, creator: ActorId, participant: Participant) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::register(storage, creator, participant));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn cancel_register(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::cancel_register(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn delete_player(&mut self, player_id: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::delete_player(storage, player_id));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn start_game(&mut self, fuel_amount: u8, payload_amount: u8) {
         let storage = self.get_mut();
         let event =
             services::utils::panicking(|| funcs::start_game(storage, fuel_amount, payload_amount));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn change_admin(&mut self, new_admin: ActorId) {
         let storage = self.get_mut();
@@ -138,7 +138,7 @@ impl GameService {
             services::utils::panic(GameError::DeniedAccess);
         }
         storage.admin = new_admin;
-        self.notify_on(Event::AdminChanged { new_admin })
+        self.emit_event(Event::AdminChanged { new_admin })
             .expect("Notification Error");
     }
     pub async fn kill(&mut self, inheritor: ActorId) {
@@ -155,7 +155,7 @@ impl GameService {
                 .expect("Error in `AddNewProgram`");
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }

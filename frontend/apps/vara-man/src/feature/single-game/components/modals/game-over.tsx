@@ -1,16 +1,14 @@
 import { useAtom } from 'jotai';
-
-import { Button } from '@/components';
-import { Icons } from '@/components/ui/icons';
-import { useGame } from '@/app/context/ctx-game';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useApp } from '@/app/context/ctx-app';
-
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useGame } from '@/app/context/ctx-game';
 import { Level } from '@/app/utils';
+import { Button } from '@/components';
+import { Icons } from '@/components/ui/icons';
+import { Modal } from '@/components/ui/modal/modal2';
 import { GAME_OVER, COINS } from '@/feature/game/consts';
 import { calculatePoints } from '@/feature/game/utils/calculatePoints';
-import { Modal } from '@/components/ui/modal/modal2';
 
 export const GameOverModal = ({ restartGame }: { restartGame: () => void }) => {
   const [searchParams] = useSearchParams();

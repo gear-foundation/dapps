@@ -15,8 +15,8 @@ yarn add @dapps-frontend/error-tracking
 Specify Sentry environment variables:
 
 ```sh
-REACT_APP_SENTRY_DSN=
-REACT_APP_SENTRY_TARGET=
+VITE_SENTRY_DSN=
+VITE_SENTRY_TARGET=
 ```
 
 or
@@ -81,10 +81,10 @@ For dev and debug purposes. Be careful to only share public information, such as
 It's recommended to stick to below varaible names for chain values, since they'll be logged by default:
 
 ```sh
-REACT_APP_NODE_ADDRESS=
-REACT_APP_CONTRACT_ADDRESS=
-REACT_APP_IPFS_ADDRESS=
-REACT_APP_IPFS_GATEWAY_ADDRESS=
+VITE_NODE_ADDRESS=
+VITE_CONTRACT_ADDRESS=
+VITE_IPFS_ADDRESS=
+VITE_IPFS_GATEWAY_ADDRESS=
 ```
 
 or
@@ -131,7 +131,7 @@ logPublicEnvs({ marketplaceContractAddress });
 Specify Google Analytics environment variable:
 
 ```sh
-REACT_APP_GTM_ID=
+VITE_GTM_ID=
 ```
 
 or

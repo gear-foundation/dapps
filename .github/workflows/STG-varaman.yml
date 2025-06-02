@@ -3,7 +3,7 @@ name: Staging - Deploy Vara Man
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
     paths:
       - frontend/apps/vara-man/**
       - frontend/packages/**
@@ -18,7 +18,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: vara-man
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -78,8 +78,9 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_VARA_MAN }}
-            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_VARA_MAN }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_VARA_MAN }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS_VARA_MAN }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_VARAMAN }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

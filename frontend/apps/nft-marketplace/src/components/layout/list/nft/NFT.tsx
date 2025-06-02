@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from '@gear-js/ui';
 import { Link } from 'react-router-dom';
+
 import styles from './NFT.module.scss';
 
 type Props = {

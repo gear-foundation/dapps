@@ -72,7 +72,7 @@ impl CarRacesService {
                 .expect("Error in `AddNewProgram`");
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }
@@ -175,10 +175,10 @@ impl CarRacesService {
 
         match round_info {
             Some(info) => {
-                self.notify_on(Event::RoundInfo(info))
+                self.emit_event(Event::RoundInfo(info))
                     .expect("Notification Error");
                 if game_finished {
-                    self.notify_on(Event::GameFinished { player: msg_src })
+                    self.emit_event(Event::GameFinished { player: msg_src })
                         .expect("Notification Error");
                 }
             }

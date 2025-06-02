@@ -1,6 +1,8 @@
-import styles from './typography.module.scss';
 import clsx from 'clsx';
+
 import { textVariants } from '@/components/ui/text/text';
+
+import styles from './typography.module.scss';
 
 type HelpDescriptionProps = React.PropsWithChildren & { className?: string };
 

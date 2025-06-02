@@ -1,7 +1,9 @@
-import { Navigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
-import { AuthRouteProps } from './AuthRoute.interface';
+import { Navigate } from 'react-router-dom';
+
 import { ACCOUNT } from '@/App.routes';
+
+import { AuthRouteProps } from './AuthRoute.interface';
 
 function AuthRoute({ children }: AuthRouteProps) {
   const { account } = useAccount();

@@ -1,5 +1,7 @@
 import { useProgramEvent } from '@gear-js/react-hooks';
+
 import { useProgram } from '@/app/utils/sails';
+
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
 

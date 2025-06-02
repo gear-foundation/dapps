@@ -1,6 +1,6 @@
+import IntroClockImage from '@/assets/images/intro-clock.png';
 import { HomeBackground } from '@/components/sections/home/home-background';
 import { HomeFormGradient } from '@/components/sections/home/home-form-gradient';
-import IntroClockImage from '@/assets/images/intro-clock.png';
 
 export function HomeNotActive() {
   return (

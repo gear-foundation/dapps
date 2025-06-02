@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { BaseHTMLAttributes } from 'react';
+
 import styles from './text.module.scss';
 
 export const textVariants = cva('', {

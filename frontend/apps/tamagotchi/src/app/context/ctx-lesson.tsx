@@ -1,8 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+
 import { LessonState } from '@/app/types/lessons';
-import { useProgramMetadata } from '../hooks/use-metadata';
 import meta5 from '@/assets/meta/meta5.txt';
+
+import { useProgramMetadata } from '../hooks/use-metadata';
 
 const key = 'tmgState';
 

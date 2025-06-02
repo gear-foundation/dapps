@@ -1,9 +1,9 @@
-import { LucideProps, type Icon as LucideIcon } from 'lucide-react';
+import { LucideProps, Icon as LucideIcon } from 'lucide-react';
 
-export type Icon = LucideIcon;
+export type Icon = typeof LucideIcon;
 
 export const Icons = {
-  logo: ({ ...props }: LucideProps) => (
+  logo: () => (
     <svg width="92" height="60" viewBox="0 0 92 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M17.9287 22.1352L12.0764 0H7.94296L17.9287 37.7691V52.1831L4.13341 0H0L15.862 60H17.9287H19.9941H22.0608V0H17.9287V22.1352Z"
@@ -23,7 +23,7 @@ export const Icons = {
       />
     </svg>
   ),
-  gameJoystick: ({ ...props }: LucideProps) => (
+  gameJoystick: () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M17 4.5C18.5913 4.5 20.1174 5.13214 21.2426 6.25736C22.3679 7.38258 23 8.9087 23 10.5V14.5C23 16.0913 22.3679 17.6174 21.2426 18.7426C20.1174 19.8679 18.5913 20.5 17 20.5H7C5.4087 20.5 3.88258 19.8679 2.75736 18.7426C1.63214 17.6174 1 16.0913 1 14.5V10.5C1 8.9087 1.63214 7.38258 2.75736 6.25736C3.88258 5.13214 5.4087 4.5 7 4.5H17ZM17 6.5H7C5.97376 6.5 4.98677 6.89444 4.24319 7.60172C3.4996 8.30901 3.05631 9.27504 3.005 10.3L3 10.5V14.5C3 15.5262 3.39444 16.5132 4.10172 17.2568C4.80901 18.0004 5.77504 18.4437 6.8 18.495L7 18.5H17C18.0262 18.5 19.0132 18.1056 19.7568 17.3983C20.5004 16.691 20.9437 15.725 20.995 14.7L21 14.5V10.5C21 9.47376 20.6056 8.48677 19.8983 7.74319C19.191 6.9996 18.225 6.55631 17.2 6.505L17 6.5ZM10 9.5V11.5H12V13.5H9.999L10 15.5H8L7.999 13.5H6V11.5H8V9.5H10ZM18 13.5V15.5H16V13.5H18ZM16 9.5V11.5H14V9.5H16Z"
@@ -31,7 +31,7 @@ export const Icons = {
       />
     </svg>
   ),
-  search: ({ ...props }: LucideProps) => (
+  search: () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_419_451109)">
         <path
@@ -46,7 +46,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  admin: ({ ...props }: LucideProps) => (
+  admin: () => (
     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_419_451116)">
         <path
@@ -61,7 +61,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  skull: ({ ...props }: LucideProps) => (
+  skull: () => (
     <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_416_347787)">
         <path
@@ -76,7 +76,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  skullDisable: ({ ...props }: LucideProps) => (
+  skullDisable: () => (
     <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_416_347788)">
         <path
@@ -91,7 +91,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  speedLevel: ({ ...props }: LucideProps) => (
+  speedLevel: () => (
     <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_416_347795)">
         <path
@@ -106,7 +106,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  speedLevelDisable: ({ ...props }: LucideProps) => (
+  speedLevelDisable: () => (
     <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_416_347799)">
         <path
@@ -808,7 +808,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  statsTimer: ({ ...props }: LucideProps) => (
+  statsTimer: () => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_422_477513)">
         <path
@@ -863,7 +863,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  exit: ({ ...props }: LucideProps) => (
+  exit: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
@@ -1007,7 +1007,7 @@ export const Icons = {
       </defs>
     </svg>
   ),
-  blindMode: ({ ...props }: LucideProps) => (
+  blindMode: () => (
     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0_775_59429)">
         <path

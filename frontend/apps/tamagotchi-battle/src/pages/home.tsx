@@ -1,8 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
+
 import { StartDisclaimer, Wallet } from '@dapps-frontend/ui';
-import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
-import { useBattle } from 'features/battle/context';
+
+import { CreateTamagotchiForm } from '@/features/battle/components/create-tamagotchi-form';
+import { useBattle } from '@/features/battle/context';
 
 export const Home = () => {
   const { battle } = useBattle();

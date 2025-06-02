@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
 import { Account, useAccount } from '@gear-js/react-hooks';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
+
 import { useWallet } from '../Wallet/hooks';
+
 import { IS_AUTH_READY_ATOM } from './atoms';
 
 export function useAuth() {

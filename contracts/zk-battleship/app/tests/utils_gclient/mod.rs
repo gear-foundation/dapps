@@ -104,7 +104,7 @@ pub async fn init(
         (BUILTIN_BLS381, start_vk, move_vk, config).encode(),
     ]
     .concat();
-    let path = "../target/wasm32-unknown-unknown/release/battleship_wasm.opt.wasm";
+    let path = "../target/wasm32-gear/release/battleship_wasm.opt.wasm";
     let gas_info = api
         .calculate_upload_gas(
             None,

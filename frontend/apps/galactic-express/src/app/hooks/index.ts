@@ -1,2 +1,5 @@
 export { usePending } from './use-pending';
-export * from './use-sign-and-send';
+export { useExecuteWithPending } from './use-execute-with-pending';
+export { useSignAndSend } from './use-sign-and-send';
+
+export type { Options } from './use-execute-with-pending';

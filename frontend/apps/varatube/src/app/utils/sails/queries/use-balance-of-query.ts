@@ -1,5 +1,6 @@
-import { useVftProgram } from '../sails';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
+import { useVftProgram } from '../sails';
 
 export const useBalanceOfQuery = () => {
   const program = useVftProgram();

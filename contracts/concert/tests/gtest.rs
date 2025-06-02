@@ -16,10 +16,7 @@ pub const AMOUNT: U256 = U256::one();
 pub const DATE: u128 = 100000;
 
 fn init_multitoken(sys: &System) -> (ActorId, Program<'_>) {
-    let vmt = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vmt.opt.wasm",
-    );
+    let vmt = Program::from_file(sys, "../target/wasm32-gear/release/extended_vmt.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vmt.send_bytes(USER_ID, encoded_request);
@@ -54,7 +51,7 @@ async fn create_concert() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/concert.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
     let (vmt_id, _vmt_program) = init_multitoken(program_space.system());
@@ -98,7 +95,7 @@ async fn buy_tickets() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/concert.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
     let (vmt_id, vmt_program) = init_multitoken(program_space.system());
@@ -161,7 +158,7 @@ async fn hold_concert() {
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/concert.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
     let (vmt_id, vmt_program) = init_multitoken(program_space.system());

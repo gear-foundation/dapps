@@ -1,15 +1,18 @@
-import clsx from 'clsx';
 import { VariantProps, cva } from 'class-variance-authority';
+import clsx from 'clsx';
+
+import { PlayerSettings } from '@/app/utils';
 import { Text } from '@/components';
+
 import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
-import { ReactComponent as VectorIcon } from './vector.svg';
-import { HealthIndicator } from '../health-indicator';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
-import { PlayerSettings } from '@/app/utils';
-import styles from './character-stats.module.scss';
+import { HealthIndicator } from '../health-indicator';
 
-export const variants = cva('', {
+import styles from './character-stats.module.scss';
+import VectorIcon from './vector.svg?react';
+
+const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },
   defaultVariants: { align: 'left', status: 'alive' },
 });

@@ -1,7 +1,8 @@
+import { withoutCommas } from '@gear-js/react-hooks';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+
 import { TamagotchiAvatarAge } from '@/app/types/tamagotchi';
-import { withoutCommas } from '@gear-js/react-hooks';
 
 export const getTamagotchiAge = (v: string) => {
   dayjs.extend(relativeTime);

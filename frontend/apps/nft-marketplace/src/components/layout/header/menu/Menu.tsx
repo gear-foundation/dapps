@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+
 import styles from './Menu.module.scss';
 
 function Menu() {

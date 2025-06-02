@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { isNull } from '@polkadot/util';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
-import { useProgram } from '@/app/utils/sails';
-import { useMultiplayerGame } from '../../hooks';
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { isNull } from '@polkadot/util';
+import { useCallback, useEffect, useState } from 'react';
+
+import { useProgram } from '@/app/utils/sails';
+import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
+import { useShips } from '@/features/zk/hooks/use-ships';
+
+import { useMultiplayerGame } from '../../hooks';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
 
 export type GameEndEvent = {

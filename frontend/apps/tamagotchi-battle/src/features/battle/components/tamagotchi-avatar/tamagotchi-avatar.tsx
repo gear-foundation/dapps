@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { SpriteIcon } from 'components/ui/sprite-icon';
-import { getTamagotchiAgeDiff, getTamagotchiColor } from '../../utils';
+
+import { cn } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+
+import type { BattleRoundMoveVariants, TamagotchiColor } from '../../types/battles';
 import type { StoreItemsNames } from '../../types/ft-store';
 import type { TamagotchiAvatarEmotions } from '../../types/tamagotchi';
-import type { BattleRoundMoveVariants, TamagotchiColor } from '../../types/battles';
-import { cn } from 'app/utils';
+import { getTamagotchiAgeDiff, getTamagotchiColor } from '../../utils';
 
 const transition = {
   duration: 0.5,

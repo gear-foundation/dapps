@@ -1,7 +1,9 @@
-import { Heading, Loader } from 'components';
 import { useParams } from 'react-router-dom';
-import { ADDRESS } from 'consts';
-import { useSubscription } from 'hooks';
+
+import { Heading, Loader } from '@/components';
+import { ENV } from '@/consts';
+import { useSubscription } from '@/hooks';
+
 import styles from './Video.module.scss';
 
 const description =
@@ -31,7 +33,7 @@ function Video() {
       <div className={styles.videoWrapper}>
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video controls>
-          <source src={`${ADDRESS.IPFS_GATEWAY}${cid}`} type="video/mp4" />
+          <source src={`${ENV.IPFS_GATEWAY}${cid}`} type="video/mp4" />
         </video>
       </div>
 

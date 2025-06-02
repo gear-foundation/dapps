@@ -1,14 +1,18 @@
 import { decodeAddress } from '@gear-js/api';
 import { useAccount, useAlert, useHandleCalculateGas, useSendMessage, withoutCommas } from '@gear-js/react-hooks';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useAtom } from 'jotai';
-import metaMasterNFT from 'assets/master_nft.meta.txt';
-import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from 'hooks';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { IUserNFTRequest, NFT } from './types';
+
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import metaMasterNFT from '@/assets/master_nft.meta.txt';
+import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from '@/hooks';
+
+import { ENV } from '../../consts';
+
 import { IS_MINTING_ATOM, NFTS_ATOM, USER_NFT_QUERY_ATOM } from './consts';
-import { ADDRESS } from '../../consts';
+import { IUserNFTRequest, NFT } from './types';
 
 export function useNFTSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,7 +47,7 @@ export function useNFTs() {
   const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
   const [userNftQuery, setUserNftQuery] = useAtom(USER_NFT_QUERY_ATOM);
 
-  const getIpfsAddress = (cid: string) => `${ADDRESS.IPFS_GATEWAY}/${cid}`;
+  const getIpfsAddress = (cid: string) => `${ENV.IPFS_GATEWAY}/${cid}`;
 
   const getImageUrl = (value: string) => (value.startsWith('https://') ? value : getIpfsAddress(value));
 

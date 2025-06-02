@@ -1,16 +1,18 @@
 import { decodeAddress } from '@gear-js/api';
-import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat, useAccount, useAlert } from '@gear-js/react-hooks';
+import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRandomPairOr } from '../../hooks';
-import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
-import styles from './create-session-modal.module.css';
-import { SignlessParams } from '../signless-params-list';
-import { AccountPair } from '../account-pair';
+
 import { BALANCE_VALUE_TO_ISSUE_VOUCHER, BALANCE_VALUE_TO_START_GAME, DURATIONS, REQUIRED_MESSAGE } from '../../consts';
+import { useSignlessTransactions } from '../../context';
+import { useRandomPairOr } from '../../hooks';
+import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
+import { AccountPair } from '../account-pair';
+import { SignlessParams } from '../signless-params-list';
+
+import styles from './create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'> & {
   allowedActions: string[];
@@ -91,7 +93,7 @@ function CreateSessionModal({
 
     const duration = getMilliseconds(Number(durationMinutes));
 
-    const key = shouldIssueVoucher ? decodeAddress(pair.address) : account!.decodedAddress;
+    const key = shouldIssueVoucher ? decodeAddress(pair.address) : account.decodedAddress;
     const onFinally = () => setIsLoading(false);
 
     let pairToSave: KeyringPair;
@@ -132,7 +134,7 @@ function CreateSessionModal({
           onFinally,
           pair: pairToSave,
         });
-      } catch (err) {
+      } catch (_err) {
         alert.error('Error when fetching gasless voucher');
         onFinally();
       }
@@ -158,7 +160,8 @@ function CreateSessionModal({
             },
             {
               heading: 'Voucher to issue:',
-              value: `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}`,
+              value:
+                issueVoucherValue > 0 ? `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}` : '',
             },
           ]}
         />

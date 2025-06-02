@@ -1,4 +1,5 @@
 import { HexString } from '@polkadot/util/types';
+
 import { SingleGame } from '../../app/utils/sails/lib/lib';
 
 export interface IGameState {

@@ -8,14 +8,14 @@ import {
   useReadFullState,
   useVouchers,
 } from '@gear-js/react-hooks';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useMemo, useEffect, useState } from 'react';
 
-import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
+import { getUnlockedPair } from '../utils';
 
 import { SIGNLESS_STORAGE_KEY } from './consts';
-import { getUnlockedPair } from '../utils';
-import { getStorage } from './utils';
 import { BaseProgram, Session, State } from './types';
+import { getStorage } from './utils';
 
 function useMetadataSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { account } = useAccount();

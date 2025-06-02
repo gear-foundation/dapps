@@ -1,4 +1,5 @@
 import { AnyJson } from '@polkadot/types/types';
+
 import { AUTH_API_ADDRESS } from './consts';
 import { IApiError } from './types';
 

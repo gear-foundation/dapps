@@ -41,8 +41,8 @@ jobs:
         with:
           name: wasm
           path: |
-            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
-            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+            contracts/target/wasm32-gear/release/*.*.wasm
+            contracts/target/wasm32-gear/release/*.meta.txt
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
@@ -57,8 +57,8 @@ jobs:
           tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
           prerelease: ${{ github.ref == 'refs/heads/master' }}
           files: |
-            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
-            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
+            contracts/target/wasm32-gear/release/*.*.wasm
+            contracts/target/wasm32-gear/release/*.meta.txt
 
       - name: Upload the GitHub Pages artifact
         if: github.ref == 'refs/heads/master'

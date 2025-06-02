@@ -1,4 +1,4 @@
-import { Variants } from 'framer-motion'
+import { Variants } from 'framer-motion';
 
 export const variantsOverlay: Variants = {
   closed: {
@@ -16,7 +16,7 @@ export const variantsOverlay: Variants = {
       ease: 'easeOut',
     },
   },
-}
+};
 export const variantsPanel: Variants = {
   closed: {
     y: 'var(--y-closed, 0)',
@@ -36,4 +36,4 @@ export const variantsPanel: Variants = {
       duration: 0.2,
     },
   },
-}
+};

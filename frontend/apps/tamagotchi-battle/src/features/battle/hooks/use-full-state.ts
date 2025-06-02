@@ -1,5 +1,8 @@
-import { useReadState } from 'app/hooks/api';
+import { HexString } from '@gear-js/api';
 import { useMemo } from 'react';
+
+import { useReadState } from '@/app/hooks/api';
+
 import {
   BattleAdminsResponse,
   BattleCompletedGamesResponse,
@@ -10,7 +13,6 @@ import {
   BattlePlayersIdsResponse,
   BattlePlayersResponse,
 } from '../types/battles';
-import { HexString } from '@gear-js/api';
 
 export const useFullState = (programId: HexString, meta: string) => {
   const getPairsPayload = useMemo(() => ({ GetPairs: null }), []);
