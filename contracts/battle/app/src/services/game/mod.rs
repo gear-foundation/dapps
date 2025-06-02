@@ -8,8 +8,9 @@ use sails_rs::{
     prelude::*,
 };
 mod funcs;
+pub mod session;
 pub mod utils;
-use utils::{Config, *};
+pub use utils::{Config, *};
 
 #[derive(Debug, Default, Clone)]
 struct Storage {
@@ -111,6 +112,7 @@ impl BattleService {
         attack: u16,
         defence: u16,
         dodge: u16,
+        session_for_account: Option<ActorId>,
     ) {
         let storage = self.get_mut();
         let res = funcs::create_new_battle(
@@ -122,13 +124,14 @@ impl BattleService {
             attack,
             defence,
             dodge,
+            session_for_account,
         )
         .await;
         let event = match res {
             Ok(v) => v,
             Err(e) => services::utils::panic(e),
         };
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub async fn register(
         &mut self,
@@ -139,66 +142,83 @@ impl BattleService {
         attack: u16,
         defence: u16,
         dodge: u16,
+        session_for_account: Option<ActorId>,
     ) {
         let storage = self.get_mut();
         let res = funcs::battle_registration(
-            storage, game_id, warrior_id, appearance, user_name, attack, defence, dodge,
+            storage,
+            game_id,
+            warrior_id,
+            appearance,
+            user_name,
+            attack,
+            defence,
+            dodge,
+            session_for_account,
         )
         .await;
         let event = match res {
             Ok(v) => v,
             Err(e) => services::utils::panic(e),
         };
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn cancel_register(&mut self) {
+    pub fn cancel_register(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::cancel_register(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event =
+            services::utils::panicking(|| funcs::cancel_register(storage, session_for_account));
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn delete_player(&mut self, player_id: ActorId) {
+    pub fn delete_player(&mut self, player_id: ActorId, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::delete_player(storage, player_id));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event = services::utils::panicking(|| {
+            funcs::delete_player(storage, player_id, session_for_account)
+        });
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn cancel_tournament(&mut self) {
+    pub fn cancel_tournament(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::cancel_tournament(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event =
+            services::utils::panicking(|| funcs::cancel_tournament(storage, session_for_account));
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn delayed_cancel_tournament(&mut self, game_id: ActorId, time_creation: u64) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::delayed_cancel_tournament(storage, game_id, time_creation)
         });
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn start_battle(&mut self) {
+    pub fn start_battle(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::start_battle(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event =
+            services::utils::panicking(|| funcs::start_battle(storage, session_for_account));
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn make_move(&mut self, warrior_move: Move) {
+    pub fn make_move(&mut self, warrior_move: Move, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::make_move(storage, warrior_move));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event = services::utils::panicking(|| {
+            funcs::make_move(storage, warrior_move, session_for_account)
+        });
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn automatic_move(&mut self, player_id: ActorId, number_of_victories: u8, round: u8) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::automatic_move(storage, player_id, number_of_victories, round)
         });
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn start_next_fight(&mut self) {
+    pub fn start_next_fight(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::start_next_fight(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event =
+            services::utils::panicking(|| funcs::start_next_fight(storage, session_for_account));
+        self.emit_event(event.clone()).expect("Notification Error");
     }
-    pub fn exit_game(&mut self) {
+    pub fn exit_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::exit_game(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        let event = services::utils::panicking(|| funcs::exit_game(storage, session_for_account));
+        self.emit_event(event.clone()).expect("Notification Error");
     }
     pub fn add_admin(&mut self, new_admin: ActorId) {
         let storage = self.get_mut();
@@ -206,7 +226,7 @@ impl BattleService {
             services::utils::panic(BattleError::AccessDenied);
         }
         storage.admins.insert(new_admin);
-        self.notify_on(Event::AdminAdded { new_admin })
+        self.emit_event(Event::AdminAdded { new_admin })
             .expect("Notification Error");
     }
     pub fn change_config(&mut self, config: Config) {
@@ -215,7 +235,7 @@ impl BattleService {
             services::utils::panic(BattleError::AccessDenied);
         }
         storage.config = config.clone();
-        self.notify_on(Event::ConfigChanged { config })
+        self.emit_event(Event::ConfigChanged { config })
             .expect("Notification Error");
     }
 

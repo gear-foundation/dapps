@@ -1,6 +1,6 @@
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 export type ActorId = string;
 
@@ -125,7 +125,10 @@ export class Program {
   public readonly session: Session;
   public readonly single: Single;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {
       VerifyingKeyBytes: {
         alpha_g1_beta_g2: 'Vec<u8>',

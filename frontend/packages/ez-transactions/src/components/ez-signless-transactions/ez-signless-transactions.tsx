@@ -1,4 +1,5 @@
-import { SignlessTransactions } from '@/features/signless-transactions';
+import { SignlessTransactions } from '@ez/features/signless-transactions';
+
 import { useEzTransactions } from '../../context';
 
 type Props = {

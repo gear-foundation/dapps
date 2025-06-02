@@ -1,20 +1,22 @@
 import { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
-import { PlayerProps } from './Player.interfaces';
-import { cx } from '@/utils';
-import styles from './Player.module.scss';
-import { Button } from '@/ui';
-import PlaySVG from '@/assets/icons/player-play-icon.svg';
+
+import PauseSVG from '@/assets/icons/pause-icon.svg';
+import BLockedCameraSVG from '@/assets/icons/player-camera-blocked-icon.svg';
+import CameraSVG from '@/assets/icons/player-camera-icon.svg';
+import FullScreenSVG from '@/assets/icons/player-fullscreen-icon.svg';
+import LeaveSVG from '@/assets/icons/player-leave-icon.svg';
 import MicSVG from '@/assets/icons/player-mic-icon.svg';
 import MutedMicSVG from '@/assets/icons/player-mic-muted-icon.svg';
+import PlaySVG from '@/assets/icons/player-play-icon.svg';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+import { PlayerProps } from './Player.interfaces';
+import styles from './Player.module.scss';
+
 import ShareSVG from '@/assets/icons/player-share-icon.svg';
 import ShareActiveSVG from '@/assets/icons/player-share-active-icon.svg';
-import CameraSVG from '@/assets/icons/player-camera-icon.svg';
-import BLockedCameraSVG from '@/assets/icons/player-camera-blocked-icon.svg';
-import LeaveSVG from '@/assets/icons/player-leave-icon.svg';
-import FullScreenSVG from '@/assets/icons/player-fullscreen-icon.svg';
 import VolumeSVG from '@/assets/icons/player-volume-icon.svg';
 import VolumeMutedSVG from '@/assets/icons/player-volume-muted-icon.svg';
-import PauseSVG from '@/assets/icons/pause-icon.svg';
 
 function Player({
   mode,

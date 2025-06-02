@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ButtonHTMLAttributes } from 'react';
 import { Loader2 } from 'lucide-react';
+import { ButtonHTMLAttributes } from 'react';
+
 import styles from './buttons.module.scss';
 
 export const buttonVariants = cva(styles.base, {
@@ -55,7 +56,6 @@ export function Button({
       type="button"
       className={buttonVariants({ variant, size, state: isLoading ? 'loading' : 'normal', width, className })}
       disabled={disabled || isLoading}
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}>
       {isLoading && <Loader2 width={20} height={20} className={styles.loader} />}
       {children}

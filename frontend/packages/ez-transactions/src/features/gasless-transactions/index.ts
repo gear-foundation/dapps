@@ -1,10 +1,10 @@
+import { GaslessTransactions, EnableGaslessSession } from './components';
 import {
   GaslessTransactionsProvider,
   useGaslessTransactions,
   GaslessContext,
   DEFAULT_GASLESS_CONTEXT,
 } from './context';
-import { GaslessTransactions, EnableGaslessSession } from './components';
 
 export {
   GaslessTransactionsProvider,

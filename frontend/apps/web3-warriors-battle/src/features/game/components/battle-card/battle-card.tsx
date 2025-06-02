@@ -1,11 +1,14 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
+
+import { PlayerSettings } from '@/app/utils';
 import { Text } from '@/components';
+
 import { AttackIcon, CupStarIcon, DefenceIcon, DodgeIcon, HealthIcon } from '../../assets/images';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
+
 import styles from './battle-card.module.scss';
-import { PlayerSettings } from '@/app/utils';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right } },

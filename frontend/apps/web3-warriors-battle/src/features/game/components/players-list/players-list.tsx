@@ -1,12 +1,15 @@
-import clsx from 'clsx';
-import { Button } from '@gear-js/vara-ui';
 import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import clsx from 'clsx';
 import { useState } from 'react';
+
 import { BaseComponentProps } from '@/app/types';
 import { Text } from '@/components';
 import { VaraIcon } from '@/components/layout';
 import { Heading } from '@/components/ui/heading';
+
 import { PlayerStatus } from '../player-status/player-status';
+
 import styles from './players-list.module.scss';
 
 type Item = {

@@ -1,16 +1,19 @@
-import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAccount } from '@gear-js/react-hooks';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
-import { useAccount } from '@gear-js/react-hooks';
-import styles from './Watch.module.scss';
-import { cx } from '@/utils';
-import { CandidateMsg, ErrorMsg, OfferMsg, StreamState, WatchProps } from './Watch.interface';
-import { Player } from '../Player';
-import { Loader } from '@/components';
-import { RTC_CONFIG } from '../../config';
-import { Button } from '@/ui';
+import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { useGetStateQuery } from '@/app/utils';
+import { Loader } from '@/components';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { RTC_CONFIG } from '../../config';
+import { Player } from '../Player';
+
+import { CandidateMsg, ErrorMsg, OfferMsg, StreamState, WatchProps } from './Watch.interface';
+import styles from './Watch.module.scss';
 
 function Watch({ socket, streamId }: WatchProps) {
   const navigate = useNavigate();
@@ -107,7 +110,7 @@ function Watch({ socket, streamId }: WatchProps) {
 
           setLocalStream(str);
         } else {
-          setLocalStream((prev) => new MediaStream([...(prev ? prev!.getTracks() : []), event.track]));
+          setLocalStream((prev) => new MediaStream([...(prev ? prev.getTracks() : []), event.track]));
         }
       };
 

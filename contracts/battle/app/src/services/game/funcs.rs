@@ -1,9 +1,10 @@
+use super::session::{ActionsForSession, SessionData, Storage as SessionStorage};
 use crate::services::game::{
     Appearance, Battle, BattleError, BattleResult, Config, Event, Move, Pair, Player,
     PlayerSettings, State, Storage,
 };
 use gstd::{exec, prelude::*, ReservationId};
-use sails_rs::{gstd::msg, prelude::*};
+use sails_rs::{collections::HashMap, gstd::msg, prelude::*};
 
 async fn check_owner(warrior_id: ActorId, msg_src: ActorId) -> Result<(), BattleError> {
     let request = [
@@ -55,8 +56,18 @@ pub async fn create_new_battle(
     attack: u16,
     defence: u16,
     dodge: u16,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::CreateNewBattle,
+    );
+
     let msg_value = msg::value();
 
     let reply = create(
@@ -68,7 +79,7 @@ pub async fn create_new_battle(
         attack,
         defence,
         dodge,
-        msg_src,
+        player_id,
         msg_value,
     )
     .await;
@@ -87,13 +98,13 @@ async fn create(
     attack: u16,
     defence: u16,
     dodge: u16,
-    msg_src: ActorId,
+    player_id: ActorId,
     msg_value: u128,
 ) -> Result<Event, BattleError> {
     let time_creation = exec::block_timestamp();
     check_player_settings(attack, defence, dodge, &storage.config)?;
     let appearance = if let Some(id) = warrior_id {
-        check_owner(id, msg_src).await?;
+        check_owner(id, player_id).await?;
         get_appearance(id).await?
     } else if let Some(app) = appearance {
         app
@@ -101,7 +112,7 @@ async fn create(
         return Err(BattleError::IdAndAppearanceIsNone);
     };
 
-    if storage.battles.contains_key(&msg_src) {
+    if storage.battles.contains_key(&player_id) {
         return Err(BattleError::AlreadyHaveBattle);
     }
 
@@ -109,7 +120,7 @@ async fn create(
     let player = Player {
         warrior_id,
         appearance,
-        owner: msg_src,
+        owner: player_id,
         user_name: user_name.clone(),
         player_settings: PlayerSettings {
             health: storage.config.health,
@@ -121,22 +132,22 @@ async fn create(
         ultimate_reload: 0,
         reflect_reload: 0,
     };
-    battle.participants.insert(msg_src, player);
+    battle.participants.insert(player_id, player);
     battle.bid = msg_value;
-    battle.admin = msg_src;
+    battle.admin = player_id;
     battle.time_creation = time_creation;
     battle.battle_name = battle_name;
-    storage.battles.insert(msg_src, battle);
-    storage.players_to_battle_id.insert(msg_src, msg_src);
+    storage.battles.insert(player_id, battle);
+    storage.players_to_battle_id.insert(player_id, player_id);
 
     send_delayed_message_for_cancel_tournament(
-        msg_src,
+        player_id,
         time_creation,
         storage.config.gas_to_cancel_the_battle,
         storage.config.time_to_cancel_the_battle,
     );
     Ok(Event::NewBattleCreated {
-        battle_id: msg_src,
+        battle_id: player_id,
         bid: msg_value,
     })
 }
@@ -150,12 +161,21 @@ pub async fn battle_registration(
     attack: u16,
     defence: u16,
     dodge: u16,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::Registration,
+    );
     let msg_value = msg::value();
 
     let reply = register(
-        storage, admin_id, warrior_id, appearance, user_name, attack, defence, dodge, msg_src,
+        storage, admin_id, warrior_id, appearance, user_name, attack, defence, dodge, player_id,
         msg_value,
     )
     .await;
@@ -174,13 +194,13 @@ async fn register(
     attack: u16,
     defence: u16,
     dodge: u16,
-    msg_src: ActorId,
+    player_id: ActorId,
     msg_value: u128,
 ) -> Result<Event, BattleError> {
     check_player_settings(attack, defence, dodge, &storage.config)?;
 
     let appearance = if let Some(id) = warrior_id {
-        check_owner(id, msg_src).await?;
+        check_owner(id, player_id).await?;
         get_appearance(id).await?
     } else if let Some(app) = appearance {
         app
@@ -188,7 +208,7 @@ async fn register(
         return Err(BattleError::IdAndAppearanceIsNone);
     };
 
-    if storage.players_to_battle_id.contains_key(&msg_src) {
+    if storage.players_to_battle_id.contains_key(&player_id) {
         return Err(BattleError::SeveralRegistrations);
     }
     let battle = storage
@@ -212,13 +232,13 @@ async fn register(
     )
     .expect("Reservation across executions");
 
-    battle.reservation.insert(msg_src, reservation_id);
+    battle.reservation.insert(player_id, reservation_id);
     battle.participants.insert(
-        msg_src,
+        player_id,
         Player {
             warrior_id,
             appearance,
-            owner: msg_src,
+            owner: player_id,
             user_name: user_name.clone(),
             player_settings: PlayerSettings {
                 health: storage.config.health,
@@ -231,7 +251,7 @@ async fn register(
             reflect_reload: 0,
         },
     );
-    storage.players_to_battle_id.insert(msg_src, admin_id);
+    storage.players_to_battle_id.insert(player_id, admin_id);
     Ok(Event::PlayerRegistered {
         admin_id,
         user_name,
@@ -239,11 +259,22 @@ async fn register(
     })
 }
 
-pub fn cancel_register(storage: &mut Storage) -> Result<Event, BattleError> {
+pub fn cancel_register(
+    storage: &mut Storage,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
     let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::Registration,
+    );
     let admin_id = storage
         .players_to_battle_id
-        .get(&msg_src)
+        .get(&player_id)
         .ok_or(BattleError::NoSuchPlayer)?;
 
     let battle = storage
@@ -251,61 +282,19 @@ pub fn cancel_register(storage: &mut Storage) -> Result<Event, BattleError> {
         .get_mut(admin_id)
         .ok_or(BattleError::NoSuchGame)?;
 
-    if battle.admin == msg_src {
+    if battle.admin == player_id {
         return Err(BattleError::AccessDenied);
     }
     if battle.state != State::Registration {
         return Err(BattleError::WrongState);
     }
-    let reservation_id = battle
-        .reservation
-        .get(&msg_src)
-        .ok_or(BattleError::NoSuchReservation)?;
-
-    if battle.bid != 0 {
-        msg::send_with_gas(msg_src, "", 0, battle.bid).expect("Error in sending the value");
-    }
-    reservation_id
-        .unreserve()
-        .expect("Unreservation across executions");
-    battle.reservation.remove(&msg_src);
-    battle.participants.remove(&msg_src);
-    storage.players_to_battle_id.remove(&msg_src);
-
-    Ok(Event::RegisterCanceled { player_id: msg_src })
-}
-
-pub fn delete_player(storage: &mut Storage, player_id: ActorId) -> Result<Event, BattleError> {
-    let msg_src = msg::source();
-    let admin_id = storage
-        .players_to_battle_id
-        .get(&msg_src)
-        .ok_or(BattleError::NoSuchPlayer)?;
-
-    let battle = storage
-        .battles
-        .get_mut(admin_id)
-        .ok_or(BattleError::NoSuchGame)?;
-
-    if battle.admin != msg_src {
-        return Err(BattleError::AccessDenied);
-    }
-
-    if battle.state != State::Registration {
-        return Err(BattleError::WrongState);
-    }
-
-    if !battle.participants.contains_key(&player_id) {
-        return Err(BattleError::NoSuchPlayer);
-    }
-
     let reservation_id = battle
         .reservation
         .get(&player_id)
         .ok_or(BattleError::NoSuchReservation)?;
 
     if battle.bid != 0 {
-        msg::send_with_gas(player_id, "", 0, battle.bid).expect("Error in sending the value");
+        msg::send_with_gas(msg_src, "", 0, battle.bid).expect("Error in sending the value");
     }
     reservation_id
         .unreserve()
@@ -317,11 +306,79 @@ pub fn delete_player(storage: &mut Storage, player_id: ActorId) -> Result<Event,
     Ok(Event::RegisterCanceled { player_id })
 }
 
-pub fn cancel_tournament(storage: &mut Storage) -> Result<Event, BattleError> {
+pub fn delete_player(
+    storage: &mut Storage,
+    player_id_to_delete: ActorId,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
     let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::Registration,
+    );
+    let admin_id = storage
+        .players_to_battle_id
+        .get(&player_id)
+        .ok_or(BattleError::NoSuchPlayer)?;
+
     let battle = storage
         .battles
-        .get(&msg_src)
+        .get_mut(admin_id)
+        .ok_or(BattleError::NoSuchGame)?;
+
+    if battle.admin != player_id {
+        return Err(BattleError::AccessDenied);
+    }
+
+    if battle.state != State::Registration {
+        return Err(BattleError::WrongState);
+    }
+
+    if !battle.participants.contains_key(&player_id_to_delete) {
+        return Err(BattleError::NoSuchPlayer);
+    }
+
+    let reservation_id = battle
+        .reservation
+        .get(&player_id_to_delete)
+        .ok_or(BattleError::NoSuchReservation)?;
+
+    if battle.bid != 0 {
+        msg::send_with_gas(player_id_to_delete, "", 0, battle.bid)
+            .expect("Error in sending the value");
+    }
+    reservation_id
+        .unreserve()
+        .expect("Unreservation across executions");
+    battle.reservation.remove(&player_id_to_delete);
+    battle.participants.remove(&player_id_to_delete);
+    storage.players_to_battle_id.remove(&player_id_to_delete);
+
+    Ok(Event::RegisterCanceled {
+        player_id: player_id_to_delete,
+    })
+}
+
+pub fn cancel_tournament(
+    storage: &mut Storage,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
+    let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::Registration,
+    );
+    let battle = storage
+        .battles
+        .get(&player_id)
         .ok_or(BattleError::NoSuchGame)?;
 
     let game_is_over = matches!(battle.state, State::GameIsOver { .. });
@@ -344,9 +401,9 @@ pub fn cancel_tournament(storage: &mut Storage) -> Result<Event, BattleError> {
         let _ = id.unreserve();
     });
 
-    storage.battles.remove(&msg_src);
+    storage.battles.remove(&player_id);
 
-    Ok(Event::BattleCanceled { game_id: msg_src })
+    Ok(Event::BattleCanceled { game_id: player_id })
 }
 
 pub fn delayed_cancel_tournament(
@@ -385,11 +442,23 @@ pub fn delayed_cancel_tournament(
     Ok(Event::BattleCanceled { game_id })
 }
 
-pub fn start_battle(storage: &mut Storage) -> Result<Event, BattleError> {
+pub fn start_battle(
+    storage: &mut Storage,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
     let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::StartBattle,
+    );
+
     let battle = storage
         .battles
-        .get_mut(&msg_src)
+        .get_mut(&player_id)
         .ok_or(BattleError::NoSuchGame)?;
 
     let reservation_id = ReservationId::reserve(
@@ -398,7 +467,7 @@ pub fn start_battle(storage: &mut Storage) -> Result<Event, BattleError> {
     )
     .expect("Reservation across executions");
 
-    battle.reservation.insert(msg_src, reservation_id);
+    battle.reservation.insert(player_id, reservation_id);
 
     match battle.state {
         State::Registration => {
@@ -576,11 +645,23 @@ pub fn automatic_move(
     Ok(Event::AutomaticMoveMade)
 }
 
-pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, BattleError> {
-    let player = msg::source();
+pub fn make_move(
+    storage: &mut Storage,
+    warrior_move: Move,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
+    let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::MakeMove,
+    );
     let game_id = storage
         .players_to_battle_id
-        .get(&player)
+        .get(&player_id)
         .ok_or(BattleError::NoSuchGame)?;
     let battle = storage
         .battles
@@ -591,7 +672,7 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
 
     let pair_id = battle
         .players_to_pairs
-        .get(&player)
+        .get(&player_id)
         .ok_or(BattleError::NoSuchPair)?;
     let pair = battle
         .pairs
@@ -608,20 +689,20 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
         Move::Ultimate => check_reload_ultimate(
             battle
                 .participants
-                .get(&player)
+                .get(&player_id)
                 .expect("The player must exist"),
         )?,
         Move::Reflect => check_reload_reflect(
             battle
                 .participants
-                .get(&player)
+                .get(&player_id)
                 .expect("The player must exist"),
         )?,
         Move::Attack => (),
     }
 
     if let Some(opponent_info) = pair.action {
-        if opponent_info.0 == player {
+        if opponent_info.0 == player_id {
             return Err(BattleError::MoveHasAlreadyBeenMade);
         }
 
@@ -631,7 +712,7 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
             .expect("The player must exist") as *mut _;
         let player_2_ptr = battle
             .participants
-            .get_mut(&player)
+            .get_mut(&player_id)
             .expect("The player must exist") as *mut _;
 
         let (round_result, player_1, player_2) = unsafe {
@@ -708,16 +789,27 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
         Ok(Event::RoundAction {
             round: current_round,
             player_1: (opponent_info.0, opponent_info.1, player_1_health),
-            player_2: (player, warrior_move, player_2_health),
+            player_2: (player_id, warrior_move, player_2_health),
         })
     } else {
-        pair.action = Some((player, warrior_move));
+        pair.action = Some((player_id, warrior_move));
         Ok(Event::MoveMade)
     }
 }
 
-pub fn start_next_fight(storage: &mut Storage) -> Result<Event, BattleError> {
-    let player_id = msg::source();
+pub fn start_next_fight(
+    storage: &mut Storage,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
+    let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::MakeMove,
+    );
     let game_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -791,8 +883,20 @@ pub fn start_next_fight(storage: &mut Storage) -> Result<Event, BattleError> {
     }
 }
 
-pub fn exit_game(storage: &mut Storage) -> Result<Event, BattleError> {
-    let player_id = msg::source();
+pub fn exit_game(
+    storage: &mut Storage,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, BattleError> {
+    let msg_src = msg::source();
+
+    let sessions = SessionStorage::get_session_map();
+    let player_id = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::Registration,
+    );
+
     let game_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -943,4 +1047,34 @@ fn send_delayed_message_for_cancel_tournament(
         time_to_cancel_the_battle,
     )
     .expect("Error in sending message");
+}
+
+fn get_player(
+    session_map: &HashMap<ActorId, SessionData>,
+    msg_source: &ActorId,
+    session_for_account: &Option<ActorId>,
+    actions_for_session: ActionsForSession,
+) -> ActorId {
+    let player = match session_for_account {
+        Some(account) => {
+            let session = session_map
+                .get(account)
+                .expect("This account has no valid session");
+            assert!(
+                session.expires > exec::block_timestamp(),
+                "The session has already expired"
+            );
+            assert!(
+                session.allowed_actions.contains(&actions_for_session),
+                "This message is not allowed"
+            );
+            assert_eq!(
+                session.key, *msg_source,
+                "The account is not approved for this session"
+            );
+            *account
+        }
+        None => *msg_source,
+    };
+    player
 }

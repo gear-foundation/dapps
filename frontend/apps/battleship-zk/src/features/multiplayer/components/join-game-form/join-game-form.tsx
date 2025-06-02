@@ -1,19 +1,23 @@
-import { useState } from 'react';
-import { Button } from '@gear-js/vara-ui';
-import { decodeAddress } from '@gear-js/api';
+import { decodeAddress, HexString } from '@gear-js/api';
 import { useAccount, useAlert, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
-import { TextField } from '@/components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { HexString } from '@gear-js/api';
-import { GameFoundModal, JoinModalFormValues } from '../game-found-modal';
-import { TextModal } from '@/components/layout/text-modal';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
-import { usePending } from '@/features/game/hooks';
+import { useState } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { MultipleGameState } from '@/app/utils/sails/lib/lib';
+import { TextField } from '@/components/layout/text-field';
+import { TextModal } from '@/components/layout/text-modal';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { usePending } from '@/features/game/hooks';
+
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { useJoinGameMessage } from '../../sails/messages';
 import { useMultiGameQuery } from '../../sails/queries';
+import { GameFoundModal, JoinModalFormValues } from '../game-found-modal';
+
 import styles from './JoinGameForm.module.scss';
 
 type Props = {
@@ -85,11 +89,9 @@ function JoinGameForm({ onCancel }: Props) {
 
         await response();
         await triggerGame();
-      } catch (err) {
-        console.log(err);
-        const { message, docs } = err as Error & { docs: string };
-        const errorText = message || docs || 'Create game error';
-        alert.error(errorText);
+      } catch (error) {
+        console.error(error);
+        alert.error(getErrorMessage(error));
       } finally {
         setPending(false);
       }

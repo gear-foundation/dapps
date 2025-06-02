@@ -1,13 +1,15 @@
-import { Character } from './Character';
-import { CharacterRenderer } from './renders/CharacterRenderer';
-import { MapRenderer } from './renders/MapRenderer';
-import { EnemyRenderer } from './renders/EnemyRenderer';
-import { EnemyWithVision } from './EnemyWithVision';
-import { findEnemyStartPositions } from '../utils/findEnemyStartPositions';
-import { findCharacterStartPosition } from '../utils/findCharacterStartPosition';
 import { Level } from '@/app/utils';
-import { TileMap } from '../types';
+
 import { HEIGHT_CANVAS, WIDTH_CANVAS, gameLevels } from '../consts';
+import { TileMap } from '../types';
+import { findCharacterStartPosition } from '../utils/findCharacterStartPosition';
+import { findEnemyStartPositions } from '../utils/findEnemyStartPositions';
+
+import { Character } from './Character';
+import { EnemyWithVision } from './EnemyWithVision';
+import { CharacterRenderer } from './renders/CharacterRenderer';
+import { EnemyRenderer } from './renders/EnemyRenderer';
+import { MapRenderer } from './renders/MapRenderer';
 
 export class GameEngine {
   private context: CanvasRenderingContext2D;
@@ -32,7 +34,7 @@ export class GameEngine {
   map: TileMap;
   level: Level;
 
-  setGameOver = (gameOver: boolean) => {};
+  setGameOver = (_gameOver: boolean) => {};
   gameOver = false;
   pause?: boolean;
 

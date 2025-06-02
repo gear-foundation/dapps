@@ -1,12 +1,12 @@
-import { useApp } from '@/app/context/ctx-app';
-import { useRegisterForTournamentMessage } from '@/app/utils';
-import { Modal } from '@/components/ui/modal/modal2';
-
-import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from 'gear-ez-transactions';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Button } from '@gear-js/vara-ui';
 import { hasLength, useForm } from '@mantine/form';
+import { useEzTransactions } from 'gear-ez-transactions';
+
+import { useApp } from '@/app/context/ctx-app';
+import { useRegisterForTournamentMessage } from '@/app/utils';
+import { Modal } from '@/components/ui/modal/modal2';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type GameFindModalProps = {
   findGame: {

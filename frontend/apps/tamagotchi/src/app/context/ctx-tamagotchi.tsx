@@ -1,7 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import type { TamagotchiState } from '@/app/types/lessons';
+
 import type { StoreItemsNames } from '@/app/types/ft-store';
+import type { TamagotchiState } from '@/app/types/lessons';
 
 export const TamagotchiCtx = createContext({} as ReturnType<typeof useProgram>);
 

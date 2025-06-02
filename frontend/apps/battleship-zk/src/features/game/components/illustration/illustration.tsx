@@ -1,5 +1,6 @@
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import tailsGif from '@/assets/images/tails.gif';
+
 import styles from './Illustration.module.scss';
 
 export function Illustration() {

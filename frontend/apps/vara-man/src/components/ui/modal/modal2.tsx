@@ -1,6 +1,7 @@
-import { cn } from '@/app/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ReactNode, useEffect } from 'react';
+
+import { cn } from '@/app/utils';
 
 export function Modal({
   open,

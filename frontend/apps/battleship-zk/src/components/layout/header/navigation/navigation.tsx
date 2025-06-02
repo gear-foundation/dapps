@@ -1,7 +1,9 @@
-import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
-import styles from './navigation.module.scss';
+import { NavLink } from 'react-router-dom';
+
 import { ROUTES } from '@/app/consts';
+
+import styles from './navigation.module.scss';
 
 const nav = [
   {

@@ -1,17 +1,21 @@
-import { HelpDescription } from '../ui/typography';
-import styles from './game.module.scss';
-import { GameField } from '../game-field';
-import { GameInfoPlayerMark } from '../game-info-player-mark';
-import { GameCountdown } from '../game-countdown';
-import { GameSkipButton } from '../game-skip-button';
-import { GameStartButton } from '../game-start-button';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
+
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { BaseComponentProps } from '@/app/types';
+import { GameInstance } from '@/app/utils';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
+
 import { useGame } from '@/features/tic-tac-toe/hooks';
-import { BaseComponentProps } from '@/app/types';
-import { EzTransactionsSwitch } from 'gear-ez-transactions';
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { GameInstance } from '@/app/utils';
+import { GameCountdown } from '../game-countdown';
+import { GameField } from '../game-field';
+import { GameInfoPlayerMark } from '../game-info-player-mark';
+import { GameSkipButton } from '../game-skip-button';
+import { GameStartButton } from '../game-start-button';
+
+import { HelpDescription } from '../ui/typography';
+
+import styles from './game.module.scss';
 
 type GameProps = BaseComponentProps & {
   game: GameInstance;
@@ -25,7 +29,7 @@ export function Game({ game }: GameProps) {
     <section className={styles.game}>
       <Heading className={styles.game__heading}>
         <>
-          {!!game_result ? (
+          {game_result ? (
             <>
               {game_result === 'Player' && <TextGradient>You win</TextGradient>}
               {game_result === 'Bot' && <TextGradient className={styles.loose}>You lose</TextGradient>}
@@ -37,7 +41,7 @@ export function Game({ game }: GameProps) {
         </>
       </Heading>
       <HelpDescription className={styles.game__text}>
-        {!!game_result ? (
+        {game_result ? (
           <>
             {game_result === 'Player' && (
               <p>
@@ -60,7 +64,7 @@ export function Game({ game }: GameProps) {
       </HelpDescription>
 
       <div className={styles.game__actions}>
-        {Boolean(!game_result) ? (
+        {!game_result ? (
           <>
             {countdown?.isActive ? (
               <GameCountdown game={game} className={styles.game__countdown} />

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+
 import { GAME_OVER } from '@/feature/game/consts';
 
 const totalTimeGame = 10 * 60 * 1000;

@@ -4,8 +4,10 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
-import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { sendTransaction } from '../utils';
+
+import { useBatchSignAndSend } from './use-batch-sign-and-send';
+
 import { useIsAvailable } from '.';
 
 type Session = {

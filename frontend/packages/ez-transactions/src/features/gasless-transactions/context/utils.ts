@@ -1,4 +1,5 @@
 import { HexString } from '@gear-js/api';
+
 import { VoucherStatus } from './types';
 
 async function guardedFetch<T extends object>(...args: Parameters<typeof fetch>) {

@@ -1,7 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { cx } from '@/utils';
+
 import arrowDownSVG from '@/assets/icons/arrow-filled-down-icon.svg';
-import styles from './Table.module.scss';
+import { cx } from '@/utils';
+
+import { Button } from '../Button';
+import { Pagination } from '../Pagination';
+import { Search } from '../Search';
+
 import {
   SortOrder,
   TableBodyProps,
@@ -12,9 +17,7 @@ import {
   TableRow,
   TableRowProps,
 } from './Table.interfaces';
-import { Pagination } from '../Pagination';
-import { Search } from '../Search';
-import { Button } from '../Button';
+import styles from './Table.module.scss';
 
 function Cell({ className, children }: TableCellProps) {
   return <th className={cx(styles.cell, className || '')}>{children}</th>;

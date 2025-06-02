@@ -122,19 +122,19 @@ impl GameService {
     pub fn register(&mut self, player: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::register(storage, &player));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn reserve_gas(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::reserve_gas(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn start_registration(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::start_registration(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub async fn play(&mut self) {
@@ -145,7 +145,7 @@ impl GameService {
             Err(e) => services::utils::panic(e),
         };
 
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Event {
@@ -153,38 +153,38 @@ impl GameService {
         let event = services::utils::panicking(|| {
             funcs::throw_roll(storage, pay_fine, properties_for_sale)
         });
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
         event
     }
 
     pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_gear(storage, properties_for_sale));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::upgrade(storage, properties_for_sale));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::buy_cell(storage, properties_for_sale));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::pay_rent(storage, properties_for_sale));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub fn change_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::change_admin(storage, admin));
-        self.notify_on(event.clone()).expect("Notification Error");
+        self.emit_event(event.clone()).expect("Notification Error");
     }
 
     pub async fn kill(&mut self, inheritor: ActorId) {
@@ -201,7 +201,7 @@ impl GameService {
                 .expect("Error in `AddNewProgram`");
         }
 
-        self.notify_on(Event::Killed { inheritor })
+        self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }

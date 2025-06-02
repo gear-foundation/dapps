@@ -1,5 +1,6 @@
-import { Modal } from '@/components/ui/modal/modal2';
 import { Button } from '@gear-js/vara-ui';
+
+import { Modal } from '@/components/ui/modal/modal2';
 
 type Props = {
   setIsOpenCancelModal: (_: boolean) => void;

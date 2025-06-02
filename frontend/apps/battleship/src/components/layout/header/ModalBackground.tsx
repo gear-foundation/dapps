@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+
 import styles from './header.module.scss';
 
 type Props = {
