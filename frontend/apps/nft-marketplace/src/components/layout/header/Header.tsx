@@ -1,8 +1,10 @@
-import { OnLogin } from 'components';
 import { Wallet } from '@dapps-frontend/ui';
+
+import { OnLogin } from '@/components';
+
+import styles from './Header.module.scss';
 import { Logo } from './logo';
 import { Menu } from './menu';
-import styles from './Header.module.scss';
 
 function Header() {
   return (

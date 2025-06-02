@@ -1,9 +1,11 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
+
+import { usePending } from '@/features/game/hooks';
+
 import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
 import { useSingleGameQuery } from '../sails/queries';
-import { usePending } from '@/features/game/hooks';
 
 export function useSingleplayerGame() {
   const { account } = useAccount();
@@ -23,7 +25,7 @@ export function useSingleplayerGame() {
     try {
       const res = await gameQuery(account.decodedAddress);
       setGame(res);
-      if (!!res) {
+      if (res) {
         setIsActiveGame(true);
       }
       setIsGameReady(true);

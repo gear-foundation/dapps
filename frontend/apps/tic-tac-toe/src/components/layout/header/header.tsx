@@ -1,10 +1,13 @@
-import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
-import { Logo } from './logo';
-import styles from './header.module.scss';
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
+import clsx from 'clsx';
+import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
+
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+
+import styles from './header.module.scss';
+import { Logo } from './logo';
 
 export function Header() {
   const { account } = useAccount();

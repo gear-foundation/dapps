@@ -4,11 +4,11 @@ use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use tamagotchi_battle_io::*;
 
 const PATHS: [&str; 2] = [
-    "../target/wasm32-unknown-unknown/release/tamagotchi.opt.wasm",
-    "../target/wasm32-unknown-unknown/release/tamagotchi_battle.opt.wasm",
+    "../target/wasm32-gear/release/tamagotchi.opt.wasm",
+    "../target/wasm32-gear/release/tamagotchi_battle.opt.wasm",
 ];
 const META_WASM: &str =
-    "../target/wasm32-unknown-unknown/release/tamagotchi_battle_state.meta.wasm";
+    "../target/wasm32-gear/release/tamagotchi_battle_state.meta.wasm";
 
 pub const PLAYERS: &[&str] = &[
     "//John", "//Mike", "//Dan", "//Bot", "//Jack", "//Mops", "//Alex",

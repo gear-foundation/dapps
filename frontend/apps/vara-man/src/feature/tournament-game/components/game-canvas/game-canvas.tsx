@@ -1,9 +1,11 @@
+import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+
+import { MOBILE_BREAKPOINT } from '@/app/consts';
 import { Icons } from '@/components/ui/icons';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+
 import { GameLayout } from '../../GameLayout';
 import { GameTimer } from '../timer';
-import { MOBILE_BREAKPOINT } from '@/app/consts';
 
 type GameInfoCanvasProps = {
   isStarted: boolean;

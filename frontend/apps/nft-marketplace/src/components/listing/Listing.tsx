@@ -1,9 +1,11 @@
 import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ReactNode } from 'react';
-import { Listing as ListingType } from 'types';
+
+import { Listing as ListingType } from '@/types';
+
+import styles from './Listing.module.scss';
 import { Card } from './card';
 import { Offer } from './offer';
-import styles from './Listing.module.scss';
 
 type Props = {
   item: ListingType;
@@ -17,10 +19,7 @@ function Listing({ children, item }: Props) {
 
   const getAttributes = () =>
     attrs &&
-    Object.keys(attrs).map((attr, index) => (
-      // eslint-disable-next-line react/no-array-index-key
-      <p key={index} className={styles.text}>{`${attr}: ${attrs![attr]}`}</p>
-    ));
+    Object.keys(attrs).map((attr, index) => <p key={index} className={styles.text}>{`${attr}: ${attrs[attr]}`}</p>);
 
   const getOffers = () =>
     offers

@@ -1,4 +1,7 @@
 import { useAlert } from '@gear-js/react-hooks';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { usePending } from './use-pending';
 
 export type Options = {
@@ -18,12 +21,7 @@ export function useExecuteWithPending() {
     } catch (error) {
       console.error(error);
       options?.onError?.(error);
-
-      const alertError = typeof error === 'string' ? error : error instanceof Error ? error.message : null;
-
-      if (alertError) {
-        alert.error(alertError);
-      }
+      alert.error(getErrorMessage(error));
     } finally {
       setPending(false);
     }

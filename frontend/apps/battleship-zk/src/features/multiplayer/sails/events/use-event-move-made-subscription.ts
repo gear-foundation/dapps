@@ -2,13 +2,14 @@ import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { isNull } from '@polkadot/util';
 import { useEffect } from 'react';
 
-import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
-import { useShips } from '@/features/zk/hooks/use-ships';
 import { useProgram } from '@/app/utils/sails';
-import { useMultiplayerGame } from '../../hooks';
 import { MultipleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
 import { usePending } from '@/features/game/hooks';
+import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
+import { useShips } from '@/features/zk/hooks/use-ships';
+
+import { useMultiplayerGame } from '../../hooks';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
 
 type MoveMadeEvent = {

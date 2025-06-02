@@ -1,9 +1,11 @@
 import { Buffer } from 'buffer';
-import { useEffect, useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+
 import { CreateType } from '@gear-js/api';
-import { formatBalance } from '@polkadot/util';
 import { useAlert, useAccount, useApi, useBalance } from '@gear-js/react-hooks';
+import { formatBalance } from '@polkadot/util';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+
 import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WalletId } from './consts';
 import { SystemAccount } from './types';
 

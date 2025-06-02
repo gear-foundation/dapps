@@ -8,5 +8,5 @@ pub fn panicking<T, E: Debug>(res: Result<T, E>) -> T {
 }
 
 pub fn panic(err: impl Debug) -> ! {
-    panic!("{}", &format!("{err:?}"))
+    panic!("{}", format!("{err:?}"))
 }

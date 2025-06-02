@@ -1,9 +1,13 @@
 import { Route } from 'react-router-dom';
+
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { useInitBattleData } from 'features/battle/hooks';
+
+import { useInitBattleData } from '@/features/battle/hooks';
+
 import { ROUTES } from '../app/consts';
-import { Home } from './home';
+
 import { Battle } from './battle';
+import { Home } from './home';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },

@@ -1,6 +1,7 @@
-import { ADDRESS } from 'consts';
+import { ENV } from '@/consts';
+
 import { getMintDetails, getMintPayload } from './form';
 
-const getIpfsAddress = (cid: string) => `${ADDRESS.IPFS_GATEWAY}/${cid}`;
+const getIpfsAddress = (cid: string) => `${ENV.IPFS_GATEWAY}/${cid}`;
 
 export { getIpfsAddress, getMintDetails, getMintPayload };

@@ -1,28 +1,10 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { StateMetadata, getStateMetadata } from '@gear-js/api';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY } from '@/consts';
+
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from './features/Auth/consts';
-
-export function useStateMetadata(source: string) {
-  const alert = useAlert();
-
-  const [stateMetadata, setStateMetadata] = useState<StateMetadata>();
-
-  useEffect(() => {
-    fetch(source)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => Buffer.from(arrayBuffer))
-      .then((buffer) => getStateMetadata(buffer))
-      .then((result) => setStateMetadata(result))
-      .catch(({ message }: Error) => alert.error(message));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return stateMetadata;
-}
 
 export function useMediaQuery(width: number) {
   const [targetReached, setTargetReached] = useState(false);

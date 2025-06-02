@@ -1,9 +1,12 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import styles from './game-cell.module.scss';
-import { variantsGameMark } from '../../variants';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+
 import { BaseComponentProps } from '@/app/types';
+import { Button } from '@/components/ui/button';
+
+import { variantsGameMark } from '../../variants';
+
+import styles from './game-cell.module.scss';
 
 type GameFieldProps = BaseComponentProps & {
   disabled?: boolean;

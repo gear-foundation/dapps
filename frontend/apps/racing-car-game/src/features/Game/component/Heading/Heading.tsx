@@ -1,7 +1,8 @@
 import { Spinner } from '@/components';
+import { cx } from '@/utils';
+
 import { HeadingProps } from './Heading.interface';
 import styles from './Heading.module.scss';
-import { cx } from '@/utils';
 
 function Heading({ currentTurn, isPlayerAction, winStatus }: HeadingProps) {
   return (

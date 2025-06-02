@@ -1,28 +1,28 @@
-@use '~styles/variables' as *;
-@use '~styles/mixins' as *;
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .container {
-    width: 300px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    padding: 8px 20px;
-    gap: 10px;
-    background: theme-var($background-primary);
+  width: 300px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  gap: 10px;
+  background: theme-var($background-primary);
 }
 
 .search {
-    flex: 1;
-    height: 40px;
-    border: none;
-    outline: none;
+  flex: 1;
+  height: 40px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 400;
+
+  &::placeholder {
     font-size: 16px;
     font-weight: 400;
-
-    &::placeholder {
-        font-size: 16px;
-        font-weight: 400;
-        color: theme-var($text-primary);
-        opacity: 1;
-    }
+    color: theme-var($text-primary);
+    opacity: 1;
+  }
 }

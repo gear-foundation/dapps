@@ -1,8 +1,10 @@
-import clsx from 'clsx';
 import { Button } from '@gear-js/vara-ui';
-import { BaseComponentProps } from '@/app/types';
-import styles from './list.module.scss';
+import clsx from 'clsx';
 import { useState } from 'react';
+
+import { BaseComponentProps } from '@/app/types';
+
+import styles from './list.module.scss';
 
 type ListProps = BaseComponentProps & {
   items: React.ReactNode[];

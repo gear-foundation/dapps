@@ -1,7 +1,7 @@
-import { ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { isHex } from '@polkadot/util';
+import { ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export * from './sails';
 

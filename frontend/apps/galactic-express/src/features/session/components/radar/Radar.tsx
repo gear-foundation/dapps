@@ -1,9 +1,12 @@
-import { PLAYER_COLORS } from 'features/session/consts';
 import { CSSProperties } from 'react';
+
+import { PLAYER_COLORS } from '@/features/session/consts';
+
 import cropEarthSrc from '../../assets/earth-crop.gif';
 import { Event, RankWithName } from '../../types';
-import styles from './Radar.module.scss';
 import { WinStatus } from '../win-status';
+
+import styles from './Radar.module.scss';
 
 type Props = {
   currentEvents: Event[] | undefined;

@@ -7,6 +7,9 @@ COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
+COPY /frontend/vite.apps.config.ts .
+COPY /frontend/tsconfig.json .
+COPY /frontend/tsconfig.node.json .
 
 COPY ./frontend/apps/tamagotchi-battle ./apps/tamagotchi-battle
 COPY ./frontend/packages ./packages
@@ -15,19 +18,22 @@ RUN apk update
 
 RUN apk add xsel
 
-ARG REACT_APP_DNS_API_URL \
-    REACT_APP_DNS_NAME \
-    REACT_APP_NODE_ADDRESS \
-    REACT_APP_SENTRY_DSN \    
-    REACT_APP_GASLESS_BACKEND_ADDRESS \
-    REACT_APP_GTM_ID
-ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_DNS_API_URL=${REACT_APP_DNS_API_URL} \
-    REACT_APP_DNS_NAME=${REACT_APP_DNS_NAME} \
-    REACT_APP_GASLESS_BACKEND_ADDRESS=${REACT_APP_GASLESS_BACKEND_ADDRESS} \
-    REACT_APP_SENTRY_DSN=${REACT_APP_SENTRY_DSN} \
-    REACT_APP_GTM_ID=${REACT_APP_GTM_ID} \
-    DISABLE_ESLINT_PLUGIN=true
+ARG VITE_DNS_API_URL \
+    VITE_DNS_NAME \
+    VITE_NODE_ADDRESS \
+    VITE_SENTRY_DSN \
+    VITE_GASLESS_BACKEND_ADDRESS \
+    VITE_GTM_ID \
+    VITE_VOUCHER_LIMIT
+
+ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
+    VITE_DNS_API_URL=${VITE_DNS_API_URL} \
+    VITE_DNS_NAME=${VITE_DNS_NAME} \
+    VITE_GASLESS_BACKEND_ADDRESS=${VITE_GASLESS_BACKEND_ADDRESS} \
+    VITE_SENTRY_DSN=${VITE_SENTRY_DSN} \
+    VITE_GTM_ID=${VITE_GTM_ID} \
+    DISABLE_ESLINT_PLUGIN=true \
+    VITE_VOUCHER_LIMIT=${VITE_VOUCHER_LIMIT}
 
 WORKDIR /frontend/apps/tamagotchi-battle
 

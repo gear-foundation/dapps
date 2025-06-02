@@ -1,7 +1,7 @@
-const ADDRESS = {
-  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
-  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
+const ENV = {
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
 };
 
 const LOCAL_STORAGE = {
@@ -15,4 +15,4 @@ const ROUTES = {
   NOT_AUTHORIZED: 'not-authorized',
 };
 
-export { ADDRESS, LOCAL_STORAGE, ROUTES };
+export { ENV, LOCAL_STORAGE, ROUTES };

@@ -1,5 +1,7 @@
-import { ZkProofData } from '@/features/zk/types';
 import { useAccount } from '@gear-js/react-hooks';
+
+import { ZkProofData } from '@/features/zk/types';
+
 import { useStartGameMessage } from '../sails/messages';
 
 export const useArrangementWithSingleplayer = () => {

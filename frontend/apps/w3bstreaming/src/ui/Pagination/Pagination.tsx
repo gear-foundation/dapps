@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
-import vectorLeft from '@/assets/icons/vector-left.svg';
-import vectorRight from '@/assets/icons/vector-right.svg';
+
 import doubleVectorLeft from '@/assets/icons/double-vector-left.svg';
 import doubleVectorRight from '@/assets/icons/double-vector-right.svg';
-import { Button } from '../Button';
-import styles from './Pagination.module.scss';
+import vectorLeft from '@/assets/icons/vector-left.svg';
+import vectorRight from '@/assets/icons/vector-right.svg';
 import { cx } from '@/utils';
+
+import { Button } from '../Button';
 import { Dropdown } from '../Dropdown';
+
 import { PagesMenu } from './Pagination.interface';
+import styles from './Pagination.module.scss';
 
 function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: any) {
   const pages = Math.ceil(totalRows / rowsPerPage);

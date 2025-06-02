@@ -1,5 +1,7 @@
 import clsx from 'clsx';
-import { useGame } from 'app/context';
+
+import { useGame } from '@/app/context';
+
 import { DominoItem } from '../domino-item';
 
 type Props = {
@@ -17,10 +19,10 @@ export const DominoZone = ({ light, id, disabled, reverse }: Props) => {
       Number(playerChoice.track_id) !== id
         ? setPlayerChoice({ ...playerChoice, track_id: id.toString(), remove_train: false })
         : setPlayerChoice({
-          ...playerChoice,
-          track_id: undefined,
-          remove_train: false,
-        });
+            ...playerChoice,
+            track_id: undefined,
+            remove_train: false,
+          });
     } else {
       setPlayerChoice({ track_id: id.toString(), remove_train: false });
     }

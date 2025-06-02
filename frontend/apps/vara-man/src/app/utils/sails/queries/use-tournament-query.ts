@@ -1,5 +1,6 @@
-import { useProgram } from '@/app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+
+import { useProgram } from '@/app/utils';
 
 export const useTournamentQuery = () => {
   const program = useProgram();

@@ -1,6 +1,10 @@
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useState } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
+import { Button } from '@/components/ui/button';
+
 import { useEventMoveMadeSubscription, useEventGameFinishedSubscription, useSkipMessage } from '../../sails';
 
 export function GameSkipButton() {
@@ -21,8 +25,8 @@ export function GameSkipButton() {
     try {
       await skipMessage();
     } catch (error) {
-      console.log(error);
-      alert.error((error instanceof Error && error.message) || 'Game skip error');
+      console.error(error);
+      alert.error(getErrorMessage(error));
       setIsLoading(false);
     }
   };

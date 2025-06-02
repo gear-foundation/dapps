@@ -1,11 +1,13 @@
+import { HexString } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
 import moment from 'moment';
 import { FC, useEffect, useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
+
+import { useGetStateQuery } from '@/app/utils';
+import { Loader } from '@/components';
+
 import { SubscribersData, SubscriptionsData, UsersTableProps } from './components/UsersTable/UsersTable.interfaces';
 import { WithDataProps } from './types';
-import { Loader } from '@/components';
-import { useGetStateQuery } from '@/app/utils';
-import { HexString } from '@gear-js/api';
 
 function withData(
   Component: FC<UsersTableProps>,

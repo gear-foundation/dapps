@@ -1,18 +1,21 @@
-import clsx from 'clsx';
-import styles from './game-field.module.scss';
-import { GameCell } from '../game-cell';
-import { GameMark } from '../game-mark';
-import { useGame } from '../../hooks';
-import { calculateWinner } from '../../utils';
-import { motion } from 'framer-motion';
-import { variantsGameMark } from '../../variants';
-import { BaseComponentProps } from '@/app/types';
-import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
 import { useEzTransactions } from 'gear-ez-transactions';
+import { useAtom } from 'jotai';
+import { BaseComponentProps } from '@/app/types';
 import { GameInstance } from '@/app/utils';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+import { useGame } from '../../hooks';
 import { useEventGameFinishedSubscription, useEventMoveMadeSubscription, useTurnMessage } from '../../sails';
+import { calculateWinner } from '../../utils';
+import { variantsGameMark } from '../../variants';
+import { GameCell } from '../game-cell';
+import { GameMark } from '../game-mark';
+
+import styles from './game-field.module.scss';
 
 type GameFieldProps = BaseComponentProps & {
   game: GameInstance;
@@ -42,8 +45,8 @@ export function GameField({ game }: GameFieldProps) {
     try {
       await turnMessage(step);
     } catch (error) {
-      console.log(error);
-      alert.error((error instanceof Error && error.message) || 'Game turn error');
+      console.error(error);
+      alert.error(getErrorMessage(error));
       setIsLoading(false);
     }
   };

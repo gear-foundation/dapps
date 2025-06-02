@@ -1,6 +1,7 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useProgram } from 'app/utils';
-import { Options, useSignAndSend } from 'app/hooks';
+
+import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
+import { useProgram } from '@/app/utils';
 
 type Params = {
   fuel: number;
@@ -15,19 +16,16 @@ export const useStartGameMessage = () => {
     functionName: 'startGame',
   });
   const { signAndSend } = useSignAndSend();
+  const { executeWithPending } = useExecuteWithPending();
 
-  const startGameMessage = async ({ fuel, payload }: Params, options?: Options) => {
-    try {
+  const startGameMessage = async ({ fuel, payload }: Params, options?: Options) =>
+    executeWithPending(async () => {
       const { transaction } = await prepareTransactionAsync({
         args: [fuel, payload],
         gasLimit: { increaseGas: 20 },
       });
-      signAndSend(transaction, options);
-    } catch (error) {
-      console.error(error);
-      options?.onError?.(error as Error);
-    }
-  };
+      return signAndSend(transaction);
+    }, options);
 
   return { startGameMessage };
 };

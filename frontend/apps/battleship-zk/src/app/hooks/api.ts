@@ -1,6 +1,6 @@
 import { useReadFullState } from '@gear-js/react-hooks';
-import { HexString } from '@polkadot/util/types';
 import { AnyJson } from '@polkadot/types/types';
+import { HexString } from '@polkadot/util/types';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 

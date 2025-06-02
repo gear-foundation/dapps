@@ -1,8 +1,11 @@
-import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useAlert } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
-import { ReactComponent as CopySVG } from '@/assets/icons/file-copy-fill.svg';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
+
+import CopySVG from '@ez/assets/icons/file-copy-fill.svg?react';
+
 import { copyToClipboard, getVaraAddress, shortenString } from '../../utils';
+
 import styles from './account-pair.module.css';
 
 type Props = {
