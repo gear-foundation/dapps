@@ -6,7 +6,7 @@ use rmrk_state::WASM_BINARY;
 use rmrk_types::primitives::{PartId, TokenId};
 
 const CATALOG_ID: u64 = 100;
-const PATH_TO_CATALOG: &str = "../target/wasm32-unknown-unknown/release/rmrk_catalog.opt.wasm";
+const PATH_TO_CATALOG: &str = "../target/wasm32-gear/release/rmrk_catalog.opt.wasm";
 const ADMIN: u64 = 200;
 const KANARIA_ID: u64 = 10;
 const GEM_ID: u64 = 11;

@@ -9,5 +9,5 @@ pub fn panicking<T, E: Debug, F: FnOnce() -> Result<T, E>>(f: F) -> T {
 }
 
 pub fn panic(err: impl Debug) -> ! {
-    ext::panic(&format!("{err:?}"))
+    ext::panic_bytes(format!("{err:?}").as_bytes())
 }

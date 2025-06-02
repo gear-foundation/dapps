@@ -1,5 +1,6 @@
-import { Navigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { Navigate } from 'react-router-dom';
+
 import { ProtectedRouteProps } from './ProtectedRoute.interface';
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {

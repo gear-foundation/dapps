@@ -1,12 +1,14 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { EzTransactionsSwitch } from 'gear-ez-transactions';
-import { useGame } from '@/features/tic-tac-toe/hooks';
-import { Game, Welcome } from '@/features/tic-tac-toe';
+
 import { Wallet } from '@dapps-frontend/ui';
-import { GameStartButton } from '@/features/tic-tac-toe/components/game-start-button';
-import { Loader } from '@/components';
+
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { useProgram } from '@/app/utils';
+import { Loader } from '@/components';
+import { Game, Welcome } from '@/features/tic-tac-toe';
+import { GameStartButton } from '@/features/tic-tac-toe/components/game-start-button';
+import { useGame } from '@/features/tic-tac-toe/hooks';
 
 export default function Home() {
   const { account } = useAccount();

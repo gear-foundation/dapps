@@ -1,23 +1,25 @@
+import { useAccount } from '@gear-js/react-hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
+import isEqual from 'lodash.isequal';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import isEqual from 'lodash.isequal';
-import { useAccount } from '@gear-js/react-hooks';
 
 import { Container, Footer } from '@dapps-frontend/ui';
-import { useEzTransactions } from 'gear-ez-transactions';
-import styles from './Layout.module.scss';
-import { cx } from '@/utils';
-import { Heading } from '../Heading';
-import { Road } from '../Road';
-import { Button } from '@/ui';
-import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
-import shootSVG from '@/assets/icons/shoot-icon.svg';
-import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
-import { Loader } from '@/components';
+
 import { PLAY } from '@/App.routes';
-import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
-import { useEventRoundInfoSubscription, usePlayerMoveMessage, useStartGameMessage, useGameQuery } from '../../sails';
 import { GameResult } from '@/app/utils';
+import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
+import GearLogoIcon from '@/assets/icons/gear-logo-icon.svg?react';
+import shootSVG from '@/assets/icons/shoot-icon.svg';
+import { Loader } from '@/components';
+import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { Heading } from '../Heading';
+import styles from './Layout.module.scss';
+import { Road } from '../Road';
+import { useEventRoundInfoSubscription, usePlayerMoveMessage, useStartGameMessage, useGameQuery } from '../../sails';
 
 function LayoutComponent() {
   const { signless, gasless } = useEzTransactions();

@@ -8,8 +8,8 @@ use crate::{
     services::session::storage::SessionsStorage,
 };
 use core::fmt::Debug;
-use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::{format, gstd::service, Box};
+use gstd::{exec, ext, msg, ActorId, Decode, Encode, TypeInfo, Vec};
+use sails_rs::gstd::service;
 
 pub use utils::*;
 
@@ -99,7 +99,7 @@ impl SingleService {
                 exec::block_timestamp(),
             )
         });
-        self.notify_on(Event::SingleGameStarted)
+        self.emit_event(Event::SingleGameStarted)
             .expect("Notification Error");
     }
     /// This function processes a move made by a player in a single-player game. It handles both
@@ -193,7 +193,7 @@ impl SingleService {
                 )
             })
         };
-        self.notify_on(event).expect("Notification Error");
+        self.emit_event(event).expect("Notification Error");
     }
 
     /// Function for deleting a game. This function is called by a delayed message from the program itself
@@ -225,7 +225,7 @@ impl SingleService {
             funcs::check_out_timing(SingleGamesStorage::as_mut(), actor_id, check_time)
         });
         if let Some(event) = event {
-            self.notify_on(event).expect("Notification Error");
+            self.emit_event(event).expect("Notification Error");
         }
     }
 

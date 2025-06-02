@@ -1,8 +1,10 @@
-import { useAtom } from 'jotai';
 import { Account, useAccount } from '@gear-js/react-hooks';
-import { IS_AUTH_READY_ATOM } from './consts';
-import { useWallet } from '@/features/wallet/hooks';
+import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+
+import { useWallet } from '@/features/wallet/hooks';
+
+import { IS_AUTH_READY_ATOM } from './consts';
 
 // TODO: not needed, remove!
 export function useAuth() {

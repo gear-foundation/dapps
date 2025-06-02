@@ -1,4 +1,3 @@
-@use '@gear-js/ui/mixins' as *;
 @use './variables' as *;
 
 @keyframes loading {
@@ -112,6 +111,6 @@
 
   &:global(.exit-active),
   &:global(.enter-active) {
-    @include transition();
+    transition: all 0.25s;
   }
 }

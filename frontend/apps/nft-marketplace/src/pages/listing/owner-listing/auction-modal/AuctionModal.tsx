@@ -1,7 +1,8 @@
 import { Button, Input, Modal } from '@gear-js/ui';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { modalStyles } from 'components/modals';
-import { AuctionFormValues } from 'types';
+
+import { modalStyles } from '@/components/modals';
+import { AuctionFormValues } from '@/types';
 
 type Props = {
   close: () => void;

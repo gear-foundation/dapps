@@ -1,22 +1,25 @@
-import { useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Dialog } from '@headlessui/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+
+import { PLAY } from '@/App.routes';
+import CopyIcon from '@/assets/icons/binary-code.svg?react';
+import CrossIcon from '@/assets/icons/cross-icon.svg?react';
+import ExitIcon from '@/assets/icons/exit-icon.svg?react';
+import EditIcon from '@/assets/icons/pen-edit-icon.svg?react';
+import { variantsPanel, variantsOverlay } from '@/components/Modal/modal.variants';
+import { ScrollArea } from '@/components/ScrollArea';
+import { useAuth } from '@/features/Auth/hooks';
 import { cx, copyToClipboard, isMobileDevice } from '@/utils';
-import { ReactComponent as CopyIcon } from '@/assets/icons/binary-code.svg';
-import { ReactComponent as EditIcon } from '@/assets/icons/pen-edit-icon.svg';
-import { ReactComponent as ExitIcon } from '@/assets/icons/exit-icon.svg';
-import { ReactComponent as CrossIcon } from '@/assets/icons/cross-icon.svg';
+
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../WalletItem';
-import styles from './WalletModal.module.scss';
-import { WalletModalProps } from './WalletModal.interface';
-import { useAuth } from '@/features/Auth/hooks';
-import { PLAY } from '@/App.routes';
 import { AccountIcon } from '../account-icon';
-import { variantsPanel, variantsOverlay } from '@/components/Modal/modal.variants';
-import { ScrollArea } from '@/components/ScrollArea';
+
+import { WalletModalProps } from './WalletModal.interface';
+import styles from './WalletModal.module.scss';
 
 function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
   const alert = useAlert();

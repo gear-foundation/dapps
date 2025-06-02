@@ -1,14 +1,16 @@
-import fireGif from '@/assets/images/fire.gif';
-import seaPng from '@/assets/images/sea.png';
-import styles from './map.module.scss';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { ReactComponent as CellCrossSVG } from '@/assets/images/icons/cross.svg';
-import smokeSVG from '@/assets/images/smoke.gif';
+
+import fireGif from '@/assets/images/fire.gif';
+import CellCrossSVG from '@/assets/images/icons/cross.svg?react';
 import shipX1SVG from '@/assets/images/icons/ship-x1.svg';
 import shipX2SVG from '@/assets/images/icons/ship-x2.svg';
 import shipX3SVG from '@/assets/images/icons/ship-x3.svg';
 import shipX4SVG from '@/assets/images/icons/ship-x4.svg';
+import seaPng from '@/assets/images/sea.png';
+import smokeSVG from '@/assets/images/smoke.gif';
+
+import styles from './map.module.scss';
 
 type Props = {
   sizeBlock: number;

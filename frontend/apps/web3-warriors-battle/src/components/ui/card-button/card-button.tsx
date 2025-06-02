@@ -1,7 +1,10 @@
 import clsx from 'clsx';
+
 import { BaseComponentProps } from '@/app/types';
 import { ArrowRightIcon } from '@/features/game/assets/images';
+
 import { Text } from '../text';
+
 import styles from './card-button.module.scss';
 
 type CardButtonProps = BaseComponentProps & {

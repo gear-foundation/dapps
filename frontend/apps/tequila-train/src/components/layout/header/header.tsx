@@ -1,29 +1,31 @@
-import { Logo } from './logo';
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
-import { useAccount } from '@gear-js/react-hooks';
+import { useState } from 'react';
+
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
+import { useApp, useGame } from '@/app/context';
+import { useGameMessage } from '@/app/hooks/use-game';
+import { Icon } from '@/components/ui/icon';
+import { Modal } from '@/components/ui/modal';
 
 import styles from './header.module.scss';
-import { Icon } from 'components/ui/icon';
-import { useApp, useGame } from 'app/context';
-import { useState } from 'react';
-import { Modal } from 'components/ui/modal';
-import { useGameMessage } from 'app/hooks/use-game';
+import { Logo } from './logo';
 
 export function Header() {
   const { account } = useAccount();
   const { setIsPending, isPending } = useApp();
-  const { isAdmin } = useGame()
-  const [isOpenModal, setIsOpenModal] = useState(false)
+  const { isAdmin } = useGame();
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const handleMessage = useGameMessage();
 
   const onSuccess = () => {
-    setIsOpenModal(false)
+    setIsOpenModal(false);
     setIsPending(false);
   };
   const onError = () => {
-    setIsOpenModal(false)
+    setIsOpenModal(false);
     setIsPending(false);
   };
 
@@ -34,8 +36,8 @@ export function Header() {
       onSuccess,
       onError,
     });
-    setIsOpenModal(false)
-  }
+    setIsOpenModal(false);
+  };
 
   return (
     <CommonHeader
@@ -45,33 +47,29 @@ export function Header() {
       className={{ header: styles.header, content: styles.header__container }}
       menu={
         <div className="flex items-center">
-          {isOpenModal &&
-            <Modal heading='Sure you want to end the game?' onClose={() => setIsOpenModal(false)}>
-              This action cannot be undone. The game will be concluded, and all players will exit the gaming room. Any entry fees will be refunded to all players.
-
+          {isOpenModal && (
+            <Modal heading="Sure you want to end the game?" onClose={() => setIsOpenModal(false)}>
+              This action cannot be undone. The game will be concluded, and all players will exit the gaming room. Any
+              entry fees will be refunded to all players.
               <div className="flex w-full gap-3 mt-5">
+                <Button text="Cancel game" color="grey" onClick={onCloseGame} disabled={isPending} />
                 <Button
-                  text='Cancel game'
-                  color='grey'
-                  onClick={onCloseGame}
-                  disabled={isPending}
-                />
-                <Button
-                  text='Continue the game'
-                  color='primary'
+                  text="Continue the game"
+                  color="primary"
                   onClick={() => setIsOpenModal(false)}
                   disabled={isPending}
                 />
               </div>
             </Modal>
-          }
-          {isAdmin &&
+          )}
+          {isAdmin && (
             <Button
-              text='Cancel game'
+              text="Cancel game"
               className="!bg-[#F7ECED] !text-red-500 mr-5"
               icon={() => <Icon name="close" width={18} height={18} />}
               onClick={() => setIsOpenModal(true)}
-            />}
+            />
+          )}
           <MenuHandler />
         </div>
       }

@@ -1,9 +1,10 @@
-import { useParams } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { useParams } from 'react-router-dom';
+
+import { useGetStateQuery } from '@/app/utils';
 import { Watch, Broadcast } from '@/features/Stream/components';
 import { Layout } from '@/features/Stream/components/Layout';
 import { socket } from '@/utils';
-import { useGetStateQuery } from '@/app/utils';
 
 function StreamPage() {
   const { account } = useAccount();

@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import styles from './game-info-player-mark.module.scss';
-import { GameMark } from '../game-mark';
-import { Mark } from '@/app/utils';
-import { variantsPlayerMark } from '../../variants';
+import { useEffect, useState } from 'react';
+
 import { BaseComponentProps } from '@/app/types';
+import { Mark } from '@/app/utils';
+
+import { variantsPlayerMark } from '../../variants';
+import { GameMark } from '../game-mark';
+
+import styles from './game-info-player-mark.module.scss';
 
 type GameSelectedFigureProps = BaseComponentProps & {
   mark: Mark;

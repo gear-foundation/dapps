@@ -1,17 +1,16 @@
-import { Key } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
+import { useEzTransactions } from 'gear-ez-transactions';
+import { useAtom, useSetAtom } from 'jotai';
+import { Key } from 'react';
 
+import { useApp } from '@/app/context/ctx-app';
+import { useGame } from '@/app/context/ctx-game';
+import { Player, TournamentState, useCancelTournamentMessage, useLeaveGameMessage } from '@/app/utils';
 import { Button } from '@/components';
 import { Icons } from '@/components/ui/icons';
-import { useGame } from '@/app/context/ctx-game';
-import { useApp } from '@/app/context/ctx-app';
-import { GAME_OVER, COINS, PRIZE_POOL } from '@/feature/game/consts';
-
-import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from 'gear-ez-transactions';
 import { Modal } from '@/components/ui/modal/modal2';
-import { Player, TournamentState, useCancelTournamentMessage, useLeaveGameMessage } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
+import { GAME_OVER, COINS, PRIZE_POOL } from '@/feature/game/consts';
 
 type Props = {
   tournamentGame: TournamentState;
@@ -65,11 +64,14 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
     }
   };
 
-  const winners = tournamentGame.stage.finished.reduce((acc, winnerAddress: string) => {
-    const participant = tournamentGame.participants.find(([address]) => address === winnerAddress);
+  const winners = tournamentGame.stage.finished.reduce(
+    (acc, winnerAddress: string) => {
+      const participant = tournamentGame.participants.find(([address]) => address === winnerAddress);
 
-    return participant ? [...acc, participant] : acc;
-  }, [] as [string, Player][]);
+      return participant ? [...acc, participant] : acc;
+    },
+    [] as [string, Player][],
+  );
 
   return (
     <div>

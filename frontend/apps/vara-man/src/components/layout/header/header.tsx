@@ -1,16 +1,15 @@
-import { Link } from 'react-router-dom';
-import { useGame } from '@/app/context/ctx-game';
-import { HeaderAdmin } from '@/components/layout/header/header-admin';
-import { Icons } from '@/components/ui/icons';
-
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+import { useAccount } from '@gear-js/react-hooks';
+import clsx from 'clsx';
 import { EzGaslessTransactions, EzSignlessTransactions } from 'gear-ez-transactions';
 
-import styles from './Header.module.scss';
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { useGame } from '@/app/context/ctx-game';
+import { HeaderAdmin } from '@/components/layout/header/header-admin';
+
+import styles from './Header.module.scss';
 import { Logo } from './logo';
-import clsx from 'clsx';
-import { useAccount } from '@gear-js/react-hooks';
 
 export const Header = () => {
   const { isAdmin } = useGame();

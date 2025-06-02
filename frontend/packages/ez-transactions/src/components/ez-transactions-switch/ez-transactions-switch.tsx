@@ -1,7 +1,8 @@
-import { EnableSignlessSession } from '@/features/signless-transactions';
-import { EnableGaslessSession } from '@/features/gasless-transactions';
+import { EnableGaslessSession } from '@ez/features/gasless-transactions';
+import { EnableSignlessSession } from '@ez/features/signless-transactions';
 
 import { useEzTransactions } from '../../context';
+
 import styles from './ez-transactions-switch.module.css';
 
 type Props = {

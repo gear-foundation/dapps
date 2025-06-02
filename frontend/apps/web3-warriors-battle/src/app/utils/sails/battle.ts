@@ -1,10 +1,10 @@
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
-type ActorId = string;
+export type ActorId = string;
 
-export interface Config {
+export interface UtilsConfig {
   health: number;
   max_participants: number;
   attack_range: [number, number];
@@ -18,6 +18,12 @@ export interface Config {
   time_to_cancel_the_battle: number;
   reservation_amount: number | string | bigint;
   reservation_time: number;
+}
+
+export interface SessionConfig {
+  gas_to_delete_session: number | string | bigint;
+  minimum_session_duration_ms: number | string | bigint;
+  ms_per_block: number | string | bigint;
 }
 
 export interface Appearance {
@@ -74,18 +80,40 @@ export interface Pair {
   round_start_time: number | string | bigint;
 }
 
+/**
+ * Reservation identifier.
+ *
+ * The identifier is used to reserve and unreserve gas amount for program
+ * execution later.
+ */
 export type ReservationId = [Array<number>];
+
+export interface SignatureData {
+  key: ActorId;
+  duration: number | string | bigint;
+  allowed_actions: Array<ActionsForSession>;
+}
+
+export type ActionsForSession = 'CreateNewBattle' | 'Registration' | 'StartBattle' | 'MakeMove';
+
+export interface SessionData {
+  key: ActorId;
+  expires: number | string | bigint;
+  allowed_actions: Array<ActionsForSession>;
+  expires_at_block: number;
+}
 
 export class Program {
   public readonly registry: TypeRegistry;
   public readonly battle: Battle;
+  public readonly session: Session;
 
   constructor(
     public api: GearApi,
-    public programId?: `0x${string}`,
+    private _programId?: `0x${string}`,
   ) {
     const types: Record<string, any> = {
-      Config: {
+      UtilsConfig: {
         health: 'u16',
         max_participants: 'u8',
         attack_range: '(u16, u16)',
@@ -100,6 +128,7 @@ export class Program {
         reservation_amount: 'u64',
         reservation_time: 'u32',
       },
+      SessionConfig: { gas_to_delete_session: 'u64', minimum_session_duration_ms: 'u64', ms_per_block: 'u64' },
       Appearance: {
         head_index: 'u16',
         hat_index: 'u16',
@@ -145,6 +174,14 @@ export class Program {
         round_start_time: 'u64',
       },
       ReservationId: '([u8; 32])',
+      SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
+      ActionsForSession: { _enum: ['CreateNewBattle', 'Registration', 'StartBattle', 'MakeMove'] },
+      SessionData: {
+        key: '[u8;32]',
+        expires: 'u64',
+        allowed_actions: 'Vec<ActionsForSession>',
+        expires_at_block: 'u32',
+      },
     };
 
     this.registry = new TypeRegistry();
@@ -152,35 +189,45 @@ export class Program {
     this.registry.register(types);
 
     this.battle = new Battle(this);
+    this.session = new Session(this);
   }
 
-  newCtorFromCode(code: Uint8Array | Buffer, config: Config): TransactionBuilder<null> {
+  public get programId(): `0x${string}` {
+    if (!this._programId) throw new Error(`Program ID is not set`);
+    return this._programId;
+  }
+
+  newCtorFromCode(
+    code: ArrayBuffer | Uint8Array,
+    config: UtilsConfig,
+    session_config: SessionConfig,
+  ): TransactionBuilder<null> {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'upload_program',
-      ['New', config],
-      '(String, Config)',
+      ['New', config, session_config],
+      '(String, UtilsConfig, SessionConfig)',
       'String',
       code,
     );
 
-    this.programId = builder.programId;
+    this._programId = builder.programId;
     return builder;
   }
 
-  newCtorFromCodeId(codeId: `0x${string}`, config: Config) {
+  newCtorFromCodeId(codeId: `0x${string}`, config: UtilsConfig, session_config: SessionConfig) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'create_program',
-      ['New', config],
-      '(String, Config)',
+      ['New', config, session_config],
+      '(String, UtilsConfig, SessionConfig)',
       'String',
       codeId,
     );
 
-    this.programId = builder.programId;
+    this._programId = builder.programId;
     return builder;
   }
 }
@@ -214,40 +261,40 @@ export class Battle {
     );
   }
 
-  public cancelRegister(): TransactionBuilder<null> {
+  public cancelRegister(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'CancelRegister'],
-      '(String, String)',
+      ['Battle', 'CancelRegister', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public cancelTournament(): TransactionBuilder<null> {
+  public cancelTournament(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'CancelTournament'],
-      '(String, String)',
+      ['Battle', 'CancelTournament', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public changeConfig(config: Config): TransactionBuilder<null> {
+  public changeConfig(config: UtilsConfig): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
       ['Battle', 'ChangeConfig', config],
-      '(String, String, Config)',
+      '(String, String, UtilsConfig)',
       'Null',
       this._program.programId,
     );
@@ -261,14 +308,26 @@ export class Battle {
     attack: number,
     defence: number,
     dodge: number,
+    session_for_account: ActorId | null,
   ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'CreateNewBattle', battle_name, user_name, warrior_id, appearance, attack, defence, dodge],
-      '(String, String, String, String, Option<[u8;32]>, Option<Appearance>, u16, u16, u16)',
+      [
+        'Battle',
+        'CreateNewBattle',
+        battle_name,
+        user_name,
+        warrior_id,
+        appearance,
+        attack,
+        defence,
+        dodge,
+        session_for_account,
+      ],
+      '(String, String, String, String, Option<[u8;32]>, Option<Appearance>, u16, u16, u16, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -287,40 +346,40 @@ export class Battle {
     );
   }
 
-  public deletePlayer(player_id: ActorId): TransactionBuilder<null> {
+  public deletePlayer(player_id: ActorId, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'DeletePlayer', player_id],
-      '(String, String, [u8;32])',
+      ['Battle', 'DeletePlayer', player_id, session_for_account],
+      '(String, String, [u8;32], Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public exitGame(): TransactionBuilder<null> {
+  public exitGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'ExitGame'],
-      '(String, String)',
+      ['Battle', 'ExitGame', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public makeMove(warrior_move: Move): TransactionBuilder<null> {
+  public makeMove(warrior_move: Move, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'MakeMove', warrior_move],
-      '(String, String, Move)',
+      ['Battle', 'MakeMove', warrior_move, session_for_account],
+      '(String, String, Move, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -334,40 +393,41 @@ export class Battle {
     attack: number,
     defence: number,
     dodge: number,
+    session_for_account: ActorId | null,
   ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'Register', game_id, warrior_id, appearance, user_name, attack, defence, dodge],
-      '(String, String, [u8;32], Option<[u8;32]>, Option<Appearance>, String, u16, u16, u16)',
+      ['Battle', 'Register', game_id, warrior_id, appearance, user_name, attack, defence, dodge, session_for_account],
+      '(String, String, [u8;32], Option<[u8;32]>, Option<Appearance>, String, u16, u16, u16, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public startBattle(): TransactionBuilder<null> {
+  public startBattle(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'StartBattle'],
-      '(String, String)',
+      ['Battle', 'StartBattle', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public startNextFight(): TransactionBuilder<null> {
+  public startNextFight(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'StartNextFight'],
-      '(String, String)',
+      ['Battle', 'StartNextFight', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -380,7 +440,7 @@ export class Battle {
   ): Promise<Array<ActorId>> {
     const payload = this._program.registry.createType('(String, String)', ['Battle', 'Admins']).toHex();
     const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
+      destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
       payload,
       value: value || 0,
@@ -396,10 +456,10 @@ export class Battle {
     originAddress?: string,
     value?: number | string | bigint,
     atBlock?: `0x${string}`,
-  ): Promise<Config> {
+  ): Promise<UtilsConfig> {
     const payload = this._program.registry.createType('(String, String)', ['Battle', 'Config']).toHex();
     const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
+      destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
       payload,
       value: value || 0,
@@ -407,8 +467,8 @@ export class Battle {
       at: atBlock,
     });
     if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+    const result = this._program.registry.createType('(String, String, UtilsConfig)', reply.payload);
+    return result[2].toJSON() as unknown as UtilsConfig;
   }
 
   public async getBattle(
@@ -421,7 +481,7 @@ export class Battle {
       .createType('(String, String, [u8;32])', ['Battle', 'GetBattle', game_id])
       .toHex();
     const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
+      destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
       payload,
       value: value || 0,
@@ -440,7 +500,7 @@ export class Battle {
   ): Promise<BattleState | null> {
     const payload = this._program.registry.createType('(String, String)', ['Battle', 'GetMyBattle']).toHex();
     const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
+      destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
       payload,
       value: value || 0,
@@ -679,7 +739,7 @@ export class Battle {
   }
 
   public subscribeToConfigChangedEvent(
-    callback: (data: { config: Config }) => void | Promise<void>,
+    callback: (data: { config: UtilsConfig }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -690,8 +750,8 @@ export class Battle {
       if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'ConfigChanged') {
         callback(
           this._program.registry
-            .createType('(String, String, {"config":"Config"})', message.payload)[2]
-            .toJSON() as unknown as { config: Config },
+            .createType('(String, String, {"config":"UtilsConfig"})', message.payload)[2]
+            .toJSON() as unknown as { config: UtilsConfig },
         );
       }
     });
@@ -748,6 +808,116 @@ export class Battle {
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'AutomaticMoveMade') {
+        callback(null);
+      }
+    });
+  }
+}
+
+export class Session {
+  constructor(private _program: Program) {}
+
+  public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'CreateSession', signature_data, signature],
+      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public deleteSessionFromAccount(): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'DeleteSessionFromAccount'],
+      '(String, String)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public deleteSessionFromProgram(session_for_account: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'DeleteSessionFromProgram', session_for_account],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public async sessionForTheAccount(
+    account: ActorId,
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<SessionData | null> {
+    const payload = this._program.registry
+      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
+      .toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
+    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
+    return result[2].toJSON() as unknown as SessionData | null;
+  }
+
+  public async sessions(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<[ActorId, SessionData]>> {
+    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
+    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  }
+
+  public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Session' && getFnNamePrefix(payload) === 'SessionCreated') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToSessionDeletedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Session' && getFnNamePrefix(payload) === 'SessionDeleted') {
         callback(null);
       }
     });

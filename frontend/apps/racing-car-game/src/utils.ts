@@ -1,4 +1,4 @@
-import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
+import { AlertContainerFactory } from '@gear-js/react-hooks/dist/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';

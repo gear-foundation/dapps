@@ -1,10 +1,12 @@
-import { Modal } from 'components/layout/modal';
-import { Button } from '@gear-js/vara-ui';
-import styles from './ContinueGameModal.module.scss';
-import { GameDetails } from 'components/layout/game-details';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useApi } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { GameDetails } from '@/components/layout/game-details';
+import { Modal } from '@/components/layout/modal';
+
+import styles from './ContinueGameModal.module.scss';
 
 type Props = {
   onReserve: () => void;

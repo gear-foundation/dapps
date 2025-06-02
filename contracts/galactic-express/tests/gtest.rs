@@ -25,7 +25,7 @@ async fn test_play_game() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -101,7 +101,7 @@ async fn cancel_register_and_delete_player() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -194,7 +194,7 @@ async fn errors() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -220,7 +220,7 @@ async fn errors() {
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "NoSuchGame".to_string());
+    assert_error(&res, "NoSuchGame".as_bytes());
 
     client
         .create_new_session("Game".to_string())
@@ -241,7 +241,7 @@ async fn errors() {
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "SeveralRegistrations".to_string());
+    assert_error(&res, "SeveralRegistrations".as_bytes());
 
     let res = client
         .start_game(42, 20)
@@ -249,14 +249,14 @@ async fn errors() {
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "NoSuchGame".to_string());
+    assert_error(&res, "NoSuchGame".as_bytes());
 
     let res = client
         .start_game(42, 20)
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "NotEnoughParticipants".to_string());
+    assert_error(&res, "NotEnoughParticipants".as_bytes());
 
     // register
     for player_id in PLAYERS {
@@ -282,21 +282,21 @@ async fn errors() {
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "FuelOrPayloadOverload".to_string());
+    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
 
     let res = client
         .start_game(100, 101)
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "FuelOrPayloadOverload".to_string());
+    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
 
     let res = client
         .start_game(101, 101)
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "FuelOrPayloadOverload".to_string());
+    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
 
     let player = Participant {
         id: 100.into(),
@@ -313,15 +313,15 @@ async fn errors() {
         .send_recv(galactic_express_id)
         .await;
 
-    assert_error(&res, "SessionFull".to_string());
+    assert_error(&res, "SessionFull".as_bytes());
 }
 
-fn assert_error(res: &Result<(), Error>, error: String) {
+fn assert_error(res: &Result<(), Error>, error: &[u8]) {
     assert!(matches!(
         res,
         Err(sails_rs::errors::Error::Rtl(RtlError::ReplyHasError(
             ErrorReplyReason::Execution(SimpleExecutionError::UserspacePanic),
             message
-        ))) if *message == "Panic occurred: ".to_string() + &error
+        ))) if message == error
     ));
 }

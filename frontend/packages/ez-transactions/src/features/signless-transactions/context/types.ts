@@ -1,8 +1,8 @@
-import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder } from 'sails-js';
 import { IVoucherDetails } from '@gear-js/api';
-import { HexString } from '@polkadot/util/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
+import { TypeRegistry } from '@polkadot/types';
+import { HexString } from '@polkadot/util/types';
+import { TransactionBuilder } from 'sails-js';
 
 import { UseCreateSessionReturn } from '../hooks';
 
