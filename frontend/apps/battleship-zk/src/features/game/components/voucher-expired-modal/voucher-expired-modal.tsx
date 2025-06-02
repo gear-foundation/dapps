@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Text } from '@/components/ui/text';
 import { Button } from '@gear-js/vara-ui';
 import { useGaslessTransactions } from 'gear-ez-transactions';
+import { useEffect, useState } from 'react';
+
 import { useCountdown } from '@dapps-frontend/hooks';
+
 import { ModalBottom } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+
 import styles from './VoucherExpiredModal.module.scss';
 
 export default function VoucherExpiredModal() {

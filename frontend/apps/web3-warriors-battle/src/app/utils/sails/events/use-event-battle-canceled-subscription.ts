@@ -1,5 +1,6 @@
-import { useAtom } from 'jotai';
 import { useProgramEvent, useAccount } from '@gear-js/react-hooks';
+import { useAtom } from 'jotai';
+
 import { useProgram } from '@/app/utils';
 import { isBattleCanceledAtom } from '@/features/game/store';
 

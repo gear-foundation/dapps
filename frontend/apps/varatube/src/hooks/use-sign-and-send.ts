@@ -1,6 +1,8 @@
-import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useAlert } from '@gear-js/react-hooks';
-import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/esm/hooks/sails/types';
+import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
+
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 export type Options<T = null> = {
   onSuccess?: (result: T) => void;
@@ -24,12 +26,10 @@ export const useSignAndSend = () => {
           const { response } = await transaction.signAndSend();
           const result = await response();
           onSuccess?.(result);
-        } catch (e) {
+        } catch (error) {
           onError?.();
-          console.error(e);
-          if (typeof e === 'string') {
-            alert.error(e);
-          }
+          console.error(error);
+          alert.error(getErrorMessage(error));
         }
       },
       onError,

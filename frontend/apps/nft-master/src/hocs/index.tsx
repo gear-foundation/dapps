@@ -4,17 +4,20 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
-import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider as UrqlClientProvider } from 'urql';
-import { Alert, alertStyles } from 'components/ui/alert';
-import { urqlClient } from 'utils';
-import { ADDRESS } from '../consts';
+
+import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
+
+import { Alert, alertStyles } from '@/components/ui/alert';
+import { urqlClient } from '@/utils';
+
+import { ENV } from '../consts';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.DEFAULT_NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.DEFAULT_NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {
@@ -23,7 +26,7 @@ function AccountProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );

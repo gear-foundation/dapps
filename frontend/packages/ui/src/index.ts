@@ -10,8 +10,8 @@ import {
   MenuHandler,
   Switcher,
 } from './components';
-
 import { QueryProvider } from './providers';
+import { getErrorMessage } from './utils';
 
 export {
   Footer,
@@ -24,4 +24,5 @@ export {
   MenuHandler,
   Switcher,
   QueryProvider,
+  getErrorMessage,
 };

@@ -1,8 +1,4 @@
-@use '@gear-js/ui/mixins' as *;
-@use '@gear-js/ui/headings' as *;
-
 %text {
-  @extend %headingFont;
   color: #333;
   letter-spacing: 0.08em;
   line-height: 21px;
@@ -22,7 +18,9 @@
   align-items: center;
 
   &::before {
-    @include circle(8px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     content: '';
     margin-right: 8px;
     flex-shrink: 0;
@@ -61,7 +59,6 @@
 }
 
 .heading {
-  @extend %headingFont;
   font-size: 21px;
   font-weight: 400;
 
@@ -69,7 +66,9 @@
 }
 
 .disk {
-  @include circle(380px);
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
   margin-bottom: 25px;
   padding: 50px;
   display: flex;
@@ -95,7 +94,9 @@
 }
 
 .roll {
-  @include circle(160px);
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
   flex-shrink: 0;
   background-color: #fff;
   border: 1px solid #000;

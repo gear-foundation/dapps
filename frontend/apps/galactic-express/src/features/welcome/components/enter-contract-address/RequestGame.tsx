@@ -1,20 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Wallet } from '@dapps-frontend/ui';
-import { Button } from '@gear-js/vara-ui';
-import { cx } from 'utils';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
-import { useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from 'atoms';
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/TextField';
-import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString, decodeAddress } from '@gear-js/api';
-import { GameFoundModal } from 'features/session/components/game-found-modal';
-import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
-import { TextModal } from 'features/session/components/game-not-found-modal';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { useSetAtom, useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+
+import { Wallet } from '@dapps-frontend/ui';
+
+import { GameState, useGetGameQuery, useCreateNewSessionMessage } from '@/app/utils';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from '@/atoms';
+import { TextField } from '@/components/layout/TextField';
+import { GameFoundModal } from '@/features/session/components/game-found-modal';
+import { JoinModalFormValues } from '@/features/session/components/game-found-modal/GameFoundModal';
+import { TextModal } from '@/features/session/components/game-not-found-modal';
+import { cx } from '@/utils';
+
 import { GameIntro } from '../game-intro';
-import { GameState, useGetGameQuery, useCreateNewSessionMessage } from 'app/utils';
+
 import styles from './RequestGame.module.scss';
 
 type Status = 'creating' | 'joining' | null;
@@ -40,7 +44,7 @@ function RequestGame() {
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const [status, setStatus] = useState<Status>(null);
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
@@ -85,11 +89,7 @@ function RequestGame() {
     if (!account?.decodedAddress) {
       return;
     }
-    setIsLoading(true);
-    createNewSessionMessage(
-      { name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) },
-      { onSuccess: () => setIsLoading(false), onError: () => setIsLoading(false) },
-    );
+    void createNewSessionMessage({ name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) });
   };
 
   const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
@@ -107,8 +107,8 @@ function RequestGame() {
         return;
       }
       setGameNotFoundModal(true);
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (error) {
+      console.log(error);
       setGameNotFoundModal(true);
     }
   };

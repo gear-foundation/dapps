@@ -13,10 +13,7 @@ use sails_rs::{
 const USERS: &[u64] = &[3, 4, 5, 6];
 
 fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
-    );
+    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vft.send_bytes(USERS[0], encoded_request);
@@ -31,10 +28,7 @@ fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) 
 }
 
 fn init_non_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
-    let vnft = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/extended_vnft.opt.wasm",
-    );
+    let vnft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vnft.opt.wasm");
     let payload = ("Name".to_string(), "Symbol".to_string());
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = vnft.send_bytes(USERS[0], encoded_request);

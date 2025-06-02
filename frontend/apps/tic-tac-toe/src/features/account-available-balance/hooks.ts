@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
 import { CreateType } from '@gear-js/api';
+import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
 import { formatBalance } from '@polkadot/util';
-import { ISystemAccount } from './types';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect } from 'react';
+
 import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY } from './consts';
+import { ISystemAccount } from './types';
 
 export function useAccountAvailableBalance() {
   const isAvailableBalanceReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);

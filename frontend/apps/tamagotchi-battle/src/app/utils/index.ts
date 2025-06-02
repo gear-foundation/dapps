@@ -1,9 +1,9 @@
-import { ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import { withoutCommas } from '@gear-js/react-hooks';
-import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
+import { AlertContainerFactory } from '@gear-js/react-hooks/dist/types';
 import { u64 } from '@polkadot/types';
 import { formatNumber } from '@polkadot/util';
+import { ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

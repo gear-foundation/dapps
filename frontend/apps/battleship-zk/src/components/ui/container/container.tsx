@@ -1,5 +1,6 @@
-import styles from './container.module.scss';
 import clsx from 'clsx';
+
+import styles from './container.module.scss';
 
 type ContainerProps = BaseComponentProps & {};
 

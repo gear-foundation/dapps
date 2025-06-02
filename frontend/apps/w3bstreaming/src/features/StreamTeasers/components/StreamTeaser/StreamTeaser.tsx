@@ -1,9 +1,11 @@
-import { cx } from '@/utils';
-import styles from './StreamTeaser.module.scss';
 import streamDateIcon from '@/assets/icons/hexagon-icon.png';
 import noUserAvatarImg from '@/assets/icons/no-avatar-user-img.png';
 import noStreamPreviewImg from '@/assets/icons/no-stream-preview-img.png';
+import { cx } from '@/utils';
+
 import { StreamProps } from '../../types';
+
+import styles from './StreamTeaser.module.scss';
 
 function StreamTeaser({ title, start_time, description, img_link, broadcasterInfo }: StreamProps) {
   const date = new Date(Number(start_time));

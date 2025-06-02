@@ -1,4 +1,5 @@
 import { HexString } from '@polkadot/util/types';
+
 import { TamagotchiState } from './lessons';
 
 export type BattlePlayerResponse = {

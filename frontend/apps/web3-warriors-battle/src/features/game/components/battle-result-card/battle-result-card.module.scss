@@ -1,0 +1,45 @@
+.backdrop {
+  position: absolute;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  &.grayedOut {
+    backdrop-filter: grayscale(100%);
+  }
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 217px;
+  width: 546px;
+  > div {
+    padding: 32px;
+  }
+  gap: 28px;
+  h2 {
+    font-size: 32px;
+    line-height: 38px;
+  }
+}
+
+.scrollToHistoryButton {
+  padding: 0;
+  background-color: transparent;
+
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  color: #0ed3a3;
+
+  transition: 0.25s opacity;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}

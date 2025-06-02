@@ -1,16 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import { Modal } from 'components';
-import { useAccount } from '@gear-js/react-hooks';
-import { cx } from '@/utils';
-import playSVG from '@/assets/icons/play-icon.svg';
-import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
-import playlistCrossedSVG from '@/assets/icons/playlist-crossed-icon.svg';
-import { Button } from '@/ui';
-import { SubscribeModalProps } from './SubscribeModal.interface';
-import { ACCOUNT } from '@/App.routes';
-import { useGetStateQuery, useSubscribeMessage, useUnsubscribeMessage } from '@/app/utils';
 import { HexString } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
+import { useNavigate } from 'react-router-dom';
+
+import { ACCOUNT } from '@/App.routes';
 import { usePending } from '@/app/hooks';
+import { useGetStateQuery, useSubscribeMessage, useUnsubscribeMessage } from '@/app/utils';
+import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
+import playSVG from '@/assets/icons/play-icon.svg';
+import playlistCrossedSVG from '@/assets/icons/playlist-crossed-icon.svg';
+import { Modal } from '@/components';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { SubscribeModalProps } from './SubscribeModal.interface';
 import styles from './SubscribeModal.module.scss';
 
 function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {

@@ -1,5 +1,6 @@
+import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
+
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/esm/hooks/sails/types';
 
 export const useSignAndSend = () => {
   const { checkBalance } = useCheckBalance();

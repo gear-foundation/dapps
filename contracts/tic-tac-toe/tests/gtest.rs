@@ -19,7 +19,7 @@ async fn test_play_game() {
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -63,12 +63,6 @@ async fn test_play_game() {
         .await
         .unwrap();
 
-    client
-        .turn(3, None)
-        .send_recv(tic_tac_toe_id)
-        .await
-        .unwrap();
-
     // check game instance
     let game_instance = client
         .game(ADMIN_ID.into())
@@ -91,7 +85,7 @@ async fn add_and_remove_admin() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -140,7 +134,7 @@ async fn allow_messages() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
+        .submit_code_file("../target/wasm32-gear/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {

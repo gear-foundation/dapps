@@ -8,7 +8,10 @@ export class Program {
   public readonly registry: TypeRegistry;
   public readonly vft: Vft;
 
-  constructor(public api: GearApi, public programId?: `0x${string}`) {
+  constructor(
+    public api: GearApi,
+    public programId?: `0x${string}`,
+  ) {
     const types: Record<string, any> = {};
 
     this.registry = new TypeRegistry();

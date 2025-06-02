@@ -1,8 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+
 import { cn } from '@/app/utils';
 import { Button } from '@/components/ui/button';
-
 import { Icons } from '@/components/ui/icons';
-import { useNavigate } from 'react-router-dom';
 
 const levels = [
   {

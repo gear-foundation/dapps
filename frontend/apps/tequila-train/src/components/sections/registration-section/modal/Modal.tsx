@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+
+import type { BaseComponentProps } from '@/app/types';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+
 import styles from './Modal.module.scss';
-import { variantsOverlay, variantsPanel } from 'components/ui/modal/modal.variants';
-import type { BaseComponentProps } from 'app/types';
 
 export function Modal({ children }: BaseComponentProps) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -26,7 +28,6 @@ export function Modal({ children }: BaseComponentProps) {
     return () => close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   return (
     <motion.dialog
