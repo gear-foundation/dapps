@@ -1,19 +1,10 @@
-import { Heading, Loader } from 'components';
 import { Link } from 'react-router-dom';
-import { ADDRESS } from 'consts';
-import { useSubscription } from 'hooks';
-import styles from './Videos.module.scss';
 
-const names = [
-  'Trash Panda',
-  'Raccoon & Beans (R&B)',
-  'Pet Me',
-  'Lovely Nap',
-  "Don't Play w/ Me",
-  'Aww',
-  'is that even a cat??',
-  'Lil Boi',
-];
+import { Heading, Loader } from '@/components';
+import { ADDRESS } from '@/consts';
+import { useSubscription } from '@/hooks';
+
+import styles from './Videos.module.scss';
 
 const description =
   'some random description using random words, some random description using random words, some random description using random words, some random description using random words';

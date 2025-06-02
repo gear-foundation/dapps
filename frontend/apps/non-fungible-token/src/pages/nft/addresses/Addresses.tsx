@@ -1,6 +1,8 @@
-import { HexString } from '@polkadot/util/types';
 import { Button } from '@gear-js/ui';
+import { HexString } from '@polkadot/util/types';
+
 import { Card } from '../card';
+
 import styles from './Addresses.module.scss';
 
 type Props = {

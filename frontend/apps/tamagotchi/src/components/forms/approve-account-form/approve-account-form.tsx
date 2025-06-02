@@ -1,8 +1,9 @@
 import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { hexRequired } from '@/app/utils/form-validations';
+
 import { useApp } from '@/app/context';
 import { useTamagotchiMessage } from '@/app/hooks/use-tamagotchi';
+import { hexRequired } from '@/app/utils/form-validations';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 const initialValues = {

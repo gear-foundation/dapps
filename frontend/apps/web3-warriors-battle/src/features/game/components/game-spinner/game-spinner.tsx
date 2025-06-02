@@ -1,5 +1,7 @@
-import { LoaderIcon } from '../../assets/images';
 import { Text } from '@/components';
+
+import { LoaderIcon } from '../../assets/images';
+
 import styles from './game-spinner.module.scss';
 
 type GameSpinnerProps = {

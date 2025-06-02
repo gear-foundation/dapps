@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { useNavigate } from 'react-router-dom';
-import { Button, Input } from '@gear-js/vara-ui';
-import { decodeAddress } from '@gear-js/api';
+import { decodeAddress, HexString } from '@gear-js/api';
 import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { Button, Input } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { HexString } from '@gear-js/api';
+import { useAtomValue } from 'jotai';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
+import { BattleState, useBattleQuery, useRegisterMessage } from '@/app/utils';
+import { Card, Modal } from '@/components';
+import { usePending } from '@/features/game/hooks';
+import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
+import { getSafeDecodedAddress } from '@/features/game/utils';
 
 import { GameFoundModal, JoinModalFormValues } from '../../modals/game-found-modal';
-import { Card, Modal } from '@/components';
-import { BattleState, useBattleQuery, useRegisterMessage } from '@/app/utils';
-import { usePending } from '@/features/game/hooks';
-import { ROUTES } from '@/app/consts';
-import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
+
 import styles from './find-game-form.module.scss';
-import { getSafeDecodedAddress } from '@/features/game/utils';
 
 type FindGameFormValues = {
   address: HexString | undefined;

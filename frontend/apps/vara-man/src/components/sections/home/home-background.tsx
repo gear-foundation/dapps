@@ -1,6 +1,6 @@
 import { cn } from '@/app/utils';
-import IntroSmokeImage from '@/assets/images/intro-smoke.webp';
 import IntroMapImage from '@/assets/images/intro-map.webp';
+import IntroSmokeImage from '@/assets/images/intro-smoke.webp';
 
 type HomeBackgroundProps = BaseComponentProps & {
   grayscale?: boolean;

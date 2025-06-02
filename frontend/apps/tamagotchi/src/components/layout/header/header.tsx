@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+
 import { Wallet } from '@dapps-frontend/ui';
+
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 export const Header = () => {

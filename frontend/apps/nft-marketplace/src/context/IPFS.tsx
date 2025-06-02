@@ -1,7 +1,8 @@
 import { ProviderProps } from '@gear-js/react-hooks';
-import { createContext, useRef } from 'react';
 import { IPFSHTTPClient, create } from 'ipfs-http-client';
-import { ADDRESS } from 'consts';
+import { createContext, useRef } from 'react';
+
+import { ADDRESS } from '@/consts';
 
 const IPFSContext = createContext<IPFSHTTPClient>({} as IPFSHTTPClient);
 

@@ -10,6 +10,7 @@
   white-space: nowrap;
   user-select: none;
   touch-action: none;
+  cursor: pointer;
 
   &:disabled,
   &[aria-disabled='true'] {

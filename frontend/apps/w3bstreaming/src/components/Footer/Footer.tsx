@@ -1,7 +1,9 @@
 import { Container, Footer as VaraFooter } from '@dapps-frontend/ui';
+
 import logo from '@/assets/icons/logo.svg';
-import styles from './Footer.module.scss';
 import { cx } from '@/utils';
+
+import styles from './Footer.module.scss';
 
 function Footer() {
   return (

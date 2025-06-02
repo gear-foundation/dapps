@@ -1,6 +1,8 @@
-import clsx from 'clsx';
 import { getVaraAddress } from '@gear-js/react-hooks';
+import clsx from 'clsx';
+
 import { Buttons } from '../buttons';
+
 import styles from './Roll.module.scss';
 
 type Props = {

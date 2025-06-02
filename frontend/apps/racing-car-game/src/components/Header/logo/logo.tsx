@@ -1,6 +1,7 @@
-import styles from './logo.module.scss';
 import logo from '@/assets/icons/logo-vara-black.svg';
 import { Link } from '@/ui';
+
+import styles from './logo.module.scss';
 
 type LogoProps = {
   label?: string;

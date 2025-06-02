@@ -1,10 +1,12 @@
 import { useAccount } from '@gear-js/react-hooks';
+
 import { Wallet } from '@dapps-frontend/ui';
+
 import { useLessons, useTamagotchi } from '@/app/context';
+import { CreateTamagotchiForm } from '@/components/forms/create-tamagotchi-form';
+import { Loader } from '@/components/loaders/loader';
 import { TamagotchiAvatar } from '@/components/tamagotchi/tamagotchi-avatar';
 import { TamagotchiInfoCard } from '@/components/tamagotchi/tamagotchi-info-card';
-import { Loader } from '@/components/loaders/loader';
-import { CreateTamagotchiForm } from '@/components/forms/create-tamagotchi-form';
 
 export const HomeCreateSection = () => {
   const { account } = useAccount();

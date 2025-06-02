@@ -1,20 +1,23 @@
-import { Link } from 'react-router-dom';
-import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/logo-vara.svg';
-import { ReactComponent as CrossSVG } from 'assets/images/icons/cross-icon.svg';
-import { Button } from '@gear-js/vara-ui';
-import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
 import { useAccount } from '@gear-js/react-hooks';
-import clsx from 'clsx';
-import { useQuitGame } from 'hooks/useQuitGame';
+import { Button } from '@gear-js/vara-ui';
+import { Link } from 'react-router-dom';
+
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+
+import { useGetGameSessionQuery } from '@/app/utils';
+import CrossSVG from '@/assets/images/icons/cross-icon.svg?react';
+import VaraSVG from '@/assets/images/icons/logo-vara.svg?react';
+import { useQuitGame } from '@/hooks/useQuitGame';
+
 import styles from './Header.module.scss';
 
 function Header() {
-  const { state } = useReadGameSessionState();
   const { account } = useAccount();
-  const { adminId, gameStatus } = state || {};
-  const isAdmin = account?.decodedAddress === adminId;
+  const { state } = useGetGameSessionQuery();
+  const { admin_id, game_status } = state || {};
+  const isAdmin = account?.decodedAddress === admin_id;
   const { cancelGame, deleteGame, exitGame } = useQuitGame();
+  const isFinished = game_status && 'finished' in game_status;
 
   return (
     <CommonHeader
@@ -25,7 +28,7 @@ function Header() {
       }
       menu={
         <div className={styles.headerContent}>
-          {account?.decodedAddress && adminId === account?.decodedAddress && gameStatus !== 'Finished' && (
+          {account?.decodedAddress && admin_id === account?.decodedAddress && isFinished && (
             <Button
               color="light"
               text="Cancel game"
@@ -34,7 +37,7 @@ function Header() {
               onClick={cancelGame}
             />
           )}
-          {account?.decodedAddress && gameStatus === 'Finished' && (
+          {account?.decodedAddress && isFinished && (
             <>
               {isAdmin ? (
                 <Button text="Remove game" onClick={deleteGame} />

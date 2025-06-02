@@ -1,6 +1,7 @@
+import { Button } from '@gear-js/vara-ui';
+
 import { useGame } from '@/app/context/ctx-game';
 import { Modal } from '@/components/ui/modal/modal2';
-import { Button } from '@gear-js/vara-ui';
 
 export const GameCanceledModal = () => {
   const { setPreviousGame } = useGame();

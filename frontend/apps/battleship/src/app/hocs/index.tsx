@@ -4,21 +4,20 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import {
+  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
+  GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
+  EzTransactionsProvider,
+} from 'gear-ez-transactions';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
-import {
-  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
-  GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
-  EzTransactionsProvider,
-} from 'gear-ez-transactions';
-
-import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;

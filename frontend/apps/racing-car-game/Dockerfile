@@ -7,6 +7,9 @@ COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
+COPY /frontend/vite.apps.config.ts .
+COPY /frontend/tsconfig.json .
+COPY /frontend/tsconfig.node.json .
 
 COPY ./frontend/apps/racing-car-game ./apps/racing-car-game
 COPY ./frontend/packages ./packages
@@ -15,16 +18,16 @@ RUN apk update
 
 RUN apk add xsel
 
-ARG REACT_APP_DNS_API_URL \
-    REACT_APP_DNS_NAME \
-    REACT_APP_NODE_ADDRESS \
-    REACT_APP_GASLESS_BACKEND_ADDRESS \
-    REACT_APP_SENTRY_DSN
-ENV REACT_APP_DNS_API_URL=${REACT_APP_DNS_API_URL} \
-    REACT_APP_DNS_NAME=${REACT_APP_DNS_NAME} \
-    REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_GASLESS_BACKEND_ADDRESS=${REACT_APP_GASLESS_BACKEND_ADDRESS} \
-    REACT_APP_SENTRY_DSN=${REACT_APP_SENTRY_DSN} \
+ARG VITE_DNS_API_URL \
+    VITE_DNS_NAME \
+    VITE_NODE_ADDRESS \
+    VITE_GASLESS_BACKEND_ADDRESS \
+    VITE_SENTRY_DSN
+ENV VITE_DNS_API_URL=${VITE_DNS_API_URL} \
+    VITE_DNS_NAME=${VITE_DNS_NAME} \
+    VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
+    VITE_GASLESS_BACKEND_ADDRESS=${VITE_GASLESS_BACKEND_ADDRESS} \
+    VITE_SENTRY_DSN=${VITE_SENTRY_DSN} \
     DISABLE_ESLINT_PLUGIN=true
 
 WORKDIR /frontend/apps/racing-car-game

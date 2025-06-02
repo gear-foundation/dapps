@@ -1,13 +1,14 @@
-import { Button } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
-import { useAtom } from 'jotai';
-import { IS_LOADING } from 'atoms';
 import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { TextField } from 'components/layout/text-field';
+import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { useSyndoteMessage } from 'hooks/metadata';
+
+import { usePending } from '@/app/hooks';
+import { useCreateGameSessionMessage } from '@/app/utils';
+import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
+import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
+import { TextField } from '@/components/layout/text-field';
+
 import styles from './CreateGameForm.module.scss';
 
 type CreateFormValues = {
@@ -25,8 +26,9 @@ function CreateGameForm({ onCancel }: Props) {
   const { api } = useApi();
   const { getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
 
-  const { sendMessage: sendNewSessionMessage } = useSyndoteMessage();
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const { createGameSessionMessage } = useCreateGameSessionMessage();
+
+  const { pending } = usePending();
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
 
   const createForm = useForm({
@@ -51,26 +53,11 @@ function CreateGameForm({ onCancel }: Props) {
     if (!account?.decodedAddress) {
       return;
     }
-    console.log(values);
-    const payload = {
-      CreateGameSession: {
-        name: values.name,
-        strategyId: decodeAddress(values.strategyId),
-        entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
-      },
-    };
-    console.log(payload);
-    setIsLoading(true);
-    sendNewSessionMessage({
-      payload,
-      value: Number(values.fee) ? getChainBalanceValue(values.fee).toFixed() : undefined,
-      onSuccess: () => {
-        setIsLoading(false);
-      },
-      onError: () => {
-        console.log('error');
-        setIsLoading(false);
-      },
+    createGameSessionMessage({
+      value: Number(values.fee) ? BigInt(getChainBalanceValue(values.fee).toFixed()) : undefined,
+      name: values.name,
+      strategyId: decodeAddress(values.strategyId),
+      entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
     });
   };
 
@@ -82,7 +69,7 @@ function CreateGameForm({ onCancel }: Props) {
           label="Enter your program address:"
           placeholder="0x25c..."
           variant="active"
-          disabled={isLoading}
+          disabled={pending}
           {...getCreateInputProps('strategyId')}
         />
         <span className={styles.fieldError}>{createErrors.strategyId}</span>
@@ -93,7 +80,7 @@ function CreateGameForm({ onCancel }: Props) {
           variant="active"
           type="number"
           icon={api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
-          disabled={isLoading}
+          disabled={pending}
           {...getCreateInputProps('fee')}
         />
         <span className={styles.fieldError}>{createErrors.fee}</span>
@@ -104,18 +91,18 @@ function CreateGameForm({ onCancel }: Props) {
           variant="active"
           placeholder="Your name"
           maxLength={20}
-          disabled={isLoading}
+          disabled={pending}
           {...getCreateInputProps('name')}
         />
         <span className={styles.fieldError}>{createErrors.name}</span>
       </div>
       <div className={styles.buttons}>
-        <Button type="submit" text="Continue" disabled={isLoading} className={styles.button} />
+        <Button type="submit" text="Continue" disabled={pending} className={styles.button} />
         <Button
           type="submit"
           text="Cancel"
           color="dark"
-          disabled={isLoading}
+          disabled={pending}
           className={styles.button}
           onClick={onCancel}
         />

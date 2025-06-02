@@ -1,6 +1,7 @@
-import styles from './loading-error.module.scss';
-import { Container } from '@/components/ui/container';
 import { BaseComponentProps } from '@/app/types';
+import { Container } from '@/components/ui/container';
+
+import styles from './loading-error.module.scss';
 
 type LoadingErrorProps = BaseComponentProps & {};
 

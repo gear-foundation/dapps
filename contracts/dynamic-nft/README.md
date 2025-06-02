@@ -1,3 +1,5 @@
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=dynamic-nft/https://github.com/gear-foundation/dapps)
+
 # Dynamic NFT 
 
 A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/NFTs/dynamic-nft).

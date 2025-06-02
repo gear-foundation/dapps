@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { decodeAddress } from '@gear-js/api';
 import { Input, Button } from '@gear-js/vara-ui';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useGame } from '@/app/context/ctx-game';
 import { GameFindModal } from '@/feature/tournament-game/components/modals/game-find';
 import { GameNotFoundModal } from '@/feature/tournament-game/components/modals/game-not-found';
-import { decodeAddress } from '@gear-js/api';
 
 type findGame = {
   admin: string;

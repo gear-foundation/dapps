@@ -1,6 +1,7 @@
-import { useProgram } from 'app/utils';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
+
+import { useProgram } from '@/app/utils';
 import { arrayToRecord } from '@/utils';
 
 export const useGetStateQuery = () => {

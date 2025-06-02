@@ -1,11 +1,14 @@
-import { useDropzone } from 'react-dropzone';
 import { MouseEvent, useEffect, useState } from 'react';
-import { cx } from '@/utils';
-import picImage from '@/assets/icons/picture.png';
+import { useDropzone } from 'react-dropzone';
+
 import closeIcon from '@/assets/icons/cross-icon.svg';
-import styles from './DropzoneUploader.module.scss';
+import picImage from '@/assets/icons/picture.png';
+import { cx } from '@/utils';
+
 import { Button } from '../Button';
+
 import { DropzoneUploaderProps } from './DropzoneUploader.interface';
+import styles from './DropzoneUploader.module.scss';
 
 function DropzoneUploader({
   content,

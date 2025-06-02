@@ -1,12 +1,18 @@
 import { atom } from 'jotai';
+
 import EnkryptSVG from '@/assets/icons/enkrypt-icon.svg';
+import NovaSVG from '@/assets/icons/nova.svg';
 import PolkadotSVG from '@/assets/icons/polkadot-js-icon.svg';
 import SubWalletSVG from '@/assets/icons/sub-wallet-icon.svg';
 import TalismanSVG from '@/assets/icons/talisman-icon.svg';
-import NovaSVG from '@/assets/icons/nova.svg';
+
 import { WalletValue } from './types';
 
-export const isNovaWallet = !!window?.walletExtension?.isNovaWallet;
+interface InjectedWindow extends Window {
+  walletExtension?: { isNovaWallet: boolean };
+}
+
+export const isNovaWallet = !!(window as InjectedWindow)?.walletExtension?.isNovaWallet;
 
 export const WALLET = isNovaWallet
   ? {

@@ -1,18 +1,19 @@
-import { Route, Routes } from 'react-router-dom';
+import '@gear-js/vara-ui/dist/style-deprecated.css';
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
-import { Header, Footer } from '@/components';
-import { withProviders } from '@/hocs';
-import { useScrollToTop, cx } from '@/utils';
+import { Route, Routes } from 'react-router-dom';
+
 import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
-import { StreamTeasersList } from '@/features/StreamTeasers';
+import { Header, Footer } from '@/components';
 import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
-import { Loader } from './components/Loader';
+import { StreamTeasersList } from '@/features/StreamTeasers';
+import { withProviders } from '@/hocs';
+import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
+import { useScrollToTop, cx } from '@/utils';
+
 import styles from './App.module.scss';
-import 'babel-polyfill';
-import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
-import '@gear-js/vara-ui/dist/style.css';
 import { useGetStateQuery } from './app/utils';
+import { Loader } from './components/Loader';
+import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 
 function AppComponent() {
   useScrollToTop();

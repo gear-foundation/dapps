@@ -1,12 +1,15 @@
-import { useEffect, useRef } from 'react';
-import clsx from 'clsx';
-import { stringShorten } from '@polkadot/util';
-import { Button } from '@gear-js/vara-ui';
-import { Text } from '@/components';
-import { copyToClipboard, useDeletePlayerMessage } from '@/app/utils';
 import { getVaraAddress, useAccount, useAlert } from '@gear-js/react-hooks';
-import { CopyIcon, FilledCrossIcon } from '../../assets/images';
+import { Button } from '@gear-js/vara-ui';
+import { stringShorten } from '@polkadot/util';
+import clsx from 'clsx';
+import { useEffect, useRef } from 'react';
+
+import { copyToClipboard, useDeletePlayerMessage } from '@/app/utils';
+import { Text } from '@/components';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { CopyIcon, FilledCrossIcon } from '../../assets/images';
+
 import styles from './wait-list.module.scss';
 
 type WaitListItem = {

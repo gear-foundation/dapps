@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, MouseEventHandler } from 'react';
 import { motion } from 'framer-motion';
-import { CrossIcon } from '@/assets/images';
+import React, { useEffect, useRef, MouseEventHandler } from 'react';
 
+import { CrossIcon } from '@/assets/images';
 import { Button } from '@/components/ui/button';
 
-import styles from './Modal.module.scss';
 import { ScrollArea } from '../scroll-area';
+
+import styles from './Modal.module.scss';
 
 type Props = React.PropsWithChildren & {
   heading: string;

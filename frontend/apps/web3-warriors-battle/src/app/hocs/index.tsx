@@ -4,13 +4,21 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import { Alert, alertStyles } from '@gear-js/vara-ui';
+import {
+  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
+  GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
+  EzTransactionsProvider,
+} from 'gear-ez-transactions';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 import { ADDRESS } from '@/app/consts';
-import { Alert, alertStyles } from '@/components/ui/alert';
+
+import { useProgram } from '../utils';
+
 import { QueryProvider } from './query-provider';
 
 function ApiProvider({ children }: ProviderProps) {
@@ -37,10 +45,41 @@ function DnsProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, ApiProvider, AccountProvider, AlertProvider, DnsProvider, QueryProvider];
+function GaslessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
 
-function withProviders(Component: ComponentType) {
+  return (
+    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
+      {children}
+    </SharedGaslessTransactionsProvider>
+  );
+}
+
+function SignlessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
+  const program = useProgram();
+
+  return (
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
+      {children}
+    </SharedSignlessTransactionsProvider>
+  );
+}
+
+const providers = [
+  BrowserRouter,
+  ApiProvider,
+  AccountProvider,
+  AlertProvider,
+  DnsProvider,
+  QueryProvider,
+  GaslessTransactionsProvider,
+  SignlessTransactionsProvider,
+  EzTransactionsProvider,
+];
+
+function WithProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
-export { withProviders };
+export { WithProviders };

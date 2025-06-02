@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use '@/utils' as *;
 
 .loader {
   @include absoluteCenter;
@@ -8,7 +8,7 @@
   &::before,
   &::after {
     content: '';
-    background: url(/assets/images/icons/gear.svg) center/cover no-repeat;
+    background: url(@/assets/images/icons/gear.svg) center/cover no-repeat;
     animation: spin linear infinite;
   }
 

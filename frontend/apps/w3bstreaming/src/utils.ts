@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
+
 import { ADDRESS } from './consts';
 
 export const cx = (...styles: string[]) => clsx(...styles);
@@ -86,8 +87,11 @@ export const logger = (message: unknown | unknown[]) => {
 };
 
 export const arrayToRecord = <T extends [string, any]>(array: T[]): Record<T[0], T[1]> => {
-  return array.reduce((record, [key, value]) => {
-    (record as any)[key] = value;
-    return record;
-  }, {} as Record<T[0], T[1]>);
+  return array.reduce(
+    (record, [key, value]) => {
+      (record as any)[key] = value;
+      return record;
+    },
+    {} as Record<T[0], T[1]>,
+  );
 };

@@ -1,6 +1,7 @@
-import styles from './Heading.module.scss';
 import { cva, VariantProps } from 'class-variance-authority';
 import { BaseHTMLAttributes } from 'react';
+
+import styles from './Heading.module.scss';
 
 export const headingVariants = cva('', {
   variants: {

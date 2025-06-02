@@ -1,10 +1,13 @@
 import clsx from 'clsx';
 import React, { Suspense, memo } from 'react';
+
+import { Appearance } from '@/app/utils';
+import { Text } from '@/components';
+
 import { BackColor, BodyColor, LoaderIcon } from '../../assets/images';
 import { getLazySvg } from '../../utils';
-import { Text } from '@/components';
+
 import styles from './character.module.scss';
-import { Appearance } from '@/app/utils';
 
 export type CharacterView = Appearance;
 

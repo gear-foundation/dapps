@@ -1,43 +1,43 @@
-import { ReactComponent as AcalaSVG } from 'assets/images/logos/acala.svg';
-import { ReactComponent as AstarSVG } from 'assets/images/logos/astar.svg';
-import { ReactComponent as BifrostSVG } from 'assets/images/logos/bifrost.svg';
-import centrifuge from 'assets/images/logos/centrifuge.png';
-import { ReactComponent as DockSVG } from 'assets/images/logos/dock.svg';
-import { ReactComponent as EfinitySVG } from 'assets/images/logos/efinity.svg';
-import hydradx from 'assets/images/logos/hydradx.png';
-import i from 'assets/images/logos/i.png';
-import { ReactComponent as InterlaySVG } from 'assets/images/logos/interlay.svg';
-import { ReactComponent as KiltSVG } from 'assets/images/logos/kilt.svg';
-import { ReactComponent as KusamaSVG } from 'assets/images/logos/kusama.svg';
-import { ReactComponent as LitentrySVG } from 'assets/images/logos/litentry.svg';
-import { ReactComponent as MSVG } from 'assets/images/logos/m.svg';
-import { ReactComponent as MoonbeamSVG } from 'assets/images/logos/moonbeam.svg';
-import { ReactComponent as NodleSVG } from 'assets/images/logos/nodle.svg';
-import { ReactComponent as NovaSVG } from 'assets/images/logos/nova.svg';
-import { ReactComponent as ParallelSVG } from 'assets/images/logos/parallel.svg';
-import { ReactComponent as PhalaSVG } from 'assets/images/logos/phala.svg';
-import { ReactComponent as PolkadotSVG } from 'assets/images/logos/polkadot.svg';
-import { ReactComponent as PolkadotJsSVG } from 'assets/images/logos/polkadotjs.svg';
-import { ReactComponent as RmrkSVG } from 'assets/images/logos/rmrk.svg';
-import { ReactComponent as RobonomicsSVG } from 'assets/images/logos/robonomics.svg';
-import { ReactComponent as SubquerySVG } from 'assets/images/logos/subquery.svg';
-import { ReactComponent as SubsocialSVG } from 'assets/images/logos/subsocial.svg';
-import subsquid from 'assets/images/logos/subsquid.png';
-import subwallet from 'assets/images/logos/subwallet.png';
-import { ReactComponent as TalismanSVG } from 'assets/images/logos/talisman.svg';
-import unique from 'assets/images/logos/unique.png';
-import { ReactComponent as ErrorSVG } from 'assets/images/logos/error.svg';
-import { ReactComponent as FireSVG } from 'assets/images/logos/fire.svg';
-import { ReactComponent as GasSVG } from 'assets/images/logos/gas.svg';
-import { ReactComponent as GearSVG } from 'assets/images/logos/gear.svg';
-import { ReactComponent as HackSVG } from 'assets/images/logos/hack.svg';
-import { ReactComponent as VaraSVG } from 'assets/images/logos/vara.svg';
-import { PlayerType } from 'types';
+import AcalaSVG from '@/assets/images/logos/acala.svg?react';
+import AstarSVG from '@/assets/images/logos/astar.svg?react';
+import BifrostSVG from '@/assets/images/logos/bifrost.svg?react';
+import centrifuge from '@/assets/images/logos/centrifuge.png';
+import DockSVG from '@/assets/images/logos/dock.svg?react';
+import EfinitySVG from '@/assets/images/logos/efinity.svg?react';
+import ErrorSVG from '@/assets/images/logos/error.svg?react';
+import FireSVG from '@/assets/images/logos/fire.svg?react';
+import GasSVG from '@/assets/images/logos/gas.svg?react';
+import GearSVG from '@/assets/images/logos/gear.svg?react';
+import HackSVG from '@/assets/images/logos/hack.svg?react';
+import hydradx from '@/assets/images/logos/hydradx.png';
+import i from '@/assets/images/logos/i.png';
+import InterlaySVG from '@/assets/images/logos/interlay.svg?react';
+import KiltSVG from '@/assets/images/logos/kilt.svg?react';
+import KusamaSVG from '@/assets/images/logos/kusama.svg?react';
+import LitentrySVG from '@/assets/images/logos/litentry.svg?react';
+import MSVG from '@/assets/images/logos/m.svg?react';
+import MoonbeamSVG from '@/assets/images/logos/moonbeam.svg?react';
+import NodleSVG from '@/assets/images/logos/nodle.svg?react';
+import NovaSVG from '@/assets/images/logos/nova.svg?react';
+import ParallelSVG from '@/assets/images/logos/parallel.svg?react';
+import PhalaSVG from '@/assets/images/logos/phala.svg?react';
+import PolkadotSVG from '@/assets/images/logos/polkadot.svg?react';
+import PolkadotJsSVG from '@/assets/images/logos/polkadotjs.svg?react';
+import RmrkSVG from '@/assets/images/logos/rmrk.svg?react';
+import RobonomicsSVG from '@/assets/images/logos/robonomics.svg?react';
+import SubquerySVG from '@/assets/images/logos/subquery.svg?react';
+import SubsocialSVG from '@/assets/images/logos/subsocial.svg?react';
+import subsquid from '@/assets/images/logos/subsquid.png';
+import subwallet from '@/assets/images/logos/subwallet.png';
+import TalismanSVG from '@/assets/images/logos/talisman.svg?react';
+import unique from '@/assets/images/logos/unique.png';
+import VaraSVG from '@/assets/images/logos/vara.svg?react';
+import { PlayerType } from '@/types';
 
 const ADDRESS = {
-  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
-  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
+  NODE: import.meta.env.VITE_NODE_ADDRESS as string,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
 };
 
 enum LocalStorage {
