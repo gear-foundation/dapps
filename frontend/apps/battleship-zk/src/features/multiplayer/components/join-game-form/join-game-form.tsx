@@ -4,6 +4,8 @@ import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useState } from 'react';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { MultipleGameState } from '@/app/utils/sails/lib/lib';
 import { TextField } from '@/components/layout/text-field';
 import { TextModal } from '@/components/layout/text-modal';
@@ -87,11 +89,9 @@ function JoinGameForm({ onCancel }: Props) {
 
         await response();
         await triggerGame();
-      } catch (err) {
-        console.log(err);
-        const { message, docs } = err as Error & { docs: string };
-        const errorText = message || docs || 'Create game error';
-        alert.error(errorText);
+      } catch (error) {
+        console.error(error);
+        alert.error(getErrorMessage(error));
       } finally {
         setPending(false);
       }

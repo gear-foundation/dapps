@@ -8,7 +8,7 @@ export const LOCAL_STORAGE = {
   CONTRACT_ADDRESS: 'simple-nft-contract-address',
 };
 
-export const ADDRESS = {
+export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
@@ -16,6 +16,7 @@ export const ADDRESS = {
   BASE_NODES: import.meta.env.VITE_DEFAULT_NODES_URL as string,
   STAGING_NODES: import.meta.env.VITE_STAGING_NODES_URL as string,
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_CARS as string,
+  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT as string,
 };
 
 export const SEARCH_PARAMS = {

@@ -1,5 +1,7 @@
-import { useSendProgramTransaction } from '@gear-js/react-hooks';
+import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { StrategyAction, useProgram } from '@/app/utils';
 
@@ -15,6 +17,7 @@ export const usePlayerMoveMessage = () => {
     functionName: 'playerMove',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
+  const alert = useAlert();
 
   const playerMoveMessage = async (strategyMove: StrategyAction, { onError }: Options) => {
     try {
@@ -24,9 +27,10 @@ export const usePlayerMoveMessage = () => {
         ...params,
       });
       return result.response();
-    } catch (e) {
+    } catch (error) {
       onError?.();
-      console.error(e);
+      alert.error(getErrorMessage(error));
+      console.error(error);
     }
   };
 

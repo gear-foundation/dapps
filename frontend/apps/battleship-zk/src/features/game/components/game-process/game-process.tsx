@@ -1,13 +1,14 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from 'gear-ez-transactions';
 import { useEffect, useState } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import { VerificationModal } from '@/features/game/components/verification-modal';
 import { useShips } from '@/features/zk/hooks/use-ships';
-
 import { SHIP_LENGTHS } from '../../consts';
 import { usePending } from '../../hooks';
 import { GameType, RenderShips } from '../../types';
@@ -57,6 +58,7 @@ export default function GameProcess({
   resetGameState,
 }: Props) {
   const { account } = useAccount();
+  const alert = useAlert();
   const { gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
@@ -88,7 +90,8 @@ export default function GameProcess({
         .then(() => setPlayerLastHit(indexCell))
         .catch((error) => {
           setPending(false);
-          console.log(error);
+          console.error(error);
+          alert.error(getErrorMessage(error));
         });
     }
   };
@@ -96,8 +99,9 @@ export default function GameProcess({
   const onVerifyHit = () => {
     setPending(true);
     onVerifyOponentsHit().catch((error) => {
-      console.log(error);
       setPending(false);
+      console.error(error);
+      alert.error(getErrorMessage(error));
     });
   };
 

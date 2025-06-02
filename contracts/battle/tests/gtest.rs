@@ -13,10 +13,7 @@ const USER_2: u64 = 101;
 const USER_3: u64 = 102;
 
 fn init_warrior(system: &System, user: u64) -> ActorId {
-    let warrior = Program::from_file(
-        system,
-        "../target/wasm32-unknown-unknown/release/warrior.opt.wasm",
-    );
+    let warrior = Program::from_file(system, "../target/wasm32-gear/release/warrior.opt.wasm");
     let request = ["New".encode(), ("link".to_string()).encode()].concat();
 
     let mid = warrior.send_bytes(user, request);
@@ -29,9 +26,9 @@ fn init_warrior(system: &System, user: u64) -> ActorId {
 async fn test() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_1, 100_000_000_000_000);
-    system.mint_to(USER_2, 100_000_000_000_000);
-    system.mint_to(USER_3, 100_000_000_000_000);
+    system.mint_to(USER_1, 1_000_000_000_000_000);
+    system.mint_to(USER_2, 1_000_000_000_000_000);
+    system.mint_to(USER_3, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, USER_1.into());
 
@@ -159,9 +156,9 @@ async fn test() {
 async fn test_both_made_move() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_1, 100_000_000_000_000);
-    system.mint_to(USER_2, 100_000_000_000_000);
-    system.mint_to(USER_3, 100_000_000_000_000);
+    system.mint_to(USER_1, 1_000_000_000_000_000);
+    system.mint_to(USER_2, 1_000_000_000_000_000);
+    system.mint_to(USER_3, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, USER_1.into());
 
@@ -292,9 +289,9 @@ async fn test_both_made_move() {
 async fn test_three_player() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_1, 100_000_000_000_000);
-    system.mint_to(USER_2, 100_000_000_000_000);
-    system.mint_to(USER_3, 100_000_000_000_000);
+    system.mint_to(USER_1, 1_000_000_000_000_000);
+    system.mint_to(USER_2, 1_000_000_000_000_000);
+    system.mint_to(USER_3, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, USER_1.into());
 
@@ -464,9 +461,9 @@ async fn test_three_player() {
 async fn test_error() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_1, 100_000_000_000_000);
-    system.mint_to(USER_2, 100_000_000_000_000);
-    system.mint_to(USER_3, 100_000_000_000_000);
+    system.mint_to(USER_1, 1_000_000_000_000_000);
+    system.mint_to(USER_2, 1_000_000_000_000_000);
+    system.mint_to(USER_3, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, USER_1.into());
 
@@ -559,10 +556,10 @@ async fn test_error() {
         .unwrap();
 
     let res = make_move(&mut service_client, Move::Ultimate, USER_1, program_id).await;
-    check_result(res, "Panic occurred: UltimateReload".to_string());
+    check_result(res, "UltimateReload".as_bytes());
 
     let res = make_move(&mut service_client, Move::Reflect, USER_2, program_id).await;
-    check_result(res, "Panic occurred: ReflectReload".to_string());
+    check_result(res, "ReflectReload".as_bytes());
 }
 
 async fn make_move(
@@ -590,12 +587,12 @@ async fn get_battle(
         .unwrap()
 }
 
-fn check_result(result: Result<(), Error>, error_string: String) {
+fn check_result(result: Result<(), Error>, error: &[u8]) {
     assert!(matches!(
         result,
         Err(sails_rs::errors::Error::Rtl(RtlError::ReplyHasError(
             ErrorReplyReason::Execution(SimpleExecutionError::UserspacePanic),
             message
-        ))) if message == error_string
+        ))) if message == *error
     ));
 }

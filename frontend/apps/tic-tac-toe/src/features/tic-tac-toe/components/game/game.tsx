@@ -13,7 +13,6 @@ import { GameInfoPlayerMark } from '../game-info-player-mark';
 import { GameSkipButton } from '../game-skip-button';
 import { GameStartButton } from '../game-start-button';
 
-
 import { HelpDescription } from '../ui/typography';
 
 import styles from './game.module.scss';

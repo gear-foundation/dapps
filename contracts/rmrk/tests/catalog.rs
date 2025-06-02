@@ -8,7 +8,7 @@ pub fn init_catalog(sys: &System, admin: u64) {
     sys.mint_to(admin, 100_000_000_000_000);
     let catalog = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/release/rmrk_catalog.opt.wasm",
+        "../target/wasm32-gear/release/rmrk_catalog.opt.wasm",
     );
     let mid = catalog.send(
         admin,

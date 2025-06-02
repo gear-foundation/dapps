@@ -1,6 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 
-import { ADDRESS } from '@/app/consts';
+import { ENV } from '@/app/consts';
 import { getArrangementShips, getHash, getParsedZkData, setZkData } from '@/features/zk/utils';
 
 import { GameType, ZkProofData } from '../types';
@@ -57,7 +57,7 @@ export const useProofShipHit = () => {
     const payload = { ...ships, hash, hit, hits };
 
     try {
-      const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/hit`, {
+      const res = await fetch(`${ENV.ZK_PROOF_BACKEND}/api/proof/hit`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -67,8 +67,8 @@ export const useProofShipHit = () => {
       const proofData = await res.json();
 
       return proofData;
-    } catch (err: any) {
-      throw new Error(err);
+    } catch (_error) {
+      throw new Error('Failed to fetch proof data');
     }
   };
 

@@ -30,7 +30,7 @@ function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
   ];
 
   const handleDeletePlayer = (playerId: string) => {
-    deletePlayerMessage({ playerId: decodeAddress(playerId) });
+    void deletePlayerMessage({ playerId: decodeAddress(playerId) });
   };
 
   return (

@@ -118,7 +118,7 @@ impl StakingService {
                 ..Default::default()
             });
         storage.total_staked = storage.total_staked.saturating_add(amount);
-        self.notify_on(Event::StakeAccepted(amount))
+        self.emit_event(Event::StakeAccepted(amount))
             .expect("Notification Error");
     }
 
@@ -157,7 +157,7 @@ impl StakingService {
         staker.balance = staker.balance.saturating_sub(amount);
         storage.total_staked = storage.total_staked.saturating_sub(amount);
 
-        self.notify_on(Event::Withdrawn(amount))
+        self.emit_event(Event::Withdrawn(amount))
             .expect("Notification Error");
     }
 
@@ -191,7 +191,7 @@ impl StakingService {
         storage.all_produced = storage.reward_produced;
         storage.produced_time = exec::block_timestamp();
         storage.reward_total = reward_total;
-        self.notify_on(Event::Updated).expect("Notification Error");
+        self.emit_event(Event::Updated).expect("Notification Error");
     }
 
     /// Sends reward to the staker
@@ -224,7 +224,7 @@ impl StakingService {
             .entry(msg::source())
             .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
 
-        self.notify_on(Event::Reward(reward))
+        self.emit_event(Event::Reward(reward))
             .expect("Notification Error");
     }
 

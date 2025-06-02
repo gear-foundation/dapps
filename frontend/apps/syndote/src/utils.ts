@@ -57,14 +57,3 @@ export const getSafeDecodedAddress = (address?: string) => {
   }
   return null;
 };
-
-export const getPanicType = (error: unknown) => {
-  if (error instanceof Error) {
-    const errorWords = error?.message?.replaceAll("'", '').trim().split(' ');
-    const panicType = errorWords[errorWords.length - 1];
-
-    return panicType;
-  }
-
-  return null;
-};

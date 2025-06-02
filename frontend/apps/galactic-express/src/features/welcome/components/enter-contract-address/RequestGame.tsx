@@ -44,7 +44,7 @@ function RequestGame() {
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const [status, setStatus] = useState<Status>(null);
-  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isLoading] = useAtom(IS_LOADING);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
@@ -89,11 +89,7 @@ function RequestGame() {
     if (!account?.decodedAddress) {
       return;
     }
-    setIsLoading(true);
-    createNewSessionMessage(
-      { name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) },
-      { onSuccess: () => setIsLoading(false), onError: () => setIsLoading(false) },
-    );
+    void createNewSessionMessage({ name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) });
   };
 
   const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
@@ -111,8 +107,8 @@ function RequestGame() {
         return;
       }
       setGameNotFoundModal(true);
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (error) {
+      console.log(error);
       setGameNotFoundModal(true);
     }
   };

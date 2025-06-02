@@ -82,7 +82,7 @@ impl MultisigWalletService {
         wallet.validate_owner_doesnt_exist(&owner);
         validate_requirement(wallet.owners.len() + 1, wallet.required);
         wallet.owners.insert(owner);
-        self.notify_on(Event::OwnerAddition { owner })
+        self.emit_event(Event::OwnerAddition { owner })
             .expect("Notification Error");
     }
     pub fn remove_owner(&mut self, owner: ActorId) {
@@ -99,10 +99,10 @@ impl MultisigWalletService {
 
         if (next_owners_count as u32) < wallet.required {
             wallet.change_requirement(next_owners_count as _);
-            self.notify_on(Event::RequirementChange(next_owners_count.into()))
+            self.emit_event(Event::RequirementChange(next_owners_count.into()))
                 .expect("Notification Error");
         }
-        self.notify_on(Event::OwnerRemoval { owner })
+        self.emit_event(Event::OwnerRemoval { owner })
             .expect("Notification Error");
     }
 
@@ -115,7 +115,7 @@ impl MultisigWalletService {
         wallet.owners.insert(new_owner);
         wallet.owners.remove(&old_owner);
 
-        self.notify_on(Event::OwnerReplace {
+        self.emit_event(Event::OwnerReplace {
             old_owner,
             new_owner,
         })
@@ -124,7 +124,7 @@ impl MultisigWalletService {
     pub fn change_required_confirmations_count(&mut self, count: u32) {
         let wallet = self.get_mut();
         wallet.change_requirement(count);
-        self.notify_on(Event::RequirementChange(count.into()))
+        self.emit_event(Event::RequirementChange(count.into()))
             .expect("Notification Error");
     }
 
@@ -140,14 +140,14 @@ impl MultisigWalletService {
         let transaction_id = wallet.add_transaction(&destination, data, value, description);
         wallet.confirm_transaction(&transaction_id, msg_source);
 
-        self.notify_on(Event::Submission { transaction_id })
+        self.emit_event(Event::Submission { transaction_id })
             .expect("Notification Error");
     }
     pub fn confirm_transaction(&mut self, transaction_id: U256) {
         let wallet = self.get_mut();
         let msg_source = msg::source();
         wallet.confirm_transaction(&transaction_id, msg_source);
-        self.notify_on(Event::Confirmation {
+        self.emit_event(Event::Confirmation {
             sender: msg_source,
             transaction_id,
         })
@@ -167,7 +167,7 @@ impl MultisigWalletService {
             .or_default()
             .remove(&msg_source);
 
-        self.notify_on(Event::Revocation {
+        self.emit_event(Event::Revocation {
             sender: msg_source,
             transaction_id,
         })
@@ -176,7 +176,7 @@ impl MultisigWalletService {
     pub fn execute_transaction(&mut self, transaction_id: U256) {
         let wallet = self.get_mut();
         let completion = || {
-            self.notify_on(Event::Execution { transaction_id })
+            self.emit_event(Event::Execution { transaction_id })
                 .expect("Notification Error");
         };
 

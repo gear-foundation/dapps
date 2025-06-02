@@ -17,6 +17,7 @@ export function useExecuteWithPending() {
     try {
       setPending(true);
       await action();
+      console.log('success');
       options?.onSuccess?.();
     } catch (error) {
       console.error(error);

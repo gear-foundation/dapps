@@ -7,6 +7,7 @@ import { useAtom } from 'jotai';
 import { BaseComponentProps } from '@/app/types';
 import { GameInstance } from '@/app/utils';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
 import { useGame } from '../../hooks';
 import { useEventGameFinishedSubscription, useEventMoveMadeSubscription, useTurnMessage } from '../../sails';
 import { calculateWinner } from '../../utils';
@@ -44,8 +45,8 @@ export function GameField({ game }: GameFieldProps) {
     try {
       await turnMessage(step);
     } catch (error) {
-      console.log(error);
-      alert.error((error instanceof Error && error.message) || 'Game turn error');
+      console.error(error);
+      alert.error(getErrorMessage(error));
       setIsLoading(false);
     }
   };

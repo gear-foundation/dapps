@@ -76,6 +76,7 @@ jobs:
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_VARA_MAN }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS_VARA_MAN }}
             VITE_GTM_ID=${{ secrets.VITE_GTM_ID_VARA_MAN }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_VARAMAN }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

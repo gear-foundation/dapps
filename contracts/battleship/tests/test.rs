@@ -13,7 +13,7 @@ fn init_battleship(sys: &System) {
     let battleship = Program::current(sys);
     let bot = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
+        "../target/wasm32-gear/release/battleship_bot.opt.wasm",
     );
     let mid = bot.send_bytes(3, []);
     let res = sys.run_next_block();

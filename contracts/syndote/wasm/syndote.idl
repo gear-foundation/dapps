@@ -58,15 +58,28 @@ service Syndote {
     Registered;
     StartRegistration;
     Played;
-    GameFinished: struct { winner: actor_id };
+    GameFinished: struct {
+      winner: actor_id
+    };
     StrategicError;
     StrategicSuccess;
-    Step: struct { players: vec struct { actor_id, PlayerInfo }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }, current_player: actor_id, ownership: vec actor_id, current_step: u64 };
-    Jail: struct { in_jail: bool, position: u8 };
+    Step: struct {
+      players: vec struct { actor_id, PlayerInfo },
+      properties: vec opt struct { actor_id, vec Gear, u32, u32 },
+      current_player: actor_id,
+      ownership: vec actor_id,
+      current_step: u64,
+    };
+    Jail: struct {
+      in_jail: bool,
+      position: u8,
+    };
     GasReserved;
     NextRoundFromReservation;
     AdminChanged;
-    Killed: struct { inheritor: actor_id };
+    Killed: struct {
+      inheritor: actor_id
+    };
   }
 };
 

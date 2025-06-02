@@ -55,7 +55,7 @@ export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobil
 
 export const getPanicType = (error: unknown) => {
   if (error instanceof Error) {
-    const errorWords = error?.message?.replaceAll("'", '').trim().split(' ');
+    const errorWords = error?.message?.replaceAll("'", '').replaceAll('"', '').trim().split(' ');
     const panicType = errorWords[errorWords.length - 1];
 
     return panicType;

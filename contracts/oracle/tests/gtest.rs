@@ -16,10 +16,7 @@ pub struct Random {
 }
 
 fn init_randomness(sys: &System) -> (ActorId, Program<'_>) {
-    let randomness = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/randomness.opt.wasm",
-    );
+    let randomness = Program::from_file(sys, "../target/wasm32-gear/release/randomness.opt.wasm");
     let payload: ActorId = ACTOR_ID.into();
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = randomness.send_bytes(ACTOR_ID, encoded_request);

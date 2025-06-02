@@ -1,6 +1,8 @@
-import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useProgramEvent } from '@gear-js/react-hooks';
 import { isNull } from '@polkadot/util';
 import { useEffect } from 'react';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { useProgram } from '@/app/utils/sails';
 import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
@@ -23,6 +25,7 @@ export function useEventMoveMadeSubscription() {
   const program = useProgram();
   const gameType = 'single';
   const { account } = useAccount();
+  const alert = useAlert();
   const { game, triggerGame } = useSingleplayerGame();
   const { setPending } = usePending();
   const { getPlayerShips, updatePlayerHits, getPlayerHits, updateEnemyBoard, updatePlayerBoard } = useShips();
@@ -70,8 +73,9 @@ export function useEventMoveMadeSubscription() {
 
       triggerGame();
       setPending(false);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
     }
   };
 
