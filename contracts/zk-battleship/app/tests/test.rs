@@ -18,7 +18,7 @@
 //     sys.init_logger();
 //     let battleship = Program::from_file(
 //         &sys,
-//         "../target/wasm32-unknown-unknown/release/battleship_wasm.opt.wasm",
+//         "../target/wasm32-gear/release/battleship_wasm.opt.wasm",
 //     );
 //     let encoded_request = ["New".encode(), ().encode()].concat();
 //     battleship.send_bytes(USERS[0], encoded_request);

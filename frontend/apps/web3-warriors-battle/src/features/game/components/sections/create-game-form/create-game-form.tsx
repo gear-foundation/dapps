@@ -1,16 +1,19 @@
-import { useEffect } from 'react';
 import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { useAtomValue } from 'jotai';
-import { useNavigate } from 'react-router-dom';
 import { Input, Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
+import { useAtomValue } from 'jotai';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { ROUTES } from '@/app/consts';
+import { useCreateNewBattleMessage } from '@/app/utils';
+import { Card } from '@/components';
 import { VaraIcon } from '@/components/layout';
 import { usePending } from '@/features/game/hooks';
-import { Background } from '../../background';
-import { Card } from '@/components';
 import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
-import { useCreateNewBattleMessage } from '@/app/utils';
-import { ROUTES } from '@/app/consts';
+
+import { Background } from '../../background';
+
 import styles from './create-game-form.module.scss';
 
 type CreateGameFormValues = {

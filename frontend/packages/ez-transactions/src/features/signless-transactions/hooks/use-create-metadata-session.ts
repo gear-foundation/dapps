@@ -1,8 +1,10 @@
 import { HexString, ProgramMetadata, decodeAddress } from '@gear-js/api';
 import { Account, useAccount, useApi } from '@gear-js/react-hooks';
-import { AnyJson } from '@polkadot/types/types';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { AnyJson } from '@polkadot/types/types';
+
 import { sendTransaction } from '../utils';
+
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
 function useCreateMetadataSession(

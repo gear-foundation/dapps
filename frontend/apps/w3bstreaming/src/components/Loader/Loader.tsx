@@ -1,6 +1,7 @@
 import { cx } from '@/utils';
-import styles from './Loader.module.scss';
+
 import { LoaderProps } from './Loader.interface';
+import styles from './Loader.module.scss';
 
 function Loader({ wholeScreen }: LoaderProps) {
   return (

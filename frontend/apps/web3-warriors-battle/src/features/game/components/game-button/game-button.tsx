@@ -1,7 +1,9 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { ButtonHTMLAttributes } from 'react';
+
 import { GameButtonGlowSvg, LoaderIcon } from '../../assets/images';
+
 import styles from './game-button.module.scss';
 
 const variants = cva('', {

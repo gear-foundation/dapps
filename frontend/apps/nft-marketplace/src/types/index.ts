@@ -1,6 +1,7 @@
-import { HexString } from '@polkadot/util/types';
-import { TokenMetadata } from 'app/utils/sails/nft';
-import { ItemState, Auction } from 'app/utils/sails/nft_marketplace';
+import { HexString } from '@gear-js/api';
+
+import { TokenMetadata } from '@/app/utils/sails/nft';
+import { ItemState, Auction } from '@/app/utils/sails/nft_marketplace';
 
 type BaseNFT = TokenMetadata & {
   token_id: number;

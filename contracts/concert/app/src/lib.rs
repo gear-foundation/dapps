@@ -122,7 +122,7 @@ impl ConcertService {
         storage.tickets_left = number_of_tickets;
         storage.token_id = token_id;
 
-        self.notify_on(Event::Creation {
+        self.emit_event(Event::Creation {
             creator,
             concert_id: storage.concert_id,
             number_of_tickets,
@@ -139,9 +139,7 @@ impl ConcertService {
         }
         // get balances from a contract
         let accounts: Vec<_> = storage.buyers.clone().into_iter().collect();
-        let tokens: Vec<U256> = iter::repeat(storage.token_id)
-            .take(accounts.len())
-            .collect();
+        let tokens: Vec<U256> = iter::repeat_n(storage.token_id, accounts.len()).collect();
 
         let request = vmt_io::BalanceOfBatch::encode_call(accounts.clone(), tokens.clone());
 
@@ -191,7 +189,7 @@ impl ConcertService {
         }
         storage.running = false;
 
-        self.notify_on(Event::Hold {
+        self.emit_event(Event::Hold {
             concert_id: storage.concert_id,
         })
         .expect("Notification Error");
@@ -234,7 +232,7 @@ impl ConcertService {
             .await
             .expect("CONCERT: Error minting concert tokens");
 
-        self.notify_on(Event::Purchase {
+        self.emit_event(Event::Purchase {
             concert_id: storage.concert_id,
             amount,
         })
@@ -262,7 +260,7 @@ impl ConcertProgram {
 }
 
 pub fn panic(err: impl Debug) -> ! {
-    ext::panic(&format!("{err:?}"))
+    ext::panic(format!("{err:?}"))
 }
 
 pub type Tickets = Vec<(U256, Option<TokenMetadata>)>;

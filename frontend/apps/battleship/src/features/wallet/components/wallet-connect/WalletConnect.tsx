@@ -1,10 +1,11 @@
-import { Suspense, useEffect } from 'react';
 import { useAlert, useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
+import { Suspense, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import { ROUTES } from '@/app/consts';
 import { copyToClipboard } from '@/app/utils';
 import { CopyDecoded } from '@/assets/images/';
-
 import { Button } from '@/components/ui/button';
 import { ModalBottom } from '@/components/ui/modal';
 
@@ -12,8 +13,6 @@ import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 
 import styles from './WalletConnect.module.scss';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/app/consts';
 
 type Props = {
   onClose(): void;

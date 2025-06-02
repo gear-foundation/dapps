@@ -140,7 +140,7 @@ export function checkDeadShip(index: number, board: string[]): boolean {
       [0, 1], // right
     ];
 
-    for (let [dx, dy] of directions) {
+    for (const [dx, dy] of directions) {
       const newRow = row + dx;
       const newCol = col + dy;
       if (newRow >= 0 && newRow < boardSize && newCol >= 0 && newCol < boardSize) {

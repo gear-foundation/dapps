@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useNFTs, useOwnerNFTs, useApprovedNFTs } from 'hooks';
-import { InfoText, Loader } from 'components';
-import { FILTERS } from 'consts';
 import { useAccount } from '@gear-js/react-hooks';
-import { NFT } from './nft';
-import { Filter } from './filter';
+import { useState } from 'react';
+
+import { InfoText, Loader } from '@/components';
+import { FILTERS } from '@/consts';
+import { useNFTs, useOwnerNFTs, useApprovedNFTs } from '@/hooks';
+
 import styles from './Home.module.scss';
+import { Filter } from './filter';
+import { NFT } from './nft';
 
 function Home() {
   const [filter, setFilter] = useState('All');

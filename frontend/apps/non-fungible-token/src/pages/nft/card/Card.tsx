@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { ReactNode } from 'react';
+
 import styles from './Card.module.scss';
 
 type BaseProps = {

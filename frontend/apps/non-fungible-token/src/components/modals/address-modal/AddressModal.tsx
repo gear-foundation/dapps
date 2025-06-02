@@ -1,7 +1,8 @@
-import { HexString } from '@polkadot/util/types';
 import { Button, Input, Modal } from '@gear-js/ui';
 import { isHex } from '@polkadot/util';
+import { HexString } from '@polkadot/util/types';
 import { useForm } from 'react-hook-form';
+
 import styles from './AddressModal.module.scss';
 
 type Props = {

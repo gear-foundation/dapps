@@ -7,12 +7,14 @@ import {
 import { Alert, alertStyles } from '@gear-js/vara-ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
-import { ADDRESS } from 'consts';
+
+import { ENV } from '@/consts';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {
@@ -21,7 +23,7 @@ function AccountProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );

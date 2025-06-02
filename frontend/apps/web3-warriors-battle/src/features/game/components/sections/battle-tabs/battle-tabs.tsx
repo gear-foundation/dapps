@@ -1,25 +1,28 @@
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { RefObject, useEffect, useState } from 'react';
 
 import { Switcher } from '@dapps-frontend/ui';
-import { BattleHistoryCard, BattleCard, PlayersList, List } from '@/features/game/components';
-import { Segmented, Text } from '@/components';
+
 import { BattleState, Player } from '@/app/utils';
+import { Segmented, Text } from '@/components';
 import { UserSkullIcon, UserSmileIcon } from '@/features/game/assets/images';
-import { PlayerStatus } from '@/features/game/types';
+import { BattleHistoryCard, BattleCard, PlayersList, List } from '@/features/game/components';
 import { battleHistoryAtom, currentPlayersAtom, otherPairBattleWatchAtom } from '@/features/game/store';
+import { PlayerStatus } from '@/features/game/types';
+
 import styles from './battle-tabs.module.scss';
 
-type Tabs = 'players' | 'history';
+type Tabs = 'players' | 'battles';
 
 type BattleTabsProps = {
   battleState: BattleState;
   participantsMap: Record<string, Player>;
   isAlive: boolean;
+  tabsRef: RefObject<HTMLDivElement>;
 };
 
-export const BattleTabs = ({ battleState, participantsMap, isAlive }: BattleTabsProps) => {
+export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: BattleTabsProps) => {
   const { participants, defeated_participants, battle_name, state } = battleState;
   const [selectedTab, setSelectedTab] = useState<Tabs>('players');
   const [showCurrentBattle, setShowCurrentBattle] = useState(true);
@@ -32,7 +35,7 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive }: BattleTabs
 
   useEffect(() => {
     if (!isAlive && !isTournamentOver) {
-      setSelectedTab('history');
+      setSelectedTab('battles');
       setShowCurrentBattle(false);
     }
   }, [isAlive, isTournamentOver]);
@@ -66,12 +69,89 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive }: BattleTabs
       value: 'players',
     },
     {
-      label: 'Battle History ',
-      value: 'history',
+      label: 'Active Battles',
+      value: 'battles',
     },
   ];
+
+  const renderCurrentBattleItems = () => {
+    if (!currentPlayers || !battleHistory) return [];
+
+    return battleHistory.map((history, index) => {
+      return (
+        <div key={index} className={clsx(styles.historyItem, styles.disabled)}>
+          <BattleHistoryCard
+            {...currentPlayers.player.player_settings}
+            {...history.player}
+            name={currentPlayers.player.user_name}
+          />
+
+          <BattleHistoryCard
+            {...currentPlayers.opponent.player_settings}
+            {...history.opponent}
+            name={currentPlayers.opponent.user_name}
+            align="right"
+          />
+        </div>
+      );
+    });
+  };
+
+  const renderBattleItems = () => {
+    if (!battleState.pairs.length)
+      return [
+        <div key="empty">
+          <Text>There are no other battles now</Text>
+        </div>,
+      ];
+
+    return battleState.pairs.map(([key, { player_1, player_2 }]) => {
+      const player1 = participantsMap[player_1];
+      const player2 = participantsMap[player_2];
+      const disabled = isAlive || !player2;
+
+      const handleClick = () => {
+        if (disabled) return;
+
+        setOtherPairBattleWatch(key);
+
+        setBattleHistory([
+          {
+            player: { action: null, health: player1.player_settings.health, isDodged: false, receivedDamage: 0 },
+            opponent: { action: null, health: player1.player_settings.health, isDodged: false, receivedDamage: 0 },
+          },
+        ]);
+      };
+
+      return (
+        <button
+          type="button"
+          key={key}
+          className={clsx(styles.historyItem, disabled && styles.disabled)}
+          onClick={handleClick}>
+          <BattleCard
+            {...player1.player_settings}
+            name={player1.user_name}
+            characterView={player1.appearance}
+            winsCount={player1.number_of_victories}
+          />
+
+          {player2 && (
+            <BattleCard
+              {...player2.player_settings}
+              name={player2.user_name}
+              characterView={player2.appearance}
+              winsCount={player2.number_of_victories}
+              align="right"
+            />
+          )}
+        </button>
+      );
+    });
+  };
+
   return (
-    <div className={clsx(styles.tabs, !isAlive && styles.defeated)}>
+    <div className={clsx(styles.tabs, !isAlive && styles.defeated)} ref={tabsRef}>
       <Segmented options={segmentedOptions} value={selectedTab} onChange={(value) => setSelectedTab(value as Tabs)} />
 
       {selectedTab === 'players' && (
@@ -83,7 +163,7 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive }: BattleTabs
         />
       )}
 
-      {selectedTab === 'history' && (
+      {selectedTab === 'battles' && (
         <>
           <div className={styles.switcher}>
             <Switcher
@@ -91,97 +171,14 @@ export const BattleTabs = ({ battleState, participantsMap, isAlive }: BattleTabs
               checked={showCurrentBattle}
               onChange={(isChecked) => setShowCurrentBattle(isChecked)}
             />
+
             <Text size="sm">Show current battle</Text>
           </div>
-          {showCurrentBattle ? (
-            <List
-              className={styles.list}
-              maxLength={6}
-              items={
-                (currentPlayers &&
-                  battleHistory?.map((history, index) => {
-                    return (
-                      <div key={index} className={clsx(styles.historyItem, styles.disabled)}>
-                        <BattleHistoryCard
-                          {...currentPlayers.player.player_settings}
-                          {...history.player}
-                          name={currentPlayers.player.user_name}
-                        />
-                        <BattleHistoryCard
-                          {...currentPlayers.opponent.player_settings}
-                          {...history.opponent}
-                          name={currentPlayers.opponent.user_name}
-                          align="right"
-                        />
-                      </div>
-                    );
-                  })) ||
-                []
-              }
-            />
-          ) : (
-            <List
-              className={styles.list}
-              maxLength={7}
-              items={
-                battleState.pairs.length
-                  ? battleState.pairs.map(([key, { player_1, player_2 }]) => {
-                      const player1 = participantsMap[player_1];
-                      const player2 = participantsMap[player_2];
-                      const disabled = isAlive || !player2;
-                      return (
-                        <div
-                          key={key}
-                          className={clsx(styles.historyItem, disabled && styles.disabled)}
-                          onClick={() => {
-                            if (disabled) {
-                              return;
-                            }
 
-                            setOtherPairBattleWatch(key);
-                            setShowCurrentBattle(true);
-                            setBattleHistory([
-                              {
-                                player: {
-                                  action: null,
-                                  health: player1.player_settings.health,
-                                  isDodged: false,
-                                  receivedDamage: 0,
-                                },
-                                opponent: {
-                                  action: null,
-                                  health: player1.player_settings.health,
-                                  isDodged: false,
-                                  receivedDamage: 0,
-                                },
-                              },
-                            ]);
-                          }}>
-                          <BattleCard
-                            {...player1.player_settings}
-                            name={player1.user_name}
-                            characterView={player1.appearance}
-                            winsCount={player1.number_of_victories}
-                          />
-                          {player2 && (
-                            <BattleCard
-                              {...player2.player_settings}
-                              name={player2.user_name}
-                              characterView={player2.appearance}
-                              winsCount={player2.number_of_victories}
-                              align="right"
-                            />
-                          )}
-                        </div>
-                      );
-                    })
-                  : [
-                      <div key="empty">
-                        <Text>There are no other battles now</Text>
-                      </div>,
-                    ]
-              }
-            />
+          {showCurrentBattle ? (
+            <List className={styles.list} maxLength={6} items={renderCurrentBattleItems()} />
+          ) : (
+            <List className={styles.list} maxLength={7} items={renderBattleItems()} />
           )}
         </>
       )}

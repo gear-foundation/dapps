@@ -174,7 +174,7 @@ pub fn panicking<T, E: Debug, F: FnOnce() -> Result<T, E>>(f: F) -> T {
 }
 
 pub fn panic(err: impl Debug) -> ! {
-    ext::panic(&format!("{err:?}"))
+    ext::panic(format!("{err:?}"))
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]

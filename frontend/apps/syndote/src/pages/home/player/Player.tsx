@@ -1,9 +1,11 @@
-import Identicon from '@polkadot/react-identicon';
 import { getVaraAddress } from '@gear-js/react-hooks';
-import clsx from 'clsx';
-import { PlayerType } from 'types';
-import styles from './Player.module.scss';
+import Identicon from '@polkadot/react-identicon';
 import { stringShorten } from '@polkadot/util';
+import clsx from 'clsx';
+
+import { PlayerType } from '@/types';
+
+import styles from './Player.module.scss';
 
 type Props = PlayerType & {
   isActive?: boolean;

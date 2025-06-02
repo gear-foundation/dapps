@@ -1,5 +1,4 @@
-@use '@gear-js/ui/mixins' as *;
-@use 'assets/styles/shared' as *;
+@use '@/assets/styles/shared' as *;
 
 .loader {
   @extend %absoluteCenter;
@@ -9,17 +8,19 @@
   &::before,
   &::after {
     content: '';
-    background: url(/assets/images/icons/gear.svg) center/cover no-repeat;
+    background: url(@/assets/images/icons/gear.svg) center/cover no-repeat;
     animation: spin linear infinite;
   }
 
   &::before {
-    @include square(50px);
+    width: 50px;
+    height: 50px;
     animation-duration: 4s;
   }
 
   &::after {
-    @include square(25px);
+    width: 25px;
+    height: 25px;
     margin-left: -6px;
     animation-duration: 2s;
     animation-direction: reverse;

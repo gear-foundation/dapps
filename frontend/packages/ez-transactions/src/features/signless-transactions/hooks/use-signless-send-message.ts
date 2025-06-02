@@ -1,4 +1,3 @@
-import { AnyJson } from '@polkadot/types/types';
 import { HexString, ProgramMetadata } from '@gear-js/api';
 import {
   SendMessageOptions,
@@ -7,6 +6,7 @@ import {
   useSendMessage,
   useSendMessageWithGas,
 } from '@gear-js/react-hooks';
+import { AnyJson } from '@polkadot/types/types';
 
 import { useSignlessTransactions } from '../context';
 
