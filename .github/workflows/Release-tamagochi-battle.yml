@@ -76,6 +76,7 @@ jobs:
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_TAMAGOCHI_BATTLE }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_GTM_ID=${{ secrets.VITE_GTM_ID_TAMAGOCHI_BATTLE }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_VOUCHER_LIMIT_TAMAGOTCHI_BATTLE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

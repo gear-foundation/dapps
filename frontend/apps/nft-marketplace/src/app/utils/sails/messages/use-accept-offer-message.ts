@@ -2,7 +2,7 @@ import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 
 import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
 import { useMarketplaceProgram } from '@/app/utils';
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 
 type Params = {
   tokenId: string;
@@ -22,7 +22,7 @@ export const useAcceptOfferMessage = () => {
   const acceptOfferMessage = async ({ tokenId, price }: Params, options?: Options) =>
     executeWithPending(async () => {
       const { transaction } = await prepareTransactionAsync({
-        args: [ADDRESS.NFT_CONTRACT, null, tokenId, price],
+        args: [ENV.NFT_CONTRACT, null, tokenId, price],
         gasLimit: { increaseGas: 10 },
       });
       await signAndSend(transaction);

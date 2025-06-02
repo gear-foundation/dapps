@@ -2,7 +2,7 @@ import { useAccount, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 
 import { Options, useExecuteWithPending, useSignAndSend } from '@/app/hooks';
 import { useNftProgram } from '@/app/utils';
-import { ADDRESS } from '@/consts';
+import { ENV } from '@/consts';
 
 type Params = {
   tokenId: string;
@@ -23,7 +23,7 @@ export const useApproveMessage = () => {
     executeWithPending(async () => {
       if (!account?.decodedAddress) throw 'account is not connected';
       const { transaction } = await prepareTransactionAsync({
-        args: [ADDRESS.MARKETPLACE_CONTRACT, tokenId],
+        args: [ENV.MARKETPLACE_CONTRACT, tokenId],
         gasLimit: { increaseGas: 10 },
       });
       await signAndSend(transaction);

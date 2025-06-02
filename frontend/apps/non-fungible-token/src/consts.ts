@@ -1,4 +1,4 @@
-const ADDRESS = {
+const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   IPFS: import.meta.env.VITE_IPFS_ADDRESS as string,
   IPFS_GATEWAY: import.meta.env.VITE_IPFS_GATEWAY_ADDRESS as string,
@@ -11,4 +11,4 @@ const LOCAL_STORAGE = {
 
 const FILTERS = ['All', 'My', 'Approved'];
 
-export { ADDRESS, LOCAL_STORAGE, FILTERS };
+export { ENV, LOCAL_STORAGE, FILTERS };

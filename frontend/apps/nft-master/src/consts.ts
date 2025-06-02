@@ -4,7 +4,7 @@ export const IS_BALANCE_LOW_ATOM = atom<boolean>(false);
 
 export const isPendingUI = atom<boolean>(false);
 
-export const ADDRESS = {
+export const ENV = {
   DEFAULT_NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   IPFS_GATEWAY: import.meta.env.VITE_IPFS_GATEWAY_ADDRESS as string,
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,

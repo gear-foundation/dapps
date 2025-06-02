@@ -15,7 +15,7 @@ import { Period } from '@/app/utils/sails/varatube';
 import pic from '@/assets/images/pic.png';
 import { Heading, Loader, PurchaseSubscriptionModal } from '@/components';
 import { PurchaseSubscriptionApproveModal } from '@/components/modals/purchase-subscription-approve-modal';
-import { ADDRESS, periods } from '@/consts';
+import { ENV, periods } from '@/consts';
 import { FormValues } from '@/types';
 
 import styles from './Subscription.module.scss';
@@ -74,7 +74,7 @@ function Subscription() {
     if (valuesToTransfer) {
       registerSubscriptionMessage(
         {
-          currency_id: ADDRESS.FT_CONTRACT,
+          currency_id: ENV.FT_CONTRACT,
           period: valuesToTransfer.period as Period,
           with_renewal: valuesToTransfer.isRenewal,
         },
@@ -120,7 +120,7 @@ function Subscription() {
     if (amountToTransfer) {
       approveMessage(
         {
-          spender: ADDRESS.CONTRACT,
+          spender: ENV.CONTRACT,
           value: amountToTransfer,
         },
         {
