@@ -19,7 +19,7 @@
   }
 
   &.bottom {
-    top: 434px;
+    top: 462px;
   }
 }
 
@@ -113,7 +113,11 @@
     transform: translate(-24%, -20%);
   }
 
-  &.center {
+  &.top {
     transform: translate(-36%, -50%);
+  }
+
+  &.bottom {
+    display: none;
   }
 }

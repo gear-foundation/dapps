@@ -3,3 +3,7 @@ export { useActiveParticipantsQuery } from './use-active-participants-query';
 export { usePlayerCardsQuery } from './use-player-cards-query';
 export { useParticipantsQuery } from './use-participants-query';
 export { useConfigQuery } from './use-config-query';
+export { useBettingQuery } from './use-betting-query';
+export { useBettingBankQuery } from './use-betting-bank-query';
+export { useEncryptedTableCardsQuery } from './use-encrypted-table-cards-query';
+export { useRevealedTableCardsQuery } from './use-revealed-table-cards-query';

@@ -1,4 +1,3 @@
-import { useAccount } from '@gear-js/react-hooks';
 import { useCallback } from 'react';
 
 interface ConnectRequest {
@@ -25,9 +24,9 @@ interface SignTransactionResult {
   error?: string;
 }
 
-const useVaranWallet = () => {
-  const { account } = useAccount();
+const DEFAULT_CALLBACK = 'wallet?startapp=';
 
+const useVaranWallet = () => {
   const encodeRequest = useCallback((request: ConnectRequest | SignTransactionRequest): string => {
     const jsonString = JSON.stringify(request);
     const base64String = btoa(jsonString);
@@ -47,14 +46,13 @@ const useVaranWallet = () => {
   }, []);
 
   const connect = useCallback(
-    (callbackUrl: string = 'http://localhost:3000/'): void => {
+    (callbackUrl: string = DEFAULT_CALLBACK): void => {
       const request: ConnectRequest = {
         method: 'connect',
         callback: callbackUrl,
       };
 
       const encodedRequest = encodeRequest(request);
-      console.log('🚀 ~ useVaranWal ~ encodedRequest:', encodedRequest);
       const botUrl = `https://t.me/devReptileBot?startapp=${encodedRequest}`;
 
       if (typeof window !== 'undefined') {
@@ -65,7 +63,7 @@ const useVaranWallet = () => {
   );
 
   const signTransaction = useCallback(
-    (txHash: string, walletAddress: string, callbackUrl: string = 'wallet?startapp='): void => {
+    (txHash: string, walletAddress: string, callbackUrl: string = DEFAULT_CALLBACK): void => {
       const request: SignTransactionRequest = {
         method: 'signTransaction',
         tx: txHash,
@@ -90,21 +88,10 @@ const useVaranWallet = () => {
     [decodeResult],
   );
 
-  const getWalletAddress = useCallback((): string | null => {
-    return account?.address || null;
-  }, [account]);
-
-  const isConnected = useCallback((): boolean => {
-    return !!account;
-  }, [account]);
-
   return {
     connect,
     signTransaction,
     handleCallback,
-    getWalletAddress,
-    isConnected,
-    account,
   };
 };
 

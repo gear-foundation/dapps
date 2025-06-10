@@ -3,69 +3,136 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, GameCard, Header } from '@/components';
-import { Card } from '@/types';
+import { Card } from '@/features/zk/api/types';
 
 import styles from './combinations.module.scss';
 
-const combinations = [
+type Combination = {
+  name: string;
+  description: string;
+  example: Card[];
+  rank: number;
+};
+
+const combinations: Combination[] = [
   {
     name: 'Royal Flush',
     description: 'A, K, Q, J, 10 of the same suit',
-    example: ['Ah', 'Kh', 'Qh', 'Jh', 'Th'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Hearts', rank: 'Q' },
+      { suit: 'Hearts', rank: 'J' },
+      { suit: 'Hearts', rank: '10' },
+    ],
     rank: 1,
   },
   {
     name: 'Straight Flush',
     description: 'Five cards in sequence of the same suit',
-    example: ['9h', '8h', '7h', '6h', '5h'],
+    example: [
+      { suit: 'Hearts', rank: '9' },
+      { suit: 'Hearts', rank: '8' },
+      { suit: 'Hearts', rank: '7' },
+      { suit: 'Hearts', rank: '6' },
+      { suit: 'Hearts', rank: '5' },
+    ],
     rank: 2,
   },
   {
     name: 'Four of a Kind',
     description: 'Four cards of the same rank',
-    example: ['Ah', 'As', 'Ad', 'Ac', 'Kh'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'A' },
+      { suit: 'Diamonds', rank: 'A' },
+      { suit: 'Clubs', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+    ],
     rank: 3,
   },
   {
     name: 'Full House',
     description: 'Three of a kind plus a pair',
-    example: ['Ah', 'As', 'Ad', 'Kh', 'Ks'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'A' },
+      { suit: 'Diamonds', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Spades', rank: 'K' },
+    ],
     rank: 4,
   },
   {
     name: 'Flush',
     description: 'Five cards of the same suit',
-    example: ['Ah', 'Kh', '7h', '6h', '2h'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Hearts', rank: '7' },
+      { suit: 'Hearts', rank: '6' },
+      { suit: 'Hearts', rank: '2' },
+    ],
     rank: 5,
   },
   {
     name: 'Straight',
     description: 'Five cards in sequence',
-    example: ['Ah', 'Ks', 'Qd', 'Jc', 'Th'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'K' },
+      { suit: 'Diamonds', rank: 'Q' },
+      { suit: 'Hearts', rank: 'J' },
+      { suit: 'Hearts', rank: '10' },
+    ],
     rank: 6,
   },
   {
     name: 'Three of a Kind',
     description: 'Three cards of the same rank',
-    example: ['Ah', 'As', 'Ad', 'Kh', 'Qs'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'A' },
+      { suit: 'Diamonds', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Spades', rank: 'Q' },
+    ],
     rank: 7,
   },
   {
     name: 'Two Pair',
     description: 'Two different pairs',
-    example: ['Ah', 'As', 'Kh', 'Ks', 'Qd'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Spades', rank: 'K' },
+      { suit: 'Diamonds', rank: 'Q' },
+    ],
     rank: 8,
   },
   {
     name: 'One Pair',
     description: 'Two cards of the same rank',
-    example: ['Ah', 'As', 'Kh', 'Qs', 'Jd'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'A' },
+      { suit: 'Hearts', rank: 'K' },
+      { suit: 'Spades', rank: 'Q' },
+      { suit: 'Diamonds', rank: 'J' },
+    ],
     rank: 9,
   },
   {
     name: 'High Card',
     description: 'Highest card when no other hand is made',
-    example: ['Ah', 'Ks', 'Qd', 'Jc', '9h'],
+    example: [
+      { suit: 'Hearts', rank: 'A' },
+      { suit: 'Spades', rank: 'K' },
+      { suit: 'Diamonds', rank: 'Q' },
+      { suit: 'Clubs', rank: 'J' },
+      { suit: 'Hearts', rank: '9' },
+    ],
     rank: 10,
   },
 ];
@@ -97,7 +164,7 @@ export default function CombinationsPage() {
                 <span className={styles.exampleLabel}>Example:</span>
                 <div className={styles.cards}>
                   {combination.example.map((card) => (
-                    <GameCard key={card} value={card as Card} />
+                    <GameCard key={`${card.suit}-${card.rank}`} value={card} />
                   ))}
                 </div>
               </div>

@@ -14,20 +14,20 @@ import {
   SpadeLgIcon,
   SpadeSmIcon,
 } from '@/assets/images';
-import { Suit } from '@/types';
+import { Suit } from '@/features/zk/api/types';
 
 const suitLgIcon: Record<Suit, SVGComponent> = {
-  c: ClubLgIcon,
-  d: DiamondLgIcon,
-  h: HeartLgIcon,
-  s: SpadeLgIcon,
+  Clubs: ClubLgIcon,
+  Diamonds: DiamondLgIcon,
+  Hearts: HeartLgIcon,
+  Spades: SpadeLgIcon,
 };
 
 const suitSmIcon: Record<Suit, SVGComponent> = {
-  c: ClubSmIcon,
-  d: DiamondSmIcon,
-  h: HeartSmIcon,
-  s: SpadeSmIcon,
+  Clubs: ClubSmIcon,
+  Diamonds: DiamondSmIcon,
+  Hearts: HeartSmIcon,
+  Spades: SpadeSmIcon,
 };
 
 type RankWithIcon = 'J' | 'Q' | 'K';

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { Fragment } from 'react';
 
 import { GameCard, PlayerSlot, PlayerCards } from '@/components';
-import { Card, PlayerStatus } from '@/types';
+import { Card, PlayerStatus } from '@/features/zk/api/types';
 
 import styles from './game-board.module.scss';
 import { getCommonCardsMarginTop, getPositionSide, getSlotPositions } from './helpers';
@@ -18,7 +18,7 @@ type PlayerSlot = {
 };
 
 type Props = {
-  totalPot: number;
+  totalPot?: number;
   commonCardsFields: (Card | null)[];
   playerSlots: PlayerSlot[];
 };
@@ -45,16 +45,17 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots }: Props) => {
               <div className={styles.boardFieldLine1}>
                 <div className={styles.boardFieldLine2}>
                   <div className={styles.commonCards} style={{ marginTop: commonCardsMarginTop }}>
-                    <div className={clsx(styles.totalPot, { [styles.low]: isMovedTotalPot })}>
-                      <div className={styles.totalPotValue}>{totalPot}</div>
-                      <div className={styles.totalPotText}>Total pot</div>
-                    </div>
+                    {totalPot && (
+                      <div className={clsx(styles.totalPot, { [styles.low]: isMovedTotalPot })}>
+                        <div className={styles.totalPotValue}>{totalPot}</div>
+                        <div className={styles.totalPotText}>Total pot</div>
+                      </div>
+                    )}
 
                     {commonCardsFields.map((card, index) => (
                       <GameCard value={card} size="md" isDashed key={index} />
                     ))}
 
-                    {mySlot && <PlayerSlot {...mySlot} side="bottom" hideAvatar={!!mySlot?.cards} />}
                     {mySlot?.cards && (
                       <div className={styles.myCards}>
                         {mySlot.cards.map((card, index) => (
@@ -62,6 +63,7 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots }: Props) => {
                         ))}
                       </div>
                     )}
+                    {mySlot && <PlayerSlot {...mySlot} side="bottom" hideAvatar={!!mySlot?.cards} />}
                   </div>
                 </div>
               </div>

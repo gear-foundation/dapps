@@ -12,6 +12,7 @@ type LobbyConfig = struct {
   big_blind: u128,
   number_of_participants: u16,
   starting_bank: u128,
+  time_per_move_ms: u64,
 };
 
 type PublicKey = struct {
@@ -57,6 +58,7 @@ service PokerFactory {
     LobbyCreated: struct {
       lobby_address: actor_id,
       admin: actor_id,
+      pk: PublicKey,
       lobby_config: LobbyConfig,
     };
     LobbyDeleted: struct {
@@ -64,3 +66,4 @@ service PokerFactory {
     };
   }
 };
+

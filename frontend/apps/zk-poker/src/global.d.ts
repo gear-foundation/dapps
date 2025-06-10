@@ -42,8 +42,3 @@ declare global {
     };
   }
 }
-
-declare module 'ffjavascript' {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const F1Field: any;
-}

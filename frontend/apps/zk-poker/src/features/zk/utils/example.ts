@@ -12,17 +12,10 @@ import {
   generatePermutation,
   permuteMatrix,
 } from '../lib';
+import { decryptWasmFilePath, decryptZkeyFilePath } from './consts';
 
-// import encryptWasmFile from './shuffle_encrypt.wasm';
-// import encryptZkeyFile from './shuffle_encrypt.zkey';
-// import decryptWasmFile from './decrypt.wasm';
-// import decryptZkeyFile from './decrypt.zkey';
-
-// ! TODO: check it
 const encryptWasmFile = './shuffle_encrypt.wasm';
 const encryptZkeyFile = './shuffle_encrypt.zkey';
-const decryptWasmFile = './decrypt.wasm';
-const decryptZkeyFile = './decrypt.zkey';
 
 const q = BigInt('52435875175126190479447740508185965837690552500527637822603658699938581184513'); // BLS12-381 scalar field
 const F = new F1Field(q);
@@ -214,7 +207,7 @@ async function main() {
       sk: sk.toString(),
       expected: [dec.X.toString(), dec.Y.toString(), dec.Z.toString()],
     };
-    const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFile, decryptZkeyFile);
+    const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath);
     results.push({
       cardOwner,
       cardIndex,

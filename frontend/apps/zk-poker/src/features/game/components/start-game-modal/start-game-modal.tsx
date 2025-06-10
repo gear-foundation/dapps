@@ -17,12 +17,13 @@ type Props = {
   participants: [`0x${string}`, Participant][];
   maxPlayers: number;
   isAdmin: boolean;
+  isWaitingStart: boolean;
 };
 
-const DRAG_THRESHOLD = 50;
+const DRAG_THRESHOLD = 30;
 const MAX_HEIGHT = 350;
 
-const StartGameModal = ({ participants, maxPlayers, isAdmin }: Props) => {
+const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
   const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
@@ -154,10 +155,7 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin }: Props) => {
             <Button color="danger" onClick={() => killMessage()} disabled={isKillPending}>
               Cancel game
             </Button>
-            <Button
-              color="primary"
-              onClick={() => startGameMessage()}
-              disabled={participants.length < 2 || isStartGamePending}>
+            <Button color="primary" onClick={() => startGameMessage()} disabled={isStartGamePending || !isWaitingStart}>
               Start game
             </Button>
           </div>

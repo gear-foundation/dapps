@@ -1,4 +1,3 @@
-import { HexString } from '@gear-js/api';
 import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
@@ -7,8 +6,7 @@ import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { usePokerProgram } from '@/app/utils';
 
 type Params = {
-  decryptions: Array<[EncryptedCard, Array<HexString>]>;
-  proofs: Array<VerificationVariables>;
+  instances: Array<VerificationVariables>;
 };
 
 export const useSubmitTablePartialDecryptionsMessage = () => {
@@ -21,9 +19,9 @@ export const useSubmitTablePartialDecryptionsMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const tx = async ({ decryptions, proofs }: Params) => {
+  const tx = async ({ instances }: Params) => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [decryptions, proofs], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({ args: [instances], ...params, gasLimit: { increaseGas: 20 } });
     return result.awaited;
   };
 

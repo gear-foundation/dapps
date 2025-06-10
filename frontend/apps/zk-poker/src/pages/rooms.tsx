@@ -46,7 +46,7 @@ export default function Rooms() {
               name={lobby_name}
               adminName={admin_name}
               totalPlayers={number_of_participants}
-              // ! TODO: add
+              // ! TODO: get from indexer when it will be ready
               currentPlayers={1}
               buyIn={Number(starting_bank)}
               // ! TODO: add

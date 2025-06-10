@@ -17,7 +17,7 @@ export const useRestartGameMessage = () => {
 
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({ args: [], ...params });
     return result.awaited;
   };
 

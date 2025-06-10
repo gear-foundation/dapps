@@ -13,11 +13,13 @@ export const useGetAccuralMessage = () => {
     serviceName: 'pts',
     functionName: 'getAccural',
   });
+
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
     const result = await sendTransactionAsync({ args: [], ...params });
+
     return result.awaited;
   };
 

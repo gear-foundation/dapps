@@ -27,6 +27,7 @@ export class Program {
         big_blind: 'u128',
         number_of_participants: 'u16',
         starting_bank: 'u128',
+        time_per_move_ms: 'u64',
       },
       PublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
       VerifyingKeyBytes: {
@@ -37,9 +38,9 @@ export class Program {
       },
       Card: { value: 'u8', suit: 'Suit' },
       Suit: { _enum: ['Spades', 'Hearts', 'Diamonds', 'Clubs'] },
-      EncryptedCard: { c0: '[Vec<u8>; 3]', c1: '[Vec<u8>; 3]' },
       VerificationVariables: { proof_bytes: 'ProofBytes', public_input: 'Vec<Vec<u8>>' },
       ProofBytes: { a: 'Vec<u8>', b: 'Vec<u8>', c: 'Vec<u8>' },
+      EncryptedCard: { c0: '[Vec<u8>; 3]', c1: '[Vec<u8>; 3]' },
       Action: { _enum: { Fold: 'Null', Call: 'Null', Raise: { bet: 'u128' }, Check: 'Null', AllIn: 'Null' } },
       TurnManagerForActorId: { active_ids: 'Vec<[u8;32]>', turn_index: 'u64' },
       BettingStage: {
@@ -156,14 +157,14 @@ export class Poker {
     );
   }
 
-  public cardDisclosure(id_to_cards: Array<[ActorId, [Card, Card]]>): TransactionBuilder<null> {
+  public cardDisclosure(instances: Array<[Card, VerificationVariables]>): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CardDisclosure', id_to_cards],
-      '(String, String, Vec<([u8;32], (Card, Card))>)',
+      ['Poker', 'CardDisclosure', instances],
+      '(String, String, Vec<(Card, VerificationVariables)>)',
       'Null',
       this._program.programId,
     );
@@ -309,49 +310,27 @@ export class Poker {
     );
   }
 
-  public submitAllPartialDecryptions(
-    cards_by_player: Array<[ActorId, Array<EncryptedCard>]>,
-    proofs: Array<VerificationVariables>,
-  ): TransactionBuilder<null> {
+  public submitAllPartialDecryptions(instances: Array<VerificationVariables>): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitAllPartialDecryptions', cards_by_player, proofs],
-      '(String, String, Vec<([u8;32], [EncryptedCard; 2])>, Vec<VerificationVariables>)',
+      ['Poker', 'SubmitAllPartialDecryptions', instances],
+      '(String, String, Vec<VerificationVariables>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public submitRevealedTableCards(
-    new_cards: Array<Card>,
-    proofs: Array<VerificationVariables>,
-  ): TransactionBuilder<null> {
+  public submitTablePartialDecryptions(instances: Array<VerificationVariables>): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitRevealedTableCards', new_cards, proofs],
-      '(String, String, Vec<Card>, Vec<VerificationVariables>)',
-      'Null',
-      this._program.programId,
-    );
-  }
-
-  public submitTablePartialDecryptions(
-    decryptions: Array<[EncryptedCard, Array<`0x${string}`>]>,
-    proofs: Array<VerificationVariables>,
-  ): TransactionBuilder<null> {
-    if (!this._program.programId) throw new Error('Program ID is not set');
-    return new TransactionBuilder<null>(
-      this._program.api,
-      this._program.registry,
-      'send_message',
-      ['Poker', 'SubmitTablePartialDecryptions', decryptions, proofs],
-      '(String, String, Vec<(EncryptedCard, [Vec<u8>; 3])>, Vec<VerificationVariables>)',
+      ['Poker', 'SubmitTablePartialDecryptions', instances],
+      '(String, String, Vec<VerificationVariables>)',
       'Null',
       this._program.programId,
     );
@@ -713,6 +692,19 @@ export class Poker {
             .createType('(String, String, {"player_id":"[u8;32]"})', message.payload)[2]
             .toJSON() as unknown as { player_id: ActorId },
         );
+      }
+    });
+  }
+
+  public subscribeToDeckShuffleCompleteEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'DeckShuffleComplete') {
+        callback(null);
       }
     });
   }

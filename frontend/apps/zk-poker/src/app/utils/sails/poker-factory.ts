@@ -28,6 +28,7 @@ export class Program {
         big_blind: 'u128',
         number_of_participants: 'u16',
         starting_bank: 'u128',
+        time_per_move_ms: 'u64',
       },
       PublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
     };
@@ -278,7 +279,12 @@ export class PokerFactory {
   }
 
   public subscribeToLobbyCreatedEvent(
-    callback: (data: { lobby_address: ActorId; admin: ActorId; lobby_config: LobbyConfig }) => void | Promise<void>,
+    callback: (data: {
+      lobby_address: ActorId;
+      admin: ActorId;
+      pk: PublicKey;
+      lobby_config: LobbyConfig;
+    }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -290,10 +296,15 @@ export class PokerFactory {
         callback(
           this._program.registry
             .createType(
-              '(String, String, {"lobby_address":"[u8;32]","admin":"[u8;32]","lobby_config":"LobbyConfig"})',
+              '(String, String, {"lobby_address":"[u8;32]","admin":"[u8;32]","pk":"PublicKey","lobby_config":"LobbyConfig"})',
               message.payload,
             )[2]
-            .toJSON() as unknown as { lobby_address: ActorId; admin: ActorId; lobby_config: LobbyConfig },
+            .toJSON() as unknown as {
+            lobby_address: ActorId;
+            admin: ActorId;
+            pk: PublicKey;
+            lobby_config: LobbyConfig;
+          },
         );
       }
     });

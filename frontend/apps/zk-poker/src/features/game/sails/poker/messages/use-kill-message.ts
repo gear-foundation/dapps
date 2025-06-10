@@ -3,6 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
 import { usePokerProgram } from '@/app/utils';
 
 export const useKillMessage = () => {
@@ -14,13 +16,13 @@ export const useKillMessage = () => {
     functionName: 'kill',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
+  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
 
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
     const result = await sendTransactionAsync({
-      args: ['0x0000000000000000000000000000000000000000000000000000000000000000'],
+      args: [pokerFactoryProgramId],
       ...params,
-      gasLimit: undefined,
     });
     return result.awaited;
   };

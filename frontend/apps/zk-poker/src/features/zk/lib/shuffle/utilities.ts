@@ -1,6 +1,6 @@
 /* eslint-disable */
 // @ts-ignore
-import { Scalar, F1Field } from 'ffjavascript';
+import { Scalar, F1Field, F1FieldInstance } from 'ffjavascript';
 import { randomBytes } from 'crypto';
 
 const q = BigInt('52435875175126190479447740508185965837690552500527637822603658699938581184513'); // BLS12-381 scalar field
@@ -30,7 +30,7 @@ export function generateRandomScalar(numBits: number): bigint {
   }
 }
 export function scalarMul(
-  F: F1Field,
+  F: F1FieldInstance,
   a: bigint,
   d: bigint,
   P: { X: bigint; Y: bigint; Z: bigint },

@@ -9,7 +9,7 @@ export type Params = {
   onData: (payload: FinishedPayload) => void;
 };
 
-export function useEventGameEndedSubscription({ onData }: Params) {
+export function useEventFinishedSubscription({ onData }: Params) {
   const program = usePokerProgram();
 
   useProgramEvent({

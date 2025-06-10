@@ -16,18 +16,11 @@ declare global {
     big_blind: number | string | bigint;
     number_of_participants: number;
     starting_bank: number | string | bigint;
+    time_per_move_ms: number | string | bigint;
   }
 
   // poker
-  export interface Config {
-    admin_id: ActorId;
-    admin_name: string;
-    lobby_name: string;
-    small_blind: number | string | bigint;
-    big_blind: number | string | bigint;
-    number_of_participants: number;
-    starting_bank: number | string | bigint;
-  }
+  export type Config = LobbyConfig;
 
   export interface PublicKey {
     x: Uint8Array;
@@ -35,6 +28,9 @@ declare global {
     z: Uint8Array;
   }
 
+  /**
+   * Serialized verifying key for zk-SNARK verification
+   */
   export interface VerifyingKeyBytes {
     alpha_g1_beta_g2: `0x${string}`;
     gamma_g2_neg_pc: `0x${string}`;
@@ -47,22 +43,29 @@ declare global {
     suit: Suit;
   }
 
-  export type Suit = 'spades' | 'hearts' | 'diamonds' | 'clubs';
+  export type Suit = 'Spades' | 'Hearts' | 'Diamonds' | 'Clubs';
 
-  export interface EncryptedCard {
-    c0: Array<`0x${string}`>;
-    c1: Array<`0x${string}`>;
-  }
-
+  /**
+   * Complete verification instance containing proof and public inputs
+   */
   export interface VerificationVariables {
     proof_bytes: ProofBytes;
     public_input: Array<`0x${string}`>;
   }
 
+  /**
+   * Serialized zk-SNARK proof components
+   */
   export interface ProofBytes {
     a: `0x${string}`;
     b: `0x${string}`;
     c: `0x${string}`;
+  }
+
+  // ! TODO: check if this is correct
+  export interface EncryptedCard {
+    c0: Array<`0x${string}`>;
+    c1: Array<`0x${string}`>;
   }
 
   export type Action =
@@ -102,11 +105,11 @@ declare global {
     | { finished: { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> } };
 
   export type Stage =
-    | 'preFlop'
-    | 'waitingTableCardsAfterPreFlop'
-    | 'flop'
-    | 'waitingTableCardsAfterFlop'
-    | 'turn'
-    | 'waitingTableCardsAfterTurn'
-    | 'river';
+    | 'PreFlop'
+    | 'WaitingTableCardsAfterPreFlop'
+    | 'Flop'
+    | 'WaitingTableCardsAfterFlop'
+    | 'Turn'
+    | 'WaitingTableCardsAfterTurn'
+    | 'River';
 }

@@ -2,12 +2,11 @@ import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
-import { ActorId } from 'sails-js';
 
 import { usePokerProgram } from '@/app/utils';
 
 type Params = {
-  idToCards: Array<[ActorId, [Card, Card]]>;
+  instances: Array<[Card, VerificationVariables]>;
 };
 
 export const useCardDisclosureMessage = () => {
@@ -20,9 +19,9 @@ export const useCardDisclosureMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const tx = async ({ idToCards }: Params) => {
+  const tx = async ({ instances }: Params) => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [idToCards], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({ args: [instances], ...params });
     return result.awaited;
   };
 

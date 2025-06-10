@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import { CardBackIcon } from '@/assets/images';
-import { Card, Rank, Suit } from '@/types';
+import { Card } from '@/features/zk/api/types';
 
 import styles from './game-card.module.scss';
 import { rankIcon, suitLgIcon, suitSmIcon } from './icons';
@@ -29,16 +29,15 @@ const GameCard = ({ className, size = 'md', isDashed = false, isBack = false, va
     return <div className={clsx(styles.card, styles[size], isDashed && styles.dashed, className)} />;
   }
 
-  const [rank, suit] = value.split('') as [Rank, Suit];
-  const displayRank = rank === 'T' ? '10' : rank;
+  const { rank, suit } = value;
   const SuitSmIcon = suitSmIcon[suit];
-  const color = suit === 'c' || suit === 's' ? 'black' : 'red';
+  const color = suit === 'Clubs' || suit === 'Spades' ? 'black' : 'red';
 
   const isSm = size === 'sm';
   const isRankWithIcon = rank === 'J' || rank === 'Q' || rank === 'K';
   const SuitLgIcon = isRankWithIcon && !isSm ? rankIcon[color][rank] : suitLgIcon[suit];
 
-  const centerContent = isSm ? displayRank : <SuitLgIcon />;
+  const centerContent = isSm ? rank : <SuitLgIcon />;
 
   return (
     <div className={clsx(styles.card, styles[size], styles[color], className)}>
@@ -51,7 +50,7 @@ const GameCard = ({ className, size = 'md', isDashed = false, isBack = false, va
         <SuitLgIcon className={styles.suitSmIcon} />
       ) : (
         <div className={styles.rank}>
-          {displayRank}
+          {rank}
           <SuitSmIcon />
         </div>
       )}

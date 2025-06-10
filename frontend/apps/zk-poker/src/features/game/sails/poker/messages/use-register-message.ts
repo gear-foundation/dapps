@@ -6,6 +6,7 @@ import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { usePokerProgram } from '@/app/utils';
 import { useUserName } from '@/features/game/hooks';
 import { useKeys } from '@/features/zk/hooks';
+import { getPkBytes } from '@/features/zk/utils';
 
 export const useRegisterMessage = () => {
   const program = usePokerProgram();
@@ -21,7 +22,10 @@ export const useRegisterMessage = () => {
 
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [userName, pk], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({
+      args: [userName, getPkBytes(pk)],
+      ...params,
+    });
     return result.awaited;
   };
 

@@ -1,0 +1,24 @@
+.container {
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Urbanist', sans-serif;
+  padding: 0 20px;
+}
+
+.title {
+  color: #ffffffbf;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 150%;
+}
+
+.description {
+  color: #ffffff40;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 120%;
+  margin-top: 1px;
+}

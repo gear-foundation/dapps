@@ -22,7 +22,7 @@ export const useShuffleDeckMessage = () => {
 
   const tx = async ({ encryptedDeck, instances }: Params) => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [encryptedDeck, instances], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({ args: [encryptedDeck, instances], ...params });
     return result.awaited;
   };
 

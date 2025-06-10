@@ -8,6 +8,7 @@ import { Button, Input, Select, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
 import { LobbyCreatedPayload, useCreateLobbyMessage, useEventLobbyCreatedSubscription } from '@/features/game/sails';
 import { useKeys } from '@/features/zk/hooks';
+import { getPkBytes } from '@/features/zk/utils';
 
 import styles from './create-game.module.scss';
 
@@ -19,11 +20,19 @@ type FormData = {
 };
 
 const initialFormData: FormData = {
-  name: '',
-  players: 9,
-  time: 60,
-  buyIn: 15000,
+  name: '--Test--',
+  players: 2,
+  time: 120,
+  buyIn: 2000,
 };
+
+// TODO: use this after testing
+// const initialFormData: FormData = {
+//   name: '',
+//   players: 9,
+//   time: 60,
+//   buyIn: 15000,
+// };
 
 const buyInOptions = [
   { value: 2000, label: '2k' },
@@ -98,8 +107,7 @@ export default function CreateLobby() {
     void createLobbyMessage(
       {
         config: {
-          // ! TODO: add
-          // time_per_move: formData.time,
+          time_per_move_ms: formData.time * 1000,
           admin_id: account.decodedAddress,
           admin_name: userName,
           big_blind,
@@ -108,7 +116,7 @@ export default function CreateLobby() {
           small_blind,
           starting_bank: formData.buyIn,
         },
-        pk,
+        pk: getPkBytes(pk),
       },
       {
         onError: (error) => {

@@ -12,8 +12,7 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
-// import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ADDRESS } from '@/app/consts';
@@ -38,19 +37,22 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-// function DnsProvider({ children }: ProviderProps) {
-//   return (
-//     <SharedDnsProvider names={{ pokerProgramId: ADDRESS.DNS_NAME, ptsProgramId: }} dnsApiUrl={ADDRESS.DNS_API_URL}>
-//       {children}
-//     </SharedDnsProvider>
-//   );
-// }
+function DnsProvider({ children }: ProviderProps) {
+  return (
+    <SharedDnsProvider names={{ pokerFactoryProgramId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+      {children}
+    </SharedDnsProvider>
+  );
+}
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
-  const { programId } = useDnsProgramIds();
+  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
 
   return (
-    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider
+      programId={pokerFactoryProgramId}
+      backendAddress={ADDRESS.GASLESS_BACKEND}
+      voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
@@ -74,7 +76,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   QueryProvider,
-  // DnsProvider,
+  DnsProvider,
   GaslessTransactionsProvider,
   // SignlessTransactionsProvider,
   EzTransactionsProvider,

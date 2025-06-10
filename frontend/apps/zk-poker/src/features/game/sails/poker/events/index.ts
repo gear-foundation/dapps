@@ -1,5 +1,5 @@
 export { useEventRegisteredSubscription } from './use-event-registered-subscription';
-export { useEventGameEndedSubscription } from './use-event-game-ended-subscription';
+export { useEventFinishedSubscription } from './use-event-finished-subscription';
 export { useEventGameStartedSubscription } from './use-event-game-started-subscription';
 export { useEventCardsDealtToPlayersSubscription } from './use-event-cards-dealt-to-players-subscription';
 export { useEventCardsDealtToTableSubscription } from './use-event-cards-dealt-to-table-subscription';
@@ -10,3 +10,4 @@ export { useEventTurnIsMadeSubscription } from './use-event-turn-is-made-subscri
 export { useEventNextStageSubscription } from './use-event-next-stage-subscription';
 export { useEventPlayerDeletedSubscription } from './use-event-player-deleted-subscription';
 export { useEventRegistrationCanceledSubscription } from './use-event-registration-canceled-subscription';
+export { useEventDeckShuffleCompleteSubscription } from './use-event-deck-shuffle-complete-subscription';

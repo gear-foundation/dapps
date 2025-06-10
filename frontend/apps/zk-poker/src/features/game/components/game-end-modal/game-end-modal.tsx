@@ -1,8 +1,7 @@
 import clsx from 'clsx';
-import { useEffect } from 'react';
 
 import { GameCard, Modal } from '@/components';
-import { Card, HandRank } from '@/types';
+import { Card, HandRank } from '@/features/zk/api/types';
 
 import styles from './game-end-modal.module.scss';
 
@@ -10,22 +9,13 @@ type Props = {
   winner: string;
   pot: number;
   winnersHand: Card[];
-  onClose: () => void;
   handRank: HandRank;
   isWinner: boolean;
 };
 
-const GameEndModal = ({ onClose, winner, pot, winnersHand, handRank, isWinner }: Props) => {
-  console.log(onClose);
+const GameEndModal = ({ winner, pot, winnersHand, handRank, isWinner }: Props) => {
   const rank = handRank.replace('-', ' ');
   const potText = `+${pot}`;
-
-  useEffect(() => {
-    setTimeout(() => {
-      onClose();
-    }, 3000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Modal heading="" className={{ modal: styles.modal, wrapper: clsx(styles.wrapper, isWinner && styles.win) }}>

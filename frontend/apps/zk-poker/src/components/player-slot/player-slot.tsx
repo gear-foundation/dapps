@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import { DefaultAvatar } from '@/assets/images';
-import { PlayerStatus } from '@/types';
+import { PlayerStatus } from '@/features/zk/api/types';
 
 import { Avatar } from '../avatar';
 import { GameTimer } from '../game-timer';

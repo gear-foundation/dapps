@@ -6,6 +6,7 @@ type Config = struct {
   big_blind: u128,
   number_of_participants: u16,
   starting_bank: u128,
+  time_per_move_ms: u64,
 };
 
 type PublicKey = struct {
@@ -14,6 +15,7 @@ type PublicKey = struct {
   z: [u8, 32],
 };
 
+/// Serialized verifying key for zk-SNARK verification
 type VerifyingKeyBytes = struct {
   alpha_g1_beta_g2: vec u8,
   gamma_g2_neg_pc: vec u8,
@@ -33,20 +35,22 @@ type Suit = enum {
   Clubs,
 };
 
-type EncryptedCard = struct {
-  c0: [vec u8, 3],
-  c1: [vec u8, 3],
-};
-
+/// Complete verification instance containing proof and public inputs
 type VerificationVariables = struct {
   proof_bytes: ProofBytes,
   public_input: vec vec u8,
 };
 
+/// Serialized zk-SNARK proof components
 type ProofBytes = struct {
   a: vec u8,
   b: vec u8,
   c: vec u8,
+};
+
+type EncryptedCard = struct {
+  c0: [vec u8, 3],
+  c1: [vec u8, 3],
 };
 
 type Action = enum {
@@ -118,7 +122,7 @@ service Poker {
   /// Sends a transfer request to PTS contract to return points to the player.
   /// Removes player data and emits `RegistrationCanceled` event on success.
   CancelRegistration : () -> null;
-  CardDisclosure : (id_to_cards: vec struct { actor_id, struct { Card, Card } }) -> null;
+  CardDisclosure : (instances: vec struct { Card, VerificationVariables }) -> null;
   /// Admin-only function to forcibly remove a player and refund their balance.
   /// 
   /// Panics if:
@@ -174,9 +178,8 @@ service Poker {
   /// 
   /// Note: Handles edge cases where players can't cover blinds
   StartGame : () -> null;
-  SubmitAllPartialDecryptions : (cards_by_player: vec struct { actor_id, [EncryptedCard, 2] }, proofs: vec VerificationVariables) -> null;
-  SubmitRevealedTableCards : (new_cards: vec Card, proofs: vec VerificationVariables) -> null;
-  SubmitTablePartialDecryptions : (decryptions: vec struct { EncryptedCard, [vec u8, 3] }, proofs: vec VerificationVariables) -> null;
+  SubmitAllPartialDecryptions : (instances: vec VerificationVariables) -> null;
+  SubmitTablePartialDecryptions : (instances: vec VerificationVariables) -> null;
   /// Processes player actions during betting rounds.
   /// 
   /// Panics if:
@@ -219,6 +222,7 @@ service Poker {
     RegistrationCanceled: struct {
       player_id: actor_id
     };
+    DeckShuffleComplete;
     GameStarted;
     CardsDealtToPlayers: vec struct { actor_id, [EncryptedCard, 2] };
     CardsDealtToTable: vec EncryptedCard;
@@ -240,3 +244,4 @@ service Poker {
     };
   }
 };
+

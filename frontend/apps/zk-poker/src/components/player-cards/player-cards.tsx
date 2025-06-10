@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import { CardBackDillerIcon } from '@/assets/images';
-import { Card } from '@/types';
+import { Card } from '@/features/zk/api/types';
 
 import { GameCard } from '../game-card';
 

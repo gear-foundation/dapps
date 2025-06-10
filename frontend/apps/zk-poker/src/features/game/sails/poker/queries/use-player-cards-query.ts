@@ -3,7 +3,11 @@ import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
 
-export const usePlayerCardsQuery = () => {
+type Params = {
+  enabled: boolean;
+};
+
+export const usePlayerCardsQuery = ({ enabled }: Params) => {
   const program = usePokerProgram();
   const { account } = useAccount();
 
@@ -11,8 +15,8 @@ export const usePlayerCardsQuery = () => {
     program,
     serviceName: 'poker',
     functionName: 'playerCards',
-    args: [account?.address as HexString],
-    query: { enabled: !!account },
+    args: [account?.decodedAddress as HexString],
+    query: { enabled: !!account && enabled },
   });
 
   return { playerCards: data, isFetching, refetch, error };
