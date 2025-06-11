@@ -1,3 +1,4 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Button as VaraButton } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { balance, refetch: refetchPtsBalance } = useGetBalanceQuery();
   const { userName, setUserName } = useUserName();
+  const { account } = useAccount();
 
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
@@ -62,7 +64,7 @@ export default function Home() {
           />
         </div>
         <h3 className={styles.welcome}>
-          Welcome, <Avatar size="sm" className={styles.avatar} /> {userName}{' '}
+          Welcome, <Avatar size="sm" className={styles.avatar} address={account?.decodedAddress} /> {userName}{' '}
           <VaraButton
             color="transparent"
             icon={EditIcon}

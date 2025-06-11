@@ -14,22 +14,23 @@ type Props = {
   currentPlayers: number;
   buyIn: number;
   adminName: string;
+  adminId: HexString;
   time: number;
   id: HexString;
 };
 
-const Room = ({ name, totalPlayers, currentPlayers, buyIn, time, adminName, id }: Props) => {
+const Room = ({ name, totalPlayers, currentPlayers, buyIn, time, adminName, adminId, id }: Props) => {
   const formattedBuyIn = String(buyIn).slice(0, -3);
   const haveSeat = currentPlayers !== totalPlayers;
 
   return (
     <Link to={`/game/${id}`}>
       <div className={styles.container}>
-        <Avatar className={styles.avatar} />
+        <Avatar className={styles.avatar} address={adminId} />
         <div className={styles.roomInfo}>
           <div className={styles.roomHeader}>
             <h3 className={styles.roomTitle}>{name}</h3>
-            <div className={clsx(styles.buyIn, !haveSeat && styles.disabled)}>
+            <div className={styles.buyIn}>
               <ChipsIcon />
               <span>Buy in {formattedBuyIn}k PTS</span>
             </div>

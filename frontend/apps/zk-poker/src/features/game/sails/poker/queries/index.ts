@@ -7,3 +7,4 @@ export { useBettingQuery } from './use-betting-query';
 export { useBettingBankQuery } from './use-betting-bank-query';
 export { useEncryptedTableCardsQuery } from './use-encrypted-table-cards-query';
 export { useRevealedTableCardsQuery } from './use-revealed-table-cards-query';
+export { useAlreadyInvestedInTheCircleQuery } from './use-already-invested-in-the-circle-query';

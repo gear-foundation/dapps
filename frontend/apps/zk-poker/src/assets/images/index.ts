@@ -21,7 +21,16 @@ export { default as Copy } from './icons/copy.svg?react';
 export { default as Exit } from './icons/exit.svg?react';
 export { default as EditIcon } from './icons/edit.svg?react';
 export { default as BurgerMenuIcon } from './icons/burger-menu.svg?react';
-export { default as DefaultAvatar } from './icons/default-avatar.svg';
+
+export { default as DefaultAvatar0 } from './icons/default-avatar-0.svg';
+export { default as DefaultAvatar1 } from './icons/default-avatar-1.svg';
+export { default as DefaultAvatar2 } from './icons/default-avatar-2.svg';
+export { default as DefaultAvatar3 } from './icons/default-avatar-3.svg';
+export { default as DefaultAvatar4 } from './icons/default-avatar-4.svg';
+export { default as DefaultAvatar5 } from './icons/default-avatar-5.svg';
+export { default as DefaultAvatar6 } from './icons/default-avatar-6.svg';
+export { default as DefaultAvatar7 } from './icons/default-avatar-7.svg';
+
 export { default as AllInIcon } from './icons/button-all-in.svg?react';
 export { default as CallIcon } from './icons/button-call.svg?react';
 export { default as FoldIcon } from './icons/button-fold.svg?react';

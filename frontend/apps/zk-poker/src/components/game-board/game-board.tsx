@@ -1,3 +1,4 @@
+import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
@@ -8,7 +9,7 @@ import styles from './game-board.module.scss';
 import { getCommonCardsMarginTop, getPositionSide, getSlotPositions } from './helpers';
 
 type PlayerSlot = {
-  avatar?: string;
+  address?: HexString;
   name: string;
   status: PlayerStatus;
   chips: number;

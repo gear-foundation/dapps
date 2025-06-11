@@ -9,7 +9,7 @@ type Props = {
 };
 
 const ClaimPtsButton = ({ onSuccess, className }: Props) => {
-  const { remainingTime, refetch: refetchRemainingTime, isFetching: isFetchingRemainingTime } = useRemainingTimeQuery();
+  const { remainingTime, refetch: refetchRemainingTime, isPending: isPendingRemainingTime } = useRemainingTimeQuery();
   const { getAccuralMessage, isPending } = useGetAccuralMessage();
   const [currentTime, setCurrentTime] = useState<number | null>(null);
 
@@ -35,7 +35,7 @@ const ClaimPtsButton = ({ onSuccess, className }: Props) => {
   };
 
   const formattedTime = currentTime ? `(${new Date(currentTime).toISOString().slice(11, 19)})` : '';
-  const isClaimDisabled = !!remainingTime || isFetchingRemainingTime || isPending;
+  const isClaimDisabled = !!remainingTime || isPendingRemainingTime || isPending;
 
   return (
     <Button className={className} onClick={claimFreePTS} disabled={isClaimDisabled}>

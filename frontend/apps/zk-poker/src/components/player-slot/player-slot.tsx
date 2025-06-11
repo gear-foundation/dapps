@@ -1,6 +1,6 @@
+import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 
-import { DefaultAvatar } from '@/assets/images';
 import { PlayerStatus } from '@/features/zk/api/types';
 
 import { Avatar } from '../avatar';
@@ -9,7 +9,7 @@ import { GameTimer } from '../game-timer';
 import styles from './player-slot.module.scss';
 
 type Props = {
-  avatar?: string;
+  address?: HexString;
   top?: number;
   name: string;
   chips: number;
@@ -19,13 +19,13 @@ type Props = {
   hideAvatar?: boolean;
 };
 
-const PlayerSlot = ({ avatar = DefaultAvatar, top, name, chips, status, side, bet, hideAvatar }: Props) => {
+const PlayerSlot = ({ address, top, name, chips, status, side, bet, hideAvatar }: Props) => {
   return (
     <div className={clsx(styles.playerSlot, styles[side])} style={{ top }}>
       {status === 'thinking' && <div className={clsx(styles.highlight, styles[side])} />}
 
       {hideAvatar && <Avatar isHidden size="lg" />}
-      {!hideAvatar && (status === 'thinking' ? <GameTimer /> : <Avatar avatar={avatar} size="lg" />)}
+      {!hideAvatar && (status === 'thinking' ? <GameTimer /> : <Avatar address={address} size="lg" />)}
 
       <div className={styles.playerInfo}>
         <div className={styles.playerName}>{name}</div>

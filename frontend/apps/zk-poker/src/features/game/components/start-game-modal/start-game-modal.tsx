@@ -1,14 +1,14 @@
-import { useAlert } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { copyToClipboard } from '@ui/utils';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Copy } from '@/assets/images';
+import { Copy, Exit } from '@/assets/images';
 import { Button, Modal } from '@/components';
 
 import { useThrottle } from '../../hooks';
-import { useKillMessage, useStartGameMessage } from '../../sails';
+import { useCancelRegistrationMessage, useKillMessage, useRegisterMessage, useStartGameMessage } from '../../sails';
 import { PlayersList } from '../players-list';
 
 import styles from './start-game-modal.module.scss';
@@ -26,8 +26,11 @@ const MAX_HEIGHT = 350;
 const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
+  const { account } = useAccount();
   const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
   const { killMessage, isPending: isKillPending } = useKillMessage();
+  const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
+  const { registerMessage, isPending: isRegisterPending } = useRegisterMessage();
 
   const players = participants.map(([address, { name, balance }]) => ({
     address,
@@ -35,6 +38,9 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: P
     avatar: undefined,
     balance: Number(balance),
   }));
+
+  const isSpectator = !players.some(({ address }) => address === account?.decodedAddress);
+  const isSeatAvailable = players.length < maxPlayers;
 
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -157,6 +163,26 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: P
             </Button>
             <Button color="primary" onClick={() => startGameMessage()} disabled={isStartGamePending || !isWaitingStart}>
               Start game
+            </Button>
+          </div>
+        )}
+
+        {isSpectator && isSeatAvailable && (
+          <div className={styles.buttons}>
+            <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending}>
+              Join game
+            </Button>
+          </div>
+        )}
+
+        {!isSpectator && !isAdmin && (
+          <div className={styles.buttons}>
+            <Button
+              color="contrast"
+              className={styles.exitButton}
+              onClick={() => cancelRegistrationMessage()}
+              disabled={isCancelPending}>
+              <Exit /> Exit Game
             </Button>
           </div>
         )}

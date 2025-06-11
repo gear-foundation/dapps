@@ -40,11 +40,12 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {lobbies?.map(([address, { admin_name, lobby_name, number_of_participants, starting_bank }]) => (
+          {lobbies?.map(([address, { admin_name, admin_id, lobby_name, number_of_participants, starting_bank }]) => (
             <Room
               key={address}
               name={lobby_name}
               adminName={admin_name}
+              adminId={admin_id}
               totalPlayers={number_of_participants}
               // ! TODO: get from indexer when it will be ready
               currentPlayers={1}

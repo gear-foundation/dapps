@@ -7,7 +7,7 @@ export const useRemainingTimeQuery = () => {
   const program = usePtsProgram();
   const { account } = useAccount();
 
-  const { data, refetch, isFetching, error } = useProgramQuery({
+  const { data, refetch, isPending, error } = useProgramQuery({
     program,
     serviceName: 'pts',
     functionName: 'getRemainingTimeMs',
@@ -15,5 +15,5 @@ export const useRemainingTimeQuery = () => {
     query: { enabled: !!account },
   });
 
-  return { remainingTime: data, isFetching, refetch, error };
+  return { remainingTime: data, isPending, refetch, error };
 };

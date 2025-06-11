@@ -1,7 +1,7 @@
+import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ActorId } from 'sails-js';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
@@ -26,6 +26,8 @@ import {
   useEventGameRestartedSubscription,
   useEventRegistrationCanceledSubscription,
   useEventCardsDealtToTableSubscription,
+  useActiveParticipantsQuery,
+  useAlreadyInvestedInTheCircleQuery,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
 import { Card, PlayerStatus } from '@/features/zk/api/types';
@@ -59,11 +61,14 @@ export default function GamePage() {
 
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
+  const { alreadyInvestedInTheCircle, refetch: refetchAlreadyInvestedInTheCircle } =
+    useAlreadyInvestedInTheCircleQuery();
   // ! TODO: understand if we need this query
-  // const { activeParticipants: _activeParticipants, refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
+  const { activeParticipants, refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
   const { turn, current_bet } = betting || {};
+  const { cash_prize, winners } = (isFinished && status.finished) || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
@@ -87,13 +92,17 @@ export default function GamePage() {
       }
     },
   });
+
   useEventTurnIsMadeSubscription({
     onData: () => {
       void refetchParticipants();
+      void refetchActiveParticipants();
       void refetchBetting();
       void refetchBettingBank();
+      void refetchAlreadyInvestedInTheCircle();
     },
   });
+
   useEventCardsDealtToPlayersSubscription({
     onData: () => {
       void refetchStatus();
@@ -106,6 +115,8 @@ export default function GamePage() {
       void refetchStatus();
       void refetchBetting();
       void refetchBettingBank();
+      void refetchActiveParticipants();
+      void refetchAlreadyInvestedInTheCircle();
     },
   });
 
@@ -122,6 +133,7 @@ export default function GamePage() {
       void refetchParticipants();
       void refetchBetting();
       void refetchBettingBank();
+      void refetchAlreadyInvestedInTheCircle();
     },
   });
 
@@ -156,18 +168,23 @@ export default function GamePage() {
     return playerCards ? null : undefined;
   };
 
-  const getStatusAndBet = (
-    address: string,
-    _bettingBank: Array<[ActorId, number | string | bigint]> | undefined,
-  ): { status: PlayerStatus; bet?: number } => {
-    const _betting = _bettingBank?.find(([actorId]) => actorId === address);
+  const getStatusAndBet = (address: HexString): { status: PlayerStatus; bet?: number } => {
+    const investedInTheCircle = alreadyInvestedInTheCircle?.find(([actorId]) => actorId === address);
+
+    if (winners?.includes(address)) {
+      return { status: 'winner' };
+    }
+
+    if (!activeParticipants?.active_ids?.includes(address)) {
+      return { status: 'fold' };
+    }
 
     if (address === turn && isActiveGame) {
       return { status: 'thinking' };
     }
 
-    if (_betting) {
-      const [, amount] = _betting;
+    if (investedInTheCircle) {
+      const [, amount] = investedInTheCircle;
       return { status: 'bet', bet: Number(amount) };
     }
     return { status: 'waiting' };
@@ -175,14 +192,14 @@ export default function GamePage() {
 
   const playerSlots =
     participants?.map(([address, participant]) => ({
+      address,
       name: participant.name,
       chips: Number(participant.balance),
       cards: getPlayerCards(address, participant),
       isMe: address === account?.decodedAddress,
-      ...getStatusAndBet(address, bettingBank),
+      ...getStatusAndBet(address),
       //     avatar: 'https://avatar.iran.liara.run/public/27',
       // isDiller: true,
-      //     bet: 100,
     })) || [];
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
@@ -196,7 +213,7 @@ export default function GamePage() {
 
   const winnersHand = [] as Card[];
   const totalPot = bettingBank?.reduce((acc, [, amount]) => acc + Number(amount), 0) || undefined;
-  const { cash_prize, winners } = (isFinished && status.finished) || {};
+
   const myWinnerIndex = winners?.findIndex((winner) => winner === account?.decodedAddress);
   const isWinner = myWinnerIndex !== undefined && myWinnerIndex !== -1;
   const myWinnerCashPrize = isWinner && cash_prize ? Number(cash_prize[myWinnerIndex]) : undefined;

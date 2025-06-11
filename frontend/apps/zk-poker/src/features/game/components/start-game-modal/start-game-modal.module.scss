@@ -40,6 +40,17 @@
   background-image: none;
 }
 
+.exitButton {
+  button {
+    color: #89849f;
+  }
+
+  svg {
+    height: 22px;
+    width: 22px;
+  }
+}
+
 .grab {
   position: absolute;
   top: 10px;

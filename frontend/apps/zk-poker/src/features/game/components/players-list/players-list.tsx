@@ -1,10 +1,10 @@
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 
-import { CrossBoldIcon, Exit, PlusIcon } from '@/assets/images';
+import { CrossBoldIcon, Exit } from '@/assets/images';
 import { Avatar, Button } from '@/components';
 
-import { useCancelRegistrationMessage, useRegisterMessage, useDeletePlayerMessage } from '../../sails';
+import { useCancelRegistrationMessage, useDeletePlayerMessage } from '../../sails';
 
 import styles from './players-list.module.scss';
 
@@ -24,9 +24,7 @@ type Props = {
 
 const PlayersList = ({ seats, players, isAdmin }: Props) => {
   const { account } = useAccount();
-  const isSpectator = !players.some(({ address }) => address === account?.decodedAddress);
   const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
-  const { registerMessage, isPending: isRegisterPending } = useRegisterMessage();
   const { deletePlayerMessage, isPending: isDeletePending } = useDeletePlayerMessage();
 
   const ExitButton = () => {
@@ -55,25 +53,17 @@ const PlayersList = ({ seats, players, isAdmin }: Props) => {
     );
   };
 
-  const RegisterButton = () => {
-    return (
-      <Button color="contrast" rounded size="x-small" onClick={() => registerMessage()} disabled={isRegisterPending}>
-        <PlusIcon />
-      </Button>
-    );
-  };
-
   return seats.map((seat) => {
     const player = players[seat];
     const isMe = account?.decodedAddress === player?.address;
-    const { avatar, name, balance } = player || {};
+    const { address, name, balance } = player || {};
     const playerName = player ? `${name} ${isMe ? '(you)' : ''}` : 'Seat Available';
     const points = balance?.toLocaleString('en-US').replace(',', ' ');
 
     return (
       <div className={styles.player} key={seat}>
         <div className={styles.playerInfo}>
-          <Avatar avatar={avatar} isEmpty={!player} />
+          <Avatar address={address} isEmpty={!player} />
           <div className={styles.playerDetails}>
             <span className={styles.playerName}>{playerName}</span>
             <span className={styles.playerDescription}>
@@ -84,7 +74,6 @@ const PlayersList = ({ seats, players, isAdmin }: Props) => {
 
         <div className={styles.playerActions}>
           {isMe && <ExitButton />}
-          {isSpectator && !player && <RegisterButton />}
           {isAdmin && !!player && !isMe && <RemovePlayerButton address={player.address} />}
         </div>
       </div>
