@@ -17,15 +17,21 @@ type Props = {
   bet?: number;
   side: 'left' | 'right' | 'top' | 'bottom';
   hideAvatar?: boolean;
+  timePerMoveMs: number;
 };
 
-const PlayerSlot = ({ address, top, name, chips, status, side, bet, hideAvatar }: Props) => {
+const PlayerSlot = ({ address, top, name, chips, status, side, bet, hideAvatar, timePerMoveMs }: Props) => {
   return (
     <div className={clsx(styles.playerSlot, styles[side])} style={{ top }}>
       {status === 'thinking' && <div className={clsx(styles.highlight, styles[side])} />}
 
       {hideAvatar && <Avatar isHidden size="lg" />}
-      {!hideAvatar && (status === 'thinking' ? <GameTimer /> : <Avatar address={address} size="lg" />)}
+      {!hideAvatar &&
+        (status === 'thinking' ? (
+          <GameTimer timeoutSec={timePerMoveMs / 1000} />
+        ) : (
+          <Avatar address={address} size="lg" />
+        ))}
 
       <div className={styles.playerInfo}>
         <div className={styles.playerName}>{name}</div>

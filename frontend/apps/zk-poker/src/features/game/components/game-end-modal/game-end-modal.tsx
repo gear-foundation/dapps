@@ -6,14 +6,24 @@ import { Card, HandRank } from '@/features/zk/api/types';
 import styles from './game-end-modal.module.scss';
 
 type Props = {
-  winner: string;
+  winnerName: string;
   pot: number;
-  winnersHand: Card[];
-  handRank: HandRank;
+  winnersHand?: Card[];
+  handRank?: HandRank;
   isWinner: boolean;
 };
 
-const GameEndModal = ({ winner, pot, winnersHand, handRank, isWinner }: Props) => {
+const GameEndModal = ({ winnerName, pot, winnersHand, handRank, isWinner }: Props) => {
+  // ! TODO: remove it when fixed
+  if (!winnersHand || !handRank)
+    return (
+      <Modal heading="" className={{ modal: styles.modal, wrapper: clsx(styles.wrapper, isWinner && styles.win) }}>
+        <div>
+          <h1 className={styles.lose}>No one wins</h1>
+        </div>
+      </Modal>
+    );
+
   const rank = handRank.replace('-', ' ');
   const potText = `+${pot}`;
 
@@ -42,7 +52,7 @@ const GameEndModal = ({ winner, pot, winnersHand, handRank, isWinner }: Props) =
           </div>
 
           <div className={clsx(styles.handRank, styles.winner)}>
-            <div>{winner} wins with</div>
+            <div>{winnerName} wins with</div>
             {rank}
           </div>
         </div>

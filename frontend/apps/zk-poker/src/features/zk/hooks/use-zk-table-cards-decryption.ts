@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 
-import { useEncryptedTableCardsQuery, useSubmitTablePartialDecryptionsMessage } from '@/features/game/sails';
+import {
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription,
+  useEventWaitingForCardsToBeDisclosedSubscription,
+  useSubmitTablePartialDecryptionsMessage,
+  useTableCardsToDecryptQuery,
+} from '@/features/game/sails';
 
 import { partialDecryptionsForTableCards } from '../utils';
 
@@ -10,49 +15,54 @@ type Params = {
   isWaitingTableCardsAfterPreFlop?: boolean;
   isWaitingTableCardsAfterFlop?: boolean;
   isWaitingTableCardsAfterTurn?: boolean;
+  onEvent: () => void;
 };
 
 const useZkTableCardsDecryption = ({
   isWaitingTableCardsAfterPreFlop,
   isWaitingTableCardsAfterFlop,
   isWaitingTableCardsAfterTurn,
+  onEvent,
 }: Params) => {
   const isWaitingTableCards =
     isWaitingTableCardsAfterPreFlop || isWaitingTableCardsAfterFlop || isWaitingTableCardsAfterTurn;
 
-  const { encryptedTableCards } = useEncryptedTableCardsQuery({ enabled: isWaitingTableCards });
+  const { refetch: refetchTableCardsToDecrypt } = useTableCardsToDecryptQuery({ enabled: false });
+
   const { submitTablePartialDecryptionsMessage } = useSubmitTablePartialDecryptionsMessage();
   const { sk } = useKeys();
 
+  // TODO: unused here
+  useEventWaitingForCardsToBeDisclosedSubscription({
+    onData: () => {
+      console.log('!!!! ~ waiting for cards to be disclosed');
+      void refetchTableCardsToDecrypt();
+      onEvent();
+    },
+  });
+
+  // TODO: unused here
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription({
+    onData: () => {
+      console.log('!!!! ~ waiting for all table cards to be disclosed');
+      void refetchTableCardsToDecrypt();
+      onEvent();
+    },
+  });
+
   useEffect(() => {
     const decrypt = async () => {
-      if (encryptedTableCards && sk && isWaitingTableCards) {
-        const getActualCards = () => {
-          // ! TODO: it will change. Only actual cards will be returned from contract
-          if (isWaitingTableCardsAfterPreFlop) {
-            return encryptedTableCards.slice(0, 3);
-          }
-          if (isWaitingTableCardsAfterFlop) {
-            return encryptedTableCards.slice(3, 4);
-          }
-          return encryptedTableCards.slice(4, 5);
-        };
+      if (!sk || !isWaitingTableCards) return;
 
-        const decryptedCards = await partialDecryptionsForTableCards(getActualCards(), sk);
-        void submitTablePartialDecryptionsMessage(decryptedCards);
-      }
+      const { data: cards } = await refetchTableCardsToDecrypt();
+      if (!cards?.length) return;
+
+      const decryptedCards = await partialDecryptionsForTableCards(cards, sk);
+      void submitTablePartialDecryptionsMessage(decryptedCards);
     };
 
     void decrypt();
-  }, [
-    encryptedTableCards,
-    sk,
-    isWaitingTableCards,
-    submitTablePartialDecryptionsMessage,
-    isWaitingTableCardsAfterPreFlop,
-    isWaitingTableCardsAfterFlop,
-    isWaitingTableCardsAfterTurn,
-  ]);
+  }, [sk, isWaitingTableCards, submitTablePartialDecryptionsMessage, refetchTableCardsToDecrypt]);
 };
 
 export { useZkTableCardsDecryption };

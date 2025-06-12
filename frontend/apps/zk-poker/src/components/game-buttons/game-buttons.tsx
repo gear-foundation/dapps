@@ -15,18 +15,14 @@ type Props = {
 };
 
 const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bigBlind }: Props) => {
-  const { turnMessage } = useTurnMessage();
+  const { turnMessage, isPending } = useTurnMessage();
 
   const handleAllIn = () => {
     void turnMessage({ action: { allIn: null } });
   };
 
   const handleCall = () => {
-    if (myCurrentBet === currentBet || currentBet === 0) {
-      void turnMessage({ action: { check: null } });
-    } else {
-      void turnMessage({ action: { call: null } });
-    }
+    void turnMessage({ action: { call: null } });
   };
 
   const handleCheck = () => {
@@ -41,35 +37,39 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
     void turnMessage({ action: { raise: { bet: multiplier * (currentBet || bigBlind) } } });
   };
 
+  const isDisabled = disabled || isPending;
+
   return (
     <>
       <div className={clsx(styles.gameButtons, className)}>
         <div className={styles.allInContainer}>
-          <Button onClick={handleAllIn} disabled={disabled} color="transparent">
+          <Button onClick={handleAllIn} disabled={isDisabled} color="transparent">
             <AllInIcon />
           </Button>
         </div>
         <div className={styles.actionButtons}>
-          <Button onClick={handleFold} disabled={disabled} color="transparent">
+          <Button onClick={handleFold} disabled={isDisabled} color="transparent">
             <FoldIcon />
           </Button>
+
           {myCurrentBet === currentBet || currentBet === 0 ? (
-            <Button onClick={handleCheck} disabled={disabled} color="transparent">
+            <Button onClick={handleCheck} disabled={isDisabled} color="transparent">
               {/* // ! TODO: add check icon*/}
               <CallIcon />
             </Button>
           ) : (
-            <Button onClick={handleCall} disabled={disabled} color="transparent">
+            <Button onClick={handleCall} disabled={isDisabled} color="transparent">
               <CallIcon />
             </Button>
           )}
-          <Button onClick={() => handleRaise(2)} disabled={disabled} color="transparent">
+
+          <Button onClick={() => handleRaise(2)} disabled={isDisabled} color="transparent">
             <Chips2xIcon />
           </Button>
-          <Button onClick={() => handleRaise(3)} disabled={disabled} color="transparent">
+          <Button onClick={() => handleRaise(3)} disabled={isDisabled} color="transparent">
             <Chips3xIcon />
           </Button>
-          <Button onClick={() => handleRaise(5)} disabled={disabled} color="transparent">
+          <Button onClick={() => handleRaise(5)} disabled={isDisabled} color="transparent">
             <Chips5xIcon />
           </Button>
         </div>

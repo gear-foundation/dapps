@@ -7,7 +7,7 @@ import { DecryptedCardsResult } from '@/features/zk/utils/decrypt-player-cards';
 import { usePlayerCardsQuery } from '../sails';
 
 const usePlayerCards = (enabled: boolean) => {
-  const { playerCards } = usePlayerCardsQuery({ enabled });
+  const { playerCards, refetch } = usePlayerCardsQuery({ enabled });
   const { sk } = useKeys();
 
   const [decryptedCards, setDecryptedCards] = useState<DecryptedCardsResult>();
@@ -20,7 +20,7 @@ const usePlayerCards = (enabled: boolean) => {
     });
   }, [playerCards, sk]);
 
-  return decryptedCards;
+  return { playerCards: decryptedCards?.cards, instances: decryptedCards?.instances, refetchPlayerCards: refetch };
 };
 
 export { usePlayerCards };

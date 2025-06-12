@@ -15,11 +15,10 @@ const ClaimPtsButton = ({ onSuccess, className }: Props) => {
 
   useEffect(() => {
     if (remainingTime) {
-      const secondInDay = 86400000;
-      setCurrentTime(secondInDay - Number(remainingTime));
+      setCurrentTime(Number(remainingTime));
 
       const timer = setInterval(() => {
-        setCurrentTime((prev) => (prev ? prev - 1000 : null));
+        setCurrentTime((prev) => (prev && prev > 0 ? prev - 1000 : null));
       }, 1000);
 
       return () => clearInterval(timer);
@@ -34,8 +33,8 @@ const ClaimPtsButton = ({ onSuccess, className }: Props) => {
     onSuccess();
   };
 
-  const formattedTime = currentTime ? `(${new Date(currentTime).toISOString().slice(11, 19)})` : '';
-  const isClaimDisabled = !!remainingTime || isPendingRemainingTime || isPending;
+  const formattedTime = currentTime && currentTime > 0 ? `(${new Date(currentTime).toISOString().slice(11, 19)})` : '';
+  const isClaimDisabled = !!currentTime || isPendingRemainingTime || isPending;
 
   return (
     <Button className={className} onClick={claimFreePTS} disabled={isClaimDisabled}>

@@ -90,8 +90,6 @@ declare global {
   export interface Participant {
     name: string;
     balance: number | string | bigint;
-    card_1: number | null;
-    card_2: number | null;
     pk: PublicKey;
   }
 
@@ -102,6 +100,7 @@ declare global {
     | { waitingPartialDecryptionsForPlayersCards: null }
     | { play: { stage: Stage } }
     | { waitingForCardsToBeDisclosed: null }
+    | { waitingForAllTableCardsToBeDisclosed: null }
     | { finished: { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> } };
 
   export type Stage =

@@ -1,11 +1,13 @@
 .container {
   position: absolute;
-  bottom: 50px;
+  bottom: 0;
   left: 0;
   right: 0;
   text-align: center;
   font-family: 'Urbanist', sans-serif;
-  padding: 0 20px;
+  padding: 10px 20px 50px 20px;
+  background-color: #131217;
+  border-radius: 10px;
 }
 
 .title {

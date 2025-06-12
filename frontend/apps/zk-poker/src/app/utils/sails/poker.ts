@@ -49,7 +49,7 @@ export class Program {
         current_bet: 'u128',
         acted_players: 'Vec<[u8;32]>',
       },
-      Participant: { name: 'String', balance: 'u128', card_1: 'Option<u32>', card_2: 'Option<u32>', pk: 'PublicKey' },
+      Participant: { name: 'String', balance: 'u128', pk: 'PublicKey' },
       Status: {
         _enum: {
           Registration: 'Null',
@@ -58,6 +58,7 @@ export class Program {
           WaitingPartialDecryptionsForPlayersCards: 'Null',
           Play: { stage: 'Stage' },
           WaitingForCardsToBeDisclosed: 'Null',
+          WaitingForAllTableCardsToBeDisclosed: 'Null',
           Finished: { winners: 'Vec<[u8;32]>', cash_prize: 'Vec<u128>' },
         },
       },
@@ -134,6 +135,19 @@ export class Program {
 export class Poker {
   constructor(private _program: Program) {}
 
+  public cancelGame(): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Poker', 'CancelGame'],
+      '(String, String)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
   /**
    * Cancels player registration and refunds their balance via PTS contract.
    *
@@ -202,7 +216,7 @@ export class Poker {
    *
    * Panics if:
    * - caller is not admin
-   * - wrong game status (not Registration/WaitingShuffleVerification/Finished)
+   * - wrong game status (not Registration/WaitingShuffleVerification/Finished/WaitingStart)
    *
    * Performs:
    * 1. Batch transfer of all player balances via PTS contract
@@ -579,6 +593,25 @@ export class Poker {
     return result[2].toJSON() as unknown as ActorId;
   }
 
+  public async revealedPlayers(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<[ActorId, [Card, Card]]>> {
+    const payload = this._program.registry.createType('(String, String)', ['Poker', 'RevealedPlayers']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, Vec<([u8;32], (Card, Card))>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<[ActorId, [Card, Card]]>;
+  }
+
   public async revealedTableCards(
     originAddress?: string,
     value?: number | string | bigint,
@@ -602,7 +635,7 @@ export class Poker {
     originAddress?: string,
     value?: number | string | bigint,
     atBlock?: `0x${string}`,
-  ): Promise<number> {
+  ): Promise<bigint> {
     const payload = this._program.registry.createType('(String, String)', ['Poker', 'Round']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -613,8 +646,8 @@ export class Poker {
       at: atBlock,
     });
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u32)', reply.payload);
-    return result[2].toNumber() as unknown as number;
+    const result = this._program.registry.createType('(String, String, u64)', reply.payload);
+    return result[2].toBigInt() as unknown as bigint;
   }
 
   public async status(
@@ -634,6 +667,25 @@ export class Poker {
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
     const result = this._program.registry.createType('(String, String, Status)', reply.payload);
     return result[2].toJSON() as unknown as Status;
+  }
+
+  public async tableCardsToDecrypt(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<EncryptedCard>> {
+    const payload = this._program.registry.createType('(String, String)', ['Poker', 'TableCardsToDecrypt']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, Vec<EncryptedCard>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<EncryptedCard>;
   }
 
   public subscribeToRegisteredEvent(
@@ -869,6 +921,95 @@ export class Poker {
             .createType('(String, String, {"inheritor":"[u8;32]"})', message.payload)[2]
             .toJSON() as unknown as { inheritor: ActorId },
         );
+      }
+    });
+  }
+
+  public subscribeToAllPartialDecryptionsSubmitedEvent(
+    callback: (data: null) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'AllPartialDecryptionsSubmited') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToTablePartialDecryptionsSubmitedEvent(
+    callback: (data: null) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'TablePartialDecryptionsSubmited') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToCardsDisclosedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'CardsDisclosed') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToGameCanceledEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'GameCanceled') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToWaitingForCardsToBeDisclosedEvent(
+    callback: (data: null) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'WaitingForCardsToBeDisclosed') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToWaitingForAllTableCardsToBeDisclosedEvent(
+    callback: (data: null) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (
+        getServiceNamePrefix(payload) === 'Poker' &&
+        getFnNamePrefix(payload) === 'WaitingForAllTableCardsToBeDisclosed'
+      ) {
+        callback(null);
       }
     });
   }

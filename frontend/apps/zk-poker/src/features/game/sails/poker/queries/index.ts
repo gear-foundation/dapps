@@ -8,3 +8,5 @@ export { useBettingBankQuery } from './use-betting-bank-query';
 export { useEncryptedTableCardsQuery } from './use-encrypted-table-cards-query';
 export { useRevealedTableCardsQuery } from './use-revealed-table-cards-query';
 export { useAlreadyInvestedInTheCircleQuery } from './use-already-invested-in-the-circle-query';
+export { useRevealedPlayersQuery } from './use-revealed-players-query';
+export { useTableCardsToDecryptQuery } from './use-table-cards-to-decrypt-query';

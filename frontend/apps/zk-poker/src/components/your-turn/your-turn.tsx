@@ -6,12 +6,13 @@ import { GameTimer } from '../game-timer';
 import styles from './your-turn.module.scss';
 
 type Props = {
+  timePerMoveMs: number;
   className?: string;
-  timeoutSec?: number;
 };
 
-const YourTurn = ({ className, timeoutSec = 30 }: Props) => {
+const YourTurn = ({ className, timePerMoveMs }: Props) => {
   const handleTimeEnd = () => {
+    // ! TODO: is it needed? We have a status subscription
     console.log('Time ended');
   };
 
@@ -32,7 +33,7 @@ const YourTurn = ({ className, timeoutSec = 30 }: Props) => {
       </div>
       <GameTimer
         size="lg"
-        timeoutSec={timeoutSec}
+        timeoutSec={timePerMoveMs / 1000}
         onTimeEnd={handleTimeEnd}
         onTenSecondsLeft={handleTenSecondsLeft}
         className={styles.timer}

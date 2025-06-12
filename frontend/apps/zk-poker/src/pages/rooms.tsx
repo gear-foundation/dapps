@@ -16,7 +16,6 @@ export default function Rooms() {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     searchRef.current?.focus();
-    console.log(searchRef.current?.value);
   };
 
   return (

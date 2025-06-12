@@ -71,7 +71,6 @@ export default function CreateLobby() {
   const { pk } = useKeys();
 
   const onLobbyCreated = (payload: LobbyCreatedPayload) => {
-    console.log('payload', payload);
     setIsLoading(false);
     navigate(ROUTES.GAME.replace(':gameId', payload.lobby_address));
   };

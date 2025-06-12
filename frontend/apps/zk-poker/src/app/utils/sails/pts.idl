@@ -12,7 +12,7 @@ service Pts {
   query Accrual : () -> u128;
   query Admins : () -> vec actor_id;
   query GetBalance : (id: actor_id) -> u128;
-  query GetRemainingTimeMs : (id: actor_id) -> u64;
+  query GetRemainingTimeMs : (id: actor_id) -> opt u64;
   query TimeMsBetweenBalanceReceipt : () -> u64;
 
   events {

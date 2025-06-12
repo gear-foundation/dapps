@@ -147,15 +147,15 @@ export type ContractCard = {
 
 // ! TODO: check types and move
 export type HandRank =
-  | 'straight-flush'
-  | 'four-of-a-kind'
-  | 'full-house'
+  | 'straight flush'
+  | 'four of a kind'
+  | 'full house'
   | 'flush'
   | 'straight'
-  | 'three-of-a-kind'
-  | 'two-pair'
-  | 'one-pair'
-  | 'high-card';
+  | 'three of a kind'
+  | 'two pair'
+  | 'one pair'
+  | 'high card';
 
 // ! TODO: check types and move
-export type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'waiting' | 'thinking';
+export type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'check' | 'waiting' | 'thinking';

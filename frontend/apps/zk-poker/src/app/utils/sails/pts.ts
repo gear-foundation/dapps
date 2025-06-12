@@ -218,7 +218,7 @@ export class Pts {
     originAddress?: string,
     value?: number | string | bigint,
     atBlock?: `0x${string}`,
-  ): Promise<bigint> {
+  ): Promise<number | string | bigint | null> {
     const payload = this._program.registry
       .createType('(String, String, [u8;32])', ['Pts', 'GetRemainingTimeMs', id])
       .toHex();
@@ -231,8 +231,8 @@ export class Pts {
       at: atBlock,
     });
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u64)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
+    return result[2].toJSON() as unknown as number | string | bigint | null;
   }
 
   public async timeMsBetweenBalanceReceipt(

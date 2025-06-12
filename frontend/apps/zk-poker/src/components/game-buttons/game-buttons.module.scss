@@ -12,10 +12,18 @@
 .allInContainer {
   align-self: flex-end;
   display: flex;
+
+  button:disabled {
+    opacity: 0.5;
+  }
 }
 
 .actionButtons {
   margin-top: 28px;
   display: flex;
   gap: 12px;
+
+  button:disabled {
+    opacity: 0.5;
+  }
 }

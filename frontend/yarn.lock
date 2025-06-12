@@ -11814,6 +11814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pokersolver@npm:2.1.4":
+  version: 2.1.4
+  resolution: "pokersolver@npm:2.1.4"
+  checksum: 10c0/8e5a446819a9eaaddd6643fbbedca43bb9aca5631320cb3c28a1116c7faa6d58c8999ed938eb0af71f17b0e35f46a9dbf73b0e9f2c35c78827ae21a2fde2f156
+  languageName: node
+  linkType: hard
+
 "possible-typed-array-names@npm:^1.0.0":
   version: 1.0.0
   resolution: "possible-typed-array-names@npm:1.0.0"
@@ -15577,6 +15584,7 @@ __metadata:
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
     lucide-react: "npm:0.474.0"
+    pokersolver: "npm:2.1.4"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-router-dom: "npm:6.28.0"

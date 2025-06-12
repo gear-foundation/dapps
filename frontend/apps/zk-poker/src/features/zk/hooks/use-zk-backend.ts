@@ -12,14 +12,9 @@ import { useKeys } from './use-keys';
 type Params = {
   isWaitingShuffleVerification: boolean;
   isWaitingPartialDecryptionsForPlayersCards: boolean;
-  isWaitingForCardsToBeDisclosed: boolean;
 };
 
-const useZkBackend = ({
-  isWaitingShuffleVerification,
-  isWaitingPartialDecryptionsForPlayersCards,
-  isWaitingForCardsToBeDisclosed,
-}: Params) => {
+const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryptionsForPlayersCards }: Params) => {
   const { gameId } = useParams();
   const { account } = useAccount();
   const { sk } = useKeys();
@@ -33,11 +28,10 @@ const useZkBackend = ({
       account?.decodedAddress,
       isWaitingShuffleVerification,
       isWaitingPartialDecryptionsForPlayersCards,
-      isWaitingForCardsToBeDisclosed,
     ],
     queryFn: () => getZkTask(gameId, account?.decodedAddress),
     enabled:
-      (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards || isWaitingForCardsToBeDisclosed) &&
+      (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards) &&
       !!account?.decodedAddress &&
       !!gameId,
     // TODO: implement ws connection instead of retry
@@ -105,10 +99,8 @@ const useZkBackend = ({
 
         if (DECRYPT_OTHER_PLAYERS_CARDS) {
           // ! TODO: remove logs
-          console.log('🚀 ~ postTask ~ DECRYPT_OTHER_PLAYERS_CARDS:', DECRYPT_OTHER_PLAYERS_CARDS);
           const { otherPlayersCards } = DECRYPT_OTHER_PLAYERS_CARDS;
           const decryptedCards = await partialDecryptionsForPlayersCards(otherPlayersCards, sk);
-          console.log('🚀 ~ postTask ~ decryptedCards:', decryptedCards);
 
           const result = await postPartialDecryptionsForPlayersCardsResult(decryptedCards);
           console.log('🚀 ~ postTask ~ result:', result);

@@ -78,8 +78,6 @@ type BettingStage = struct {
 type Participant = struct {
   name: str,
   balance: u128,
-  card_1: opt u32,
-  card_2: opt u32,
   pk: PublicKey,
 };
 
@@ -92,6 +90,7 @@ type Status = enum {
     stage: Stage
   },
   WaitingForCardsToBeDisclosed,
+  WaitingForAllTableCardsToBeDisclosed,
   Finished: struct {
     winners: vec actor_id,
     cash_prize: vec u128,
@@ -113,6 +112,7 @@ constructor {
 };
 
 service Poker {
+  CancelGame : () -> null;
   /// Cancels player registration and refunds their balance via PTS contract.
   /// 
   /// Panics if:
@@ -140,7 +140,7 @@ service Poker {
   /// 
   /// Panics if:
   /// - caller is not admin
-  /// - wrong game status (not Registration/WaitingShuffleVerification/Finished)
+  /// - wrong game status (not Registration/WaitingShuffleVerification/Finished/WaitingStart)
   /// 
   /// Performs:
   /// 1. Batch transfer of all player balances via PTS contract
@@ -206,9 +206,11 @@ service Poker {
   query Participants : () -> vec struct { actor_id, Participant };
   query PlayerCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
   query PtsActorId : () -> actor_id;
+  query RevealedPlayers : () -> vec struct { actor_id, struct { Card, Card } };
   query RevealedTableCards : () -> vec Card;
-  query Round : () -> u32;
+  query Round : () -> u64;
   query Status : () -> Status;
+  query TableCardsToDecrypt : () -> vec EncryptedCard;
 
   events {
     Registered: struct {
@@ -242,6 +244,12 @@ service Poker {
     Killed: struct {
       inheritor: actor_id
     };
+    AllPartialDecryptionsSubmited;
+    TablePartialDecryptionsSubmited;
+    CardsDisclosed;
+    GameCanceled;
+    WaitingForCardsToBeDisclosed;
+    WaitingForAllTableCardsToBeDisclosed;
   }
 };
 

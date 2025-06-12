@@ -129,8 +129,6 @@ async function main() {
     };
 
     const { proof, publicSignals } = await groth16.fullProve(input, encryptWasmFile, encryptZkeyFile);
-    console.log('🚀 ~ publicSignals:', publicSignals);
-    console.log('🚀 ~ proof:', proof);
     return { proof, publicSignals };
   };
 

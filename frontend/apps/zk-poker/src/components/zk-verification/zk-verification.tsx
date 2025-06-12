@@ -26,12 +26,16 @@ type Props = {
   isWaitingShuffleVerification?: boolean;
   isWaitingPartialDecryptionsForPlayersCards?: boolean;
   isWaitingTableCards?: boolean;
+  isWaitingForCardsToBeDisclosed?: boolean;
+  isWaitingForAllTableCardsToBeDisclosed?: boolean;
 };
 
 export function ZkVerification({
   isWaitingShuffleVerification,
   isWaitingPartialDecryptionsForPlayersCards,
   isWaitingTableCards,
+  isWaitingForCardsToBeDisclosed,
+  isWaitingForAllTableCardsToBeDisclosed,
 }: Props) {
   const getAction = () => {
     if (isWaitingShuffleVerification) {
@@ -42,6 +46,12 @@ export function ZkVerification({
     }
     if (isWaitingTableCards) {
       return 'Table Cards';
+    }
+    if (isWaitingForCardsToBeDisclosed) {
+      return 'Cards to be Disclosed';
+    }
+    if (isWaitingForAllTableCardsToBeDisclosed) {
+      return 'All Table Cards to be Disclosed';
     }
 
     throw new Error('Unknown action');
