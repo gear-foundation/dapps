@@ -122,6 +122,8 @@ export default function GamePage() {
       void refetchStatus();
       void refetchPlayerCards();
       void refetchBetting();
+      void refetchBettingBank();
+      void refetchAlreadyInvestedInTheCircle();
     },
   });
 
