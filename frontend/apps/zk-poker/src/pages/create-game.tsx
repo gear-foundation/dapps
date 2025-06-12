@@ -26,7 +26,7 @@ type FormData = {
 //   buyIn: 2000,
 // };
 
-// TODO: use this after testing
+// ! TODO: use this after testing
 const initialFormData: FormData = {
   name: '',
   players: 9,
