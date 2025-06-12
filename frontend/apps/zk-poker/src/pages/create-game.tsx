@@ -19,20 +19,20 @@ type FormData = {
   buyIn: number;
 };
 
-const initialFormData: FormData = {
-  name: '--Test--',
-  players: 2,
-  time: 120,
-  buyIn: 2000,
-};
+// const initialFormData: FormData = {
+//   name: '--Test--',
+//   players: 2,
+//   time: 120,
+//   buyIn: 2000,
+// };
 
 // TODO: use this after testing
-// const initialFormData: FormData = {
-//   name: '',
-//   players: 9,
-//   time: 60,
-//   buyIn: 15000,
-// };
+const initialFormData: FormData = {
+  name: '',
+  players: 9,
+  time: 60,
+  buyIn: 15000,
+};
 
 const buyInOptions = [
   { value: 2000, label: '2k' },
