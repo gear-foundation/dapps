@@ -4,7 +4,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { CrossBoldIcon, Exit } from '@/assets/images';
 import { Avatar, Button } from '@/components';
 
-import { useCancelRegistrationMessage, useDeletePlayerMessage } from '../../sails';
+import { useDeletePlayerMessage, useKillMessage } from '../../sails';
 
 import styles from './players-list.module.scss';
 
@@ -24,17 +24,12 @@ type Props = {
 
 const PlayersList = ({ seats, players, isAdmin }: Props) => {
   const { account } = useAccount();
-  const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
+  const { killMessage, isPending: isKillPending } = useKillMessage();
   const { deletePlayerMessage, isPending: isDeletePending } = useDeletePlayerMessage();
 
   const ExitButton = () => {
     return (
-      <Button
-        color="contrast"
-        rounded
-        size="x-small"
-        onClick={() => cancelRegistrationMessage()}
-        disabled={isCancelPending}>
+      <Button color="contrast" rounded size="x-small" onClick={() => killMessage()} disabled={isKillPending}>
         <Exit />
       </Button>
     );

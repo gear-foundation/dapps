@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
-import { BackIcon } from '@/assets/images';
+import { BackIcon, Exit } from '@/assets/images';
 import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
 import { usePlayerCards } from '@/features/game/hooks';
@@ -31,9 +31,10 @@ import {
   useEventGameCanceledSubscription,
   useRevealedPlayersQuery,
   useEventAllPartialDecryptionsSubmitedSubscription,
+  useKillMessage,
+  useCancelGameMessage,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
-import { getWinnersHand } from '@/features/game/utils';
 import { Card, PlayerStatus } from '@/features/zk/api/types';
 import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
 import { getRankFromValue } from '@/features/zk/utils';
@@ -70,6 +71,9 @@ export default function GamePage() {
     isWaitingForCardsToBeDisclosed ||
     isWaitingForAllTableCardsToBeDisclosed;
   const isActiveGame = isGameStarted && !isFinished && !isWaitingZk;
+
+  const { killMessage, isPending: isKillPending } = useKillMessage();
+  const { cancelGameMessage, isPending: isCancelPending } = useCancelGameMessage();
 
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
@@ -262,7 +266,7 @@ export default function GamePage() {
       cards: getPlayerCards(address),
       isMe: address === account?.decodedAddress,
       ...getStatusAndBet(address),
-      //     avatar: 'https://avatar.iran.liara.run/public/27',
+      // ! TODO: derive diller
       // isDiller: true,
     })) || [];
 
@@ -277,34 +281,45 @@ export default function GamePage() {
 
   const totalPot = bettingBank?.reduce((acc, [, amount]) => acc + Number(amount), 0) || undefined;
 
-  const myWinnerIndex = winners?.findIndex((winner) => winner === account?.decodedAddress);
-  const isWinner = myWinnerIndex !== undefined && myWinnerIndex !== -1;
-  const myWinnerCashPrize = isWinner && cash_prize ? Number(cash_prize[myWinnerIndex]) : undefined;
-
   const isMyTurn = turn === account?.decodedAddress && isActiveGame;
   const myCurrentBet = playerSlots?.find(({ isMe }) => isMe)?.bet;
-
-  const { winnersHand, handRank } = getWinnersHand(winners, revealedPlayers, commonCardsFields) || {};
-  const winnerName = participants?.find(([address]) => winners?.includes(address))?.[1].name || '';
 
   useEffect(() => {
     if (!isFinished) return;
 
     if (isAdmin && !isRestartGamePending) {
-      // setTimeout(() => {
-      // ! TODO: refetch on error
-      void restartGameMessage();
-      // }, 3000);
+      setTimeout(() => {
+        // ! TODO: refetch on error
+        void restartGameMessage();
+      }, 3000);
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
 
   return (
     <>
       <Header>
-        <Button color="contrast" rounded onClick={() => navigate(ROUTES.HOME)}>
-          <BackIcon />
-        </Button>
+        {isAdmin ? (
+          <Button
+            color="danger"
+            rounded
+            size="medium"
+            onClick={() => killMessage().then(() => navigate(ROUTES.HOME))}
+            disabled={isKillPending}
+            className={styles.killButton}>
+            <Exit />
+          </Button>
+        ) : (
+          <Button
+            color="contrast"
+            rounded
+            size="medium"
+            onClick={() => cancelGameMessage().then(() => navigate(ROUTES.HOME))}
+            disabled={isCancelPending}>
+            <BackIcon />
+          </Button>
+        )}
       </Header>
+
       {isMyTurn && <div className={styles.bottomGlow} />}
       <div className={styles.content}>
         {config && (
@@ -334,14 +349,13 @@ export default function GamePage() {
         />
       )}
 
-      {isFinished && (
+      {isFinished && participants && (
         <GameEndModal
-          // ! TODO: if 2 or more winners, we need to show all winners
-          winnerName={winnerName}
-          pot={myWinnerCashPrize || 0}
-          winnersHand={winnersHand}
-          handRank={handRank}
-          isWinner={isWinner}
+          cashPrize={cash_prize}
+          winners={winners}
+          revealedPlayers={revealedPlayers}
+          commonCardsFields={commonCardsFields}
+          participants={participants}
         />
       )}
 

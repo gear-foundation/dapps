@@ -1,5 +1,7 @@
 // ! TODO: check types (some same as global.d.ts)
 
+import { HexString } from '@gear-js/api';
+
 export type ZkProof = {
   pi_a: string[];
   pi_b: string[][];
@@ -159,3 +161,5 @@ export type HandRank =
 
 // ! TODO: check types and move
 export type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'check' | 'waiting' | 'thinking';
+
+export type RevealedPlayer = [HexString, [globalThis.Card, globalThis.Card]];

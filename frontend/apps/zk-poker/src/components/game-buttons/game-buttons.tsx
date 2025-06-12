@@ -38,6 +38,7 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
   };
 
   const isDisabled = disabled || isPending;
+  const isCheck = myCurrentBet === currentBet || currentBet === 0;
 
   return (
     <>
@@ -52,17 +53,6 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
             <FoldIcon />
           </Button>
 
-          {myCurrentBet === currentBet || currentBet === 0 ? (
-            <Button onClick={handleCheck} disabled={isDisabled} color="transparent">
-              {/* // ! TODO: add check icon*/}
-              <CallIcon />
-            </Button>
-          ) : (
-            <Button onClick={handleCall} disabled={isDisabled} color="transparent">
-              <CallIcon />
-            </Button>
-          )}
-
           <Button onClick={() => handleRaise(2)} disabled={isDisabled} color="transparent">
             <Chips2xIcon />
           </Button>
@@ -71,6 +61,15 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
           </Button>
           <Button onClick={() => handleRaise(5)} disabled={isDisabled} color="transparent">
             <Chips5xIcon />
+          </Button>
+
+          <Button
+            onClick={isCheck ? handleCheck : handleCall}
+            disabled={isDisabled}
+            color="transparent"
+            className={styles.button}>
+            <CallIcon />
+            <span className={styles.text}>{isCheck ? 'Check' : 'Call'}</span>
           </Button>
         </div>
       </div>

@@ -7,7 +7,6 @@ export const ADDRESS = {
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
 };
-console.log('🚀 ~ ADDRESS:', ADDRESS);
 
 export const ROUTES = {
   HOME: '/',

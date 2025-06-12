@@ -13,6 +13,12 @@ export default function Rooms() {
   const searchRef = useRef<HTMLInputElement>(null);
   const { lobbies } = useLobbiesQuery();
 
+  const sortedLobbies = lobbies?.sort((a, b) => {
+    const nameA = a[1].lobby_name;
+    const nameB = b[1].lobby_name;
+    return nameA.localeCompare(nameB);
+  });
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     searchRef.current?.focus();
@@ -39,21 +45,23 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {lobbies?.map(([address, { admin_name, admin_id, lobby_name, number_of_participants, starting_bank }]) => (
-            <Room
-              key={address}
-              name={lobby_name}
-              adminName={admin_name}
-              adminId={admin_id}
-              totalPlayers={number_of_participants}
-              // ! TODO: get from indexer when it will be ready
-              currentPlayers={1}
-              buyIn={Number(starting_bank)}
-              // ! TODO: add
-              time={60}
-              id={address}
-            />
-          ))}
+          {sortedLobbies?.map(
+            ([address, { admin_name, admin_id, lobby_name, number_of_participants, starting_bank }]) => (
+              <Room
+                key={address}
+                name={lobby_name}
+                adminName={admin_name}
+                adminId={admin_id}
+                totalPlayers={number_of_participants}
+                // ! TODO: get from indexer when it will be ready
+                currentPlayers={1}
+                buyIn={Number(starting_bank)}
+                // ! TODO: add
+                time={60}
+                id={address}
+              />
+            ),
+          )}
         </div>
       </div>
     </>

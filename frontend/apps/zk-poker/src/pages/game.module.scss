@@ -21,3 +21,13 @@
 
   opacity: 0.5;
 }
+
+.killButton {
+  svg {
+    height: 22px;
+    width: 22px;
+  }
+  path {
+    fill: #f39d98;
+  }
+}

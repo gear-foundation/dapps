@@ -8,3 +8,4 @@ export { useRestartGameMessage } from './use-restart-game-message';
 export { useShuffleDeckMessage } from './use-shuffle-deck-message';
 export { useSubmitTablePartialDecryptionsMessage } from './use-submit-table-partial-decryptions-message';
 export { useTurnMessage } from './use-turn-message';
+export { useKillMessage } from './use-kill-message';

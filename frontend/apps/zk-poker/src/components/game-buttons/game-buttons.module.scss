@@ -27,3 +27,18 @@
     opacity: 0.5;
   }
 }
+
+.button {
+  position: relative;
+}
+
+.text {
+  color: #26450c;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  }

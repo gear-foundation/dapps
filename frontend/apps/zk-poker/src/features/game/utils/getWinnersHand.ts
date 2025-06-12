@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { HexString } from '@gear-js/api';
 // @ts-expect-error
 import { Hand } from 'pokersolver';
 
@@ -23,9 +24,9 @@ const fromPokersolverCard = (card: { value: string; suit: string }) => {
 };
 
 const getWinnersHand = (
-  winners: `0x${string}`[] | undefined,
-  revealedPlayers: [`0x${string}`, [Card, Card]][] | undefined,
-  commonCardsFields: (GameCard | null)[],
+  winners?: `0x${string}`[],
+  revealedPlayers?: [HexString, [Card, Card]][],
+  commonCardsFields?: (GameCard | null)[],
 ): { winnersHand: GameCard[]; handRank: HandRank } | null => {
   if (!winners?.length || !revealedPlayers || !commonCardsFields || commonCardsFields.includes(null)) return null;
 

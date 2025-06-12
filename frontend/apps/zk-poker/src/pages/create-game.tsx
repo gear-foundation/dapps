@@ -29,9 +29,9 @@ type FormData = {
 // ! TODO: use this after testing
 const initialFormData: FormData = {
   name: '',
-  players: 9,
+  players: 2,
   time: 60,
-  buyIn: 15000,
+  buyIn: 5000,
 };
 
 const buyInOptions = [
