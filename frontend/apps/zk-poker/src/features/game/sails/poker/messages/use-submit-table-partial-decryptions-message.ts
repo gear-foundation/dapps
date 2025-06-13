@@ -21,7 +21,7 @@ export const useSubmitTablePartialDecryptionsMessage = () => {
 
   const tx = async ({ instances }: Params) => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [instances], ...params, gasLimit: { increaseGas: 20 } });
+    const result = await sendTransactionAsync({ args: [instances], ...params, gasLimit: { increaseGas: 30 } });
     return result.awaited;
   };
 

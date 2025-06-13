@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, Exit } from '@/assets/images';
-import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
+import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification, CardsLoader } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
 import { usePlayerCards } from '@/features/game/hooks';
 import {
@@ -32,7 +32,8 @@ import {
   useRevealedPlayersQuery,
   useEventAllPartialDecryptionsSubmitedSubscription,
   useKillMessage,
-  useCancelGameMessage,
+  useCancelRegistrationMessage,
+  useEventKilledSubscription,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
 import { Card, PlayerStatus } from '@/features/zk/api/types';
@@ -73,7 +74,7 @@ export default function GamePage() {
   const isActiveGame = isGameStarted && !isFinished && !isWaitingZk;
 
   const { killMessage, isPending: isKillPending } = useKillMessage();
-  const { cancelGameMessage, isPending: isCancelPending } = useCancelGameMessage();
+  const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
 
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
@@ -101,10 +102,24 @@ export default function GamePage() {
 
   useEventRegisteredSubscription({ onData: onPlayersChanged });
   useEventPlayerDeletedSubscription({ onData: onPlayersChanged });
-  useEventRegistrationCanceledSubscription({ onData: onPlayersChanged });
+  useEventRegistrationCanceledSubscription({
+    onData: ({ player_id }) => {
+      onPlayersChanged();
+      if (player_id === account?.decodedAddress) {
+        navigate(ROUTES.HOME);
+      }
+    },
+  });
   useEventGameCanceledSubscription({
     onData: () => {
+      alert.info('Game restarted');
+    },
+  });
+
+  useEventKilledSubscription({
+    onData: () => {
       alert.info('Game canceled');
+      navigate(ROUTES.HOME);
     },
   });
 
@@ -203,11 +218,12 @@ export default function GamePage() {
     isWaitingTableCardsAfterPreFlop,
     isWaitingTableCardsAfterFlop,
     isWaitingTableCardsAfterTurn,
+    isWaitingForAllTableCardsToBeDisclosed,
     onEvent: () => {
       void refetchStatus();
     },
   });
-  useZkCardDisclosure(isWaitingForCardsToBeDisclosed || isWaitingForAllTableCardsToBeDisclosed, instances);
+  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, instances);
 
   const getPlayerCards = (address: string) => {
     if (address === account?.decodedAddress && playerCards) {
@@ -313,8 +329,8 @@ export default function GamePage() {
             color="contrast"
             rounded
             size="medium"
-            onClick={() => cancelGameMessage().then(() => navigate(ROUTES.HOME))}
-            disabled={isCancelPending}>
+            onClick={() => cancelRegistrationMessage().then(() => navigate(ROUTES.HOME))}
+            disabled={isCancelRegistrationPending}>
             <BackIcon />
           </Button>
         )}
@@ -359,14 +375,25 @@ export default function GamePage() {
         />
       )}
 
+      {/* <ZkVerification
+        isWaitingShuffleVerification={isWaitingShuffleVerification}
+        isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
+        isWaitingTableCards={isWaitingTableCards}
+        isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
+        isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
+      /> */}
+
       {isWaitingZk && (
-        <ZkVerification
-          isWaitingShuffleVerification={isWaitingShuffleVerification}
-          isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
-          isWaitingTableCards={isWaitingTableCards}
-          isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
-          isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
-        />
+        <CardsLoader>
+          <ZkVerification
+            isWaitingShuffleVerification={isWaitingShuffleVerification}
+            isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
+            isWaitingTableCards={isWaitingTableCards}
+            isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
+            isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
+            isInLoader
+          />
+        </CardsLoader>
       )}
     </>
   );

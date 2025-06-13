@@ -17,3 +17,4 @@ export { useEventCardsDisclosedSubscription } from './use-event-cards-disclosed-
 export { useEventGameCanceledSubscription } from './use-event-game-canceled-subscription';
 export { useEventWaitingForCardsToBeDisclosedSubscription } from './use-event-waiting-for-cards-to-be-disclosed-subscription';
 export { useEventWaitingForAllTableCardsToBeDisclosedSubscription } from './use-event-waiting-for-all-table-cards-to-be-disclosed-subscription';
+export { useEventKilledSubscription } from './use-event-killed-subscription';

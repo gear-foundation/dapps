@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import styles from './zk-verification.module.scss';
@@ -28,6 +29,7 @@ type Props = {
   isWaitingTableCards?: boolean;
   isWaitingForCardsToBeDisclosed?: boolean;
   isWaitingForAllTableCardsToBeDisclosed?: boolean;
+  isInLoader?: boolean;
 };
 
 export function ZkVerification({
@@ -36,6 +38,7 @@ export function ZkVerification({
   isWaitingTableCards,
   isWaitingForCardsToBeDisclosed,
   isWaitingForAllTableCardsToBeDisclosed,
+  isInLoader,
 }: Props) {
   const getAction = () => {
     if (isWaitingShuffleVerification) {
@@ -60,7 +63,7 @@ export function ZkVerification({
   return (
     <AnimatePresence>
       <motion.div
-        className={styles.container}
+        className={clsx(styles.container, isInLoader && styles.inLoader)}
         variants={variants}
         initial="enter"
         animate="center"

@@ -15,6 +15,7 @@ type Params = {
   isWaitingTableCardsAfterPreFlop?: boolean;
   isWaitingTableCardsAfterFlop?: boolean;
   isWaitingTableCardsAfterTurn?: boolean;
+  isWaitingForAllTableCardsToBeDisclosed?: boolean;
   onEvent: () => void;
 };
 
@@ -22,10 +23,14 @@ const useZkTableCardsDecryption = ({
   isWaitingTableCardsAfterPreFlop,
   isWaitingTableCardsAfterFlop,
   isWaitingTableCardsAfterTurn,
+  isWaitingForAllTableCardsToBeDisclosed,
   onEvent,
 }: Params) => {
   const isWaitingTableCards =
-    isWaitingTableCardsAfterPreFlop || isWaitingTableCardsAfterFlop || isWaitingTableCardsAfterTurn;
+    isWaitingTableCardsAfterPreFlop ||
+    isWaitingTableCardsAfterFlop ||
+    isWaitingTableCardsAfterTurn ||
+    isWaitingForAllTableCardsToBeDisclosed;
 
   const { refetch: refetchTableCardsToDecrypt } = useTableCardsToDecryptQuery({ enabled: false });
 

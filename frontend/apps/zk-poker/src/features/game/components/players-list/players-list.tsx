@@ -4,7 +4,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { CrossBoldIcon, Exit } from '@/assets/images';
 import { Avatar, Button } from '@/components';
 
-import { useDeletePlayerMessage, useKillMessage } from '../../sails';
+import { useCancelRegistrationMessage, useDeletePlayerMessage, useKillMessage } from '../../sails';
 
 import styles from './players-list.module.scss';
 
@@ -26,8 +26,22 @@ const PlayersList = ({ seats, players, isAdmin }: Props) => {
   const { account } = useAccount();
   const { killMessage, isPending: isKillPending } = useKillMessage();
   const { deletePlayerMessage, isPending: isDeletePending } = useDeletePlayerMessage();
+  const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
 
   const ExitButton = () => {
+    return (
+      <Button
+        color="contrast"
+        rounded
+        size="x-small"
+        onClick={() => cancelRegistrationMessage()}
+        disabled={isCancelRegistrationPending}>
+        <Exit />
+      </Button>
+    );
+  };
+
+  const KillButton = () => {
     return (
       <Button color="contrast" rounded size="x-small" onClick={() => killMessage()} disabled={isKillPending}>
         <Exit />
@@ -68,8 +82,9 @@ const PlayersList = ({ seats, players, isAdmin }: Props) => {
         </div>
 
         <div className={styles.playerActions}>
-          {isMe && <ExitButton />}
-          {isAdmin && !!player && !isMe && <RemovePlayerButton address={player.address} />}
+          {isMe && !isAdmin && <ExitButton />}
+          {isMe && isAdmin && <KillButton />}
+          {!isMe && isAdmin && !!player && <RemovePlayerButton address={player.address} />}
         </div>
       </div>
     );

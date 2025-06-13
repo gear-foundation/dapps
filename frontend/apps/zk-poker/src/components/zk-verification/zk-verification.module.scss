@@ -8,6 +8,12 @@
   padding: 10px 20px 50px 20px;
   background-color: #131217;
   border-radius: 10px;
+
+  &.inLoader {
+    background-color: transparent;
+    padding-top: 20px;
+    position: unset;
+  }
 }
 
 .title {

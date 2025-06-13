@@ -1,5 +1,5 @@
 export { Header, Footer } from './layout';
-export { ApiLoader, Loader } from './loaders';
+export { ApiLoader, Loader, CardsLoader } from './loaders';
 export { Modal } from './ui/modal';
 export { Button, buttonStyles } from './ui/button';
 export { Balance } from './ui/balance';

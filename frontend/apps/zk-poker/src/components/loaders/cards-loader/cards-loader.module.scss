@@ -1,0 +1,75 @@
+.section {
+  position: fixed;
+  top: 0;
+
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  max-width: 375px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: #131217e5;
+}
+
+.cardFan {
+  height: 212px;
+  width: 212px;
+  position: relative;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+  }
+}
+
+.cardWrapper {
+  position: absolute;
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.bannerLock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.canvas {
+  position: absolute;
+}
+
+.glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(rgba(249, 200, 136, 0.5) 0%, transparent 72%),
+    radial-gradient(rgba(122, 85, 30, 0.7) 0%, transparent 78%),
+    radial-gradient(rgba(176, 127, 52, 0.9) 0%, transparent 70%),
+    radial-gradient(rgba(249, 200, 136, 0.7) 0%, transparent 20%);
+  background-blend-mode: overlay, normal;
+  width: 212px;
+  height: 192px;
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 1;
+  }
+}
