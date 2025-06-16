@@ -2,7 +2,7 @@ import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
-import { GameCard, PlayerSlot, PlayerCards } from '@/components';
+import { PlayerSlot, PlayerCards, FlipCard } from '@/components';
 import { Card, PlayerStatus } from '@/features/zk/api/types';
 
 import styles from './game-board.module.scss';
@@ -55,13 +55,13 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveMs }: 
                     )}
 
                     {commonCardsFields.map((card, index) => (
-                      <GameCard value={card} size="md" isDashed key={index} />
+                      <FlipCard key={index} size="md" value={card} delay={index * 100} isDashed />
                     ))}
 
                     {mySlot?.cards && (
                       <div className={styles.myCards}>
                         {mySlot.cards.map((card, index) => (
-                          <GameCard value={card} size="lg" key={index} />
+                          <FlipCard key={index} size="lg" value={card} delay={index * 100} />
                         ))}
                       </div>
                     )}

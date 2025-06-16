@@ -10,6 +10,7 @@ export { Banner } from './banner';
 export { Avatar } from './avatar';
 export { Stats } from './stats';
 export { GameCard } from './game-card';
+export { FlipCard } from './flip-card';
 export { GameBoard } from './game-board';
 export { PlayerSlot } from './player-slot';
 export { PlayerCards } from './player-cards';

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, Exit } from '@/assets/images';
-import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification, CardsLoader } from '@/components';
+import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
 import { usePlayerCards } from '@/features/game/hooks';
 import {
@@ -186,7 +186,7 @@ export default function GamePage() {
 
   useEventGameRestartedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventCardsDealtToPlayersSubscription');
+      console.log('!!!!! ~ useEventGameRestartedSubscription');
       void refetchStatus();
       void refetchBetting();
       void refetchBettingBank();
@@ -375,15 +375,17 @@ export default function GamePage() {
         />
       )}
 
-      {/* <ZkVerification
-        isWaitingShuffleVerification={isWaitingShuffleVerification}
-        isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
-        isWaitingTableCards={isWaitingTableCards}
-        isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
-        isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
-      /> */}
-
       {isWaitingZk && (
+        <ZkVerification
+          isWaitingShuffleVerification={isWaitingShuffleVerification}
+          isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
+          isWaitingTableCards={isWaitingTableCards}
+          isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
+          isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
+        />
+      )}
+
+      {/* {isWaitingZk && (
         <CardsLoader>
           <ZkVerification
             isWaitingShuffleVerification={isWaitingShuffleVerification}
@@ -394,7 +396,7 @@ export default function GamePage() {
             isInLoader
           />
         </CardsLoader>
-      )}
+      )} */}
     </>
   );
 }
