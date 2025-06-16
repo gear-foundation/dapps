@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, Exit } from '@/assets/images';
-import { Button, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
+import { Button, CardsLoader, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
 import { usePlayerCards } from '@/features/game/hooks';
 import {
@@ -375,7 +375,7 @@ export default function GamePage() {
         />
       )}
 
-      {isWaitingZk && (
+      {/* {isWaitingZk && (
         <ZkVerification
           isWaitingShuffleVerification={isWaitingShuffleVerification}
           isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
@@ -383,9 +383,9 @@ export default function GamePage() {
           isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
           isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
         />
-      )}
+      )} */}
 
-      {/* {isWaitingZk && (
+      {isWaitingZk && (
         <CardsLoader>
           <ZkVerification
             isWaitingShuffleVerification={isWaitingShuffleVerification}
@@ -396,7 +396,7 @@ export default function GamePage() {
             isInLoader
           />
         </CardsLoader>
-      )} */}
+      )}
     </>
   );
 }
