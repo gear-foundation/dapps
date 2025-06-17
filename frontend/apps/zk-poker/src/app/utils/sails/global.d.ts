@@ -14,7 +14,6 @@ declare global {
     lobby_name: string;
     small_blind: number | string | bigint;
     big_blind: number | string | bigint;
-    number_of_participants: number;
     starting_bank: number | string | bigint;
     time_per_move_ms: number | string | bigint;
   }

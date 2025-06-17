@@ -25,7 +25,6 @@ export class Program {
         lobby_name: 'String',
         small_blind: 'u128',
         big_blind: 'u128',
-        number_of_participants: 'u16',
         starting_bank: 'u128',
         time_per_move_ms: 'u64',
       },
@@ -221,18 +220,18 @@ export class Poker {
    * Performs:
    * 1. Batch transfer of all player balances via PTS contract
    * 2. Sends DeleteLobby request to PokerFactory
-   * 3. Emits Killed event and transfers remaining funds to inheritor
+   * 3. Emits Killed event and transfers remaining funds to admin
    *
    * WARNING: Irreversible operation
    */
-  public kill(inheritor: ActorId): TransactionBuilder<null> {
+  public kill(): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      ['Poker', 'Kill'],
+      '(String, String)',
       'Null',
       this._program.programId,
     );
@@ -304,10 +303,9 @@ export class Poker {
    * - wrong status (not WaitingStart)
    *
    * Performs:
-   * 1. Deals cards to players and table
-   * 2. Processes small/big blinds (handles all-in cases)
-   * 3. Initializes betting stage
-   * 4. Updates game status and emits GameStarted event
+   * 1. Processes small/big blinds (handles all-in cases)
+   * 2. Initializes betting stage
+   * 3. Updates game status and emits GameStarted event
    *
    * Note: Handles edge cases where players can't cover blinds
    */
@@ -689,7 +687,7 @@ export class Poker {
   }
 
   public subscribeToRegisteredEvent(
-    callback: (data: { participant_id: ActorId; pk: PublicKey; all_registered: boolean }) => void | Promise<void>,
+    callback: (data: { participant_id: ActorId; pk: PublicKey }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -700,11 +698,8 @@ export class Poker {
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'Registered') {
         callback(
           this._program.registry
-            .createType(
-              '(String, String, {"participant_id":"[u8;32]","pk":"PublicKey","all_registered":"bool"})',
-              message.payload,
-            )[2]
-            .toJSON() as unknown as { participant_id: ActorId; pk: PublicKey; all_registered: boolean },
+            .createType('(String, String, {"participant_id":"[u8;32]","pk":"PublicKey"})', message.payload)[2]
+            .toJSON() as unknown as { participant_id: ActorId; pk: PublicKey },
         );
       }
     });
@@ -908,7 +903,7 @@ export class Poker {
     });
   }
 
-  public subscribeToKilledEvent(callback: (data: { inheritor: ActorId }) => void | Promise<void>): Promise<() => void> {
+  public subscribeToKilledEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
@@ -916,11 +911,7 @@ export class Poker {
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'Killed') {
-        callback(
-          this._program.registry
-            .createType('(String, String, {"inheritor":"[u8;32]"})', message.payload)[2]
-            .toJSON() as unknown as { inheritor: ActorId },
-        );
+        callback(null);
       }
     });
   }

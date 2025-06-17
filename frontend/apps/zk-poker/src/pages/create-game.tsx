@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
-import { Button, Input, Select, Slider } from '@/components';
+import { Button, Input, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
 import { LobbyCreatedPayload, useCreateLobbyMessage, useEventLobbyCreatedSubscription } from '@/features/game/sails';
 import { useKeys } from '@/features/zk/hooks';
@@ -14,7 +14,6 @@ import styles from './create-game.module.scss';
 
 type FormData = {
   name: string;
-  players: number;
   time: number;
   buyIn: number;
 };
@@ -29,7 +28,6 @@ type FormData = {
 // ! TODO: use this after testing
 const initialFormData: FormData = {
   name: '',
-  players: 2,
   time: 60,
   buyIn: 5000,
 };
@@ -41,17 +39,6 @@ const buyInOptions = [
   { value: 15000, label: '15k' },
   { value: 50000, label: '50k' },
   { value: 100000, label: '100k' },
-];
-
-const playerOptions = [
-  { value: 9, label: '9 players' },
-  { value: 8, label: '8 players' },
-  { value: 7, label: '7 players' },
-  { value: 6, label: '6 players' },
-  { value: 5, label: '5 players' },
-  { value: 4, label: '4 players' },
-  { value: 3, label: '3 players' },
-  { value: 2, label: '2 players' },
 ];
 
 const timeOptions = [
@@ -111,7 +98,6 @@ export default function CreateLobby() {
           admin_name: userName,
           big_blind,
           lobby_name: formData.name,
-          number_of_participants: formData.players,
           small_blind,
           starting_bank: formData.buyIn,
         },
@@ -164,13 +150,6 @@ export default function CreateLobby() {
               {showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon />}
             </Button>
           </div> */}
-
-          <Select
-            name="players"
-            value={formData.players}
-            options={playerOptions}
-            onChange={(value) => handleSelectChange('players', value)}
-          />
 
           <Slider
             label="Time per move"

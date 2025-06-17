@@ -45,23 +45,20 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {sortedLobbies?.map(
-            ([address, { admin_name, admin_id, lobby_name, number_of_participants, starting_bank }]) => (
-              <Room
-                key={address}
-                name={lobby_name}
-                adminName={admin_name}
-                adminId={admin_id}
-                totalPlayers={number_of_participants}
-                // ! TODO: get from indexer when it will be ready
-                currentPlayers={1}
-                buyIn={Number(starting_bank)}
-                // ! TODO: add
-                time={60}
-                id={address}
-              />
-            ),
-          )}
+          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank }]) => (
+            <Room
+              key={address}
+              name={lobby_name}
+              adminName={admin_name}
+              adminId={admin_id}
+              // ! TODO: get from indexer when it will be ready
+              currentPlayers={1}
+              buyIn={Number(starting_bank)}
+              // ! TODO: add
+              time={60}
+              id={address}
+            />
+          ))}
         </div>
       </div>
     </>

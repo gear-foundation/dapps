@@ -356,14 +356,7 @@ export default function GamePage() {
         {isMyTurn && config && <YourTurn timePerMoveMs={Number(config.time_per_move_ms)} />}
       </div>
 
-      {!isGameStarted && participants && config && (
-        <StartGameModal
-          isAdmin={isAdmin}
-          participants={participants}
-          maxPlayers={config.number_of_participants}
-          isWaitingStart={isWaitingStart}
-        />
-      )}
+      {!isGameStarted && participants && config && <StartGameModal isAdmin={isAdmin} participants={participants} />}
 
       {isFinished && participants && (
         <GameEndModal

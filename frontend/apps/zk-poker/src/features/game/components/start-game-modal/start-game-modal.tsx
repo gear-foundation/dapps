@@ -1,9 +1,10 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { copyToClipboard } from '@ui/utils';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { MAX_PLAYERS } from '@/app/consts';
 import { Copy, Exit } from '@/assets/images';
 import { Button, Modal } from '@/components';
 
@@ -20,15 +21,14 @@ import styles from './start-game-modal.module.scss';
 
 type Props = {
   participants: [`0x${string}`, Participant][];
-  maxPlayers: number;
   isAdmin: boolean;
-  isWaitingStart: boolean;
 };
 
 const DRAG_THRESHOLD = 30;
 const MAX_HEIGHT = 350;
+const seats = Array.from({ length: MAX_PLAYERS }, (_, index) => index);
 
-const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: Props) => {
+const StartGameModal = ({ participants, isAdmin }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
   const { account } = useAccount();
@@ -45,7 +45,7 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: P
   }));
 
   const isSpectator = !players.some(({ address }) => address === account?.decodedAddress);
-  const isSeatAvailable = players.length < maxPlayers;
+  const isSeatAvailable = players.length < MAX_PLAYERS;
 
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -53,12 +53,10 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: P
   const [dragOffset, setDragOffset] = useState(0);
   const playersRef = useRef<HTMLDivElement>(null);
 
-  const heading = `Players ${participants.length}/${maxPlayers}`;
+  const heading = `Players ${participants.length}/${MAX_PLAYERS}`;
   // ! TODO: move to env
   const tgBotName = 'zk-poker-bot';
   const gameLink = `t.me/${tgBotName}/bot?start=${gameId}`;
-
-  const seats = useMemo(() => Array.from({ length: maxPlayers }, (_, index) => index), [maxPlayers]);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
@@ -166,7 +164,10 @@ const StartGameModal = ({ participants, maxPlayers, isAdmin, isWaitingStart }: P
             <Button color="danger" onClick={() => cancelGameMessage()} disabled={isCancelGamePending}>
               Cancel game
             </Button>
-            <Button color="primary" onClick={() => startGameMessage()} disabled={isStartGamePending || !isWaitingStart}>
+            <Button
+              color="primary"
+              onClick={() => startGameMessage()}
+              disabled={isStartGamePending || players.length < 2}>
               Start game
             </Button>
           </div>

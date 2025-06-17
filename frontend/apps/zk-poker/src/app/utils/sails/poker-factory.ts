@@ -26,7 +26,6 @@ export class Program {
         lobby_name: 'String',
         small_blind: 'u128',
         big_blind: 'u128',
-        number_of_participants: 'u16',
         starting_bank: 'u128',
         time_per_move_ms: 'u64',
       },

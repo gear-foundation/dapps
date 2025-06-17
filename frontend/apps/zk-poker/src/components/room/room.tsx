@@ -2,6 +2,7 @@ import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 
+import { MAX_PLAYERS } from '@/app/consts';
 import { ChipsIcon, MemberIcon, TimeIcon, UserIcon } from '@/assets/images';
 
 import { Avatar } from '../avatar';
@@ -10,7 +11,6 @@ import styles from './room.module.scss';
 
 type Props = {
   name: string;
-  totalPlayers: number;
   currentPlayers: number;
   buyIn: number;
   adminName: string;
@@ -19,9 +19,9 @@ type Props = {
   id: HexString;
 };
 
-const Room = ({ name, totalPlayers, currentPlayers, buyIn, time, adminName, adminId, id }: Props) => {
+const Room = ({ name, currentPlayers, buyIn, time, adminName, adminId, id }: Props) => {
   const formattedBuyIn = String(buyIn).slice(0, -3);
-  const haveSeat = currentPlayers !== totalPlayers;
+  const haveSeat = currentPlayers !== MAX_PLAYERS;
 
   return (
     <Link to={`/game/${id}`}>
@@ -39,7 +39,7 @@ const Room = ({ name, totalPlayers, currentPlayers, buyIn, time, adminName, admi
             <div className={styles.info}>
               <MemberIcon />
               <span>
-                <span className={clsx(haveSeat && styles.haveSeat)}>{currentPlayers}</span>/{totalPlayers}
+                <span className={clsx(haveSeat && styles.haveSeat)}>{currentPlayers}</span>/{MAX_PLAYERS}
               </span>
             </div>
             <div className={styles.info}>

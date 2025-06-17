@@ -19,4 +19,6 @@ export const ROUTES = {
   COMBINATIONS: '/combinations',
 };
 
+export const MAX_PLAYERS = 9;
+
 export const SIGNLESS_ALLOWED_ACTIONS = ['playSingleGame', 'playMultipleGame'];
