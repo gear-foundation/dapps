@@ -94,6 +94,8 @@ export default function GamePage() {
     enabled: isFinished,
   });
 
+  const isSpectator = !participants?.some(([address]) => address === account?.decodedAddress);
+
   const onPlayersChanged = () => {
     void refetchStatus();
     void refetchParticipants();
@@ -299,6 +301,7 @@ export default function GamePage() {
 
   const isMyTurn = turn === account?.decodedAddress && isActiveGame;
   const myCurrentBet = playerSlots?.find(({ isMe }) => isMe)?.bet;
+  const myBalance = Number(participants?.find(([address]) => address === account?.decodedAddress)?.[1].balance || 0);
 
   useEffect(() => {
     if (!isFinished) return;
@@ -329,7 +332,9 @@ export default function GamePage() {
             color="contrast"
             rounded
             size="medium"
-            onClick={() => cancelRegistrationMessage().then(() => navigate(ROUTES.HOME))}
+            onClick={() =>
+              isSpectator ? navigate(ROUTES.HOME) : cancelRegistrationMessage().then(() => navigate(ROUTES.HOME))
+            }
             disabled={isCancelRegistrationPending}>
             <BackIcon />
           </Button>
@@ -351,6 +356,7 @@ export default function GamePage() {
             currentBet={Number(current_bet || 0)}
             bigBlind={Number(config?.big_blind || 0)}
             myCurrentBet={myCurrentBet || 0}
+            balance={myBalance}
           />
         )}
         {isMyTurn && config && <YourTurn timePerMoveMs={Number(config.time_per_move_ms)} />}

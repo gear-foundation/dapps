@@ -8,13 +8,15 @@ import { usePlayerCardsQuery } from '../sails';
 
 const usePlayerCards = (enabled: boolean) => {
   const { playerCards, refetch } = usePlayerCardsQuery({ enabled });
-  console.log('🚀 ~ usePlayerCards ~ playerCards:', playerCards);
   const { sk } = useKeys();
 
   const [decryptedCards, setDecryptedCards] = useState<DecryptedCardsResult>();
 
   useEffect(() => {
-    if (!playerCards) return;
+    if (!playerCards) {
+      setDecryptedCards(undefined);
+      return;
+    }
 
     void decryptCards(playerCards, sk).then((cards) => {
       setDecryptedCards(cards);

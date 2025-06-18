@@ -12,9 +12,10 @@ type Props = {
   currentBet: number;
   myCurrentBet: number;
   bigBlind: number;
+  balance: number;
 };
 
-const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bigBlind }: Props) => {
+const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bigBlind, balance }: Props) => {
   const { turnMessage, isPending } = useTurnMessage();
 
   const handleAllIn = () => {
@@ -37,6 +38,10 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
     void turnMessage({ action: { raise: { bet: multiplier * (currentBet || bigBlind) } } });
   };
 
+  const getHasEnoughBalance = (multiplier: number) => {
+    return balance >= multiplier * (currentBet || bigBlind) - myCurrentBet;
+  };
+
   const isDisabled = disabled || isPending;
   const isCheck = myCurrentBet === currentBet || currentBet === 0;
 
@@ -53,13 +58,13 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
             <FoldIcon />
           </Button>
 
-          <Button onClick={() => handleRaise(2)} disabled={isDisabled} color="transparent">
+          <Button onClick={() => handleRaise(2)} disabled={isDisabled || !getHasEnoughBalance(2)} color="transparent">
             <Chips2xIcon />
           </Button>
-          <Button onClick={() => handleRaise(3)} disabled={isDisabled} color="transparent">
+          <Button onClick={() => handleRaise(3)} disabled={isDisabled || !getHasEnoughBalance(3)} color="transparent">
             <Chips3xIcon />
           </Button>
-          <Button onClick={() => handleRaise(5)} disabled={isDisabled} color="transparent">
+          <Button onClick={() => handleRaise(5)} disabled={isDisabled || !getHasEnoughBalance(5)} color="transparent">
             <Chips5xIcon />
           </Button>
 

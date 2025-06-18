@@ -9,12 +9,7 @@ import { Copy, Exit } from '@/assets/images';
 import { Button, Modal } from '@/components';
 
 import { useThrottle } from '../../hooks';
-import {
-  useCancelGameMessage,
-  useCancelRegistrationMessage,
-  useRegisterMessage,
-  useStartGameMessage,
-} from '../../sails';
+import { useCancelRegistrationMessage, useKillMessage, useRegisterMessage, useStartGameMessage } from '../../sails';
 import { PlayersList } from '../players-list';
 
 import styles from './start-game-modal.module.scss';
@@ -33,7 +28,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
   const { gameId } = useParams();
   const { account } = useAccount();
   const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
-  const { cancelGameMessage, isPending: isCancelGamePending } = useCancelGameMessage();
+  const { killMessage, isPending: isKillPending } = useKillMessage();
   const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
   const { registerMessage, isPending: isRegisterPending } = useRegisterMessage();
 
@@ -161,7 +156,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
 
         {isAdmin && (
           <div className={styles.buttons}>
-            <Button color="danger" onClick={() => cancelGameMessage()} disabled={isCancelGamePending}>
+            <Button color="danger" onClick={() => killMessage()} disabled={isKillPending}>
               Cancel game
             </Button>
             <Button

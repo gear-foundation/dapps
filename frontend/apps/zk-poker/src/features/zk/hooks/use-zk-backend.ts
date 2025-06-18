@@ -40,6 +40,7 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
         error instanceof Error &&
         (error.message.includes('Step is not for this player') ||
           error.message.includes('Step is not for a player') ||
+          error.message.includes('No step to process') ||
           error.message.includes('Player not found or game not started'));
 
       console.log('isNeedRetryError:', isNeedRetryError, error.message, failureCount);
