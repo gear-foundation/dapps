@@ -29,8 +29,6 @@ const GameCard = ({ className, size = 'md', isDashed = false, isBack = false, va
     return <div className={clsx(styles.card, styles[size], isDashed && styles.dashed, className)} />;
   }
 
-  console.log('🚀 ~ GameCard ~ value:', value, isDashed);
-
   const { rank, suit } = value;
   const SuitSmIcon = suitSmIcon[suit];
   const color = suit === 'Clubs' || suit === 'Spades' ? 'black' : 'red';

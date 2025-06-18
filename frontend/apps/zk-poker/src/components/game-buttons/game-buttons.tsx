@@ -39,7 +39,7 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
   };
 
   const getHasEnoughBalance = (multiplier: number) => {
-    return balance >= multiplier * (currentBet || bigBlind) - myCurrentBet;
+    return balance >= multiplier * (currentBet || bigBlind) + myCurrentBet;
   };
 
   const isDisabled = disabled || isPending;
