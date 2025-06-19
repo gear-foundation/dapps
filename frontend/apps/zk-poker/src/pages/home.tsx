@@ -36,6 +36,7 @@ export default function Home() {
   };
 
   const formattedBalance = balance?.toLocaleString('en-US') || '0';
+  const ptsBalance = balance ? Number(balance) : undefined;
 
   return (
     <>
@@ -75,7 +76,7 @@ export default function Home() {
         </h3>
         <Stats items={stats} />
 
-        <ClaimPtsButton onSuccess={refetchPtsBalance} className={styles.claim} />
+        <ClaimPtsButton onSuccess={refetchPtsBalance} className={styles.claim} ptsBalance={ptsBalance} />
 
         <Footer />
 

@@ -40,7 +40,7 @@ const PlayerSlot = ({ address, top, name, chips, status, side, bet, hideAvatar, 
       <div className={clsx(styles.playerStatus, styles[status])}>
         {status}
         {status === 'thinking' && '...'}
-        {status === 'bet' && <span> ${bet}</span>}
+        {status === 'bet' && <span> {bet}</span>}
       </div>
     </div>
   );
