@@ -5,7 +5,16 @@ import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, Exit } from '@/assets/images';
-import { Button, CardsLoader, GameBoard, GameButtons, Header, YourTurn, ZkVerification } from '@/components';
+import {
+  Button,
+  CardsLoader,
+  GameBoard,
+  GameButtons,
+  Header,
+  OperationLogs,
+  YourTurn,
+  ZkVerification,
+} from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
 import { usePlayerCards } from '@/features/game/hooks';
 import {
@@ -210,7 +219,6 @@ export default function GamePage() {
   //     void refetchStatus();
   //   },
   // });
-
   useZkBackend({
     isWaitingShuffleVerification,
     isWaitingPartialDecryptionsForPlayersCards,
@@ -396,6 +404,7 @@ export default function GamePage() {
           />
         </CardsLoader>
       )}
+      <OperationLogs />
     </>
   );
 }

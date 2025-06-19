@@ -8,6 +8,7 @@ import { DecryptOtherPlayersCardsResult, ShuffleResult } from '../api/types';
 import { partialDecryptionsForPlayersCards, shuffleDeck } from '../utils';
 
 import { useKeys } from './use-keys';
+import { useLogs } from './use-logs';
 
 type Params = {
   isWaitingShuffleVerification: boolean;
@@ -21,6 +22,8 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
   const { account } = useAccount();
   const { sk } = useKeys();
   const alert = useAlert();
+
+  const { setLogs } = useLogs();
 
   const { data: zkTask, isLoading: isLoadingZkTask } = useQuery({
     // ! TODO: add unique key for each game
@@ -94,7 +97,20 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
       const { SHUFFLE, DECRYPT_MY_CARDS, DECRYPT_OTHER_PLAYERS_CARDS } = zkTask.data;
       try {
         if (SHUFFLE) {
+          console.log('🎲 Starting deck shuffle operation...');
+          console.time('⏱️ Shuffle Deck');
+          const startTime = performance.now();
+
           const shuffledDeck = await shuffleDeck(SHUFFLE);
+
+          const endTime = performance.now();
+          const duration = Math.round(endTime - startTime);
+          console.timeEnd('⏱️ Shuffle Deck');
+          const log = `🎲 Shuffle completed in ${duration}ms (${(duration / 1000).toFixed(2)}s)`;
+          console.log(log);
+
+          setLogs((prev) => [...prev, log]);
+
           const result = await postShuffleResult(shuffledDeck);
           console.log('postShuffleResult:', result);
         }
@@ -102,7 +118,19 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
         if (DECRYPT_OTHER_PLAYERS_CARDS) {
           // ! TODO: remove logs
           const { otherPlayersCards } = DECRYPT_OTHER_PLAYERS_CARDS;
+          console.log('🔓 Starting partial decryption of other players cards...');
+          console.time('⏱️ Partial Decryption');
+          const startTime = performance.now();
+
           const decryptedCards = await partialDecryptionsForPlayersCards(otherPlayersCards, sk);
+
+          const endTime = performance.now();
+          const duration = Math.round(endTime - startTime);
+          console.timeEnd('⏱️ Partial Decryption');
+          const log = `🔓 Partial decryption completed in ${duration}ms (${(duration / 1000).toFixed(2)}s)`;
+          console.log(log);
+
+          setLogs((prev) => [...prev, log]);
 
           const result = await postPartialDecryptionsForPlayersCardsResult(decryptedCards);
           console.log('🚀 ~ postTask ~ result:', result);
@@ -119,9 +147,13 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
 
     // ! TODO: add retry on error
     void postTask();
-  }, [zkTask, postShuffleResult, postPartialDecryptionsForPlayersCardsResult, alert, sk]);
+  }, [zkTask, postShuffleResult, postPartialDecryptionsForPlayersCardsResult, alert, sk, setLogs]);
 
-  return { zkTask, isLoadingZkTask, postShuffleResult };
+  return {
+    zkTask,
+    isLoadingZkTask,
+    postShuffleResult,
+  };
 };
 
 export { useZkBackend };

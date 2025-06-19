@@ -1,0 +1,62 @@
+.container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.toggleButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  background: rgba(0, 255, 196, 0.1);
+  border: 1px solid rgba(0, 255, 196, 0.2);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    path {
+      fill: #00ffc4;
+    }
+  }
+
+  &:hover {
+    background: rgba(0, 255, 196, 0.15);
+    border-color: rgba(0, 255, 196, 0.3);
+  }
+}
+
+.logsContainer {
+  background: rgba(19, 18, 23, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 280px;
+  overflow: hidden;
+}
+
+.logItem {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 12px;
+  color: #00ffc4;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0, 255, 196, 0.05);
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

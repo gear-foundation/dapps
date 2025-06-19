@@ -21,3 +21,4 @@ export { Slider } from './ui/slider';
 export { Room } from './room';
 export { EditProfileModal } from './edit-profile-modal';
 export { ZkVerification } from './zk-verification';
+export { OperationLogs } from './operation-logs';

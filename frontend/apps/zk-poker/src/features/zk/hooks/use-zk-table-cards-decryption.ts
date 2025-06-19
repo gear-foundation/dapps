@@ -10,6 +10,7 @@ import {
 import { partialDecryptionsForTableCards } from '../utils';
 
 import { useKeys } from './use-keys';
+import { useLogs } from './use-logs';
 
 type Params = {
   isWaitingTableCardsAfterPreFlop?: boolean;
@@ -36,7 +37,7 @@ const useZkTableCardsDecryption = ({
 
   const { submitTablePartialDecryptionsMessage } = useSubmitTablePartialDecryptionsMessage();
   const { sk } = useKeys();
-
+  const { setLogs } = useLogs();
   // TODO: unused here
   useEventWaitingForCardsToBeDisclosedSubscription({
     onData: () => {
@@ -62,12 +63,19 @@ const useZkTableCardsDecryption = ({
       const { data: cards } = await refetchTableCardsToDecrypt();
       if (!cards?.length) return;
 
+      const startTime = performance.now();
       const decryptedCards = await partialDecryptionsForTableCards(cards, sk);
+      const endTime = performance.now();
+      const duration = Math.round(endTime - startTime);
+      setLogs((prev) => [
+        ...prev,
+        `🔓 Table Cards Decryption completed in ${duration}ms (${(duration / 1000).toFixed(2)}s)`,
+      ]);
       void submitTablePartialDecryptionsMessage(decryptedCards);
     };
 
     void decrypt();
-  }, [sk, isWaitingTableCards, submitTablePartialDecryptionsMessage, refetchTableCardsToDecrypt]);
+  }, [sk, isWaitingTableCards, submitTablePartialDecryptionsMessage, refetchTableCardsToDecrypt, setLogs]);
 };
 
 export { useZkTableCardsDecryption };
