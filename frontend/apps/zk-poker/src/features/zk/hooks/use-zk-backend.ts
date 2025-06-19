@@ -14,7 +14,7 @@ type Params = {
   isWaitingPartialDecryptionsForPlayersCards: boolean;
 };
 
-const RETRY_COUNT = 20;
+const MAX_RETRY_COUNT = 30;
 
 const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryptionsForPlayersCards }: Params) => {
   const { gameId } = useParams();
@@ -47,7 +47,7 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
 
       console.log('isNeedRetryError:', isNeedRetryError, error.message, failureCount);
 
-      if (isNeedRetryError && failureCount < RETRY_COUNT) {
+      if (isNeedRetryError && failureCount < MAX_RETRY_COUNT) {
         return true;
       }
       return false;
