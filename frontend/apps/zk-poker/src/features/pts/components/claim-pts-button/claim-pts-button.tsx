@@ -47,9 +47,13 @@ const ClaimPtsButton = ({ onSuccess, ptsBalance, className }: Props) => {
       onClick={claimFreePTS}
       disabled={isClaimDisabled}>
       Claim your free PTS {formattedTime}
-      <span className={styles.ring} style={{ '--i': 1 } as React.CSSProperties}></span>
-      <span className={styles.ring} style={{ '--i': 2 } as React.CSSProperties}></span>
-      <span className={styles.ring} style={{ '--i': 3 } as React.CSSProperties}></span>
+      {showPulse && (
+        <>
+          <span className={styles.ring} style={{ '--i': 1 } as React.CSSProperties}></span>
+          <span className={styles.ring} style={{ '--i': 2 } as React.CSSProperties}></span>
+          <span className={styles.ring} style={{ '--i': 3 } as React.CSSProperties}></span>
+        </>
+      )}
     </Button>
   );
 };
