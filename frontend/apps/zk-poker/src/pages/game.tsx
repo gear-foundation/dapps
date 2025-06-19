@@ -89,7 +89,7 @@ export default function GamePage() {
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
 
-  const { playerCards, instances, refetchPlayerCards } = usePlayerCards(isGameStarted) || {};
+  const { playerCards, inputs, refetchPlayerCards } = usePlayerCards(isGameStarted) || {};
   const { revealedPlayers, refetch: refetchRevealedPlayers } = useRevealedPlayersQuery({
     enabled: isFinished,
   });
@@ -225,7 +225,7 @@ export default function GamePage() {
       void refetchStatus();
     },
   });
-  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, instances);
+  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards);
 
   const getPlayerCards = (address: string) => {
     if (address === account?.decodedAddress && playerCards) {

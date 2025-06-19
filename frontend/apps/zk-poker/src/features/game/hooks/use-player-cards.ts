@@ -23,7 +23,7 @@ const usePlayerCards = (enabled: boolean) => {
     });
   }, [playerCards, sk]);
 
-  return { playerCards: decryptedCards?.cards, instances: decryptedCards?.instances, refetchPlayerCards: refetch };
+  return { playerCards: decryptedCards?.cards, inputs: decryptedCards?.inputs, refetchPlayerCards: refetch };
 };
 
 export { usePlayerCards };

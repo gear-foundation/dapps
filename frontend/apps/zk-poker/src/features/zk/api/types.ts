@@ -163,3 +163,4 @@ export type HandRank =
 export type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'check' | 'waiting' | 'thinking';
 
 export type RevealedPlayer = [HexString, [globalThis.Card, globalThis.Card]];
+export type Input = { c0: string[]; sk: string; expected: string[] };

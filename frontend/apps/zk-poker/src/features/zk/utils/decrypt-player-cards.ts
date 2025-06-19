@@ -1,7 +1,7 @@
 import { F1FieldInstance } from 'ffjavascript';
 import { groth16 } from 'snarkjs';
 
-import { Card, CardWithPoint, ContractCard, ECPoint, Rank, Suit } from '../api/types';
+import { Card, CardWithPoint, ContractCard, ECPoint, Input, Rank, Suit } from '../api/types';
 import { projectiveAdd, scalarMul, initDeck } from '../lib';
 
 import { curveParams, decryptWasmFilePath, decryptZkeyFilePath, RANKS, SUITS } from './consts';
@@ -71,14 +71,14 @@ type Instances = [ContractCard, VerificationVariables];
 
 export type DecryptedCardsResult = {
   cards: Card[];
-  instances: Instances[];
+  inputs: Input[];
 };
 
 const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promise<DecryptedCardsResult> => {
   const { F, a, d } = curveParams;
 
   const result = await Promise.all(
-    encryptedCards.map(async (card) => {
+    encryptedCards.map((card) => {
       const c0 = {
         X: hexToBigIntLE(card.c0[0]),
         Y: hexToBigIntLE(card.c0[1]),
@@ -98,25 +98,13 @@ const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promis
         expected: [dec.X.toString(), dec.Y.toString(), dec.Z.toString()],
       };
 
-      const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath);
-
       const decryptedPoint = projectiveAdd(F, a, d, c1, dec);
       const match = findCardByPoint(F, cardMap, decryptedPoint);
 
       if (match) {
-        const contractCard: ContractCard = {
-          value: getValueFromRank(match.rank),
-          suit: match.suit,
-        };
-
-        const fullProof: VerificationVariables = {
-          proof_bytes: encodeProof(proof),
-          public_input: publicSignalsToBytes(publicSignals),
-        };
-
         return {
           card: { suit: match.suit, rank: match.rank },
-          instances: [contractCard, fullProof] as Instances,
+          input,
         };
       } else {
         throw new Error('Unknown card');
@@ -126,8 +114,31 @@ const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promis
 
   return {
     cards: result.map(({ card }) => card),
-    instances: result.map(({ instances }) => instances),
+    inputs: result.map(({ input }) => input),
   };
 };
 
-export { decryptCards };
+const getDecryptedCardsProof = async (inputs: Input[], cards: Card[]) => {
+  const instances = await Promise.all(
+    inputs.map(async (input, index) => {
+      const card = cards[index];
+      const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath);
+
+      const contractCard: ContractCard = {
+        value: getValueFromRank(card.rank),
+        suit: card.suit,
+      };
+
+      const fullProof: VerificationVariables = {
+        proof_bytes: encodeProof(proof),
+        public_input: publicSignalsToBytes(publicSignals),
+      };
+
+      return [contractCard, fullProof] as Instances;
+    }),
+  );
+
+  return { instances };
+};
+
+export { decryptCards, getDecryptedCardsProof };

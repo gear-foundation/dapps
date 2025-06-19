@@ -5,12 +5,10 @@ import { useEffect } from 'react';
 
 import { useCardDisclosureMessage } from '@/features/game/sails';
 
-import { ContractCard } from '../api/types';
+import { Card, Input } from '../api/types';
+import { getDecryptedCardsProof } from '../utils';
 
-const useZkCardDisclosure = (
-  isWaitingForCardsToBeDisclosed: boolean,
-  instances: [ContractCard, VerificationVariables][] | undefined,
-) => {
+const useZkCardDisclosure = (isWaitingForCardsToBeDisclosed: boolean, inputs?: Input[], cards?: Card[]) => {
   const { cardDisclosureMessage } = useCardDisclosureMessage();
   const alert = useAlert();
 
@@ -20,11 +18,13 @@ const useZkCardDisclosure = (
   });
 
   useEffect(() => {
-    if (isWaitingForCardsToBeDisclosed && instances) {
-      void mutateAsync({ instances });
+    if (isWaitingForCardsToBeDisclosed && inputs && cards) {
+      getDecryptedCardsProof(inputs, cards)
+        .then(({ instances }) => mutateAsync({ instances }))
+        .catch((error) => alert.error(getErrorMessage(error)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWaitingForCardsToBeDisclosed, instances]);
+  }, [isWaitingForCardsToBeDisclosed, inputs, cards]);
 };
 
 export { useZkCardDisclosure };

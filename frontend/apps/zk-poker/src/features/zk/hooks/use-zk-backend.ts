@@ -14,6 +14,8 @@ type Params = {
   isWaitingPartialDecryptionsForPlayersCards: boolean;
 };
 
+const RETRY_COUNT = 20;
+
 const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryptionsForPlayersCards }: Params) => {
   const { gameId } = useParams();
   const { account } = useAccount();
@@ -45,8 +47,7 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
 
       console.log('isNeedRetryError:', isNeedRetryError, error.message, failureCount);
 
-      // ! TODO: add more retries (20) if more players are connected
-      if (isNeedRetryError && failureCount < 5) {
+      if (isNeedRetryError && failureCount < RETRY_COUNT) {
         return true;
       }
       return false;
