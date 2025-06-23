@@ -93,7 +93,7 @@ export default function GamePage() {
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
   const { turn, current_bet } = betting || {};
-  const { cash_prize, winners } = (isFinished && status.finished) || {};
+  const { pots } = (isFinished && status.finished) || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
@@ -254,7 +254,7 @@ export default function GamePage() {
   const getStatusAndBet = (address: HexString): { status: PlayerStatus; bet?: number } => {
     const investedInTheCircle = alreadyInvestedInTheCircle?.find(([actorId]) => actorId === address);
 
-    if (winners?.includes(address)) {
+    if (pots?.some(([_, winners]) => winners.includes(address))) {
       return { status: 'winner' };
     }
 
@@ -374,8 +374,7 @@ export default function GamePage() {
 
       {isFinished && participants && (
         <GameEndModal
-          cashPrize={cash_prize}
-          winners={winners}
+          pots={pots}
           revealedPlayers={revealedPlayers}
           commonCardsFields={commonCardsFields}
           participants={participants}

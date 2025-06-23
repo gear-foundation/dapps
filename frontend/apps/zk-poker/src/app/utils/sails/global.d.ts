@@ -100,7 +100,7 @@ declare global {
     | { play: { stage: Stage } }
     | { waitingForCardsToBeDisclosed: null }
     | { waitingForAllTableCardsToBeDisclosed: null }
-    | { finished: { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> } };
+    | { finished: { pots: Array<[number | string | bigint, Array<ActorId>]> } };
 
   export type Stage =
     | 'PreFlop'

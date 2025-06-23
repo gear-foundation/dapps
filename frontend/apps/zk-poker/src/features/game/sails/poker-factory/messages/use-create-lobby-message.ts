@@ -22,7 +22,12 @@ export const useCreateLobbyMessage = () => {
 
   const tx = async ({ config, pk }: Params) => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [config, pk], ...params, gasLimit: undefined });
+    const result = await sendTransactionAsync({
+      args: [config, pk],
+      ...params,
+      gasLimit: undefined,
+      value: 1000000000000n,
+    });
     return result.awaited;
   };
 

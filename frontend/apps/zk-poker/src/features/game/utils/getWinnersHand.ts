@@ -40,7 +40,7 @@ const getWinnersHand = (
 
   const sevenCards = [...winnersCards, ...(commonCardsFields as GameCard[])].map(toPokersolverCard);
   const hand = Hand.solve(sevenCards);
-  const handRank = hand.name;
+  const handRank = hand.name.replace('-', ' ');
   const winnersHand = hand.cards.map(fromPokersolverCard);
   return { winnersHand, handRank };
 };

@@ -58,7 +58,7 @@ export class Program {
           Play: { stage: 'Stage' },
           WaitingForCardsToBeDisclosed: 'Null',
           WaitingForAllTableCardsToBeDisclosed: 'Null',
-          Finished: { winners: 'Vec<[u8;32]>', cash_prize: 'Vec<u128>' },
+          Finished: { pots: 'Vec<(u128, Vec<[u8;32]>)>' },
         },
       },
       Stage: {
@@ -885,7 +885,7 @@ export class Poker {
   }
 
   public subscribeToFinishedEvent(
-    callback: (data: { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> }) => void | Promise<void>,
+    callback: (data: { pots: Array<[number | string | bigint, Array<ActorId>]> }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -896,8 +896,8 @@ export class Poker {
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'Finished') {
         callback(
           this._program.registry
-            .createType('(String, String, {"winners":"Vec<[u8;32]>","cash_prize":"Vec<u128>"})', message.payload)[2]
-            .toJSON() as unknown as { winners: Array<ActorId>; cash_prize: Array<number | string | bigint> },
+            .createType('(String, String, {"pots":"Vec<(u128, Vec<[u8;32]>)>"})', message.payload)[2]
+            .toJSON() as unknown as { pots: Array<[number | string | bigint, Array<ActorId>]> },
         );
       }
     });
