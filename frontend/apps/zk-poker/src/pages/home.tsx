@@ -2,11 +2,13 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button as VaraButton } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'urql';
 
 import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } from '@/assets/images';
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
 import { useUserName } from '@/features/game/hooks';
+import { GetPlayerByIdQuery } from '@/features/game/queries';
 import { useGetBalanceQuery } from '@/features/game/sails';
 import { ClaimPtsButton } from '@/features/pts';
 
@@ -24,10 +26,18 @@ export default function Home() {
     setIsEditProfileModalOpen(true);
   };
 
+  const [playerData] = useQuery({
+    query: GetPlayerByIdQuery,
+    variables: {
+      id: account?.decodedAddress,
+    },
+  });
+  const { gamesToday, wins, games } = playerData.data?.playerById || { gamesToday: 0, wins: 0, games: 0 };
+
   const stats = [
-    { value: '52.12%', label: 'Your Winrate' },
-    { value: 12, label: 'Total Hands Played' },
-    { value: 0, label: 'Hands Played Today' },
+    { value: games ? `${(wins / games) * 100}%` : '-', label: 'Your Winrate' },
+    { value: gamesToday, label: 'Total Hands Played' },
+    { value: wins, label: 'Hands Played Today' },
   ];
 
   const handleProfileSave = (name: string) => {

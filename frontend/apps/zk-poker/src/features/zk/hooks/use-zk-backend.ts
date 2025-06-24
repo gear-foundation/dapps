@@ -13,11 +13,16 @@ import { useLogs } from './use-logs';
 type Params = {
   isWaitingShuffleVerification: boolean;
   isWaitingPartialDecryptionsForPlayersCards: boolean;
+  isDisabled: boolean;
 };
 
 const MAX_RETRY_COUNT = 30;
 
-const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryptionsForPlayersCards }: Params) => {
+const useZkBackend = ({
+  isWaitingShuffleVerification,
+  isWaitingPartialDecryptionsForPlayersCards,
+  isDisabled,
+}: Params) => {
   const { gameId } = useParams();
   const { account } = useAccount();
   const { sk } = useKeys();
@@ -33,12 +38,14 @@ const useZkBackend = ({ isWaitingShuffleVerification, isWaitingPartialDecryption
       account?.decodedAddress,
       isWaitingShuffleVerification,
       isWaitingPartialDecryptionsForPlayersCards,
+      isDisabled,
     ],
     queryFn: () => getZkTask(gameId, account?.decodedAddress),
     enabled:
       (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards) &&
       !!account?.decodedAddress &&
-      !!gameId,
+      !!gameId &&
+      !isDisabled,
     // TODO: implement ws connection instead of retry
     retry: (failureCount, error) => {
       const isNeedRetryError =

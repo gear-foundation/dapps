@@ -3,6 +3,7 @@
 .loader {
   @extend %absoluteCenter;
   font-size: 21px;
+  color: #ffffff;
 
   &::after {
     content: '.';

@@ -32,7 +32,7 @@
 .victory {
   font-size: 32px;
   font-weight: 700;
-  line-height: 150%;
+  line-height: 120%;
   text-align: center;
   background: linear-gradient(90deg, #ffd28e 0%, #c69447 100%);
   background-blend-mode: color;
@@ -41,6 +41,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding: 5px 0;
 }
 
 .lose {

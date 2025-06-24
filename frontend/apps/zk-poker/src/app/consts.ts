@@ -6,6 +6,7 @@ export const ADDRESS = {
   ZK_POKER_BACKEND: import.meta.env.VITE_ZK_POKER_BACKEND_ADDRESS as string,
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
+  EXPLORER_URL: import.meta.env.VITE_EXPLORER_URL as string,
 };
 
 export const ROUTES = {

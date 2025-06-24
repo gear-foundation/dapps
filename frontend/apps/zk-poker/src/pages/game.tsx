@@ -1,4 +1,3 @@
-import { HexString } from '@gear-js/api';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +15,7 @@ import {
   ZkVerification,
 } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
-import { usePlayerCards } from '@/features/game/hooks';
+import { usePlayerCards, useGameStatus, usePlayerSlots } from '@/features/game/hooks';
 import {
   useStatusQuery,
   useParticipantsQuery,
@@ -45,7 +44,6 @@ import {
   useEventKilledSubscription,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
-import { Card, PlayerStatus } from '@/features/zk/api/types';
 import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
 import { getRankFromValue } from '@/features/zk/utils';
 
@@ -53,47 +51,35 @@ import styles from './game.module.scss';
 
 export default function GamePage() {
   const navigate = useNavigate();
-  const { status, refetch: refetchStatus } = useStatusQuery();
-  console.log('🚀 ~ GamePage ~ status:', status);
   const alert = useAlert();
+  const { refetch: refetchStatus } = useStatusQuery();
 
-  // ! TODO: move to separate file useStatus
-  const isRegistration = status && 'registration' in status;
-  const isWaitingShuffleVerification = Boolean(status && 'waitingShuffleVerification' in status);
-  const isWaitingPartialDecryptionsForPlayersCards = Boolean(
-    status && 'waitingPartialDecryptionsForPlayersCards' in status,
-  );
-  const isWaitingStart = Boolean(status && 'waitingStart' in status);
-  const isPlayStatus = status && 'play' in status;
-  const isWaitingTableCardsAfterPreFlop = isPlayStatus && status.play.stage === 'WaitingTableCardsAfterPreFlop';
-  const isWaitingTableCardsAfterFlop = isPlayStatus && status.play.stage === 'WaitingTableCardsAfterFlop';
-  const isWaitingTableCardsAfterTurn = isPlayStatus && status.play.stage === 'WaitingTableCardsAfterTurn';
-  const isWaitingTableCards =
-    isWaitingTableCardsAfterPreFlop || isWaitingTableCardsAfterFlop || isWaitingTableCardsAfterTurn;
-  const isWaitingForCardsToBeDisclosed = Boolean(status && 'waitingForCardsToBeDisclosed' in status);
-  const isWaitingForAllTableCardsToBeDisclosed = Boolean(status && 'waitingForAllTableCardsToBeDisclosed' in status);
-  const isGameStarted = !isRegistration && !isWaitingShuffleVerification && !isWaitingStart;
-  const isFinished = status && 'finished' in status;
-  const isWaitingZk =
-    isWaitingShuffleVerification ||
-    isWaitingPartialDecryptionsForPlayersCards ||
-    isWaitingTableCards ||
-    isWaitingForCardsToBeDisclosed ||
-    isWaitingForAllTableCardsToBeDisclosed;
-  const isActiveGame = isGameStarted && !isFinished && !isWaitingZk;
+  const {
+    isWaitingShuffleVerification,
+    isWaitingPartialDecryptionsForPlayersCards,
+    isWaitingTableCardsAfterPreFlop,
+    isWaitingTableCardsAfterFlop,
+    isWaitingTableCardsAfterTurn,
+    isWaitingTableCards,
+    isWaitingForCardsToBeDisclosed,
+    isWaitingForAllTableCardsToBeDisclosed,
+    isGameStarted,
+    isFinished,
+    isWaitingZk,
+    isActiveGame,
+    pots,
+  } = useGameStatus();
 
   const { killMessage, isPending: isKillPending } = useKillMessage();
   const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
 
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
-  const { alreadyInvestedInTheCircle, refetch: refetchAlreadyInvestedInTheCircle } =
-    useAlreadyInvestedInTheCircleQuery();
-  const { activeParticipants, refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
+  const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
+  const { refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
   const { turn, current_bet } = betting || {};
-  const { pots } = (isFinished && status.finished) || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
@@ -222,6 +208,7 @@ export default function GamePage() {
   useZkBackend({
     isWaitingShuffleVerification,
     isWaitingPartialDecryptionsForPlayersCards,
+    isDisabled: isSpectator,
   });
 
   useZkTableCardsDecryption({
@@ -229,72 +216,14 @@ export default function GamePage() {
     isWaitingTableCardsAfterFlop,
     isWaitingTableCardsAfterTurn,
     isWaitingForAllTableCardsToBeDisclosed,
+    isDisabled: isSpectator,
     onEvent: () => {
       void refetchStatus();
     },
   });
-  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards);
+  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards, isSpectator);
 
-  const getPlayerCards = (address: string) => {
-    if (address === account?.decodedAddress && playerCards) {
-      return playerCards as [Card, Card];
-    }
-
-    const revealedPlayer = revealedPlayers?.find(([playerAddress]) => playerAddress === address);
-    if (revealedPlayer) {
-      return revealedPlayer[1].map((card) => ({
-        suit: card.suit,
-        rank: getRankFromValue(card.value),
-      })) as [Card, Card];
-    }
-
-    return playerCards ? null : undefined;
-  };
-
-  const getStatusAndBet = (address: HexString): { status: PlayerStatus; bet?: number } => {
-    const investedInTheCircle = alreadyInvestedInTheCircle?.find(([actorId]) => actorId === address);
-
-    if (pots?.some(([_, winners]) => winners.includes(address))) {
-      return { status: 'winner' };
-    }
-
-    const isHaveNoBalance = participants?.find(([actorId]) => actorId === address)?.[1].balance === 0;
-    const isHaveBet = bettingBank?.find(([actorId]) => actorId === address)?.[1] !== 0;
-    if (isHaveNoBalance && isHaveBet) {
-      return { status: 'all-in' };
-    }
-
-    if (!activeParticipants?.active_ids?.includes(address)) {
-      return { status: 'fold' };
-    }
-
-    if (address === turn && turn !== account?.decodedAddress && isActiveGame) {
-      return { status: 'thinking' };
-    }
-
-    const isActed = betting?.acted_players?.find((actorId) => actorId === address);
-    if (isActed && !investedInTheCircle) {
-      return { status: 'check' };
-    }
-
-    if (investedInTheCircle) {
-      const [, amount] = investedInTheCircle;
-      return { status: 'bet', bet: Number(amount) };
-    }
-    return { status: 'waiting' };
-  };
-
-  const playerSlots =
-    participants?.map(([address, participant]) => ({
-      address,
-      name: participant.name,
-      chips: Number(participant.balance),
-      cards: getPlayerCards(address),
-      isMe: address === account?.decodedAddress,
-      ...getStatusAndBet(address),
-      // ! TODO: derive diller
-      // isDiller: true,
-    })) || [];
+  const playerSlots = usePlayerSlots();
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
     const card = tableCards?.[index];
@@ -381,28 +310,27 @@ export default function GamePage() {
         />
       )}
 
-      {/* {isWaitingZk && (
-        <ZkVerification
-          isWaitingShuffleVerification={isWaitingShuffleVerification}
-          isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
-          isWaitingTableCards={isWaitingTableCards}
-          isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
-          isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
-        />
-      )} */}
+      {isWaitingZk &&
+        (() => {
+          const zkVerificationProps = {
+            isWaitingShuffleVerification,
+            isWaitingPartialDecryptionsForPlayersCards,
+            isWaitingTableCards,
+            isWaitingForCardsToBeDisclosed,
+            isWaitingForAllTableCardsToBeDisclosed,
+          };
 
-      {isWaitingZk && (
-        <CardsLoader>
-          <ZkVerification
-            isWaitingShuffleVerification={isWaitingShuffleVerification}
-            isWaitingPartialDecryptionsForPlayersCards={isWaitingPartialDecryptionsForPlayersCards}
-            isWaitingTableCards={isWaitingTableCards}
-            isWaitingForCardsToBeDisclosed={isWaitingForCardsToBeDisclosed}
-            isWaitingForAllTableCardsToBeDisclosed={isWaitingForAllTableCardsToBeDisclosed}
-            isInLoader
-          />
-        </CardsLoader>
-      )}
+          const showInLoader = isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards;
+
+          return showInLoader ? (
+            <CardsLoader>
+              <ZkVerification {...zkVerificationProps} isInLoader />
+            </CardsLoader>
+          ) : (
+            <ZkVerification {...zkVerificationProps} />
+          );
+        })()}
+
       <OperationLogs />
     </>
   );

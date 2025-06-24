@@ -1,9 +1,11 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'urql';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, PlusIcon, SearchIcon } from '@/assets/images';
 import { Button, Input, Room } from '@/components';
+import { GetLobbiesQuery, Lobby } from '@/features/game/queries';
 import { useLobbiesQuery } from '@/features/game/sails';
 
 import styles from './rooms.module.scss';
@@ -12,6 +14,18 @@ export default function Rooms() {
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
   const { lobbies } = useLobbiesQuery();
+
+  const [lobbiesData] = useQuery({
+    query: GetLobbiesQuery,
+  });
+
+  const lobbiesMap = lobbiesData?.data?.lobbies.reduce(
+    (acc, lobby) => {
+      acc[lobby.address] = lobby;
+      return acc;
+    },
+    {} as Record<string, Lobby>,
+  );
 
   const sortedLobbies = lobbies?.sort((a, b) => {
     const nameA = a[1].lobby_name;
@@ -45,17 +59,15 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank }]) => (
+          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms }]) => (
             <Room
               key={address}
               name={lobby_name}
               adminName={admin_name}
               adminId={admin_id}
-              // ! TODO: get from indexer when it will be ready
-              currentPlayers={1}
+              currentPlayers={lobbiesMap?.[address]?.currentPlayers.length || 1}
               buyIn={Number(starting_bank)}
-              // ! TODO: add
-              time={60}
+              time={Number(time_per_move_ms) / 1000}
               id={address}
             />
           ))}

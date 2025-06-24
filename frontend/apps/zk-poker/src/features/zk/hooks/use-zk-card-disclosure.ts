@@ -10,7 +10,12 @@ import { getDecryptedCardsProof } from '../utils';
 
 import { useLogs } from './use-logs';
 
-const useZkCardDisclosure = (isWaitingForCardsToBeDisclosed: boolean, inputs?: Input[], cards?: Card[]) => {
+const useZkCardDisclosure = (
+  isWaitingForCardsToBeDisclosed: boolean,
+  inputs?: Input[],
+  cards?: Card[],
+  isDisabled?: boolean,
+) => {
   const { cardDisclosureMessage } = useCardDisclosureMessage();
   const alert = useAlert();
   const { setLogs } = useLogs();
@@ -21,7 +26,7 @@ const useZkCardDisclosure = (isWaitingForCardsToBeDisclosed: boolean, inputs?: I
   });
 
   useEffect(() => {
-    if (isWaitingForCardsToBeDisclosed && inputs && cards) {
+    if (isWaitingForCardsToBeDisclosed && inputs && cards && !isDisabled) {
       const startTime = performance.now();
       getDecryptedCardsProof(inputs, cards)
         .then(({ instances }) => mutateAsync({ instances }))
@@ -36,7 +41,7 @@ const useZkCardDisclosure = (isWaitingForCardsToBeDisclosed: boolean, inputs?: I
         .catch((error) => alert.error(getErrorMessage(error)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWaitingForCardsToBeDisclosed, inputs, cards]);
+  }, [isWaitingForCardsToBeDisclosed, inputs, cards, isDisabled]);
 };
 
 export { useZkCardDisclosure };

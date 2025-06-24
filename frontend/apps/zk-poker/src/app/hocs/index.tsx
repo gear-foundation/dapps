@@ -11,11 +11,13 @@ import {
 } from 'gear-ez-transactions';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider as UrqlClientProvider } from 'urql';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ADDRESS } from '@/app/consts';
+import { urqlClient } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
 // ! TODO: add program
@@ -70,8 +72,13 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 //   );
 // }
 
+function UrqlProvider({ children }: ProviderProps) {
+  return <UrqlClientProvider value={urqlClient}>{children}</UrqlClientProvider>;
+}
+
 const providers = [
   BrowserRouter,
+  UrqlProvider,
   ApiProvider,
   AccountProvider,
   AlertProvider,

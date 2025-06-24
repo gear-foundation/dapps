@@ -1,1 +1,1 @@
-export { getWinnersHand } from './getWinnersHand';
+export { getWinnersHand } from './get-winners-hand';

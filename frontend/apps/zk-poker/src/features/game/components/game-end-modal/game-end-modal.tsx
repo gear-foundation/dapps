@@ -63,15 +63,23 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
       );
     }
 
-    const { winnersHand, handRank } = getWinnersHand([myAddress], revealedPlayers, commonCardsFields) || {};
     // I won at least one pot
-
+    const { winnersHand, handRank } = getWinnersHand([myAddress], revealedPlayers, commonCardsFields) || {};
     const totalPotText = `+${myTotalWinnings}`;
+
+    const getVictoryText = () => {
+      if (myWinningPots.length === 1) {
+        return 'Victory';
+      }
+      if (isMainPotWinner) {
+        return 'Main Pot Victory';
+      }
+      return 'Side Pot Victory';
+    };
+
     return (
       <div>
-        <h1 className={isMainPotWinner ? styles.victory : styles.sidePotWin}>
-          {isMainPotWinner ? 'Main Pot Victory' : 'Side Pot Victory'}
-        </h1>
+        <h1 className={isMainPotWinner ? styles.victory : styles.sidePotWin}>{getVictoryText()}</h1>
         {winnersHand && (
           <>
             <div className={styles.winnersHand}>
@@ -82,24 +90,28 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
             <div className={styles.handRank}>{handRank}</div>
           </>
         )}
+
         {/* Show my winning pots */}
-        {myWinningPots.map((pot, index) => {
-          const isMainPot = pot === pots[0];
-          const amount = Number(pot[0]);
-          return (
-            <div key={index} className={styles.potAmount}>
-              {isMainPot ? 'Main Pot' : `Side Pot ${pots.indexOf(pot)}`}: +{amount}
-            </div>
-          );
-        })}
+        {myWinningPots.length > 1 &&
+          myWinningPots.map((pot, index) => {
+            const isMainPot = pot === pots[0];
+            const amount = Number(pot[0]);
+            return (
+              <div key={index} className={styles.potAmount}>
+                {isMainPot ? 'Main Pot' : `Side Pot ${pots.indexOf(pot)}`}: +{amount}
+              </div>
+            );
+          })}
         {/* Show other pot winners */}
-        {pots
-          .filter((pot) => !pot[1].includes(myAddress))
-          .map((pot, index) => (
-            <div key={index} className={styles.otherPotInfo}>
-              {pot === pots[0] ? 'Main pot' : `Side pot ${pots.indexOf(pot)}`} won by: {getWinnersNames(pot[1])}
-            </div>
-          ))}
+        {pots.length > 1 &&
+          pots
+            .filter((pot) => !pot[1].includes(myAddress))
+            .map((pot, index) => (
+              <div key={index} className={styles.otherPotInfo}>
+                {pot === pots[0] ? 'Main pot' : `Side pot ${pots.indexOf(pot)}`} won by: {getWinnersNames(pot[1])}
+              </div>
+            ))}
+
         <div className={styles.totalWinnings} data-text={totalPotText}>
           {totalPotText}
         </div>
