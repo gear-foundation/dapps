@@ -1,8 +1,8 @@
-@use '@/assets/styles/shared' as *;
-@use '@/assets/styles/utils' as *;
-
 .loader {
-  @extend %absoluteCenter;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
 
@@ -14,12 +14,14 @@
   }
 
   &::before {
-    @include square(50px);
+    width: 50px;
+    height: 50px;
     animation-duration: 4s;
   }
 
   &::after {
-    @include square(25px);
+    width: 25px;
+    height: 25px;
     margin-left: -6px;
     animation-duration: 2s;
     animation-direction: reverse;
