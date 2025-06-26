@@ -42,6 +42,8 @@ import {
   useKillMessage,
   useCancelRegistrationMessage,
   useEventKilledSubscription,
+  useWaitingParticipantsQuery,
+  useEventRegisteredToTheNextRoundSubscription,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
 import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
@@ -88,8 +90,9 @@ export default function GamePage() {
   const { revealedPlayers, refetch: refetchRevealedPlayers } = useRevealedPlayersQuery({
     enabled: isFinished,
   });
-
+  const { waitingParticipants, refetch: refetchWaitingParticipants } = useWaitingParticipantsQuery();
   const isSpectator = !participants?.some(([address]) => address === account?.decodedAddress);
+  const startGameParticipants = participants && waitingParticipants ? [...participants, ...waitingParticipants] : [];
 
   const onPlayersChanged = () => {
     void refetchStatus();
@@ -192,6 +195,13 @@ export default function GamePage() {
       void refetchRevealedPlayers();
       void refetchPlayerCards();
       void refetchRevealedTableCards();
+      void refetchWaitingParticipants();
+    },
+  });
+
+  useEventRegisteredToTheNextRoundSubscription({
+    onData: () => {
+      void refetchWaitingParticipants();
     },
   });
 
@@ -221,6 +231,7 @@ export default function GamePage() {
       void refetchStatus();
     },
   });
+
   useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards, isSpectator);
 
   const playerSlots = usePlayerSlots();
@@ -299,7 +310,9 @@ export default function GamePage() {
         {isMyTurn && config && <YourTurn timePerMoveMs={Number(config.time_per_move_ms)} />}
       </div>
 
-      {!isGameStarted && participants && config && <StartGameModal isAdmin={isAdmin} participants={participants} />}
+      {!isGameStarted && participants && config && (
+        <StartGameModal isAdmin={isAdmin} participants={startGameParticipants} />
+      )}
 
       {isFinished && participants && (
         <GameEndModal
