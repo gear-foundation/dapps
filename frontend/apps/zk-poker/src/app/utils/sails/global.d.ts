@@ -77,6 +77,7 @@ declare global {
   export interface TurnManagerForActorId {
     active_ids: Array<ActorId>;
     turn_index: number | string | bigint;
+    first_index: number;
   }
 
   export interface BettingStage {

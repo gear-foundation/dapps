@@ -18,3 +18,4 @@ export { useEventGameCanceledSubscription } from './use-event-game-canceled-subs
 export { useEventWaitingForCardsToBeDisclosedSubscription } from './use-event-waiting-for-cards-to-be-disclosed-subscription';
 export { useEventWaitingForAllTableCardsToBeDisclosedSubscription } from './use-event-waiting-for-all-table-cards-to-be-disclosed-subscription';
 export { useEventKilledSubscription } from './use-event-killed-subscription';
+export { useEventRegisteredToTheNextRoundSubscription } from './use-event-registered-to-the-next-round-subscription';

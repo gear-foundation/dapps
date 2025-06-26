@@ -65,6 +65,7 @@ type Action = enum {
 type TurnManagerForActorId = struct {
   active_ids: vec actor_id,
   turn_index: u64,
+  first_index: u16,
 };
 
 type BettingStage = struct {
@@ -208,6 +209,7 @@ service Poker {
   query Round : () -> u64;
   query Status : () -> Status;
   query TableCardsToDecrypt : () -> vec EncryptedCard;
+  query WaitingParticipants : () -> vec struct { actor_id, Participant };
 
   events {
     Registered: struct {
@@ -243,6 +245,10 @@ service Poker {
     GameCanceled;
     WaitingForCardsToBeDisclosed;
     WaitingForAllTableCardsToBeDisclosed;
+    RegisteredToTheNextRound: struct {
+      participant_id: actor_id,
+      pk: PublicKey,
+    };
   }
 };
 
