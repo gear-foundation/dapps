@@ -20,5 +20,3 @@ export {
   permuteMatrix,
   generatePermutation,
 } from './shuffle/plaintext';
-
-export { generateShuffleEncryptV2Proof, generateDecryptProof } from './shuffle/proof';

@@ -9,7 +9,7 @@ type Params = {
   action: Action;
 };
 
-export const useTurnMessage = () => {
+export const useTurnMessage = (withAlert = true) => {
   const program = usePokerProgram();
   const alert = useAlert();
   const { sendTransactionAsync } = useSendProgramTransaction({
@@ -27,7 +27,11 @@ export const useTurnMessage = () => {
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: tx,
-    onError: (error) => alert.error(getErrorMessage(error)),
+    onError: (error) => {
+      if (withAlert) {
+        alert.error(getErrorMessage(error));
+      }
+    },
   });
 
   return { turnMessage: mutateAsync, isPending };

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useCardDisclosureMessage } from '@/features/game/sails';
 
 import { Card, Input } from '../api/types';
-import { getDecryptedCardsProof } from '../utils';
+import { getDecryptedCardsProof, logMemory } from '../utils';
 
 import { useLogs } from './use-logs';
 
@@ -28,6 +28,7 @@ const useZkCardDisclosure = (
   useEffect(() => {
     if (isWaitingForCardsToBeDisclosed && inputs && cards && !isDisabled) {
       const startTime = performance.now();
+      logMemory('before getDecryptedCardsProof');
       getDecryptedCardsProof(inputs, cards)
         .then(({ instances }) => mutateAsync({ instances }))
         .then(() => {
@@ -37,6 +38,9 @@ const useZkCardDisclosure = (
             ...prev,
             `🔓 Card Disclosure completed in ${duration}ms (${(duration / 1000).toFixed(2)}s)`,
           ]);
+        })
+        .then(() => {
+          logMemory('after getDecryptedCardsProof');
         })
         .catch((error) => alert.error(getErrorMessage(error)));
     }

@@ -22,17 +22,18 @@ export const useTurn = () => {
   const { turn: contractTurn, current_bet, last_active_time, acted_players } = betting || {};
 
   const [currentTurn, setCurrentTurn] = useState<HexString | null>();
-  const [timeToTurnEnd, setTimeToTurnEnd] = useState<number | null>(null);
+  const [timeToTurnEndSec, setTimeToTurnEndSec] = useState<number | null>(null);
   const [autoFoldPlayers, setAutoFoldPlayers] = useState<HexString[]>([]);
   const getPlayerStatusAndBet = useGetPlayerStatusAndBet(null, autoFoldPlayers);
-  // ! TODO: check if this is correct ( - 2 or another number)
   const { first_index, turn_index } = activeParticipants || {};
-
-  const dillerIndex = (Number(first_index) + Number(turn_index) - 2) % (participants?.length || 0);
+  const participantsLength = participants?.length || 0;
+  const bigBlindIndex = Number(first_index) + Number(turn_index);
+  // ! TODO: check if this is correct ( - 2 or another number)
+  const dillerIndex = (bigBlindIndex + participantsLength - 2) % participantsLength;
   const dillerAddress = participants?.[dillerIndex]?.[0];
   const activeIds = activeParticipants?.active_ids;
 
-  const { turnMessage } = useTurnMessage();
+  const { turnMessage } = useTurnMessage(false);
 
   // Get next active player in turn order
   const getNextActivePlayer = useCallback(
@@ -52,7 +53,7 @@ export const useTurn = () => {
       const nextPlayer = activeIds[nextIndex];
       const nextPlayerParticipant = participants?.find(([address]) => address === nextPlayer);
 
-      if (!nextPlayerParticipant || autoFolded.includes(nextPlayer)) {
+      if (!nextPlayerParticipant || autoFolded.includes(nextPlayer) || activeIds.length - autoFolded.length === 1) {
         return null;
       }
 
@@ -64,7 +65,6 @@ export const useTurn = () => {
 
       const isActed = acted_players?.find((actorId) => actorId === nextPlayer);
       // ! TODO: check if this is correct
-      // const isActed = (status === 'bet' && bet === current_bet) || (current_bet === 0 && status === 'check');
       const isMaxBet = status === 'bet' && bet === current_bet;
 
       if (isActed && isMaxBet) {
@@ -77,8 +77,19 @@ export const useTurn = () => {
     [activeIds, participants, current_bet, acted_players],
   );
 
+  const sendAutoFoldWithRetry = useCallback((retryCount = 0) => {
+    turnMessage({ action: { check: null } }).catch(() => {
+      if (retryCount > 3) return;
+      setTimeout(() => {
+        sendAutoFoldWithRetry(retryCount + 1);
+      }, 1000);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (contractTurn && last_active_time && config && activeIds) {
+      console.log('🚀 ~ useEffect ~ contractTurn:', contractTurn);
       const timePerMoveMs = Number(config.time_per_move_ms);
       const lastActiveTime = Number(last_active_time);
       const timeLeft = Date.now() - lastActiveTime;
@@ -98,30 +109,48 @@ export const useTurn = () => {
       setCurrentTurn(actualTurn);
       if (actualTurn === null && account?.decodedAddress === config?.admin_id) {
         console.log('!!!!!!!!!!!!! last turn ended');
-        void turnMessage({ action: { check: null } });
+        sendAutoFoldWithRetry();
       }
-      setTimeToTurnEnd(timeLeft % timePerMoveMs);
+      setTimeToTurnEndSec(Math.floor((timePerMoveMs - (timeLeft % timePerMoveMs)) / 1000));
     } else {
       setCurrentTurn(undefined);
-      setTimeToTurnEnd(null);
+      setTimeToTurnEndSec(null);
+      setAutoFoldPlayers([]);
     }
-  }, [contractTurn, last_active_time, config, activeIds, getNextActivePlayer, account?.decodedAddress, turnMessage]);
+  }, [
+    contractTurn,
+    last_active_time,
+    config,
+    activeIds,
+    getNextActivePlayer,
+    account?.decodedAddress,
+    sendAutoFoldWithRetry,
+  ]);
 
-  const onTimeEnd = () => {
+  const onTimeEnd = useCallback(() => {
     if (currentTurn) {
-      const nextTurn = getNextActivePlayer(currentTurn, autoFoldPlayers);
-      setAutoFoldPlayers((prev) => [...prev, currentTurn]);
+      const nextAutoFoldPlayers = [...autoFoldPlayers, currentTurn];
+      const nextTurn = getNextActivePlayer(currentTurn, nextAutoFoldPlayers);
+      console.log('🚀 ~ onTimeEnd ~ nextTurn:', nextTurn);
+      setAutoFoldPlayers(nextAutoFoldPlayers);
       setCurrentTurn(nextTurn);
       if (!nextTurn && account?.decodedAddress === config?.admin_id) {
-        console.log('!!!!!!!!!!!!! last turn ended');
-        void turnMessage({ action: { check: null } });
+        console.log('!!!!!!!!!!!!! last turn ended', currentTurn);
+        sendAutoFoldWithRetry();
       }
     }
-  };
+  }, [
+    currentTurn,
+    autoFoldPlayers,
+    account?.decodedAddress,
+    config?.admin_id,
+    getNextActivePlayer,
+    sendAutoFoldWithRetry,
+  ]);
 
   return {
     currentTurn,
-    timeToTurnEnd,
+    timeToTurnEndSec,
     dillerAddress,
     autoFoldPlayers,
     getNextActivePlayer,

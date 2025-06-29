@@ -35,6 +35,8 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
     return winnersNames.join(winnersNames.length === 2 ? ' and ' : ', ');
   };
 
+  const isOneSidePot = pots.length === 2;
+
   const renderPotInfo = () => {
     if (myWinningPots.length === 0) {
       const mainPotWinners = pots[0][1];
@@ -58,7 +60,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
           </div>
           {pots.slice(1).map(([_, winners], index) => (
             <div key={index} className={styles.sidePotInfo}>
-              Side pot {index + 1} won by: {getWinnersNames(winners)}
+              Side pot {isOneSidePot ? '' : index + 1} won by: {getWinnersNames(winners)}
             </div>
           ))}
         </div>
@@ -100,7 +102,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
             const amount = Number(pot[0]);
             return (
               <div key={index} className={styles.potAmount}>
-                {isMainPot ? 'Main Pot' : `Side Pot ${pots.indexOf(pot)}`}: +{amount}
+                {isMainPot ? 'Main Pot' : `Side Pot${isOneSidePot ? '' : ` ${pots.indexOf(pot)}`}`}: +{amount}
               </div>
             );
           })}
@@ -110,7 +112,8 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
             .filter((pot) => !pot[1].includes(myAddress))
             .map((pot, index) => (
               <div key={index} className={styles.otherPotInfo}>
-                {pot === pots[0] ? 'Main pot' : `Side pot ${pots.indexOf(pot)}`} won by: {getWinnersNames(pot[1])}
+                {pot === pots[0] ? 'Main pot' : `Side pot ${isOneSidePot ? '' : pots.indexOf(pot)}`} won by:{' '}
+                {getWinnersNames(pot[1])}
               </div>
             ))}
 

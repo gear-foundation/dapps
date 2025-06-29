@@ -35,7 +35,7 @@ export default function Home() {
   const { gamesToday, wins, games } = playerData.data?.playerById || { gamesToday: 0, wins: 0, games: 0 };
 
   const stats = [
-    { value: games ? `${(wins / games) * 100}%` : '-', label: 'Your Winrate' },
+    { value: games ? `${Math.round((wins / games) * 100)}%` : '-', label: 'Your Winrate' },
     { value: gamesToday, label: 'Total Hands Played' },
     { value: wins, label: 'Hands Played Today' },
   ];

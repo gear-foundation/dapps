@@ -35,7 +35,9 @@ const shuffleDeck = async (zkTaskShuffle: ZkTaskShuffle) => {
       permuted: shuffled.map((row) => row.map((v) => v.toString())),
     };
 
-    const { proof, publicSignals } = await groth16.fullProve(input, encryptWasmFile, encryptZkeyFile);
+    const { proof, publicSignals } = await groth16.fullProve(input, encryptWasmFile, encryptZkeyFile, undefined, {
+      memorySize: 128,
+    });
 
     return { proof, publicSignals };
   };
@@ -48,8 +50,6 @@ const shuffleDeck = async (zkTaskShuffle: ZkTaskShuffle) => {
     publicSignals,
     deck: shuffled.map((row) => row.map((v) => v.toString())),
   };
-
-  console.log('shuffleDeck result:', result);
 
   const isProofValid = publicSignals[0] === '1';
   if (!isProofValid) throw new Error('Proof is not valid.');

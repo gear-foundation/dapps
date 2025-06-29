@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { getZkTask, postZkResult } from '../api';
 import { DecryptOtherPlayersCardsResult, ShuffleResult } from '../api/types';
-import { partialDecryptionsForPlayersCards, shuffleDeck } from '../utils';
+import { logMemory, partialDecryptionsForPlayersCards, shuffleDeck } from '../utils';
 
 import { useKeys } from './use-keys';
 import { useLogs } from './use-logs';
@@ -101,7 +101,9 @@ const useZkBackend = ({
     const postTask = async () => {
       if (!zkTask) return;
 
-      const { SHUFFLE, DECRYPT_MY_CARDS, DECRYPT_OTHER_PLAYERS_CARDS } = zkTask.data;
+      logMemory('before zkTask');
+
+      const { SHUFFLE, DECRYPT_OTHER_PLAYERS_CARDS } = zkTask.data;
       try {
         if (SHUFFLE) {
           console.log('🎲 Starting deck shuffle operation...');
@@ -142,10 +144,6 @@ const useZkBackend = ({
           const result = await postPartialDecryptionsForPlayersCardsResult(decryptedCards);
           console.log('🚀 ~ postTask ~ result:', result);
         }
-
-        if (DECRYPT_MY_CARDS) {
-          // ! TODO: is this needed?
-        }
       } catch (error) {
         console.error(error);
         alert.error((error as Error).message);
@@ -154,6 +152,7 @@ const useZkBackend = ({
 
     // ! TODO: add retry on error
     void postTask();
+    logMemory('after zkTask');
   }, [zkTask, postShuffleResult, postPartialDecryptionsForPlayersCardsResult, alert, sk, setLogs]);
 
   return {

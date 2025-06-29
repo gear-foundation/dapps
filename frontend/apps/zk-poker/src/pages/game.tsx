@@ -43,6 +43,7 @@ import {
   useEventKilledSubscription,
   useWaitingParticipantsQuery,
   useEventRegisteredToTheNextRoundSubscription,
+  useEventWaitingForCardsToBeDisclosedSubscription,
 } from '@/features/game/sails';
 import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
 import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
@@ -147,6 +148,7 @@ export default function GamePage() {
 
   useEventTurnIsMadeSubscription({
     onData: () => {
+      void refetchStatus();
       void refetchParticipants();
       void refetchActiveParticipants();
       void refetchBetting();
@@ -160,6 +162,7 @@ export default function GamePage() {
     onData: () => {
       console.log('!!!!! ~ useEventTablePartialDecryptionsSubmitedSubscription');
       void refetchStatus();
+      void refetchBetting();
       void refetchRevealedTableCards();
     },
   });
@@ -208,12 +211,12 @@ export default function GamePage() {
 
   const isAdmin = account?.decodedAddress === config?.admin_id;
 
-  // useEventWaitingForCardsToBeDisclosedSubscription({
-  //   onData: () => {
-  //     console.log('!!!! ~ waiting for cards to be disclosed');
-  //     void refetchStatus();
-  //   },
-  // });
+  useEventWaitingForCardsToBeDisclosedSubscription({
+    onData: () => {
+      console.log('!!!! ~ waiting for cards to be disclosed');
+      void refetchStatus();
+    },
+  });
   useZkBackend({
     isWaitingShuffleVerification,
     isWaitingPartialDecryptionsForPlayersCards,
@@ -226,14 +229,11 @@ export default function GamePage() {
     isWaitingTableCardsAfterTurn,
     isWaitingForAllTableCardsToBeDisclosed,
     isDisabled: isSpectator,
-    onEvent: () => {
-      void refetchStatus();
-    },
   });
 
   useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards, isSpectator);
 
-  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEnd, dillerAddress } = useTurn();
+  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress } = useTurn();
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
@@ -296,7 +296,7 @@ export default function GamePage() {
             totalPot={totalPot}
             commonCardsFields={commonCardsFields}
             playerSlots={playerSlots}
-            timePerMoveMs={timeToTurnEnd}
+            timePerMoveSec={timeToTurnEndSec}
             onTimeEnd={onTimeEnd}
           />
         )}
@@ -308,7 +308,7 @@ export default function GamePage() {
             balance={myBalance}
           />
         )}
-        {isMyTurn && timeToTurnEnd && <YourTurn timePerMoveMs={timeToTurnEnd} onTimeEnd={onTimeEnd} />}
+        {isMyTurn && timeToTurnEndSec && <YourTurn timePerMoveSec={timeToTurnEndSec} onTimeEnd={onTimeEnd} />}
       </div>
 
       {!isGameStarted && participants && config && (

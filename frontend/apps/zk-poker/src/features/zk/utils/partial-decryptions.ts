@@ -86,7 +86,9 @@ const partialDecryptions = async (c0: ECPoint<string>, sk: bigint) => {
     expected: [dec.X.toString(), dec.Y.toString(), dec.Z.toString()],
   };
 
-  const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath);
+  const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath, undefined, {
+    memorySize: 128,
+  });
   const { pi_a, pi_b, pi_c } = proof;
 
   return { proof: { pi_a, pi_b, pi_c }, publicSignals, decryptedC0: dec };

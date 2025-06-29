@@ -20,7 +20,7 @@ const GameTimer = ({ className, timeoutSec, onTimeEnd, onTenSecondsLeft, size = 
         if (prev <= 10) {
           if (onTenSecondsLeft) onTenSecondsLeft();
         }
-        if (prev <= 1) {
+        if (prev <= 0) {
           clearInterval(timer);
           if (onTimeEnd) onTimeEnd();
           return 0;

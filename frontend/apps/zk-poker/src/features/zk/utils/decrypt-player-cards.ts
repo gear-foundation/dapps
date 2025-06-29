@@ -122,7 +122,13 @@ const getDecryptedCardsProof = async (inputs: Input[], cards: Card[]) => {
   const instances = await Promise.all(
     inputs.map(async (input, index) => {
       const card = cards[index];
-      const { proof, publicSignals } = await groth16.fullProve(input, decryptWasmFilePath, decryptZkeyFilePath);
+      const { proof, publicSignals } = await groth16.fullProve(
+        input,
+        decryptWasmFilePath,
+        decryptZkeyFilePath,
+        undefined,
+        { memorySize: 128 },
+      );
 
       const contractCard: ContractCard = {
         value: getValueFromRank(card.rank),

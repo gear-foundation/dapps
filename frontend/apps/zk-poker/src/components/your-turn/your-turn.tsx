@@ -6,12 +6,12 @@ import { GameTimer } from '../game-timer';
 import styles from './your-turn.module.scss';
 
 type Props = {
-  timePerMoveMs: number;
+  timePerMoveSec: number;
   className?: string;
   onTimeEnd: () => void;
 };
 
-const YourTurn = ({ className, timePerMoveMs, onTimeEnd }: Props) => {
+const YourTurn = ({ className, timePerMoveSec, onTimeEnd }: Props) => {
   const [showHint, setShowHint] = useState(false);
   const handleTenSecondsLeft = () => {
     setShowHint(true);
@@ -29,7 +29,7 @@ const YourTurn = ({ className, timePerMoveMs, onTimeEnd }: Props) => {
       </div>
       <GameTimer
         size="lg"
-        timeoutSec={timePerMoveMs / 1000}
+        timeoutSec={timePerMoveSec}
         onTimeEnd={onTimeEnd}
         onTenSecondsLeft={handleTenSecondsLeft}
         className={styles.timer}
