@@ -22,10 +22,11 @@ type Props = {
   totalPot?: number;
   commonCardsFields: (Card | null)[];
   playerSlots: PlayerSlot[];
-  timePerMoveMs: number;
+  timePerMoveMs: number | null;
+  onTimeEnd: () => void;
 };
 
-const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveMs }: Props) => {
+const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveMs, onTimeEnd }: Props) => {
   const isMovedTotalPot = playerSlots.length === 1 || playerSlots.length === 2;
 
   const myIndex = playerSlots.findIndex((playerSlot) => playerSlot.isMe);
@@ -71,6 +72,7 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveMs }: 
                         side="bottom"
                         hideAvatar={!!mySlot?.cards}
                         timePerMoveMs={timePerMoveMs}
+                        onTimeEnd={onTimeEnd}
                       />
                     )}
                   </div>
@@ -87,7 +89,13 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveMs }: 
 
             return (
               <Fragment key={`${playerSlot.name}-${index}`}>
-                <PlayerSlot {...playerSlot} top={playerTopOffset} side={side} timePerMoveMs={timePerMoveMs} />
+                <PlayerSlot
+                  {...playerSlot}
+                  top={playerTopOffset}
+                  side={side}
+                  timePerMoveMs={timePerMoveMs}
+                  onTimeEnd={onTimeEnd}
+                />
                 {hasCards && <PlayerCards isDiller={isDiller} cards={cards} top={cardsTopOffset} side={side} />}
               </Fragment>
             );

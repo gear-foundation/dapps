@@ -21,14 +21,18 @@ export interface PlayerSlot {
   bet?: number;
 }
 
-export const usePlayerSlots = (): PlayerSlot[] => {
+export const usePlayerSlots = (
+  turn: HexString | null,
+  autoFoldPlayers: HexString[],
+  dillerAddress?: HexString,
+): PlayerSlot[] => {
   const { account } = useAccount();
 
   const { isActiveGame, isGameStarted, pots } = useGameStatus();
   const { participants } = useParticipantsQuery();
   const { revealedPlayers } = useRevealedPlayersQuery({ enabled: isActiveGame });
   const { playerCards } = usePlayerCards(isGameStarted) || {};
-  const getPlayerStatusAndBet = useGetPlayerStatusAndBet();
+  const getPlayerStatusAndBet = useGetPlayerStatusAndBet(turn, autoFoldPlayers);
 
   const getPlayerCards = useMemo(() => {
     return (address: string): [Card, Card] | null | undefined => {
@@ -57,8 +61,8 @@ export const usePlayerSlots = (): PlayerSlot[] => {
         cards: getPlayerCards(address),
         isMe: address === account?.decodedAddress,
         ...getPlayerStatusAndBet(address, participant, isActiveGame, pots),
-        // ! TODO: derive diller
+        isDiller: address === dillerAddress,
       })) || []
     );
-  }, [participants, getPlayerCards, account?.decodedAddress, getPlayerStatusAndBet, isActiveGame, pots]);
+  }, [participants, getPlayerCards, account?.decodedAddress, getPlayerStatusAndBet, isActiveGame, pots, dillerAddress]);
 };

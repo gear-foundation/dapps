@@ -51,7 +51,9 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
             </div>
           )}
           <div className={clsx(styles.handRank, styles.winner)}>
-            <div>{getWinnersNames(mainPotWinners)} wins main pot with</div>
+            <div>
+              {getWinnersNames(mainPotWinners)} wins main pot {Boolean(handRank) && 'with'}
+            </div>
             {handRank}
           </div>
           {pots.slice(1).map(([_, winners], index) => (

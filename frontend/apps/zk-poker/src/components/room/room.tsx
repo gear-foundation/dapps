@@ -11,7 +11,7 @@ import styles from './room.module.scss';
 
 type Props = {
   name: string;
-  currentPlayers: number;
+  currentPlayersCount: number;
   buyIn: number;
   adminName: string;
   adminId: HexString;
@@ -19,9 +19,9 @@ type Props = {
   id: HexString;
 };
 
-const Room = ({ name, currentPlayers, buyIn, time, adminName, adminId, id }: Props) => {
+const Room = ({ name, currentPlayersCount, buyIn, time, adminName, adminId, id }: Props) => {
   const formattedBuyIn = String(buyIn).slice(0, -3);
-  const haveSeat = currentPlayers !== MAX_PLAYERS;
+  const haveSeat = currentPlayersCount !== MAX_PLAYERS;
 
   return (
     <Link to={`/game/${id}`}>
@@ -39,7 +39,7 @@ const Room = ({ name, currentPlayers, buyIn, time, adminName, adminId, id }: Pro
             <div className={styles.info}>
               <MemberIcon />
               <span>
-                <span className={clsx(haveSeat && styles.haveSeat)}>{currentPlayers}</span>/{MAX_PLAYERS}
+                <span className={clsx(haveSeat && styles.haveSeat)}>{currentPlayersCount}</span>/{MAX_PLAYERS}
               </span>
             </div>
             <div className={styles.info}>

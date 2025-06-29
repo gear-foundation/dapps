@@ -8,14 +8,10 @@ import styles from './your-turn.module.scss';
 type Props = {
   timePerMoveMs: number;
   className?: string;
+  onTimeEnd: () => void;
 };
 
-const YourTurn = ({ className, timePerMoveMs }: Props) => {
-  const handleTimeEnd = () => {
-    // ! TODO: is it needed? We have a status subscription
-    console.log('Time ended');
-  };
-
+const YourTurn = ({ className, timePerMoveMs, onTimeEnd }: Props) => {
   const [showHint, setShowHint] = useState(false);
   const handleTenSecondsLeft = () => {
     setShowHint(true);
@@ -34,7 +30,7 @@ const YourTurn = ({ className, timePerMoveMs }: Props) => {
       <GameTimer
         size="lg"
         timeoutSec={timePerMoveMs / 1000}
-        onTimeEnd={handleTimeEnd}
+        onTimeEnd={onTimeEnd}
         onTenSecondsLeft={handleTenSecondsLeft}
         className={styles.timer}
       />

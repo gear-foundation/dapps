@@ -59,18 +59,23 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms }]) => (
-            <Room
-              key={address}
-              name={lobby_name}
-              adminName={admin_name}
-              adminId={admin_id}
-              currentPlayers={lobbiesMap?.[address]?.currentPlayers.length || 1}
-              buyIn={Number(starting_bank)}
-              time={Number(time_per_move_ms) / 1000}
-              id={address}
-            />
-          ))}
+          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms }]) => {
+            const currentPlayers = lobbiesMap?.[address]?.currentPlayers;
+            const currentPlayersCount = currentPlayers ? currentPlayers.length + 1 : 1;
+
+            return (
+              <Room
+                key={address}
+                name={lobby_name}
+                adminName={admin_name}
+                adminId={admin_id}
+                currentPlayersCount={currentPlayersCount}
+                buyIn={Number(starting_bank)}
+                time={Number(time_per_move_ms) / 1000}
+                id={address}
+              />
+            );
+          })}
         </div>
       </div>
     </>

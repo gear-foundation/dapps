@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useStatusQuery } from '../sails';
 
 export const useGameStatus = () => {
-  const { status } = useStatusQuery();
+  const { status, refetch: refetchStatus } = useStatusQuery();
 
   return useMemo(() => {
     const isRegistration = status && 'registration' in status;
@@ -49,6 +49,7 @@ export const useGameStatus = () => {
       isWaitingZk,
       isActiveGame,
       pots,
+      refetchStatus,
     };
-  }, [status]);
+  }, [status, refetchStatus]);
 };

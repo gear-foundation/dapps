@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import styles from './game-timer.module.scss';
 
 type Props = {
+  timeoutSec: number;
   className?: string;
-  timeoutSec?: number;
   onTimeEnd?: () => void;
   onTenSecondsLeft?: () => void;
   size?: 'lg' | 'md';
 };
 
-const GameTimer = ({ className, timeoutSec = 30, onTimeEnd, onTenSecondsLeft, size = 'md' }: Props) => {
+const GameTimer = ({ className, timeoutSec, onTimeEnd, onTenSecondsLeft, size = 'md' }: Props) => {
   const [timeLeft, setTimeLeft] = useState(timeoutSec);
 
   useEffect(() => {

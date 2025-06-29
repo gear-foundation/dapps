@@ -15,9 +15,8 @@ import {
   ZkVerification,
 } from '@/components';
 import { GameEndModal, StartGameModal } from '@/features/game/components';
-import { usePlayerCards, useGameStatus, usePlayerSlots } from '@/features/game/hooks';
+import { usePlayerCards, useGameStatus, usePlayerSlots, useTurn } from '@/features/game/hooks';
 import {
-  useStatusQuery,
   useParticipantsQuery,
   useEventRegisteredSubscription,
   useConfigQuery,
@@ -54,7 +53,6 @@ import styles from './game.module.scss';
 export default function GamePage() {
   const navigate = useNavigate();
   const alert = useAlert();
-  const { refetch: refetchStatus } = useStatusQuery();
 
   const {
     isWaitingShuffleVerification,
@@ -70,6 +68,7 @@ export default function GamePage() {
     isWaitingZk,
     isActiveGame,
     pots,
+    refetchStatus,
   } = useGameStatus();
 
   const { killMessage, isPending: isKillPending } = useKillMessage();
@@ -81,7 +80,7 @@ export default function GamePage() {
   const { refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
-  const { turn, current_bet } = betting || {};
+  const { current_bet } = betting || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
@@ -234,7 +233,8 @@ export default function GamePage() {
 
   useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards, isSpectator);
 
-  const playerSlots = usePlayerSlots();
+  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEnd, dillerAddress } = useTurn();
+  const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
     const card = tableCards?.[index];
@@ -247,7 +247,7 @@ export default function GamePage() {
 
   const totalPot = bettingBank?.reduce((acc, [, amount]) => acc + Number(amount), 0) || undefined;
 
-  const isMyTurn = turn === account?.decodedAddress && isActiveGame;
+  const isMyTurn = currentTurn === account?.decodedAddress && isActiveGame;
   const myCurrentBet = playerSlots?.find(({ isMe }) => isMe)?.bet;
   const myBalance = Number(participants?.find(([address]) => address === account?.decodedAddress)?.[1].balance || 0);
 
@@ -296,7 +296,8 @@ export default function GamePage() {
             totalPot={totalPot}
             commonCardsFields={commonCardsFields}
             playerSlots={playerSlots}
-            timePerMoveMs={Number(config.time_per_move_ms)}
+            timePerMoveMs={timeToTurnEnd}
+            onTimeEnd={onTimeEnd}
           />
         )}
         {isMyTurn && (
@@ -307,7 +308,7 @@ export default function GamePage() {
             balance={myBalance}
           />
         )}
-        {isMyTurn && config && <YourTurn timePerMoveMs={Number(config.time_per_move_ms)} />}
+        {isMyTurn && timeToTurnEnd && <YourTurn timePerMoveMs={timeToTurnEnd} onTimeEnd={onTimeEnd} />}
       </div>
 
       {!isGameStarted && participants && config && (
