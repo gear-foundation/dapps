@@ -25,10 +25,9 @@ export const useTurn = () => {
   const [timeToTurnEndSec, setTimeToTurnEndSec] = useState<number | null>(null);
   const [autoFoldPlayers, setAutoFoldPlayers] = useState<HexString[]>([]);
   const getPlayerStatusAndBet = useGetPlayerStatusAndBet(null, autoFoldPlayers);
-  const { first_index, turn_index } = activeParticipants || {};
+  const { first_index } = activeParticipants || {};
   const participantsLength = participants?.length || 0;
-  const bigBlindIndex = Number(first_index) + Number(turn_index);
-  // ! TODO: check if this is correct ( - 2 or another number)
+  const bigBlindIndex = Number(first_index);
   const dillerIndex = (bigBlindIndex + participantsLength - 2) % participantsLength;
   const dillerAddress = participants?.[dillerIndex]?.[0];
   const activeIds = activeParticipants?.active_ids;

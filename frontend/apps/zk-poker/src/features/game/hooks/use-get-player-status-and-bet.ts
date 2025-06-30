@@ -11,11 +11,8 @@ import {
   useBettingQuery,
 } from '../sails';
 
-import { useGameStatus } from './use-game-status';
-
 const useGetPlayerStatusAndBet = (turn: HexString | null, autoFoldPlayers: HexString[]) => {
   const { account } = useAccount();
-  const { isGameStarted, isWaitingZk } = useGameStatus();
   const { alreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
   const { activeParticipants } = useActiveParticipantsQuery();
   const { bettingBank } = useBettingBankQuery();
@@ -27,10 +24,6 @@ const useGetPlayerStatusAndBet = (turn: HexString | null, autoFoldPlayers: HexSt
       isActiveGame: boolean,
       pots?: [string | number | bigint, HexString[]][],
     ): { status: PlayerStatus; bet?: number } => {
-      if (!isGameStarted || isWaitingZk) {
-        return { status: 'waiting' };
-      }
-
       const investedInTheCircle = alreadyInvestedInTheCircle?.find(([actorId]) => actorId === address);
 
       if (autoFoldPlayers.includes(address)) {
@@ -66,17 +59,7 @@ const useGetPlayerStatusAndBet = (turn: HexString | null, autoFoldPlayers: HexSt
       }
       return { status: 'waiting' };
     },
-    [
-      autoFoldPlayers,
-      alreadyInvestedInTheCircle,
-      bettingBank,
-      betting,
-      activeParticipants,
-      account,
-      turn,
-      isGameStarted,
-      isWaitingZk,
-    ],
+    [autoFoldPlayers, alreadyInvestedInTheCircle, bettingBank, betting, activeParticipants, account, turn],
   );
 
   return getPlayerStatusAndBet;
