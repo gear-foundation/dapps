@@ -36,8 +36,8 @@ export default function Home() {
 
   const stats = [
     { value: games ? `${Math.round((wins / games) * 100)}%` : '-', label: 'Your Winrate' },
-    { value: gamesToday, label: 'Total Hands Played' },
-    { value: wins, label: 'Hands Played Today' },
+    { value: games, label: 'Total Hands Played' },
+    { value: gamesToday, label: 'Hands Played Today' },
   ];
 
   const handleProfileSave = (name: string) => {
