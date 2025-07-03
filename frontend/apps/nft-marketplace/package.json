@@ -15,7 +15,7 @@
     "@gear-js/react-hooks": "0.16.3",
     "@gear-js/ui": "0.5.26",
     "@polkadot/api": "16.2.2",
-    "@polkadot/util-crypto": "13.3.1",
+    "@polkadot/util-crypto": "13.4.4",
     "@tanstack/react-query": "5.81.5",
     "clsx": "2.1.1",
     "ipfs-http-client": "60.0.1",
