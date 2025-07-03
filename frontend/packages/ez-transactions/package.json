@@ -15,7 +15,7 @@
     "react-dom": "19.0.0"
   },
   "dependencies": {
-    "@gear-js/vara-ui": "0.1.1",
+    "@gear-js/vara-ui": "0.3.1",
     "@polkadot/keyring": "13.3.1",
     "@polkadot/react-identicon": "3.15.1",
     "clsx": "2.1.1",
