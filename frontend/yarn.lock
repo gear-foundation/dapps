@@ -454,8 +454,8 @@ __metadata:
     "@types/react-gtm-module": "npm:2.0.4"
     react-gtm-module: "npm:2.0.11"
   peerDependencies:
-    react: 18.3.1
-    react-router-dom: 6.28.0
+    react: 19.0.0
+    react-router-dom: 6.28.2
   languageName: unknown
   linkType: soft
 
@@ -467,8 +467,8 @@ __metadata:
     "@gear-js/react-hooks": 0.16.3
     "@polkadot/types": 16.2.2
     "@polkadot/util": 13.5.2
-    react: 18.3.1
-    react-dom: 18.3.1
+    react: 19.0.0
+    react-dom: 19.0.0
   languageName: unknown
   linkType: soft
 
@@ -488,8 +488,8 @@ __metadata:
     "@gear-js/api": 0.42.0
     "@gear-js/react-hooks": 0.16.3
     "@tanstack/react-query": 5.81.5
-    react: 18.3.1
-    react-dom: 18.3.1
+    react: 19.0.0
+    react-dom: 19.0.0
   languageName: unknown
   linkType: soft
 
@@ -3168,10 +3168,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.21.0":
-  version: 1.21.0
-  resolution: "@remix-run/router@npm:1.21.0"
-  checksum: 10c0/570792211c083a1c7146613b79cbb8e0d1e14f34e974052e060e7f9dcad38c800d80fe0a18bf42811bc278ab12c0e8fd62cfce649e905046c4e55bd5a09eafdc
+"@remix-run/router@npm:1.21.1":
+  version: 1.21.1
+  resolution: "@remix-run/router@npm:1.21.1"
+  checksum: 10c0/a90e62c6f18e53d8a1f39de8aaebe3abd340ea085a761296f4fddda23bd3ad133f9adf0190392e0b02933761180b484e7fc052447a6a8482c52207fcecbf9a90
   languageName: node
   linkType: hard
 
@@ -4997,9 +4997,9 @@ __metadata:
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
     lucide-react: "npm:0.474.0"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -5026,9 +5026,9 @@ __metadata:
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
     lucide-react: "npm:0.474.0"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -7277,11 +7277,11 @@ __metadata:
     moment: "npm:2.30.1"
     moment-timezone: "npm:0.5.47"
     rc-time-picker: "npm:3.7.3"
-    react: "npm:18.3.1"
+    react: "npm:19.0.0"
     react-datepicker: "npm:8.0.0"
-    react-dom: "npm:18.3.1"
+    react-dom: "npm:19.0.0"
     react-dropzone: "npm:14.3.5"
-    react-router-dom: "npm:6.28.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     socket.io: "npm:4.8.1"
     socket.io-client: "npm:4.8.1"
@@ -7411,9 +7411,9 @@ __metadata:
     clsx: "npm:2.1.1"
     framer-motion: "npm:12.3.1"
     jotai: "npm:2.11.3"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -7444,9 +7444,9 @@ __metadata:
     eslint-plugin-react: "npm:7.37.4"
     eslint-plugin-react-hooks: "npm:5.1.0"
     eslint-plugin-react-refresh: "npm:0.4.18"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     sass: "npm:1.83.4"
     typescript: "npm:5.7.3"
@@ -7469,8 +7469,8 @@ __metadata:
   peerDependencies:
     "@gear-js/api": 0.41.1
     "@gear-js/react-hooks": 0.16.0
-    react: 18.3.1
-    react-dom: 18.3.1
+    react: 19.0.0
+    react-dom: 19.0.0
   languageName: unknown
   linkType: soft
 
@@ -9028,7 +9028,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -9622,10 +9622,10 @@ __metadata:
     clsx: "npm:2.1.1"
     ipfs-http-client: "npm:60.0.1"
     jotai: "npm:2.11.3"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
     react-hook-form: "npm:7.54.2"
-    react-router-dom: "npm:6.28.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -9651,9 +9651,9 @@ __metadata:
     graphql: "npm:16.10.0"
     jotai: "npm:2.11.3"
     keen-slider: "npm:6.8.6"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     urql: "npm:4.2.1"
   languageName: unknown
@@ -9805,10 +9805,10 @@ __metadata:
     "@tanstack/react-query": "npm:5.81.5"
     clsx: "npm:2.1.1"
     ipfs-http-client: "npm:60.0.1"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
     react-hook-form: "npm:7.54.2"
-    react-router-dom: "npm:6.28.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -10577,9 +10577,9 @@ __metadata:
     framer-motion: "npm:12.3.1"
     jotai: "npm:2.11.3"
     lodash.isequal: "npm:4.5.0"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -10719,15 +10719,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:19.0.0":
+  version: 19.0.0
+  resolution: "react-dom@npm:19.0.0"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.25.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
+    react: ^19.0.0
+  checksum: 10c0/a36ce7ab507b237ae2759c984cdaad4af4096d8199fb65b3815c16825e5cfeb7293da790a3fc2184b52bfba7ba3ff31c058c01947aff6fd1a3701632aabaa6a9
   languageName: node
   linkType: hard
 
@@ -10825,27 +10824,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:6.28.0":
-  version: 6.28.0
-  resolution: "react-router-dom@npm:6.28.0"
+"react-router-dom@npm:6.28.2":
+  version: 6.28.2
+  resolution: "react-router-dom@npm:6.28.2"
   dependencies:
-    "@remix-run/router": "npm:1.21.0"
-    react-router: "npm:6.28.0"
+    "@remix-run/router": "npm:1.21.1"
+    react-router: "npm:6.28.2"
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10c0/e2930cf83e8c843a932b008c7ce11059fd83390502a433f0e41f192e3cb80081a621d069eeda7af3cf4bf74d7f8029f0141cdce741bca3f0af82d4bbbc7f7f10
+  checksum: 10c0/09757f0f8c63d5b939176825536d2311edac1f32b18410eb2b37900774c8622dbaa340bef78ab46931111e30890c7bc3f83346d809c2664a5dc4866fe0175f41
   languageName: node
   linkType: hard
 
-"react-router@npm:6.28.0":
-  version: 6.28.0
-  resolution: "react-router@npm:6.28.0"
+"react-router@npm:6.28.2":
+  version: 6.28.2
+  resolution: "react-router@npm:6.28.2"
   dependencies:
-    "@remix-run/router": "npm:1.21.0"
+    "@remix-run/router": "npm:1.21.1"
   peerDependencies:
     react: ">=16.8"
-  checksum: 10c0/b435510de78fd882bf6ca9800a73cd90cee418bd1d19efd91b8dcaebde36929bbb589e25d9f7eec24ceb84255e8d538bc1fe54e6ddb5c43c32798e2b720fa76d
+  checksum: 10c0/07f033a0bfdcfee6cb889d8603b6063c04c7b7fe38567fea5c7e55c45f31cf32115c2615a7962685632df49538bc867368631feb84fd1fec6f709827d492abe8
   languageName: node
   linkType: hard
 
@@ -10880,12 +10879,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
+"react@npm:19.0.0":
+  version: 19.0.0
+  resolution: "react@npm:19.0.0"
+  checksum: 10c0/9cad8f103e8e3a16d15cb18a0d8115d8bd9f9e1ce3420310aea381eb42aa0a4f812cf047bb5441349257a05fba8a291515691e3cb51267279b2d2c3253f38471
   languageName: node
   linkType: hard
 
@@ -11400,12 +11397,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
+"scheduler@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "scheduler@npm:0.25.0"
+  checksum: 10c0/a4bb1da406b613ce72c1299db43759526058fdcc413999c3c3e0db8956df7633acf395cb20eb2303b6a65d658d66b6585d344460abaee8080b4aa931f10eaafe
   languageName: node
   linkType: hard
 
@@ -12072,9 +12067,9 @@ __metadata:
     "@tanstack/react-query": "npm:5.81.5"
     clsx: "npm:2.1.1"
     jotai: "npm:2.11.3"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -12158,9 +12153,9 @@ __metadata:
     jotai: "npm:2.11.3"
     keen-slider: "npm:6.8.6"
     nanoid: "npm:5.0.9"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -12183,9 +12178,9 @@ __metadata:
     "@tanstack/react-query": "npm:5.81.5"
     clsx: "npm:2.1.1"
     dayjs: "npm:1.11.13"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -12229,9 +12224,9 @@ __metadata:
     "@tanstack/react-query": "npm:5.81.5"
     clsx: "npm:2.1.1"
     framer-motion: "npm:12.3.1"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -12280,10 +12275,10 @@ __metadata:
     framer-motion: "npm:12.3.1"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
-    react: "npm:18.3.1"
+    react: "npm:19.0.0"
     react-countdown: "npm:2.3.6"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -12848,9 +12843,9 @@ __metadata:
     eslint-plugin-react: "npm:7.37.4"
     eslint-plugin-react-hooks: "npm:5.1.0"
     eslint-plugin-react-refresh: "npm:0.4.18"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     sass: "npm:1.83.4"
     typescript: "npm:5.7.3"
@@ -12884,9 +12879,9 @@ __metadata:
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
     lucide-react: "npm:0.474.0"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     tailwindcss-radix: "npm:3.0.5"
   languageName: unknown
@@ -12908,9 +12903,9 @@ __metadata:
     "@tanstack/react-query": "npm:5.81.5"
     clsx: "npm:2.1.1"
     ipfs-http-client: "npm:60.0.1"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
@@ -13274,9 +13269,9 @@ __metadata:
     framer-motion: "npm:12.3.1"
     gear-ez-transactions: "workspace:*"
     jotai: "npm:2.11.3"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.28.0"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
   languageName: unknown
   linkType: soft
