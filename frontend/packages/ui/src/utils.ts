@@ -97,7 +97,6 @@ export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobil
 );
 
 export const getErrorMessage = (error: unknown): string => {
-
   if (typeof error === 'string') {
     return error;
   }
