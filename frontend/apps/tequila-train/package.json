@@ -12,20 +12,20 @@
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.41.1",
-    "@gear-js/react-hooks": "0.16.0",
+    "@gear-js/api": "0.42.0",
+    "@gear-js/react-hooks": "0.16.3",
     "@gear-js/ui": "0.5.21",
     "@headlessui/react": "2.2.0",
     "@mantine/form": "7.16.2",
-    "@polkadot/api": "15.9.1",
+    "@polkadot/api": "16.2.2",
     "@polkadot/util": "13.4.3",
     "@polkadot/util-crypto": "13.3.1",
-    "@tanstack/react-query": "5.66.0",
+    "@tanstack/react-query": "5.81.5",
     "clsx": "2.1.1",
     "framer-motion": "12.3.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.28.0",
-    "sails-js": "0.4.0"
+    "sails-js": "0.4.2"
   }
 }
