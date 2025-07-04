@@ -50,7 +50,7 @@ export default function GameEndModal({ onClose, time, totalShoots, successfulSho
           </div>
         </div>
         <div className={styles.buttons}>
-          <Button color="dark" text="Exit" onClick={() => navigate('/')} />
+          <Button color="contrast" text="Exit" onClick={() => navigate('/')} />
           <Button color="primary" text="Play again" onClick={resetGameState} />
         </div>
       </div>

@@ -3,7 +3,6 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
 import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from '@/features/account-available-balance/hooks';
-import { useAuth } from '@/features/auth';
 
 const isAppReadyAtom = atom<boolean>(false);
 
@@ -18,13 +17,12 @@ export function useIsAppReadySync() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const { isAvailableBalanceReady } = useAccountAvailableBalance();
-  const { isAuthReady } = useAuth();
 
   const { setIsAppReady } = useIsAppReady();
 
   useAccountAvailableBalanceSync();
   useEffect(() => {
-    setIsAppReady(isApiReady && isAccountReady && isAvailableBalanceReady && isAuthReady);
+    setIsAppReady(isApiReady && isAccountReady && isAvailableBalanceReady);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAccountReady, isApiReady, isAvailableBalanceReady, isAuthReady]);
+  }, [isAccountReady, isApiReady, isAvailableBalanceReady]);
 }

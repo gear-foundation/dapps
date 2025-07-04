@@ -132,7 +132,7 @@ export function Waiting() {
           className={styles.tutorial}>
           <div className={styles.buttons}>
             <Button
-              color="dark"
+              color="contrast"
               text="Show tutorial"
               onClick={() => navigate(ROUTES.ONBOARDING)}
               className={styles.tutorialButton}

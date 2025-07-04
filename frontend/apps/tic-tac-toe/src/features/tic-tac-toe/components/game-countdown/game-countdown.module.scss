@@ -6,10 +6,10 @@
   padding: 16px;
   background-color: #f6f6f6;
   border-radius: 4px;
-  @include flex-gap(16px);
   font-size: 16px;
   font-weight: 500;
   line-height: 28px;
+  @include flex-gap(16px);
 
   @media screen and (max-width: 767px) {
     border-radius: 12px;

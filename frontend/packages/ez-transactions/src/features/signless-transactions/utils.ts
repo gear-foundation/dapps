@@ -1,8 +1,9 @@
-import { decodeAddress, GearKeyring, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
+import { decodeAddress, GearKeyring, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { encodeAddress } from '@polkadot/keyring';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
+import { Codec } from '@polkadot/types/types';
 
 type Options = Partial<{
   onSuccess: () => void;
@@ -19,14 +20,14 @@ const MULTIPLIER = {
 };
 
 export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVoucherEvent | 'Transfer'>(
-  submitted: GearTransaction | SubmittableExtrinsic<'promise'>,
+  submitted: SubmittableExtrinsic<'promise'>,
   account: KeyringPair,
   methods: E[],
   { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
   /* eslint-disable  @typescript-eslint/no-explicit-any */
 ): Promise<any[]> {
   /* eslint-disable  @typescript-eslint/no-explicit-any */
-  const result: any = new Array(methods.length);
+  const result = new Array(methods.length) as Codec[];
   return new Promise((resolve, reject) => {
     submitted
       .signAndSend(account, ({ events, status }) => {
@@ -37,7 +38,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           } else if (method === 'ExtrinsicFailed') {
             onError('ExtrinsicFailed');
             onFinally();
-            reject(data.toString());
+            reject(new Error(data.toString()));
           }
         });
         if (status.isInBlock) {
@@ -45,11 +46,12 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           resolve([...result, status.asInBlock.toHex()]);
         }
       })
-      .catch((err) => {
-        console.log(err);
-        onError(err);
+      .catch((error) => {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.log(error);
+        onError(errorMessage);
         onFinally();
-        reject(err.message);
+        reject(new Error(errorMessage));
       });
   });
 }
@@ -80,7 +82,7 @@ const getDHMS = (ms: number) => {
 
 const shortenString = (str: string, length: number): string => `${str.slice(0, length)}...${str.slice(-length)}`;
 
-const copyToClipboard = async ({
+const copyToClipboard = ({
   alert,
   value,
   successfulText,

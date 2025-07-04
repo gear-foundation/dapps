@@ -44,7 +44,12 @@ export default tseslint.config(
 
     settings: {
       react: { version: 'detect' },
-      'import/resolver': { typescript: true },
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: ['./apps/*/tsconfig.json', './packages/*/tsconfig.json'],
+        },
+      },
     },
 
     rules: {
@@ -59,7 +64,10 @@ export default tseslint.config(
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
           'newlines-between': 'always',
           alphabetize: { order: 'asc' },
-          pathGroups: [{ pattern: '@dapps-frontend/**', group: 'internal', position: 'before' }],
+          pathGroups: [
+            { pattern: '@dapps-frontend/**', group: 'internal', position: 'before' },
+            { pattern: '@/**', group: 'internal', position: 'before' },
+          ],
           pathGroupsExcludedImportTypes: ['builtin', 'object'], // override default for internal
         },
       ],
@@ -78,6 +86,7 @@ export default tseslint.config(
 
       // we're using typescript
       'react/prop-types': 'off',
+      'import/no-named-as-default': 'off',
     },
   },
 );

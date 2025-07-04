@@ -88,7 +88,7 @@ function EnableSignlessSession(props: Props) {
             <Button
               icon={PowerSVG}
               text="Disable"
-              color="light"
+              color="grey"
               className={styles.closeButton}
               isLoading={isLoading}
               disabled={!pair}

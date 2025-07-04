@@ -45,7 +45,7 @@ export const StartSection = () => {
               />
               <Button
                 text="Create game"
-                color="dark"
+                color="contrast"
                 className={styles.connectButton}
                 onClick={() => setIsCreateGame(true)}
               />

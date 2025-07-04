@@ -111,7 +111,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
           Back
         </Button>
         <Button
-          color="dark"
+          color="contrast"
           size="small"
           text="Generate"
           onClick={onGenerateRandomLayout}

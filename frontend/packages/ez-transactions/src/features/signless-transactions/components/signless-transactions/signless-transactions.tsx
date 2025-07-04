@@ -154,7 +154,7 @@ function SignlessTransactions({
               <Button
                 icon={PowerSVG}
                 text="Disable session"
-                color="light"
+                color="grey"
                 className={styles.closeButton}
                 isLoading={isLoading}
                 size="small"

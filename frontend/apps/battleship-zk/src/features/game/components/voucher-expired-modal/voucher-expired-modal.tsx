@@ -28,7 +28,7 @@ export default function VoucherExpiredModal() {
       <div className={styles.content}>
         <Text>Your voucher has expired and couldn't be used.</Text>
         <div className={styles.buttons}>
-          <Button color="dark" text="Exit" onClick={() => setIsOpen(false)} />
+          <Button color="contrast" text="Exit" onClick={() => setIsOpen(false)} />
         </div>
       </div>
     </ModalBottom>

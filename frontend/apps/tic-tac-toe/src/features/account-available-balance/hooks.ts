@@ -27,7 +27,7 @@ export function useAccountAvailableBalanceSync() {
     if (!api || !isApiReady || !isAccountReady) return;
 
     if (account && balance) {
-      api.query.system.account(account.decodedAddress).then((res) => {
+      void api.query.system.account(account.decodedAddress).then((res) => {
         const systemAccount = res.toJSON() as ISystemAccount;
         const total = balance.toString();
         const fee = CreateType.create('u128', systemAccount.data.feeFrozen).toString();

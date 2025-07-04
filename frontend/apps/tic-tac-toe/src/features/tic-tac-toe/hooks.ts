@@ -66,7 +66,11 @@ export const useInitGameSync = () => {
 
   useEffect(() => {
     if (game === undefined) return;
-    game ? updateGame(game) : resetGame();
+    if (game) {
+      updateGame(game);
+    } else {
+      resetGame();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 

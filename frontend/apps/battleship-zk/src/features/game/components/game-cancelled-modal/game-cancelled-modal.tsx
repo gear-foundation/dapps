@@ -16,7 +16,7 @@ export default function GameCancelledModal({ text, onClose }: Props) {
       <div className={styles.content}>
         <Text>{text}</Text>
         <div className={styles.buttons}>
-          <Button color="dark" text="Exit" onClick={onClose} />
+          <Button color="contrast" text="Exit" onClick={onClose} />
         </div>
       </div>
     </ModalBottom>

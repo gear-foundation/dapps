@@ -7,7 +7,7 @@ import { Button } from '../button';
 import styles from './alert.module.scss';
 import { AlertProps } from './alert.types';
 
-export function Alert({ alert, close }: AlertProps) {
+function Alert({ alert, close }: AlertProps) {
   const { content, options } = alert;
   const { type, title, style, isClosed } = options;
 
@@ -23,4 +23,5 @@ export function Alert({ alert, close }: AlertProps) {
     </div>
   );
 }
-export { styles as alertStyles };
+
+export { Alert };

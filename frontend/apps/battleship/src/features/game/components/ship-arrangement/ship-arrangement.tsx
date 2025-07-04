@@ -28,9 +28,9 @@ export default function ShipArrangement() {
   const [shipsField, setShipsField] = useState<number[][]>([]);
   const [isLoadingGenerate, setLoadingGenerate] = useState(false);
 
-  const onGenerateRandomLayout = async () => {
+  const onGenerateRandomLayout = () => {
     setLoadingGenerate(true);
-    const newLayout = await generateShipsField(5, 5);
+    const newLayout = generateShipsField(5, 5);
     const playerShipsLayout = convertShipsToField(newLayout, 5, 5);
 
     if (newLayout !== null) {
@@ -40,7 +40,7 @@ export default function ShipArrangement() {
     }
   };
 
-  const onGameStart = async () => {
+  const onGameStart = () => {
     const gasLimit = 120000000000;
 
     if (!gasless.isLoading) {
@@ -65,7 +65,9 @@ export default function ShipArrangement() {
       <div className={styles.header}>
         <Heading>Your ships</Heading>
         <div className={styles.textWrapper}>
-          <Text size="lg">Choose a ship placement scheme, and to see a new arrangement, click "Generate"</Text>
+          <Text size="lg">
+            Choose a ship placement scheme, and to see a new arrangement, click &quot;Generate&quot;
+          </Text>
         </div>
       </div>
       <div style={{ width: '100%' }}>
@@ -74,7 +76,7 @@ export default function ShipArrangement() {
         </div>
       </div>
       <div className={styles.buttons}>
-        <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
+        <Button color="contrast" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
         <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || gasless.isLoading} />
       </div>
     </div>
