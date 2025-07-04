@@ -45,7 +45,7 @@ function CancelGameButton({ isAdmin, participants }: Props) {
       <Button
         text={isAdmin ? 'Cancel game' : 'Cancel'}
         icon={CrossIconSVG}
-        color="light"
+        color="border"
         className={styles.button}
         onClick={handleClick}
         isLoading={isLoading}
