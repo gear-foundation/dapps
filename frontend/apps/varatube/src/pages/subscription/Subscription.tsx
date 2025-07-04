@@ -185,7 +185,7 @@ function Subscription() {
                   <img src={pic} alt="" />
                 </div>
 
-                {will_renew && <Button text="Cancel subscription" color="border" onClick={cancelSubscription} />}
+                {will_renew && <Button text="Cancel subscription" color="light" onClick={cancelSubscription} />}
               </>
             ) : (
               <>
