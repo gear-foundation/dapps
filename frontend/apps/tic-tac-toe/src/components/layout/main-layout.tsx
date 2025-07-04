@@ -4,7 +4,6 @@ import { Footer } from '@dapps-frontend/ui';
 
 import { useIsAppReady, useIsAppReadySync } from '@/app/hooks/use-is-app-ready';
 import { ApiLoader, Header } from '@/components';
-import { useAuthSync } from '@/features/auth/hooks';
 
 import { Container } from '../ui/container';
 
@@ -14,7 +13,6 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { isAppReady } = useIsAppReady();
 
   useIsAppReadySync();
-  useAuthSync();
 
   return (
     <>

@@ -1,15 +1,17 @@
-import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useEzTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
+
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { BaseComponentProps } from '@/app/types';
 import { GameInstance } from '@/app/utils';
 
-import { getErrorMessage } from '@dapps-frontend/ui';
 import { useGame } from '../../hooks';
 import { useEventGameFinishedSubscription, useEventMoveMadeSubscription, useTurnMessage } from '../../sails';
+import { stateChangeLoadingAtom } from '../../store';
 import { calculateWinner } from '../../utils';
 import { variantsGameMark } from '../../variants';
 import { GameCell } from '../game-cell';
