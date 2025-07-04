@@ -101,7 +101,7 @@ function CreateGameForm({ onCancel }: Props) {
         <Button
           type="submit"
           text="Cancel"
-          color="dark"
+          color="contrast"
           disabled={pending}
           className={styles.button}
           onClick={onCancel}
