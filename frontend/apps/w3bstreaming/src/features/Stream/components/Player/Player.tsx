@@ -1,4 +1,4 @@
-import { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import PauseSVG from '@/assets/icons/pause-icon.svg';
 import BLockedCameraSVG from '@/assets/icons/player-camera-blocked-icon.svg';
@@ -29,9 +29,9 @@ function Player({
   isSharingScreen = false,
   onShareScreen,
 }: PlayerProps) {
-  const playerRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  const playerContainer: MutableRefObject<HTMLDivElement | null> = useRef(null);
-  const prevVolume: MutableRefObject<number> = useRef(0);
+  const playerRef = useRef<HTMLVideoElement>(null);
+  const playerContainer = useRef<HTMLDivElement>(null);
+  const prevVolume = useRef<number>(0);
   const [isOnPause, setIsOnPause] = useState<boolean>(false);
   const [volume, setVolume] = useState(50);
 

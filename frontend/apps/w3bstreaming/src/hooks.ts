@@ -1,9 +1,6 @@
-import { useEffect, useState, MutableRefObject, RefObject, useCallback } from 'react';
+import { useEffect, useState, RefObject, useCallback } from 'react';
 
-function useClickOutside(
-  handler: (event: Event) => void,
-  ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]
-): void {
+function useClickOutside(handler: (event: Event) => void, ...refs: RefObject<HTMLElement>[]): void {
   useEffect(() => {
     const listener = (event: Event): void => {
       const existingRefs = refs.filter((item) => item?.current && item);

@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
-import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
+import { RefObject, useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useGetStateQuery } from '@/app/utils';
@@ -17,11 +17,11 @@ import styles from './Watch.module.scss';
 
 function Watch({ socket, streamId }: WatchProps) {
   const navigate = useNavigate();
-  const publicKey: MutableRefObject<SignerResult | null> = useRef(null);
-  const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
-  const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const publicKey: RefObject<SignerResult | null> = useRef(null);
+  const retryIntervalId: RefObject<ReturnType<typeof setInterval> | null> = useRef(null);
+  const remoteVideo: RefObject<HTMLVideoElement | null> = useRef(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
+  const peerConnection: RefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
   const { streams } = useGetStateQuery();
 

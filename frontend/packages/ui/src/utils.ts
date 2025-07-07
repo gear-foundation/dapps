@@ -1,5 +1,5 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { MutableRefObject, RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 export const copyToClipboard = async ({
   alert,
@@ -47,10 +47,7 @@ export const copyToClipboard = async ({
   }
 };
 
-export function useClickOutside(
-  handler: (event: Event) => void,
-  ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]
-): void {
+export function useClickOutside(handler: (event: Event) => void, ...refs: RefObject<HTMLElement | null>[]): void {
   useEffect(() => {
     const listener = (event: Event): void => {
       const existingRefs = refs.filter((item) => item?.current && item);
@@ -71,7 +68,7 @@ export function useClickOutside(
 }
 
 export function useRootModalRef() {
-  const [modalRootRef, setModalRootRef] = useState<React.MutableRefObject<HTMLElement | null>>({ current: null });
+  const [modalRootRef, setModalRootRef] = useState<React.RefObject<HTMLElement | null>>({ current: null });
 
   useEffect(() => {
     const onBodyChildChange = () => {

@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 
 function debounce(fn: any, ms: number) {
   let timer: number | null | ReturnType<typeof setTimeout>;
@@ -11,7 +11,7 @@ function debounce(fn: any, ms: number) {
     }, ms);
   };
 }
-const useRefDimensions = (ref: MutableRefObject<HTMLElement | null>) => {
+const useRefDimensions = (ref: RefObject<HTMLElement | null>) => {
   const [dimensions, setDimensions] = useState([0, 0]);
 
   useEffect(() => {
