@@ -19,7 +19,7 @@ type BattleTabsProps = {
   battleState: BattleState;
   participantsMap: Record<string, Player>;
   isAlive: boolean;
-  tabsRef: RefObject<HTMLDivElement>;
+  tabsRef: RefObject<HTMLDivElement | null>;
 };
 
 export const BattleTabs = ({ battleState, participantsMap, isAlive, tabsRef }: BattleTabsProps) => {
