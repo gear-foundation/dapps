@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 import { BattleStatesList } from '@/app/types/battles';
 import { cn } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';

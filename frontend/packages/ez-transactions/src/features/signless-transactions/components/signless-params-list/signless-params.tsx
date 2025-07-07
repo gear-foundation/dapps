@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 import styles from './signless-params.module.css';
 
 type Props = {

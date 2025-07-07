@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { JSX, ReactElement } from 'react';
 
 export type CellValue = string | number | null | undefined;
 export interface TableRow {

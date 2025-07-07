@@ -1,6 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import clsx from 'clsx';
+import { JSX } from 'react';
 
 import DisconnectSVG from './assets/disconnect.svg?react';
 import GridSVG from './assets/grid.svg?react';

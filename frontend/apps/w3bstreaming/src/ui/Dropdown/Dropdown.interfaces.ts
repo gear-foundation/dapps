@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 interface DropdownMenu {
   [key: string]: DropdownMenuItem;
 }

@@ -1,5 +1,6 @@
 import { ProgramMetadata } from '@gear-js/api';
 import { Moment } from 'moment';
+import { JSX } from 'react';
 
 export interface SectionProps {
   title: string;
