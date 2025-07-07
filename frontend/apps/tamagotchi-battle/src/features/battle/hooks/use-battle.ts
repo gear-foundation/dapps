@@ -33,7 +33,7 @@ export function useInitBattleData() {
 
   const state = useFullState(programId, meta);
 
-  const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
+  const prevBattleState = useRef<BattleCurrentStateVariants | undefined>(undefined);
   const metadata = useProgramMetadata(meta);
 
   useEffect(() => {
