@@ -20,6 +20,8 @@ import { Alert, alertStyles } from '@/components/ui/alert';
 
 import { useProgram } from '../utils';
 
+// TODO: Remove this once we have a proper way to handle providers
+/* eslint-disable react-refresh/only-export-components */
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }

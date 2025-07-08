@@ -1,7 +1,7 @@
 import { useAlert, useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
 import { Suspense, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { copyToClipboard } from '@/app/utils';
@@ -15,7 +15,7 @@ import { useWallet } from '../../hooks';
 import styles from './WalletConnect.module.scss';
 
 type Props = {
-  onClose(): void;
+  onClose: () => void;
 };
 
 export function WalletConnect({ onClose }: Props) {
@@ -23,7 +23,7 @@ export function WalletConnect({ onClose }: Props) {
   const { wallets, isAnyWallet, account, login } = useAccount();
 
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation() as Location<{ from: { pathname: string } }>;
 
   const { walletAccounts, setWalletId } = useWallet();
 
@@ -73,7 +73,7 @@ export function WalletConnect({ onClose }: Props) {
 
       const isActive = address === account?.address;
 
-      const handleClick = async () => {
+      const handleClick = () => {
         login(_account);
         onClose();
 

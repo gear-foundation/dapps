@@ -3,7 +3,7 @@ import { Button } from '@gear-js/vara-ui';
 import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { PropsWithChildren, Suspense } from 'react';
+import { JSX, PropsWithChildren, Suspense } from 'react';
 
 import styles from './mobile-menu.module.css';
 

@@ -1,3 +1,4 @@
+import { HexString } from '@gear-js/api';
 import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 
 import { useProgram } from '@/app/utils';
@@ -10,7 +11,7 @@ export const useGameQuery = () => {
     program,
     serviceName: 'ticTacToe',
     functionName: 'game',
-    args: [account?.decodedAddress!],
+    args: [account?.decodedAddress as HexString],
     query: { enabled: account ? undefined : false },
   });
 

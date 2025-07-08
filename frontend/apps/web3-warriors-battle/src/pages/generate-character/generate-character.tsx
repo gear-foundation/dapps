@@ -70,7 +70,7 @@ export function GenerateCharacter() {
               fallback={prevCharacterView && <Character {...prevCharacterView} withSpiner={false} size="sm" />}
             />
           </div>
-          <Button text="Generate" color="dark" onClick={generate} className={styles.generate} />
+          <Button text="Generate" color="contrast" onClick={generate} className={styles.generate} />
         </Card>
         <div className={styles.container}>
           <div className={styles.buttons}>

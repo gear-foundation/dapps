@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal';
-import { MutableRefObject, memo, useEffect, useRef, useState } from 'react';
+import { RefObject, memo, useEffect, useRef, useState } from 'react';
 
 import finishVerticalSVG from '@/assets/icons/game-finish-icon-vertical.svg';
 import finishSVG from '@/assets/icons/game-finish-icon.svg';
@@ -27,7 +27,7 @@ function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
   const [cars, setCars] = useState<CarsState | null>(null);
   const [isRoadAssetsLoaded, setIsRoadAssetsLoaded] = useState<boolean>(false);
 
-  const imagesCollection: MutableRefObject<Record<string, HTMLImageElement>> = useRef({});
+  const imagesCollection: RefObject<Record<string, HTMLImageElement>> = useRef({});
 
   const loadImageSync = (src: string) =>
     new Promise((resolve, reject) => {

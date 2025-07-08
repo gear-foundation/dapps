@@ -83,7 +83,7 @@ export default function GameEndModal({
           </div>
         </div>
         <div className={styles.buttons}>
-          <Button color="dark" text="Exit" onClick={handleExit} />
+          <Button color="contrast" text="Exit" onClick={handleExit} />
           {gameType === 'single' && <Button color="primary" text="Play again" onClick={handlePlayAgain} />}
         </div>
       </div>

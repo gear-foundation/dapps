@@ -34,7 +34,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
             <Button
               icon={PowerSVG}
               text="Disable"
-              color="light"
+              color="grey"
               className={styles.closeButton}
               onClick={handleDisableButtonClick}
               disabled={disabled}

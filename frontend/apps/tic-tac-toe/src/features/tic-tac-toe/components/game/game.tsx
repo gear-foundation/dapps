@@ -5,14 +5,13 @@ import { BaseComponentProps } from '@/app/types';
 import { GameInstance } from '@/app/utils';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
-
 import { useGame } from '@/features/tic-tac-toe/hooks';
+
 import { GameCountdown } from '../game-countdown';
 import { GameField } from '../game-field';
 import { GameInfoPlayerMark } from '../game-info-player-mark';
 import { GameSkipButton } from '../game-skip-button';
 import { GameStartButton } from '../game-start-button';
-
 import { HelpDescription } from '../ui/typography';
 
 import styles from './game.module.scss';
@@ -51,7 +50,7 @@ export function Game({ game }: GameProps) {
             {game_result === 'Bot' && <p>Try again to win.</p>}
             {game_result === 'Draw' && (
               <p>
-                The game is over, it's a draw! <br />
+                The game is over, it&apos;s a draw! <br />
                 Try again to win.
               </p>
             )}

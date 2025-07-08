@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 export interface DropzoneUploaderProps {
   onDropFile: (prev: string[]) => void;
   previewLinks?: string[];

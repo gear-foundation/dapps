@@ -6,9 +6,9 @@ import { GameEngine } from '../../models/Game';
 import MobileController from '../mobile-controller/mobile-controller';
 
 type GameCanvasProps = {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
-  fogCanvasRef: React.RefObject<HTMLCanvasElement>;
-  gameInstanceRef: React.MutableRefObject<GameEngine | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  fogCanvasRef: React.RefObject<HTMLCanvasElement | null>;
+  gameInstanceRef: React.RefObject<GameEngine | null>;
   isPause?: boolean;
 };
 
