@@ -16,7 +16,7 @@ import { Provider as UrqlClientProvider } from 'urql';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
-import { ADDRESS } from '@/app/consts';
+import { ENV } from '@/app/consts';
 import { urqlClient } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
@@ -24,7 +24,7 @@ import { Alert, alertStyles } from '@/components/ui/alert';
 // import { useProgram } from '../utils/sails';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
 }
 
 function AccountProvider({ children }: ProviderProps) {
@@ -41,7 +41,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ pokerFactoryProgramId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+    <SharedDnsProvider names={{ pokerFactoryProgramId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );
@@ -53,7 +53,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   return (
     <SharedGaslessTransactionsProvider
       programId={pokerFactoryProgramId}
-      backendAddress={ADDRESS.GASLESS_BACKEND}
+      backendAddress={ENV.GASLESS_BACKEND}
       voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>

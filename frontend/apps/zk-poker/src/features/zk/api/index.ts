@@ -1,4 +1,4 @@
-import { ADDRESS } from '@/app/consts';
+import { ENV } from '@/app/consts';
 
 import { ZkResultRequest, ZkResultResponse, ZkTaskApiResponse, ZkTaskResponse } from './types';
 
@@ -7,7 +7,7 @@ const getZkTask = async (lobbyAddress?: string, playerAddress?: string): Promise
 
   try {
     const res = await fetch(
-      `${ADDRESS.ZK_POKER_BACKEND}/api/poker/task?lobbyAddress=${lobbyAddress}&playerAddress=${playerAddress}`,
+      `${ENV.ZK_POKER_BACKEND}/api/poker/task?lobbyAddress=${lobbyAddress}&playerAddress=${playerAddress}`,
     );
 
     if (!res.ok) throw new Error('Failed to fetch zk task');
@@ -28,7 +28,7 @@ const getZkTask = async (lobbyAddress?: string, playerAddress?: string): Promise
 
 const postZkResult = async (payload: ZkResultRequest): Promise<ZkResultResponse> => {
   try {
-    const res = await fetch(`${ADDRESS.ZK_POKER_BACKEND}/api/poker/result`, {
+    const res = await fetch(`${ENV.ZK_POKER_BACKEND}/api/poker/result`, {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
