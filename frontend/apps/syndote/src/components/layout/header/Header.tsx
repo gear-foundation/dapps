@@ -30,7 +30,7 @@ function Header() {
         <div className={styles.headerContent}>
           {account?.decodedAddress && admin_id === account?.decodedAddress && isFinished && (
             <Button
-              color="light"
+              color="border"
               text="Cancel game"
               icon={CrossSVG}
               className={styles.cancelGameButton}

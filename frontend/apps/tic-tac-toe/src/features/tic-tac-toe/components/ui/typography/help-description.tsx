@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import { textVariants } from '@/components/ui/text/text';
+import { textVariants } from '@/components/ui';
 
 import styles from './typography.module.scss';
 

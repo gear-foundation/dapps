@@ -1,27 +1,4 @@
-import { useEffect, useState, MutableRefObject, RefObject, useCallback } from 'react';
-
-function useClickOutside(
-  handler: (event: Event) => void,
-  ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]
-): void {
-  useEffect(() => {
-    const listener = (event: Event): void => {
-      const existingRefs = refs.filter((item) => item?.current && item);
-
-      const res = existingRefs.every((item) => !item.current?.contains(<Node>event.target));
-
-      if (res) {
-        handler(event);
-      }
-    };
-
-    document.addEventListener('mousedown', listener);
-
-    return (): void => {
-      document.removeEventListener('mousedown', listener);
-    };
-  }, [refs, handler]);
-}
+import { useEffect, useState, useCallback } from 'react';
 
 function useMediaQuery(width: number) {
   const [targetReached, setTargetReached] = useState(false);
@@ -50,4 +27,4 @@ function useMediaQuery(width: number) {
   return targetReached;
 }
 
-export { useClickOutside, useMediaQuery };
+export { useMediaQuery };

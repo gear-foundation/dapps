@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 
+import { useClickOutside } from '@dapps-frontend/ui';
+
 import selectArrow from '@/assets/icons/select-arrow.svg';
-import { useClickOutside } from '@/hooks';
 import { cx } from '@/utils';
 
 import { DropdownMenuItem, DropdownProps } from './Dropdown.interfaces';

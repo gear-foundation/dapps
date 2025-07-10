@@ -105,7 +105,7 @@ function JoinGameForm({ onCancel }: Props) {
           <Button
             type="submit"
             text="Cancel"
-            color="dark"
+            color="contrast"
             disabled={isLoading}
             className={styles.button}
             onClick={onCancel}

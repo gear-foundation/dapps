@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import moment from 'moment';
-import { FC, useEffect, useState } from 'react';
+import { FC, JSX, useEffect, useState } from 'react';
 
 import { useGetStateQuery } from '@/app/utils';
 import { Loader } from '@/components';

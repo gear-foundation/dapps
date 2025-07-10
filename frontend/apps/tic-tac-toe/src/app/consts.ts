@@ -14,7 +14,6 @@ export const ENV = {
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
-  // UNAUTHORIZED: '/not-authorized',
   NOTFOUND: '*',
 };
 

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { JSX, useRef, useState } from 'react';
 import DatePicker, { ReactDatePickerCustomHeaderProps } from 'react-datepicker';
 
 import chevronLeftSVG from '@/assets/icons/chevron-left.svg';

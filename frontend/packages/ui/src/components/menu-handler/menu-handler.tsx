@@ -3,7 +3,7 @@ import { Button } from '@gear-js/vara-ui';
 import { Wallet, WalletModal } from '@gear-js/wallet-connect';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { JSX, useRef, useState } from 'react';
 
 import CrossSVG from '@ui/assets/cross-icon.svg?react';
 import { useClickOutside, useRootModalRef } from '@ui/utils';

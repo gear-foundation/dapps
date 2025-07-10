@@ -147,7 +147,7 @@ function RequestGame() {
               <Button
                 type="submit"
                 text="Create game"
-                color="dark"
+                color="contrast"
                 className={styles.button}
                 onClick={() => handleSetStatus('creating')}
                 disabled={isLoading}
@@ -183,7 +183,7 @@ function RequestGame() {
                 <Button
                   type="submit"
                   text="Cancel"
-                  color="dark"
+                  color="contrast"
                   disabled={isLoading}
                   className={styles.button}
                   onClick={() => handleSetStatus(null)}
@@ -207,7 +207,7 @@ function RequestGame() {
                 <Button
                   type="submit"
                   text="Cancel"
-                  color="dark"
+                  color="contrast"
                   disabled={isLoading}
                   className={styles.button}
                   onClick={() => handleSetStatus(null)}

@@ -36,7 +36,7 @@ export default function VerificationModal({ isDeadShip, onVerifyHit, isLoading, 
         <ModalBottom heading="Are you sure you want to quit the game?" onClose={() => setIsCloseConfirmOpen(false)}>
           <div className={styles.content}>
             <div className={styles.buttons}>
-              <Button color="dark" text="Confirm" onClick={() => onExit()} isLoading={isLoading} />
+              <Button color="contrast" text="Confirm" onClick={() => onExit()} isLoading={isLoading} />
             </div>
           </div>
         </ModalBottom>

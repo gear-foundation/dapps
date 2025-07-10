@@ -41,7 +41,7 @@ function RequestGame() {
               <Button
                 type="submit"
                 text="Create game"
-                color="dark"
+                color="contrast"
                 className={styles.button}
                 onClick={() => handleSetStatus('creating')}
                 disabled={isLoading}

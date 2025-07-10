@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useGetStateQuery } from '@/app/utils';
@@ -20,21 +20,21 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const navigate = useNavigate();
   const { streams } = useGetStateQuery();
 
-  const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
-  const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
-  const commonStream: MutableRefObject<MediaStream> = useRef(new MediaStream());
+  const localVideo: RefObject<HTMLVideoElement | null> = useRef(null);
+  const conns: RefObject<Record<string, RTCPeerConnection>> = useRef({});
+  const commonStream: RefObject<MediaStream> = useRef(new MediaStream());
 
-  const trackIds: MutableRefObject<TrackIds> = useRef({
+  const trackIds: RefObject<TrackIds> = useRef({
     microphone: null,
     camera: null,
     screenSound: null,
     screenCapture: null,
   });
 
-  const micTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
-  const camTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
-  const scrCaptureTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
-  const scrAudioTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const micTransceiver: RefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const camTransceiver: RefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const scrCaptureTransceiver: RefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
+  const scrAudioTransceiver: RefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false);

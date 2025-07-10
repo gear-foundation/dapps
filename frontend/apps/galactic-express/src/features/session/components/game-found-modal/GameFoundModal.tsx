@@ -98,7 +98,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
             <span className={cx(styles['field-error'])}>{joinErrors.name}</span>
           </div>
           <div className={styles.inputs}>
-            <Button text="Cancel" color="dark" className={styles.button} onClick={onClose} />
+            <Button text="Cancel" color="contrast" className={styles.button} onClick={onClose} />
             <Button type="submit" text="Join" className={styles.button} />
           </div>
         </form>
