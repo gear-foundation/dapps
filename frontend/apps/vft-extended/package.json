@@ -1,0 +1,50 @@
+{
+  "name": "vara-vft-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite --open --port 3000",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@gear-js/api": "0.42.0",
+    "@gear-js/react-hooks": "0.16.3",
+    "@gear-js/ui": "^0.7.0",
+    "@gear-js/vara-ui": "0.3.1",
+    "@gear-js/wallet-connect": "^0.4.1",
+    "@polkadot/api": "16.3.1",
+    "@polkadot/react-identicon": "3.15.1",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@tanstack/react-query": "5.81.5",
+    "clsx": "2.1.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "6.28.2",
+    "sails-js": "0.4.2",
+    "sass": "1.83.4"
+  },
+  "devDependencies": {
+    "@polkadot/types": "16.3.1",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
+    "@typescript-eslint/eslint-plugin": "8.23.0",
+    "@typescript-eslint/parser": "8.23.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "eslint": "8.57.1",
+    "eslint-config-prettier": "10.0.1",
+    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.4",
+    "eslint-plugin-react-hooks": "5.1.0",
+    "eslint-plugin-react-refresh": "0.4.18",
+    "typescript": "5.7.3",
+    "vite": "6.1.0",
+    "vite-plugin-checker": "0.8.0",
+    "vite-plugin-node-polyfills": "0.23.0",
+    "vite-plugin-svgr": "4.3.0"
+  }
+}
