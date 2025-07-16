@@ -134,7 +134,6 @@ function SignlessTransactions({
           </div>
         </>
       )}
-
       {!session && storagePair && (
         <>
           <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
@@ -164,7 +163,6 @@ function SignlessTransactions({
           )}
         </>
       )}
-
       {!session && (
         <EnableSignlessSession
           type="button"
@@ -176,7 +174,6 @@ function SignlessTransactions({
           boundSessionDuration={boundSessionDuration}
         />
       )}
-
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
       {modal === 'create' && (
         <CreateSessionModal

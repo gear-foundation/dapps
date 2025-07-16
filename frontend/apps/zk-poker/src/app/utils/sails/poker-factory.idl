@@ -14,14 +14,29 @@ type LobbyConfig = struct {
   time_per_move_ms: u64,
 };
 
-type PublicKey = struct {
+type ZkPublicKey = struct {
   x: [u8, 32],
   y: [u8, 32],
   z: [u8, 32],
 };
 
+type SignatureInfo = struct {
+  signature_data: SignatureData,
+  signature: opt vec u8,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  AllActions,
+};
+
 constructor {
-  New : (config: Config, pts_actor_id: actor_id, vk_shuffle_bytes: vec u8, vk_decrypt_bytes: vec u8);
+  New : (config: Config, pts_actor_id: actor_id, zk_verification_id: actor_id);
 };
 
 service PokerFactory {
@@ -38,26 +53,25 @@ service PokerFactory {
   /// 3. Sets lobby as PTS admin
   /// 4. Transfers starting bank to lobby
   /// 5. Stores lobby info and emits LobbyCreated event
-  CreateLobby : (init_lobby: LobbyConfig, pk: PublicKey) -> null;
+  CreateLobby : (init_lobby: LobbyConfig, pk: ZkPublicKey, session: opt SignatureInfo) -> null;
   DeleteAdmin : (id: actor_id) -> null;
   /// Deletes lobby from registry. Admin or lobby itself only.
   /// Panics if:
   /// - Lobby doesn't exist
   /// - Caller lacks permissions
+  /// 
   /// Emits LobbyDeleted event on success.
   DeleteLobby : (lobby_address: actor_id) -> null;
   query Admins : () -> vec actor_id;
   query Config : () -> Config;
   query Lobbies : () -> vec struct { actor_id, LobbyConfig };
   query PtsActorId : () -> actor_id;
-  query VkDecryptBytes : () -> vec u8;
-  query VkShuffleBytes : () -> vec u8;
 
   events {
     LobbyCreated: struct {
       lobby_address: actor_id,
       admin: actor_id,
-      pk: PublicKey,
+      pk: ZkPublicKey,
       lobby_config: LobbyConfig,
     };
     LobbyDeleted: struct {

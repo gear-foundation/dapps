@@ -10,6 +10,7 @@ export type DnsProviderProps<T extends string = DefaultDnsValueName> = {
   names: Record<T, string>;
   dnsApiUrl: string;
   fallback?: ReactNode;
+  forcedValue?: Record<T, HexString>;
 };
 
 export type DnsResponse = {
@@ -28,19 +29,26 @@ function DnsProvider<T extends string = DefaultDnsValueName>({
   names,
   dnsApiUrl,
   fallback,
+  forcedValue,
 }: PropsWithChildren<DnsProviderProps<T>>) {
   const [programIds, setProgramIds] = useState<DnsContextValue>({});
   const alert = useAlert();
 
   useEffect(() => {
     const init = async () => {
+      if (forcedValue) {
+        setProgramIds(forcedValue);
+        console.log('⚠️ dDNS used forced values', forcedValue);
+        return;
+      }
+
       if (!dnsApiUrl || !names) {
         throw new Error('dnsApiUrl or names is undefined');
       }
       try {
-        const promises = Object.entries(names).map(async ([key, name]) => {
+        const promises = Object.entries<string>(names).map(async ([key, name]) => {
           const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
-          const dns: DnsResponse = await response.json();
+          const dns = (await response.json()) as DnsResponse;
           return { [key]: dns.address };
         });
 
@@ -55,8 +63,9 @@ function DnsProvider<T extends string = DefaultDnsValueName>({
       }
     };
 
-    init();
-  }, [names, dnsApiUrl]);
+    void init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [names, dnsApiUrl, forcedValue]);
 
   return (
     <DnsContext.Provider value={programIds}>{Object.keys(programIds).length ? children : fallback}</DnsContext.Provider>

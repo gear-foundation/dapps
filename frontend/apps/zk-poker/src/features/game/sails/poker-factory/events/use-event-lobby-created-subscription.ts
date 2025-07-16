@@ -3,7 +3,7 @@ import { ActorId } from 'sails-js';
 
 import { usePokerFactoryProgram } from '@/app/utils';
 
-export type LobbyCreatedPayload = { lobby_address: ActorId; admin: ActorId; lobby_config: LobbyConfig };
+export type LobbyCreatedPayload = { lobby_address: ActorId; admin: ActorId; lobby_config: GameConfig };
 
 export type Params = {
   onData: (payload: LobbyCreatedPayload) => void;

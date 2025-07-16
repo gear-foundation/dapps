@@ -5,8 +5,8 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { BALANCE_VALUE_TO_ISSUE_VOUCHER, BALANCE_VALUE_TO_START_GAME, DURATIONS, REQUIRED_MESSAGE } from '../../consts';
-import { useSignlessTransactions } from '../../context';
+import { DURATIONS, REQUIRED_MESSAGE } from '../../consts';
+import { SignlessContext, useSignlessTransactions } from '../../context';
 import { useRandomPairOr } from '../../hooks';
 import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
 import { AccountPair } from '../account-pair';
@@ -19,14 +19,16 @@ type Props = Pick<ModalProps, 'close'> & {
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
   boundSessionDuration?: number;
+  useCustomSignlessContext?: () => SignlessContext;
 };
 
 function CreateSessionModal({
   allowedActions,
   close,
-  onSessionCreate = async () => '0x',
+  onSessionCreate = () => Promise.resolve('0x'),
   shouldIssueVoucher = true,
   boundSessionDuration,
+  useCustomSignlessContext,
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
@@ -59,7 +61,17 @@ function CreateSessionModal({
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, storageVoucher, storageVoucherBalance, createSession } = useSignlessTransactions();
+  const useSignlessContext = useCustomSignlessContext || useSignlessTransactions;
+  const {
+    savePair,
+    storagePair,
+    storageVoucher,
+    storageVoucherBalance,
+    createSession,
+    voucherIssueAmount,
+    voucherReissueThreshold,
+  } = useSignlessContext();
+
   const pair = useRandomPairOr(storagePair);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -71,8 +83,8 @@ function CreateSessionModal({
 
     const minValue = api.existentialDeposit.toNumber();
 
-    const valueToStart = getChainBalanceValue(BALANCE_VALUE_TO_START_GAME).toNumber();
-    const valueToIssueVoucher = getChainBalanceValue(BALANCE_VALUE_TO_ISSUE_VOUCHER).toNumber();
+    const valueToStart = getChainBalanceValue(voucherIssueAmount).toNumber();
+    const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
 
     const totalValueToStart = minValue + valueToStart;
 

@@ -17,7 +17,7 @@ type CardsLoaderProps = {
 
 const CardsLoader = ({ children }: CardsLoaderProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(null);
   const [cards] = useState<Card[]>(() =>
     Array(TOTAL_CARDS)
       .fill(null)

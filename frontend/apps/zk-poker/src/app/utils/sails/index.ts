@@ -1,1 +1,1 @@
-export { usePokerFactoryProgram, usePokerProgram, usePtsProgram } from './sails';
+export { usePokerFactoryProgram, usePokerProgram, usePtsProgram, PokerFactoryProgram } from './sails';

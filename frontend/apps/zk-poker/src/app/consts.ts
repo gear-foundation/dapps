@@ -1,3 +1,5 @@
+import { HexString } from '@gear-js/api';
+
 export const ACCOUNT_ID_LOCAL_STORAGE_KEY = 'account';
 
 export const ENV = {
@@ -7,6 +9,9 @@ export const ENV = {
   DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
   EXPLORER_URL: import.meta.env.VITE_EXPLORER_URL as string,
+  FORCED_POKER_FACTORY_PROGRAM_ID: import.meta.env.VITE_POKER_FACTORY_PROGRAM_ID as HexString,
+  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT as string,
+  SIGNLESS_VOUCHER_ISSUE_AMOUNT: import.meta.env.VITE_SIGNLESS_VOUCHER_ISSUE_AMOUNT as string,
 };
 
 export const ROUTES = {
@@ -20,6 +25,7 @@ export const ROUTES = {
   COMBINATIONS: '/combinations',
 };
 
+export const SMALL_BLIND = 5;
+export const BIG_BLIND = 10;
 export const MAX_PLAYERS = 9;
-
-export const SIGNLESS_ALLOWED_ACTIONS = ['playSingleGame', 'playMultipleGame'];
+export const SIGNLESS_ALLOWED_ACTIONS = ['AllActions' as const];

@@ -21,9 +21,9 @@ export const useRegisterMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async () => {
-    const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
     const result = await sendTransactionAsync({
-      args: [userName, getPkBytes(pk)],
+      args: [userName, getPkBytes(pk), sessionForAccount],
       ...params,
     });
     return result.awaited;
@@ -32,12 +32,12 @@ export const useRegisterMessage = () => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: tx,
     onError: (error) => {
-      if (error.message.includes('Actor id must be exist')) {
+      if (error.message?.includes('Actor id must be exist')) {
         alert.error('Low pts balance. Claim your free PTS');
         return;
       }
 
-      if (error.message.includes('Low pts balance')) {
+      if (error.message?.includes('Low pts balance')) {
         alert.error('Low pts balance');
         return;
       }

@@ -1,4 +1,4 @@
-import { SignlessTransactions, SignlessActive, EnableSignlessSession } from './components';
+import { SignlessTransactions, SignlessActive, EnableSignlessSession, CreateSessionModal } from './components';
 import {
   SignlessTransactionsProvider,
   useSignlessTransactions,
@@ -6,18 +6,34 @@ import {
   SignlessContext,
   SignlessTransactionsMetadataProviderProps,
   SignlessTransactionsSailsProviderProps,
+  SignlessTransactionsContext,
+  usePair,
 } from './context';
-import { useSignlessSendMessage, useSignlessSendMessageHandler, SendSignlessMessageOptions } from './hooks';
+import {
+  useSignlessSendMessage,
+  useSignlessSendMessageHandler,
+  SendSignlessMessageOptions,
+  useRandomPairOr,
+  useCreateBaseSession,
+} from './hooks';
+import { signHex, getUnlockedPair } from './utils';
 
 export {
   SignlessTransactions,
   SignlessActive,
+  CreateSessionModal,
+  SignlessTransactionsContext,
   SignlessTransactionsProvider,
   EnableSignlessSession,
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
   useSignlessTransactions,
+  useRandomPairOr,
   DEFAULT_SIGNLESS_CONTEXT,
+  signHex,
+  getUnlockedPair,
+  useCreateBaseSession,
+  usePair,
 };
 
 export type {

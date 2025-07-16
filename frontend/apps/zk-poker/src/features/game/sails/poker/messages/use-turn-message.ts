@@ -20,8 +20,8 @@ export const useTurnMessage = (withAlert = true) => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ action }: Params) => {
-    const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [action], ...params });
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const result = await sendTransactionAsync({ args: [action, sessionForAccount], ...params });
     return result.awaited;
   };
 

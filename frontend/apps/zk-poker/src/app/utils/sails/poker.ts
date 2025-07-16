@@ -13,13 +13,14 @@ import {
 export class Program {
   public readonly registry: TypeRegistry;
   public readonly poker: Poker;
+  public readonly session: Session;
 
   constructor(
     public api: GearApi,
     private _programId?: `0x${string}`,
   ) {
     const types: Record<string, any> = {
-      Config: {
+      GameConfig: {
         admin_id: '[u8;32]',
         admin_name: 'String',
         lobby_name: 'String',
@@ -28,13 +29,11 @@ export class Program {
         starting_bank: 'u128',
         time_per_move_ms: 'u64',
       },
-      PublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
-      VerifyingKeyBytes: {
-        alpha_g1_beta_g2: 'Vec<u8>',
-        gamma_g2_neg_pc: 'Vec<u8>',
-        delta_g2_neg_pc: 'Vec<u8>',
-        ic: 'Vec<Vec<u8>>',
-      },
+      SessionConfig: { gas_to_delete_session: 'u64', minimum_session_duration_ms: 'u64', ms_per_block: 'u64' },
+      ZkPublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
+      SignatureInfo: { signature_data: 'SignatureData', signature: 'Option<Vec<u8>>' },
+      SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
+      ActionsForSession: { _enum: ['AllActions'] },
       Card: { value: 'u8', suit: 'Suit' },
       Suit: { _enum: ['Spades', 'Hearts', 'Diamonds', 'Clubs'] },
       VerificationVariables: { proof_bytes: 'ProofBytes', public_input: 'Vec<Vec<u8>>' },
@@ -48,7 +47,7 @@ export class Program {
         current_bet: 'u128',
         acted_players: 'Vec<[u8;32]>',
       },
-      Participant: { name: 'String', balance: 'u128', pk: 'PublicKey' },
+      Participant: { name: 'String', balance: 'u128', pk: 'ZkPublicKey' },
       Status: {
         _enum: {
           Registration: 'Null',
@@ -72,6 +71,12 @@ export class Program {
           'River',
         ],
       },
+      SessionData: {
+        key: '[u8;32]',
+        expires: 'u64',
+        allowed_actions: 'Vec<ActionsForSession>',
+        expires_at_block: 'u32',
+      },
     };
 
     this.registry = new TypeRegistry();
@@ -79,6 +84,7 @@ export class Program {
     this.registry.register(types);
 
     this.poker = new Poker(this);
+    this.session = new Session(this);
   }
 
   public get programId(): `0x${string}` {
@@ -88,18 +94,19 @@ export class Program {
 
   newCtorFromCode(
     code: Uint8Array | Buffer | HexString,
-    config: Config,
+    config: GameConfig,
+    session_config: SessionConfig,
     pts_actor_id: ActorId,
-    pk: PublicKey,
-    vk_shuffle_bytes: VerifyingKeyBytes,
-    vk_decrypt_bytes: VerifyingKeyBytes,
+    pk: ZkPublicKey,
+    session_for_admin: SignatureInfo | null,
+    zk_verification_id: ActorId,
   ): TransactionBuilder<null> {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, pts_actor_id, pk, vk_shuffle_bytes, vk_decrypt_bytes],
-      '(String, Config, [u8;32], PublicKey, VerifyingKeyBytes, VerifyingKeyBytes)',
+      ['New', config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
+      '(String, GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
       'String',
       code,
     );
@@ -110,18 +117,19 @@ export class Program {
 
   newCtorFromCodeId(
     codeId: `0x${string}`,
-    config: Config,
+    config: GameConfig,
+    session_config: SessionConfig,
     pts_actor_id: ActorId,
-    pk: PublicKey,
-    vk_shuffle_bytes: VerifyingKeyBytes,
-    vk_decrypt_bytes: VerifyingKeyBytes,
+    pk: ZkPublicKey,
+    session_for_admin: SignatureInfo | null,
+    zk_verification_id: ActorId,
   ) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'create_program',
-      ['New', config, pts_actor_id, pk, vk_shuffle_bytes, vk_decrypt_bytes],
-      '(String, Config, [u8;32], PublicKey, VerifyingKeyBytes, VerifyingKeyBytes)',
+      ['New', config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
+      '(String, GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
       'String',
       codeId,
     );
@@ -134,14 +142,14 @@ export class Program {
 export class Poker {
   constructor(private _program: Program) {}
 
-  public cancelGame(): TransactionBuilder<null> {
+  public cancelGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CancelGame'],
-      '(String, String)',
+      ['Poker', 'CancelGame', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -157,27 +165,30 @@ export class Poker {
    * Sends a transfer request to PTS contract to return points to the player.
    * Removes player data and emits `RegistrationCanceled` event on success.
    */
-  public cancelRegistration(): TransactionBuilder<null> {
+  public cancelRegistration(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CancelRegistration'],
-      '(String, String)',
+      ['Poker', 'CancelRegistration', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public cardDisclosure(instances: Array<[Card, VerificationVariables]>): TransactionBuilder<null> {
+  public cardDisclosure(
+    instances: Array<[Card, VerificationVariables]>,
+    session_for_account: ActorId | null,
+  ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CardDisclosure', instances],
-      '(String, String, Vec<(Card, VerificationVariables)>)',
+      ['Poker', 'CardDisclosure', instances, session_for_account],
+      '(String, String, Vec<(Card, VerificationVariables)>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -197,14 +208,14 @@ export class Poker {
    * 3. Resets status to Registration
    * 4. Emits PlayerDeleted event
    */
-  public deletePlayer(player_id: ActorId): TransactionBuilder<null> {
+  public deletePlayer(player_id: ActorId, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'DeletePlayer', player_id],
-      '(String, String, [u8;32])',
+      ['Poker', 'DeletePlayer', player_id, session_for_account],
+      '(String, String, [u8;32], Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -224,14 +235,14 @@ export class Poker {
    *
    * WARNING: Irreversible operation
    */
-  public kill(): TransactionBuilder<null> {
+  public kill(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Kill'],
-      '(String, String)',
+      ['Poker', 'Kill', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -247,14 +258,14 @@ export class Poker {
    * Sends a message to the PTS contract (pts_actor_id) to transfer points to this contract.
    * On success, updates participant data and emits a `Registered` event.
    */
-  public register(player_name: string, pk: PublicKey): TransactionBuilder<null> {
+  public register(player_name: string, pk: ZkPublicKey, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Register', player_name, pk],
-      '(String, String, String, PublicKey)',
+      ['Poker', 'Register', player_name, pk, session_for_account],
+      '(String, String, String, ZkPublicKey, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -266,14 +277,14 @@ export class Poker {
    * Resets game to WaitingShuffleVerification (if full) or Registration status.
    * Emits GameRestarted event with new status.
    */
-  public restartGame(): TransactionBuilder<null> {
+  public restartGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'RestartGame'],
-      '(String, String)',
+      ['Poker', 'RestartGame', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -309,14 +320,14 @@ export class Poker {
    *
    * Note: Handles edge cases where players can't cover blinds
    */
-  public startGame(): TransactionBuilder<null> {
+  public startGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'StartGame'],
-      '(String, String)',
+      ['Poker', 'StartGame', session_for_account],
+      '(String, String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -335,14 +346,17 @@ export class Poker {
     );
   }
 
-  public submitTablePartialDecryptions(instances: Array<VerificationVariables>): TransactionBuilder<null> {
+  public submitTablePartialDecryptions(
+    instances: Array<VerificationVariables>,
+    session_for_account: ActorId | null,
+  ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitTablePartialDecryptions', instances],
-      '(String, String, Vec<VerificationVariables>)',
+      ['Poker', 'SubmitTablePartialDecryptions', instances, session_for_account],
+      '(String, String, Vec<VerificationVariables>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -364,14 +378,14 @@ export class Poker {
    *
    * Emits TurnIsMade and NextStage events
    */
-  public turn(action: Action): TransactionBuilder<null> {
+  public turn(action: Action, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Turn', action],
-      '(String, String, Action)',
+      ['Poker', 'Turn', action, session_for_account],
+      '(String, String, Action, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -478,7 +492,7 @@ export class Poker {
     originAddress?: string,
     value?: number | string | bigint,
     atBlock?: `0x${string}`,
-  ): Promise<Config> {
+  ): Promise<GameConfig> {
     const payload = this._program.registry.createType('(String, String)', ['Poker', 'Config']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -489,8 +503,8 @@ export class Poker {
       at: atBlock,
     });
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+    const result = this._program.registry.createType('(String, String, GameConfig)', reply.payload);
+    return result[2].toJSON() as unknown as GameConfig;
   }
 
   public async encryptedTableCards(
@@ -706,7 +720,7 @@ export class Poker {
   }
 
   public subscribeToRegisteredEvent(
-    callback: (data: { participant_id: ActorId; pk: PublicKey }) => void | Promise<void>,
+    callback: (data: { participant_id: ActorId; pk: ZkPublicKey }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -717,8 +731,8 @@ export class Poker {
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'Registered') {
         callback(
           this._program.registry
-            .createType('(String, String, {"participant_id":"[u8;32]","pk":"PublicKey"})', message.payload)[2]
-            .toJSON() as unknown as { participant_id: ActorId; pk: PublicKey },
+            .createType('(String, String, {"participant_id":"[u8;32]","pk":"ZkPublicKey"})', message.payload)[2]
+            .toJSON() as unknown as { participant_id: ActorId; pk: ZkPublicKey },
         );
       }
     });
@@ -1025,7 +1039,7 @@ export class Poker {
   }
 
   public subscribeToRegisteredToTheNextRoundEvent(
-    callback: (data: { participant_id: ActorId; pk: PublicKey }) => void | Promise<void>,
+    callback: (data: { participant_id: ActorId; pk: ZkPublicKey }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -1036,9 +1050,119 @@ export class Poker {
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'RegisteredToTheNextRound') {
         callback(
           this._program.registry
-            .createType('(String, String, {"participant_id":"[u8;32]","pk":"PublicKey"})', message.payload)[2]
-            .toJSON() as unknown as { participant_id: ActorId; pk: PublicKey },
+            .createType('(String, String, {"participant_id":"[u8;32]","pk":"ZkPublicKey"})', message.payload)[2]
+            .toJSON() as unknown as { participant_id: ActorId; pk: ZkPublicKey },
         );
+      }
+    });
+  }
+}
+
+export class Session {
+  constructor(private _program: Program) {}
+
+  public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'CreateSession', signature_data, signature],
+      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public deleteSessionFromAccount(): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'DeleteSessionFromAccount'],
+      '(String, String)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public deleteSessionFromProgram(session_for_account: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'DeleteSessionFromProgram', session_for_account],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public async sessionForTheAccount(
+    account: string,
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<SessionData | null> {
+    const payload = this._program.registry
+      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
+      .toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
+    return result[2].toJSON() as unknown as SessionData | null;
+  }
+
+  public async sessions(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<[ActorId, SessionData]>> {
+    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  }
+
+  public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Session' && getFnNamePrefix(payload) === 'SessionCreated') {
+        callback(null);
+      }
+    });
+  }
+
+  public subscribeToSessionDeletedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Session' && getFnNamePrefix(payload) === 'SessionDeleted') {
+        callback(null);
       }
     });
   }

@@ -1,45 +1,69 @@
-import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
+import { useAccount, useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { usePrepareEzTransactionParams, useCreateBaseSession, signHex, SignlessContext } from 'gear-ez-transactions';
 
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePokerFactoryProgram } from '@/app/utils';
 
 type Params = {
-  config: LobbyConfig;
-  pk: PublicKey;
+  config: GameConfig;
+  pk: ZkPublicKey;
+  createSessionParams: Parameters<SignlessContext['createSession']>;
 };
 
 export const useCreateLobbyMessage = () => {
+  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
   const program = usePokerFactoryProgram();
+  const { account } = useAccount();
   const alert = useAlert();
-  const { sendTransactionAsync } = useSendProgramTransaction({
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
     program,
     serviceName: 'pokerFactory',
     functionName: 'createLobby',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
+  const { signAndSendCreateSession } = useCreateBaseSession(pokerFactoryProgramId);
 
-  const tx = async ({ config, pk }: Params) => {
-    const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({
-      args: [config, pk],
-      ...params,
-      gasLimit: undefined,
-      value: 1000000000000n,
+  const tx = async ({ config, pk, createSessionParams }: Params) => {
+    if (!program || !account) return;
+
+    const { sessionForAccount: _, voucherId, account: senderAccount } = await prepareEzTransactionParams();
+
+    const [session, voucherValue, { shouldIssueVoucher, voucherId: _voucherId, pair, ...options }] =
+      createSessionParams;
+    const { key, duration } = session;
+    const signature_data = { key, duration, allowed_actions: SIGNLESS_ALLOWED_ACTIONS };
+    let signature = null;
+
+    if (voucherId && pair) {
+      const hexToSign = program.registry.createType('SignatureData', signature_data).toHex();
+      signature = (await signHex(account, hexToSign)).signature;
+    }
+
+    const signatureInfo = { signature_data, signature };
+
+    const { transaction } = await prepareTransactionAsync({
+      args: [config, pk, signatureInfo],
+      account: senderAccount,
+      value: 1_000_000_000_000n,
+      voucherId,
     });
-    return result.awaited;
+
+    await signAndSendCreateSession(transaction.extrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const { mutateAsync: createLobbyMessage, isPending } = useMutation({
     mutationFn: tx,
     onError: (error) => {
-      if (error.message.includes('Actor id must be exist')) {
+      if (error.message?.includes('Actor id must be exist')) {
         alert.error('Low pts balance. Claim your free PTS');
         return;
       }
 
-      if (error.message.includes('Low pts balance')) {
+      if (error.message?.includes('Low pts balance')) {
         alert.error('Low pts balance');
         return;
       }

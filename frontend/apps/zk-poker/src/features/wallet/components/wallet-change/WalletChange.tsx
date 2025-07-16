@@ -58,6 +58,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
             { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
             { key: 'gasless', option: <EzGaslessTransactions /> },
           ]}
+          showDisconnect={false}
         />
         <div>
           <ul className={styles.list}>{getAccounts()}</ul>

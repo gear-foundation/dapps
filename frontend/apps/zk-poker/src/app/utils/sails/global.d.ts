@@ -8,7 +8,7 @@ declare global {
     gas_for_reply_deposit: number | string | bigint;
   }
 
-  export interface LobbyConfig {
+  export interface GameConfig {
     admin_id: ActorId;
     admin_name: string;
     lobby_name: string;
@@ -19,23 +19,32 @@ declare global {
   }
 
   // poker
-  export type Config = LobbyConfig;
+  export type LobbyConfig = GameConfig;
 
-  export interface PublicKey {
+  export interface SessionConfig {
+    gas_to_delete_session: number | string | bigint;
+    minimum_session_duration_ms: number | string | bigint;
+    ms_per_block: number | string | bigint;
+  }
+
+  export interface ZkPublicKey {
     x: Uint8Array;
     y: Uint8Array;
     z: Uint8Array;
   }
 
-  /**
-   * Serialized verifying key for zk-SNARK verification
-   */
-  export interface VerifyingKeyBytes {
-    alpha_g1_beta_g2: `0x${string}`;
-    gamma_g2_neg_pc: `0x${string}`;
-    delta_g2_neg_pc: `0x${string}`;
-    ic: Array<`0x${string}`>;
+  export interface SignatureInfo {
+    signature_data: SignatureData;
+    signature: `0x${string}` | null;
   }
+
+  export interface SignatureData {
+    key: string;
+    duration: number | string | bigint;
+    allowed_actions: Array<ActionsForSession>;
+  }
+
+  export type ActionsForSession = 'AllActions';
 
   export interface Card {
     value: number;
@@ -61,7 +70,6 @@ declare global {
     c: `0x${string}`;
   }
 
-  // ! TODO: check if this is correct
   export interface EncryptedCard {
     c0: Array<`0x${string}`>;
     c1: Array<`0x${string}`>;
@@ -90,7 +98,7 @@ declare global {
   export interface Participant {
     name: string;
     balance: number | string | bigint;
-    pk: PublicKey;
+    pk: ZkPublicKey;
   }
 
   export type Status =
@@ -111,4 +119,11 @@ declare global {
     | 'Turn'
     | 'WaitingTableCardsAfterTurn'
     | 'River';
+
+  export interface SessionData {
+    key: ActorId;
+    expires: number | string | bigint;
+    allowed_actions: Array<ActionsForSession>;
+    expires_at_block: number;
+  }
 }

@@ -1,8 +1,11 @@
 import { useAccount } from '@gear-js/react-hooks';
+import { CreateSessionModal, SignlessContext, usePair, useSignlessTransactions } from 'gear-ez-transactions';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ROUTES } from '@/app/consts';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+
+import { BIG_BLIND, ROUTES, SIGNLESS_ALLOWED_ACTIONS, SMALL_BLIND } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, Input, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
@@ -18,14 +21,6 @@ type FormData = {
   buyIn: number;
 };
 
-// const initialFormData: FormData = {
-//   name: '--Test--',
-//   players: 2,
-//   time: 120,
-//   buyIn: 2000,
-// };
-
-// ! TODO: use this after testing
 const initialFormData: FormData = {
   name: '',
   time: 60,
@@ -48,13 +43,14 @@ const timeOptions = [
   { value: 120, label: '120 sec' },
 ];
 
-export default function CreateLobby() {
+function CreateGame() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreateSessionOpen, setIsCreateSessionOpen] = useState(false);
   const { account } = useAccount();
   const navigate = useNavigate();
   const { userName } = useUserName();
-
+  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
   const { pk } = useKeys();
 
   const onLobbyCreated = (payload: LobbyCreatedPayload) => {
@@ -82,38 +78,48 @@ export default function CreateLobby() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!account) return;
-
-    setIsLoading(true);
-
-    // ! TODO: check if this is correct
-    const small_blind = 5;
-    const big_blind = 10;
-
-    void createLobbyMessage(
-      {
-        config: {
-          time_per_move_ms: formData.time * 1000,
-          admin_id: account.decodedAddress,
-          admin_name: userName,
-          big_blind,
-          lobby_name: formData.name,
-          small_blind,
-          starting_bank: formData.buyIn,
-        },
-        pk: getPkBytes(pk),
-      },
-      {
-        onError: (error) => {
-          console.error('Error creating game:', error);
-          setIsLoading(false);
-        },
-      },
-    );
+    setIsCreateSessionOpen(true);
   };
 
   const handleCancel = () => {
     navigate(ROUTES.HOME);
+  };
+
+  const pairData = usePair(pokerFactoryProgramId, null);
+
+  const useCustomSignlessContext = (): SignlessContext => {
+    if (!account) throw new Error('Account not found');
+
+    return {
+      ...useSignlessTransactions(),
+      ...pairData,
+
+      createSession: (...createSessionParams) => {
+        setIsLoading(true);
+
+        void createLobbyMessage(
+          {
+            config: {
+              time_per_move_ms: formData.time * 1000,
+              admin_id: account.decodedAddress,
+              admin_name: userName,
+              big_blind: BIG_BLIND,
+              lobby_name: formData.name,
+              small_blind: SMALL_BLIND,
+              starting_bank: formData.buyIn,
+            },
+            pk: getPkBytes(pk),
+            createSessionParams,
+          },
+          {
+            onError: (error) => {
+              console.error('Error creating game:', error);
+              setIsLoading(false);
+            },
+          },
+        );
+      },
+    };
   };
 
   return (
@@ -174,7 +180,19 @@ export default function CreateLobby() {
             </Button>
           </div>
         </form>
+
+        {isCreateSessionOpen && (
+          <CreateSessionModal
+            allowedActions={SIGNLESS_ALLOWED_ACTIONS}
+            close={() => setIsCreateSessionOpen(false)}
+            onSessionCreate={() => Promise.resolve('0x')}
+            shouldIssueVoucher={false}
+            useCustomSignlessContext={useCustomSignlessContext}
+          />
+        )}
       </div>
     </>
   );
 }
+
+export default CreateGame;

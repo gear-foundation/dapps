@@ -1,4 +1,4 @@
-type Config = struct {
+type GameConfig = struct {
   admin_id: actor_id,
   admin_name: str,
   lobby_name: str,
@@ -8,18 +8,31 @@ type Config = struct {
   time_per_move_ms: u64,
 };
 
-type PublicKey = struct {
+type SessionConfig = struct {
+  gas_to_delete_session: u64,
+  minimum_session_duration_ms: u64,
+  ms_per_block: u64,
+};
+
+type ZkPublicKey = struct {
   x: [u8, 32],
   y: [u8, 32],
   z: [u8, 32],
 };
 
-/// Serialized verifying key for zk-SNARK verification
-type VerifyingKeyBytes = struct {
-  alpha_g1_beta_g2: vec u8,
-  gamma_g2_neg_pc: vec u8,
-  delta_g2_neg_pc: vec u8,
-  ic: vec vec u8,
+type SignatureInfo = struct {
+  signature_data: SignatureData,
+  signature: opt vec u8,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  AllActions,
 };
 
 type Card = struct {
@@ -78,7 +91,7 @@ type BettingStage = struct {
 type Participant = struct {
   name: str,
   balance: u128,
-  pk: PublicKey,
+  pk: ZkPublicKey,
 };
 
 type Status = enum {
@@ -106,12 +119,19 @@ type Stage = enum {
   River,
 };
 
+type SessionData = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
 constructor {
-  New : (config: Config, pts_actor_id: actor_id, pk: PublicKey, vk_shuffle_bytes: VerifyingKeyBytes, vk_decrypt_bytes: VerifyingKeyBytes);
+  New : (config: GameConfig, session_config: SessionConfig, pts_actor_id: actor_id, pk: ZkPublicKey, session_for_admin: opt SignatureInfo, zk_verification_id: actor_id);
 };
 
 service Poker {
-  CancelGame : () -> null;
+  CancelGame : (session_for_account: opt actor_id) -> null;
   /// Cancels player registration and refunds their balance via PTS contract.
   /// 
   /// Panics if:
@@ -120,8 +140,8 @@ service Poker {
   /// 
   /// Sends a transfer request to PTS contract to return points to the player.
   /// Removes player data and emits `RegistrationCanceled` event on success.
-  CancelRegistration : () -> null;
-  CardDisclosure : (instances: vec struct { Card, VerificationVariables }) -> null;
+  CancelRegistration : (session_for_account: opt actor_id) -> null;
+  CardDisclosure : (instances: vec struct { Card, VerificationVariables }, session_for_account: opt actor_id) -> null;
   /// Admin-only function to forcibly remove a player and refund their balance.
   /// 
   /// Panics if:
@@ -134,7 +154,7 @@ service Poker {
   /// 2. Removes player from all participant lists
   /// 3. Resets status to Registration
   /// 4. Emits PlayerDeleted event
-  DeletePlayer : (player_id: actor_id) -> null;
+  DeletePlayer : (player_id: actor_id, session_for_account: opt actor_id) -> null;
   /// Admin-only function to terminate the lobby and refund all players.
   /// 
   /// Panics if:
@@ -147,7 +167,7 @@ service Poker {
   /// 3. Emits Killed event and transfers remaining funds to admin
   /// 
   /// WARNING: Irreversible operation
-  Kill : () -> null;
+  Kill : (session_for_account: opt actor_id) -> null;
   /// Registers a player by sending a transfer request to the PTS contract (starting_bank points).
   /// 
   /// Panics if:
@@ -156,12 +176,12 @@ service Poker {
   /// 
   /// Sends a message to the PTS contract (pts_actor_id) to transfer points to this contract.
   /// On success, updates participant data and emits a `Registered` event.
-  Register : (player_name: str, pk: PublicKey) -> null;
+  Register : (player_name: str, pk: ZkPublicKey, session_for_account: opt actor_id) -> null;
   /// Restarts the game, resetting status and refunding bets (if not Finished).
   /// Panics if caller is not admin.
   /// Resets game to WaitingShuffleVerification (if full) or Registration status.
   /// Emits GameRestarted event with new status.
-  RestartGame : () -> null;
+  RestartGame : (session_for_account: opt actor_id) -> null;
   ShuffleDeck : (encrypted_deck: vec EncryptedCard, instances: vec VerificationVariables) -> null;
   /// Admin-only function to start the poker game after setup.
   /// 
@@ -175,9 +195,9 @@ service Poker {
   /// 3. Updates game status and emits GameStarted event
   /// 
   /// Note: Handles edge cases where players can't cover blinds
-  StartGame : () -> null;
+  StartGame : (session_for_account: opt actor_id) -> null;
   SubmitAllPartialDecryptions : (instances: vec VerificationVariables) -> null;
-  SubmitTablePartialDecryptions : (instances: vec VerificationVariables) -> null;
+  SubmitTablePartialDecryptions : (instances: vec VerificationVariables, session_for_account: opt actor_id) -> null;
   /// Processes player actions during betting rounds.
   /// 
   /// Panics if:
@@ -192,13 +212,13 @@ service Poker {
   /// - Stage transitions
   /// 
   /// Emits TurnIsMade and NextStage events
-  Turn : (action: Action) -> null;
+  Turn : (action: Action, session_for_account: opt actor_id) -> null;
   query ActiveParticipants : () -> TurnManagerForActorId;
   query AllInPlayers : () -> vec actor_id;
   query AlreadyInvestedInTheCircle : () -> vec struct { actor_id, u128 };
   query Betting : () -> opt BettingStage;
   query BettingBank : () -> vec struct { actor_id, u128 };
-  query Config : () -> Config;
+  query Config : () -> GameConfig;
   query EncryptedTableCards : () -> vec EncryptedCard;
   query FactoryActorId : () -> actor_id;
   query Participants : () -> vec struct { actor_id, Participant };
@@ -214,7 +234,7 @@ service Poker {
   events {
     Registered: struct {
       participant_id: actor_id,
-      pk: PublicKey,
+      pk: ZkPublicKey,
     };
     PlayerDeleted: struct {
       player_id: actor_id
@@ -247,8 +267,21 @@ service Poker {
     WaitingForAllTableCardsToBeDisclosed;
     RegisteredToTheNextRound: struct {
       participant_id: actor_id,
-      pk: PublicKey,
+      pk: ZkPublicKey,
     };
+  }
+};
+
+service Session {
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt SessionData;
+  query Sessions : () -> vec struct { actor_id, SessionData };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
   }
 };
 

@@ -20,6 +20,8 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isActive: false,
   isSessionActive: false,
   allowedActions: [],
+  voucherIssueAmount: 0,
+  voucherReissueThreshold: 0,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

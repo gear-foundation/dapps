@@ -1,5 +1,5 @@
 import { HexString, IVoucherDetails } from '@gear-js/api';
-import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
@@ -17,8 +17,8 @@ type Session = {
 };
 
 type Options = {
-  onSuccess: () => void;
-  onFinally: () => void;
+  onSuccess?: () => void;
+  onFinally?: () => void;
 };
 
 type CreeateSessionOptions = {
@@ -47,17 +47,6 @@ function useCreateBaseSession(programId: HexString) {
   const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
 
   const onError = (message: string) => alert.error(message);
-
-  const signHex = async (account: Account, hexToSign: `0x${string}`) => {
-    const { signer } = account;
-    const { signRaw } = signer;
-
-    if (!signRaw) {
-      throw new Error('signRaw is not a function');
-    }
-
-    return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
-  };
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -109,7 +98,7 @@ function useCreateBaseSession(programId: HexString) {
       ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
       : [messageExtrinsic];
 
-    batchSignAndSend(txs, { ...options, onError });
+    void batchSignAndSend(txs, { ...options, onError });
   };
 
   const signAndSendDeleteSession = async (
@@ -122,7 +111,7 @@ function useCreateBaseSession(programId: HexString) {
     if (!account) throw new Error('Account not found');
     if (!isDeleteSessionAvailable) {
       alert.error('Low balance on account to disable session');
-      options.onFinally();
+      options.onFinally?.();
       throw new Error('Low balance on account to disable session');
     }
     const txs = [messageExtrinsic];
@@ -145,10 +134,10 @@ function useCreateBaseSession(programId: HexString) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
       await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
     }
-    batchSend(signedTxs, { ...options, onError });
+    void batchSend(signedTxs, { ...options, onError });
   };
 
-  return { signAndSendDeleteSession, signAndSendCreateSession, onError, signHex };
+  return { signAndSendDeleteSession, signAndSendCreateSession, onError };
 }
 
 export { useCreateBaseSession };

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
+import { withGameRouteProviders } from '@/app/hocs';
 import { BackIcon, Exit } from '@/assets/images';
 import {
   Button,
@@ -51,7 +52,7 @@ import { getRankFromValue } from '@/features/zk/utils';
 
 import styles from './game.module.scss';
 
-export default function GamePage() {
+function GamePage() {
   const navigate = useNavigate();
   const alert = useAlert();
 
@@ -349,3 +350,5 @@ export default function GamePage() {
     </>
   );
 }
+
+export default withGameRouteProviders(GamePage);

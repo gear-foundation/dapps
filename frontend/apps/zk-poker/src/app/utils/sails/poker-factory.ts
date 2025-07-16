@@ -29,7 +29,10 @@ export class Program {
         starting_bank: 'u128',
         time_per_move_ms: 'u64',
       },
-      PublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
+      ZkPublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
+      SignatureInfo: { signature_data: 'SignatureData', signature: 'Option<Vec<u8>>' },
+      SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
+      ActionsForSession: { _enum: ['AllActions'] },
     };
 
     this.registry = new TypeRegistry();
@@ -48,15 +51,14 @@ export class Program {
     code: Uint8Array | Buffer | HexString,
     config: PokerFactoryConfig,
     pts_actor_id: ActorId,
-    vk_shuffle_bytes: `0x${string}`,
-    vk_decrypt_bytes: `0x${string}`,
+    zk_verification_id: ActorId,
   ): TransactionBuilder<null> {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, pts_actor_id, vk_shuffle_bytes, vk_decrypt_bytes],
-      '(String, Config, [u8;32], Vec<u8>, Vec<u8>)',
+      ['New', config, pts_actor_id, zk_verification_id],
+      '(String, Config, [u8;32], [u8;32])',
       'String',
       code,
     );
@@ -69,15 +71,14 @@ export class Program {
     codeId: `0x${string}`,
     config: PokerFactoryConfig,
     pts_actor_id: ActorId,
-    vk_shuffle_bytes: `0x${string}`,
-    vk_decrypt_bytes: `0x${string}`,
+    zk_verification_id: ActorId,
   ) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'create_program',
-      ['New', config, pts_actor_id, vk_shuffle_bytes, vk_decrypt_bytes],
-      '(String, Config, [u8;32], Vec<u8>, Vec<u8>)',
+      ['New', config, pts_actor_id, zk_verification_id],
+      '(String, Config, [u8;32], [u8;32])',
       'String',
       codeId,
     );
@@ -117,14 +118,18 @@ export class PokerFactory {
    * 4. Transfers starting bank to lobby
    * 5. Stores lobby info and emits LobbyCreated event
    */
-  public createLobby(init_lobby: LobbyConfig, pk: PublicKey): TransactionBuilder<null> {
+  public createLobby(
+    init_lobby: LobbyConfig,
+    pk: ZkPublicKey,
+    session: SignatureInfo | null,
+  ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['PokerFactory', 'CreateLobby', init_lobby, pk],
-      '(String, String, LobbyConfig, PublicKey)',
+      ['PokerFactory', 'CreateLobby', init_lobby, pk, session],
+      '(String, String, LobbyConfig, ZkPublicKey, Option<SignatureInfo>)',
       'Null',
       this._program.programId,
     );
@@ -148,6 +153,7 @@ export class PokerFactory {
    * Panics if:
    * - Lobby doesn't exist
    * - Caller lacks permissions
+   *
    * Emits LobbyDeleted event on success.
    */
   public deleteLobby(lobby_address: ActorId): TransactionBuilder<null> {
@@ -239,49 +245,11 @@ export class PokerFactory {
     return result[2].toJSON() as unknown as ActorId;
   }
 
-  public async vkDecryptBytes(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<`0x${string}`> {
-    const payload = this._program.registry.createType('(String, String)', ['PokerFactory', 'VkDecryptBytes']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<u8>)', reply.payload);
-    return result[2].toJSON() as unknown as `0x${string}`;
-  }
-
-  public async vkShuffleBytes(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<`0x${string}`> {
-    const payload = this._program.registry.createType('(String, String)', ['PokerFactory', 'VkShuffleBytes']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<u8>)', reply.payload);
-    return result[2].toJSON() as unknown as `0x${string}`;
-  }
-
   public subscribeToLobbyCreatedEvent(
     callback: (data: {
       lobby_address: ActorId;
       admin: ActorId;
-      pk: PublicKey;
+      pk: ZkPublicKey;
       lobby_config: LobbyConfig;
     }) => void | Promise<void>,
   ): Promise<() => void> {
@@ -295,13 +263,13 @@ export class PokerFactory {
         callback(
           this._program.registry
             .createType(
-              '(String, String, {"lobby_address":"[u8;32]","admin":"[u8;32]","pk":"PublicKey","lobby_config":"LobbyConfig"})',
+              '(String, String, {"lobby_address":"[u8;32]","admin":"[u8;32]","pk":"ZkPublicKey","lobby_config":"LobbyConfig"})',
               message.payload,
             )[2]
             .toJSON() as unknown as {
             lobby_address: ActorId;
             admin: ActorId;
-            pk: PublicKey;
+            pk: ZkPublicKey;
             lobby_config: LobbyConfig;
           },
         );

@@ -1,7 +1,7 @@
 export const REQUIRED_MESSAGE = 'Field is required';
 
-export const BALANCE_VALUE_TO_START_GAME = 20;
-export const BALANCE_VALUE_TO_ISSUE_VOUCHER = 5;
+export const DEFAULT_VOUCHER_ISSUE_AMOUNT = 30;
+export const DEFAULT_VOUCHER_REISSUE_THRESHOLD = 10;
 
 export const DURATIONS: { label: string; value: string }[] = [
   {

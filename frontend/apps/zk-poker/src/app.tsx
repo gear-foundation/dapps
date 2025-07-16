@@ -17,6 +17,7 @@ function Component() {
   useAccountAvailableBalanceSync();
 
   const isAppReady = isApiReady && isAccountReady;
+  // ! TODO: add program or remove this
   // const isAppReady = isApiReady && isAccountReady && program;
 
   return <main>{isAppReady ? <Routing /> : <ApiLoader />}</main>;

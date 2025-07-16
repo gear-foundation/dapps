@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { JSX } from 'react';
 
 import styles from './GameDetails.module.scss';
 

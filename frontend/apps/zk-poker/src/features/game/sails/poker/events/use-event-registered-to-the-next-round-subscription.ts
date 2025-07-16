@@ -3,7 +3,7 @@ import { ActorId } from 'sails-js';
 
 import { usePokerProgram } from '@/app/utils';
 
-export type RegisteredToTheNextRoundPayload = { participant_id: ActorId; pk: PublicKey };
+export type RegisteredToTheNextRoundPayload = { participant_id: ActorId; pk: ZkPublicKey };
 
 export type Params = {
   onData: (payload: RegisteredToTheNextRoundPayload) => void;

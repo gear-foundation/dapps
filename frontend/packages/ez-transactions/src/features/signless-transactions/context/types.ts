@@ -36,6 +36,8 @@ type SignlessContext = {
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
+  voucherIssueAmount: number;
+  voucherReissueThreshold: number;
 };
 
 type ActorId = string;

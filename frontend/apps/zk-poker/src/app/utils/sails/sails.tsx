@@ -37,4 +37,4 @@ const usePtsProgram = () => {
   return program;
 };
 
-export { usePokerFactoryProgram, usePokerProgram, usePtsProgram };
+export { usePokerFactoryProgram, usePokerProgram, usePtsProgram, PokerFactoryProgram };

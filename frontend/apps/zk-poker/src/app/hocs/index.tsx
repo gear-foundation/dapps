@@ -5,7 +5,7 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import {
-  // SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
+  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from 'gear-ez-transactions';
@@ -17,11 +17,8 @@ import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-front
 import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ENV } from '@/app/consts';
-import { urqlClient } from '@/app/utils';
+import { urqlClient, usePokerProgram } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
-
-// ! TODO: add program
-// import { useProgram } from '../utils/sails';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
@@ -41,7 +38,10 @@ function AlertProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ pokerFactoryProgramId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
+    <SharedDnsProvider
+      names={{ pokerFactoryProgramId: ENV.DNS_NAME }}
+      dnsApiUrl={ENV.DNS_API_URL}
+      forcedValue={{ pokerFactoryProgramId: ENV.FORCED_POKER_FACTORY_PROGRAM_ID }}>
       {children}
     </SharedDnsProvider>
   );
@@ -54,23 +54,27 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
     <SharedGaslessTransactionsProvider
       programId={pokerFactoryProgramId}
       backendAddress={ENV.GASLESS_BACKEND}
-      voucherLimit={18}>
+      voucherLimit={Number(ENV.VOUCHER_LIMIT)}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
 }
 
-// function SignlessTransactionsProvider({ children }: ProviderProps) {
-//   // ! TODO: add program
-//   const { programId } = useDnsProgramIds();
-//   const program = useProgram();
+function SignlessTransactionsPokerProvider({ children }: ProviderProps) {
+  const program = usePokerProgram();
 
-//   return (
-//     <SharedSignlessTransactionsProvider programId={programId} program={program}>
-//       {children}
-//     </SharedSignlessTransactionsProvider>
-//   );
-// }
+  if (!program?.programId) return children;
+
+  return (
+    <SharedSignlessTransactionsProvider
+      programId={program?.programId}
+      program={program}
+      voucherIssueAmount={Number(ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT)}
+      voucherReissueThreshold={Number(ENV.VOUCHER_LIMIT)}>
+      {children}
+    </SharedSignlessTransactionsProvider>
+  );
+}
 
 function UrqlProvider({ children }: ProviderProps) {
   return <UrqlClientProvider value={urqlClient}>{children}</UrqlClientProvider>;
@@ -78,19 +82,24 @@ function UrqlProvider({ children }: ProviderProps) {
 
 const providers = [
   BrowserRouter,
-  UrqlProvider,
+  DnsProvider,
   ApiProvider,
+  QueryProvider,
+  UrqlProvider,
   AccountProvider,
   AlertProvider,
-  QueryProvider,
-  DnsProvider,
   GaslessTransactionsProvider,
-  // SignlessTransactionsProvider,
-  EzTransactionsProvider,
 ];
+
+// programId only available on game route
+const gameRouteProviders = [SignlessTransactionsPokerProvider, EzTransactionsProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
-export { withProviders };
+function withGameRouteProviders(Component: ComponentType) {
+  return () => gameRouteProviders.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+}
+
+export { withProviders, withGameRouteProviders };
