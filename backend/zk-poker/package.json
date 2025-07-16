@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node ./src/tg-bot.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "telegraf": "^4.16.3"
+  }
+}

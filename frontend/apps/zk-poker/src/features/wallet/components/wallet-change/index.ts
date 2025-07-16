@@ -1,3 +1,3 @@
-import { WalletChange } from './WalletChange';
+import { WalletChange } from './wallet-change';
 
 export { WalletChange };

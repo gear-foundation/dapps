@@ -11,10 +11,13 @@ import { useUserName } from '@/features/game/hooks';
 import { GetPlayerByIdQuery } from '@/features/game/queries';
 import { useGetBalanceQuery } from '@/features/game/sails';
 import { ClaimPtsButton } from '@/features/pts';
+import { useVaranWallet } from '@/features/wallet';
 
 import styles from './home.module.scss';
 
 export default function Home() {
+  useVaranWallet();
+
   const navigate = useNavigate();
   const { balance, refetch: refetchPtsBalance } = useGetBalanceQuery();
   const { userName, setUserName } = useUserName();

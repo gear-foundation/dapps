@@ -79,6 +79,7 @@ jobs:
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_ZK_POKER }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_ZK_POKER_BACKEND_ADDRESS=${{ secrets.VITE_ZK_POKER_BACKEND_ADDRESS }}
+            VITE_VOUCHER_LIMIT=${{ secrets.VITE_ZK_POKER_VOUCHER_LIMIT }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

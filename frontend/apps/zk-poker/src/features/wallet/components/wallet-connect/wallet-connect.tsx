@@ -12,9 +12,9 @@ import { ModalBottom } from '@/components/ui/modal';
 
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
-// import useVaranWallet from '../../varan-wallet';
+import { varanWallet } from '../../varan-wallet';
 
-import styles from './WalletConnect.module.scss';
+import styles from './wallet-connect.module.scss';
 
 type Props = {
   onClose: () => void;
@@ -30,10 +30,17 @@ export function WalletConnect({ onClose }: Props) {
 
   useEffect(() => {
     const isNovaWallet = window?.walletExtension?.isNovaWallet;
+    const varanWallets = varanWallet.parseWalletsFromStartParam();
+    console.log('🚀 ~ useEffect ~ varanWallets:', varanWallets);
 
     if (isNovaWallet) {
       setWalletId('polkadot-js');
     }
+
+    if (varanWallets) {
+      setWalletId('varan');
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -130,22 +137,9 @@ export function WalletConnect({ onClose }: Props) {
     return <p>No accounts found. Please open your extension and create a new account or import existing.</p>;
   };
 
-  // ! TODO: move to separate component
-  // const { connect: _, signTransaction } = useVaranWallet();
-  // const onClick = () => {
-  //   // connect();
-
-  //   // Get Accural from pts 0x2858459a64019ccb05bad84eb3093dd1df12bf7b61cc97058aa30acaccd7e266
-  //   const txHash =
-  //     '0x31010468032858459a64019ccb05bad84eb3093dd1df12bf7b61cc97058aa30acaccd7e2663c0c507473284765744163637572616c9253b798000000000000000000000000000000000000000001';
-  //   const walletAddress = 'kGk1iZDGu86wx5sE39bAvju1RWUoPwKgxx6i3u2oggEjCy4vF';
-  //   signTransaction(txHash, walletAddress);
-  // };
-
   return (
     <ModalBottom heading="Connect Wallet" onClose={onClose}>
       <div>{render()}</div>
-      {/* <button onClick={onClick}>Connect VARAN</button> */}
     </ModalBottom>
   );
 }

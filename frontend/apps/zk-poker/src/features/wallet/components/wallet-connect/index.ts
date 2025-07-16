@@ -1,3 +1,3 @@
-import { WalletConnect } from './WalletConnect';
+import { WalletConnect } from './wallet-connect';
 
 export { WalletConnect };

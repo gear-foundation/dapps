@@ -7,8 +7,7 @@ import { ISubmittableResult } from '@polkadot/types/types';
 import { sendTransaction } from '../utils';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
-
-import { useIsAvailable } from '.';
+import { useIsAvailable } from './use-is-available';
 
 type Session = {
   key: HexString;

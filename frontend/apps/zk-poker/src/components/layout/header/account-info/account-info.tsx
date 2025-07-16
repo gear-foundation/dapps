@@ -2,7 +2,7 @@ import { useApi, useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 
 import { BurgerMenuIcon, CoinIcon, CrossIcon } from '@/assets/images';
-import { Balance, Button } from '@/components';
+import { Balance, Button } from '@/components/ui';
 import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 import styles from './account-info.module.scss';

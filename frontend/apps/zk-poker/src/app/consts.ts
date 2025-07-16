@@ -10,7 +10,7 @@ export const ENV = {
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
   EXPLORER_URL: import.meta.env.VITE_EXPLORER_URL as string,
   FORCED_POKER_FACTORY_PROGRAM_ID: import.meta.env.VITE_POKER_FACTORY_PROGRAM_ID as HexString,
-  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT as string,
+  VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT,
   SIGNLESS_VOUCHER_ISSUE_AMOUNT: import.meta.env.VITE_SIGNLESS_VOUCHER_ISSUE_AMOUNT as string,
 };
 

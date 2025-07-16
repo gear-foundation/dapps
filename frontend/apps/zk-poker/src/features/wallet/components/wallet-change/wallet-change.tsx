@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/text';
 
 import { useWallet } from '../../hooks';
 
-import styles from './WalletChange.module.scss';
+import styles from './wallet-change.module.scss';
 
 type Props = {
   onClose: () => void;
