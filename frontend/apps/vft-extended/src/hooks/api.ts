@@ -111,8 +111,8 @@ export function useTokenActions() {
    * @param to Recipient address
    * @param value Amount to transfer
    */
-  const transfer = async (to: string, value: string) => {
-    return sendTransferTransactionAsync({ args: [to as `0x${string}`, value] });
+  const transfer = async (to: `0x${string}`, value: string) => {
+    return sendTransferTransactionAsync({ args: [to, value] });
   };
 
   // You can add more methods here, following the same pattern
