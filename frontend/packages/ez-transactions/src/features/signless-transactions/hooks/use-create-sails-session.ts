@@ -7,7 +7,7 @@ import { signHex } from '../utils';
 
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
-function useCreateSailsSession(programId: HexString, program: BaseProgram) {
+function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
   const { signAndSendCreateSession, signAndSendDeleteSession } = useCreateBaseSession(programId);
@@ -29,7 +29,7 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
   const createSession = async (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
+    { shouldIssueVoucher, voucherId, pair, additionalExtrinsics, ...options }: Options & CreeateSessionOptions,
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
@@ -66,9 +66,10 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
       voucherId,
       gasLimit,
     });
-    const messageExtrinsic = transaction.extrinsic;
 
-    void signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
+    const messageExtrinsics = [transaction.extrinsic, ...(additionalExtrinsics || [])];
+
+    void signAndSendCreateSession(messageExtrinsics, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {

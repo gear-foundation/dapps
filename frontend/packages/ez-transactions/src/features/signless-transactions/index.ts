@@ -15,6 +15,7 @@ import {
   SendSignlessMessageOptions,
   useRandomPairOr,
   useCreateBaseSession,
+  useCreateSailsSession,
 } from './hooks';
 import { signHex, getUnlockedPair } from './utils';
 
@@ -33,6 +34,7 @@ export {
   signHex,
   getUnlockedPair,
   useCreateBaseSession,
+  useCreateSailsSession,
   usePair,
 };
 

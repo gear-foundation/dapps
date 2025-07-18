@@ -30,7 +30,7 @@ function useMetadataSession(programId: HexString, metadata: ProgramMetadata | un
   return { session, isSessionReady, isSessionActive };
 }
 
-function useSailsSession(program: BaseProgram) {
+function useSailsSession(program?: BaseProgram) {
   const { account } = useAccount();
   const { data: responseSession, refetch } = useProgramQuery({
     program,

@@ -20,6 +20,7 @@ type Props = Pick<ModalProps, 'close'> & {
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
   boundSessionDuration?: number;
   useCustomSignlessContext?: () => SignlessContext;
+  maxWidth?: 'small' | 'medium' | 'large' | (string & NonNullable<unknown>);
 };
 
 function CreateSessionModal({
@@ -29,6 +30,7 @@ function CreateSessionModal({
   shouldIssueVoucher = true,
   boundSessionDuration,
   useCustomSignlessContext,
+  maxWidth,
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
@@ -127,17 +129,15 @@ function CreateSessionModal({
     };
 
     console.log('SUBMITTING');
-    console.log(shouldIssueVoucher);
-    console.log('shouldIssueVoucher');
+    console.log('shouldIssueVoucher: ', shouldIssueVoucher);
+    console.log('issueVoucherValue', issueVoucherValue);
 
     if (!shouldIssueVoucher) {
       try {
         const voucherId = await onSessionCreate(pairToSave.address);
 
         console.log('voucherId', voucherId);
-        console.log('issueVoucherValue', issueVoucherValue);
-        console.log('pairToSave');
-        console.log(pairToSave);
+        console.log('pairToSave: ', pairToSave);
 
         createSession({ duration, key, allowedActions }, issueVoucherValue, {
           shouldIssueVoucher,
@@ -163,7 +163,10 @@ function CreateSessionModal({
 
   return (
     <>
-      <Modal heading={storagePair ? 'Resume Signless Session' : 'Create Signless Session'} close={close}>
+      <Modal
+        heading={storagePair ? 'Resume Signless Session' : 'Create Signless Session'}
+        close={close}
+        maxWidth={maxWidth}>
         <SignlessParams
           params={[
             {

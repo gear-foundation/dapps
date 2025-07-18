@@ -11,7 +11,7 @@ import { BaseProgram } from './types';
 type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   programId: HexString;
   children: ReactNode;
-  program: TProgram;
+  program?: TProgram;
   voucherIssueAmount?: number;
   voucherReissueThreshold?: number;
 };

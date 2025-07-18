@@ -1,23 +1,19 @@
 import { useAccount, useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { usePrepareEzTransactionParams, useCreateBaseSession, signHex, SignlessContext } from 'gear-ez-transactions';
+import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
-
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePokerFactoryProgram } from '@/app/utils';
 
 type Params = {
   config: GameConfig;
   pk: ZkPublicKey;
-  createSessionParams: Parameters<SignlessContext['createSession']>;
 };
 
 export const useCreateLobbyMessage = () => {
-  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
   const program = usePokerFactoryProgram();
   const { account } = useAccount();
+
   const alert = useAlert();
   const { prepareTransactionAsync } = usePrepareProgramTransaction({
     program,
@@ -25,25 +21,13 @@ export const useCreateLobbyMessage = () => {
     functionName: 'createLobby',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
-  const { signAndSendCreateSession } = useCreateBaseSession(pokerFactoryProgramId);
 
-  const tx = async ({ config, pk, createSessionParams }: Params) => {
+  const tx = async ({ config, pk }: Params) => {
     if (!program || !account) return;
 
     const { sessionForAccount: _, voucherId, account: senderAccount } = await prepareEzTransactionParams();
 
-    const [session, voucherValue, { shouldIssueVoucher, voucherId: _voucherId, pair, ...options }] =
-      createSessionParams;
-    const { key, duration } = session;
-    const signature_data = { key, duration, allowed_actions: SIGNLESS_ALLOWED_ACTIONS };
-    let signature = null;
-
-    if (voucherId && pair) {
-      const hexToSign = program.registry.createType('SignatureData', signature_data).toHex();
-      signature = (await signHex(account, hexToSign)).signature;
-    }
-
-    const signatureInfo = { signature_data, signature };
+    const signatureInfo = null;
 
     const { transaction } = await prepareTransactionAsync({
       args: [config, pk, signatureInfo],
@@ -52,7 +36,7 @@ export const useCreateLobbyMessage = () => {
       voucherId,
     });
 
-    await signAndSendCreateSession(transaction.extrinsic, session, voucherValue, options, shouldIssueVoucher);
+    await transaction.signAndSend();
   };
 
   const { mutateAsync: createLobbyMessage, isPending } = useMutation({

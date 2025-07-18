@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
-import { withGameRouteProviders } from '@/app/hocs';
 import { BackIcon, Exit } from '@/assets/images';
 import {
   Button,
@@ -351,4 +350,4 @@ function GamePage() {
   );
 }
 
-export default withGameRouteProviders(GamePage);
+export default GamePage;

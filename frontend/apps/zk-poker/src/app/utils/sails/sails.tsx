@@ -1,5 +1,5 @@
 import { useProgram as useGearJsProgram, useProgramQuery } from '@gear-js/react-hooks';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
@@ -15,7 +15,9 @@ const usePokerFactoryProgram = () => {
 };
 
 const usePokerProgram = () => {
-  const { gameId } = useParams();
+  const location = useLocation();
+  // use from location (not useParams) because it uses in hocs before routing
+  const gameId = location.pathname.match(/\/game\/([^/]+)/)?.[1];
   const id = gameId ? (gameId as `0x${string}`) : undefined;
   const { data: program } = useGearJsProgram({ library: PokerProgram, id });
 

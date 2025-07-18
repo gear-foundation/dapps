@@ -80,6 +80,7 @@ jobs:
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_ZK_POKER_BACKEND_ADDRESS=${{ secrets.VITE_ZK_POKER_BACKEND_ADDRESS }}
             VITE_VOUCHER_LIMIT=${{ secrets.VITE_ZK_POKER_VOUCHER_LIMIT }}
+            VITE_SIGNLESS_VOUCHER_ISSUE_AMOUNT=${{ secrets.VITE_ZK_POKER_SIGNLESS_VOUCHER_ISSUE_AMOUNT }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

@@ -1,10 +1,11 @@
-import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
+import { useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
 import { usePokerProgram } from '@/app/utils';
 import { useUserName } from '@/features/game/hooks';
+import { useAutoSignless } from '@/features/signless';
 import { useKeys } from '@/features/zk/hooks';
 import { getPkBytes } from '@/features/zk/utils';
 
@@ -13,7 +14,8 @@ export const useRegisterMessage = () => {
   const { pk } = useKeys();
   const { userName } = useUserName();
   const alert = useAlert();
-  const { sendTransactionAsync } = useSendProgramTransaction({
+  const { executeWithSessionModal } = useAutoSignless();
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
     program,
     serviceName: 'poker',
     functionName: 'register',
@@ -22,11 +24,12 @@ export const useRegisterMessage = () => {
 
   const tx = async () => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({
+    const { transaction } = await prepareTransactionAsync({
       args: [userName, getPkBytes(pk), sessionForAccount],
       ...params,
     });
-    return result.awaited;
+
+    await executeWithSessionModal(transaction, sessionForAccount);
   };
 
   const { mutateAsync, isPending } = useMutation({

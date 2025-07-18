@@ -19,6 +19,7 @@ import { QueryProvider } from '@dapps-frontend/ui';
 import { ENV } from '@/app/consts';
 import { urqlClient, usePokerProgram } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import { AutoSignlessProvider } from '@/features/signless';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
@@ -60,17 +61,15 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   );
 }
 
-function SignlessTransactionsPokerProvider({ children }: ProviderProps) {
+function SignlessTransactionsProvider({ children }: ProviderProps) {
   const program = usePokerProgram();
-
-  if (!program?.programId) return children;
 
   return (
     <SharedSignlessTransactionsProvider
-      programId={program?.programId}
+      programId={program?.programId || '0x'}
       program={program}
-      voucherIssueAmount={Number(ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT)}
-      voucherReissueThreshold={Number(ENV.VOUCHER_LIMIT)}>
+      voucherIssueAmount={ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT}
+      voucherReissueThreshold={ENV.VOUCHER_LIMIT}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -89,17 +88,13 @@ const providers = [
   AccountProvider,
   AlertProvider,
   GaslessTransactionsProvider,
+  SignlessTransactionsProvider,
+  EzTransactionsProvider,
+  AutoSignlessProvider,
 ];
-
-// programId only available on game route
-const gameRouteProviders = [SignlessTransactionsPokerProvider, EzTransactionsProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
-function withGameRouteProviders(Component: ComponentType) {
-  return () => gameRouteProviders.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
-}
-
-export { withProviders, withGameRouteProviders };
+export { withProviders };
