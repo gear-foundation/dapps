@@ -42,7 +42,9 @@ function DnsProvider({ children }: ProviderProps) {
     <SharedDnsProvider
       names={{ pokerFactoryProgramId: ENV.DNS_NAME }}
       dnsApiUrl={ENV.DNS_API_URL}
-      forcedValue={{ pokerFactoryProgramId: ENV.FORCED_POKER_FACTORY_PROGRAM_ID }}>
+      forcedValue={
+        ENV.FORCED_POKER_FACTORY_PROGRAM_ID ? { pokerFactoryProgramId: ENV.FORCED_POKER_FACTORY_PROGRAM_ID } : undefined
+      }>
       {children}
     </SharedDnsProvider>
   );
