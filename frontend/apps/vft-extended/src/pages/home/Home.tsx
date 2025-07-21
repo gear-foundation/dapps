@@ -3,9 +3,8 @@ import { useState } from 'react';
 
 import { useTokenActions, useTokenQueries, useTokenEvents, useBalanceOfQuery } from '../../hooks';
 
-import { styles } from './styles';
 import { toActorId } from './helper';
-
+import { styles } from './styles';
 
 function isZeroAddress(address: string) {
   return address === '0x0000000000000000000000000000000000000000';
@@ -81,10 +80,18 @@ function Home() {
           <div style={{ fontSize: 18 }}>Loading token data...</div>
         ) : (
           <>
-            <div><strong>Name:</strong> {name}</div>
-            <div><strong>Symbol:</strong> {symbol}</div>
-            <div><strong>Decimals:</strong> {decimals}</div>
-            <div><strong>Total Supply:</strong> {totalSupply}</div>
+            <div>
+              <strong>Name:</strong> {name}
+            </div>
+            <div>
+              <strong>Symbol:</strong> {symbol}
+            </div>
+            <div>
+              <strong>Decimals:</strong> {decimals}
+            </div>
+            <div>
+              <strong>Total Supply:</strong> {totalSupply}
+            </div>
           </>
         )}
         <div style={{ marginTop: 12, color: '#6c6c6c', fontSize: 14 }}>
@@ -110,13 +117,13 @@ function Home() {
         <input
           placeholder="To address"
           value={transferTo}
-          onChange={e => setTransferTo(e.target.value)}
+          onChange={(e) => setTransferTo(e.target.value)}
           style={styles.input}
         />
         <input
           placeholder="Amount"
           value={transferValue}
-          onChange={e => setTransferValue(e.target.value)}
+          onChange={(e) => setTransferValue(e.target.value)}
           style={styles.input}
         />
         <button
@@ -132,19 +139,23 @@ function Home() {
         <input
           placeholder="Address"
           value={balanceAddr}
-          onChange={e => setBalanceAddr(e.target.value)}
+          onChange={(e) => setBalanceAddr(e.target.value)}
           style={styles.input}
         />
-        <button
-          onClick={handleBalanceOf}
-          style={styles.button}>
+        <button onClick={handleBalanceOf} style={styles.button}>
           Check Balance
         </button>
-        {showBalance && checkedAddr && (
-          isZeroAddress(actorId)
-            ? <div style={styles.error}>Balance: <strong>Error</strong></div>
-            : <div style={styles.balance}>Balance: <strong>{balanceQuery.data !== undefined ? balanceQuery.data?.toString() : ''}</strong></div>
-        )}
+        {showBalance &&
+          checkedAddr &&
+          (isZeroAddress(actorId) ? (
+            <div style={styles.error}>
+              Balance: <strong>Error</strong>
+            </div>
+          ) : (
+            <div style={styles.balance}>
+              Balance: <strong>{balanceQuery.data !== undefined ? balanceQuery.data?.toString() : ''}</strong>
+            </div>
+          ))}
       </div>
     </div>
   );

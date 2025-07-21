@@ -1,10 +1,10 @@
 export type TokenMetaQueries = {
-    name?: string;
-    symbol?: string;
-    decimals?: number;
-    totalSupply?: bigint | string;
-    isLoading: boolean;
-    refetchTotalSupply?: () => Promise<unknown>;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  totalSupply?: bigint | string;
+  isLoading: boolean;
+  refetchTotalSupply?: () => Promise<unknown>;
 };
 
 type MintedEvent = { to: string; value: string | number | bigint };

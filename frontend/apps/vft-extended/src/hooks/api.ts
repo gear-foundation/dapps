@@ -24,21 +24,21 @@ import { useProgram, useSendProgramTransaction, useProgramQuery, useProgramEvent
 
 import { ENV } from '../consts';
 
-import { SailsProgram } from './lib'
-import { TokenMetaQueries, TokenEventCallbacks } from './types.ts'
+import { SailsProgram } from './lib';
+import { TokenMetaQueries, TokenEventCallbacks } from './types.ts';
 
 /**
  * Returns a contract program instance.
- * 
+ *
  * This hook sets up the connection to your contract using its ABI (library) and on-chain id.
  * The returned instance is passed to all other hooks in this file.
- * 
+ *
  * Note: You can use another id (address) or ABI to connect to different contracts.
  */
 export function useProgramInstance() {
   return useProgram({
-    library: SailsProgram,      // ABI of the contract (must match what is deployed)
-    id: ENV.CONTRACT,           // Address (id) of the contract on-chain
+    library: SailsProgram, // ABI of the contract (must match what is deployed)
+    id: ENV.CONTRACT, // Address (id) of the contract on-chain
   });
 }
 
@@ -47,7 +47,7 @@ export function useProgramInstance() {
  *
  * This hook prepares all common token operations: mint, burn, transfer.
  * Each action is async and can be awaited; you get the current loading (pending) state for each.
- * 
+ *
  * Note: Each action uses serviceName and functionName matching the contract API.
  * You can easily add more actions if needed (see sendTransactionAsync usage).
  */
@@ -55,30 +55,21 @@ export function useTokenActions() {
   const { data: program } = useProgramInstance();
 
   // Hook for minting tokens
-  const {
-    sendTransactionAsync: sendMintTransactionAsync,
-    isPending: mintPending,
-  } = useSendProgramTransaction({
+  const { sendTransactionAsync: sendMintTransactionAsync, isPending: mintPending } = useSendProgramTransaction({
     program,
     serviceName: 'vft',
     functionName: 'mint',
   });
 
   // Hook for burning tokens
-  const {
-    sendTransactionAsync: sendBurnTransactionAsync,
-    isPending: burnPending,
-  } = useSendProgramTransaction({
+  const { sendTransactionAsync: sendBurnTransactionAsync, isPending: burnPending } = useSendProgramTransaction({
     program,
     serviceName: 'vft',
     functionName: 'burn',
   });
 
   // Hook for transferring tokens
-  const {
-    sendTransactionAsync: sendTransferTransactionAsync,
-    isPending: transferPending,
-  } = useSendProgramTransaction({
+  const { sendTransactionAsync: sendTransferTransactionAsync, isPending: transferPending } = useSendProgramTransaction({
     program,
     serviceName: 'vft',
     functionName: 'transfer',
@@ -122,10 +113,10 @@ export function useTokenActions() {
 
 /**
  * Returns basic token metadata and utility states.
- * 
+ *
  * This hook uses useProgramQuery to read the name, symbol, decimals, and total supply from the contract.
- * 
- * Note: 
+ *
+ * Note:
  * - Each query has its own loading state, here combined into isLoading for simplicity.
  * - The returned refetchTotalSupply lets you manually trigger an update if you want to listen to events.
  * - The underlying useProgramQuery accepts a `watch` option (default false): if true, will refetch on every block!
@@ -156,7 +147,11 @@ export function useTokenQueries(): TokenMetaQueries {
     args: [],
   });
   // Query for token total supply
-  const { data: totalSupply, isPending: isSupplyPending, refetch: refetchTotalSupply } = useProgramQuery({
+  const {
+    data: totalSupply,
+    isPending: isSupplyPending,
+    refetch: refetchTotalSupply,
+  } = useProgramQuery({
     program,
     serviceName: 'vft',
     functionName: 'totalSupply',
@@ -164,18 +159,21 @@ export function useTokenQueries(): TokenMetaQueries {
   });
 
   return {
-    name, symbol, decimals, totalSupply,
+    name,
+    symbol,
+    decimals,
+    totalSupply,
     isLoading: isNamePending || isSymbolPending || isDecimalsPending || isSupplyPending,
-    refetchTotalSupply
+    refetchTotalSupply,
   };
 }
 
 /**
  * Returns the balance for a given address.
- * 
+ *
  * @param address ActorId (address, 0x-prefixed hex string)
  * @returns { balanceOf: any, ... }
- * 
+ *
  * Note: This hook is parameterized, so you can call it with any address to check balance.
  * - The address param must always be present, and must be correctly encoded.
  * - `watch` can be enabled for live balance tracking, but default is false (manual query).
@@ -196,12 +194,12 @@ export function useBalanceOfQuery(address: `0x${string}`) {
 
 /**
  * Subscribes to all relevant token contract events.
- * 
+ *
  * This hook lets you react to on-chain events (e.g., minted, burned, transferred, approved) from the contract.
- * 
+ *
  * - Each event has its own callback.
  * - You can use these to trigger UI updates (like refetching supply or balances).
- * 
+ *
  * Note: You can subscribe to more events, depending on your contract ABI.
  */
 export function useTokenEvents(callbacks: TokenEventCallbacks) {

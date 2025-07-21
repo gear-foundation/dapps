@@ -1,6 +1,6 @@
-# Example Frontend for Foundable Token  
+# Example Frontend for Fungible Token
 
-This project demonstrates a minimal frontend for a Foundable Token (VFT) contract using [sails-js](https://wiki.gear.foundation/docs/sails-js/react-hooks) React hooks.
+This project demonstrates a minimal frontend for a Fungible Token (VFT) contract using [sails-js](https://wiki.gear.foundation/docs/sails-js/react-hooks) React hooks.
 
 ## Key Components
 
@@ -22,7 +22,7 @@ More details: [SailsJS Client Generation Guide](https://wiki.gear.foundation/doc
 
 ## Contract Standard
 
-Full description of the Foundable Token Extended (VFT) contract standard and API:
+Full description of the Fungible Token Extended (VFT) contract standard and API:
 
 - [VFT standard on wiki.gear.foundation](https://wiki.gear.foundation/docs/examples/Standards/vft)
 

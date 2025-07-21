@@ -51,6 +51,6 @@ service Vft {
     };
   }
 };
-`
+`;
 
 export { ENV, IDL };

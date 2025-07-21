@@ -2,16 +2,25 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { GearApi, Program, HexString, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, ActorId, throwOnErrorReply, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import {
+  TransactionBuilder,
+  ActorId,
+  throwOnErrorReply,
+  getServiceNamePrefix,
+  getFnNamePrefix,
+  ZERO_ADDRESS,
+} from 'sails-js';
 
 export class SailsProgram {
   public readonly registry: TypeRegistry;
   public readonly vft: Vft;
-  private _program: Program;
+  private _program!: Program;
 
-  constructor(public api: GearApi, programId?: `0x${string}`) {
-    const types: Record<string, any> = {
-    }
+  constructor(
+    public api: GearApi,
+    programId?: `0x${string}`,
+  ) {
+    const types: Record<string, any> = {};
 
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
@@ -28,7 +37,12 @@ export class SailsProgram {
     return this._program.id;
   }
 
-  newCtorFromCode(code: Uint8Array | Buffer | HexString, name: string, symbol: string, decimals: number): TransactionBuilder<null> {
+  newCtorFromCode(
+    code: Uint8Array | Buffer | HexString,
+    name: string,
+    symbol: string,
+    decimals: number,
+  ): TransactionBuilder<null> {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
@@ -37,9 +51,9 @@ export class SailsProgram {
       '(String, String, String, u8)',
       'String',
       code,
-      async (programId) =>  {
+      async (programId) => {
         this._program = await Program.new(programId, this.api);
-      }
+      },
     );
     return builder;
   }
@@ -53,9 +67,9 @@ export class SailsProgram {
       '(String, String, String, u8)',
       'String',
       codeId,
-      async (programId) =>  {
+      async (programId) => {
         this._program = await Program.new(programId, this.api);
-      }
+      },
     );
     return builder;
   }
@@ -73,7 +87,7 @@ export class Vft {
       ['Vft', 'Burn', from, value],
       '(String, String, [u8;32], U256)',
       'bool',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -86,7 +100,7 @@ export class Vft {
       ['Vft', 'GrantAdminRole', to],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -99,7 +113,7 @@ export class Vft {
       ['Vft', 'GrantBurnerRole', to],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -112,7 +126,7 @@ export class Vft {
       ['Vft', 'GrantMinterRole', to],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -125,7 +139,7 @@ export class Vft {
       ['Vft', 'Mint', to, value],
       '(String, String, [u8;32], U256)',
       'bool',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -138,7 +152,7 @@ export class Vft {
       ['Vft', 'RevokeAdminRole', from],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -151,7 +165,7 @@ export class Vft {
       ['Vft', 'RevokeBurnerRole', from],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -164,7 +178,7 @@ export class Vft {
       ['Vft', 'RevokeMinterRole', from],
       '(String, String, [u8;32])',
       'Null',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -177,7 +191,7 @@ export class Vft {
       ['Vft', 'Approve', spender, value],
       '(String, String, [u8;32], U256)',
       'bool',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -190,7 +204,7 @@ export class Vft {
       ['Vft', 'Transfer', to, value],
       '(String, String, [u8;32], U256)',
       'bool',
-      this._program.programId
+      this._program.programId,
     );
   }
 
@@ -203,11 +217,15 @@ export class Vft {
       ['Vft', 'TransferFrom', from, to, value],
       '(String, String, [u8;32], [u8;32], U256)',
       'bool',
-      this._program.programId
+      this._program.programId,
     );
   }
 
-  public async admins(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Array<ActorId>> {
+  public async admins(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<ActorId>> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Admins']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -222,7 +240,11 @@ export class Vft {
     return result[2].toJSON() as unknown as Array<ActorId>;
   }
 
-  public async burners(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Array<ActorId>> {
+  public async burners(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<ActorId>> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Burners']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -237,7 +259,11 @@ export class Vft {
     return result[2].toJSON() as unknown as Array<ActorId>;
   }
 
-  public async minters(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Array<ActorId>> {
+  public async minters(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<ActorId>> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Minters']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -252,8 +278,16 @@ export class Vft {
     return result[2].toJSON() as unknown as Array<ActorId>;
   }
 
-  public async allowance(owner: ActorId, spender: ActorId, originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String, [u8;32], [u8;32])', ['Vft', 'Allowance', owner, spender]).toHex();
+  public async allowance(
+    owner: ActorId,
+    spender: ActorId,
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<bigint> {
+    const payload = this._program.registry
+      .createType('(String, String, [u8;32], [u8;32])', ['Vft', 'Allowance', owner, spender])
+      .toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
@@ -267,8 +301,15 @@ export class Vft {
     return result[2].toBigInt() as unknown as bigint;
   }
 
-  public async balanceOf(account: ActorId, originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String, [u8;32])', ['Vft', 'BalanceOf', account]).toHex();
+  public async balanceOf(
+    account: ActorId,
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<bigint> {
+    const payload = this._program.registry
+      .createType('(String, String, [u8;32])', ['Vft', 'BalanceOf', account])
+      .toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
       origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
@@ -282,7 +323,11 @@ export class Vft {
     return result[2].toBigInt() as unknown as bigint;
   }
 
-  public async decimals(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<number> {
+  public async decimals(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<number> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Decimals']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -297,7 +342,11 @@ export class Vft {
     return result[2].toNumber() as unknown as number;
   }
 
-  public async name(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<string> {
+  public async name(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<string> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Name']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -312,7 +361,11 @@ export class Vft {
     return result[2].toString() as unknown as string;
   }
 
-  public async symbol(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<string> {
+  public async symbol(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<string> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'Symbol']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -327,7 +380,11 @@ export class Vft {
     return result[2].toString() as unknown as string;
   }
 
-  public async totalSupply(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<bigint> {
+  public async totalSupply(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<bigint> {
     const payload = this._program.registry.createType('(String, String)', ['Vft', 'TotalSupply']).toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId,
@@ -342,54 +399,78 @@ export class Vft {
     return result[2].toBigInt() as unknown as bigint;
   }
 
-  public subscribeToMintedEvent(callback: (data: { to: ActorId; value: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToMintedEvent(
+    callback: (data: { to: ActorId; value: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Vft' && getFnNamePrefix(payload) === 'Minted') {
-        callback(this._program.registry.createType('(String, String, {"to":"[u8;32]","value":"U256"})', message.payload)[2].toJSON() as unknown as { to: ActorId; value: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"to":"[u8;32]","value":"U256"})', message.payload)[2]
+            .toJSON() as unknown as { to: ActorId; value: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToBurnedEvent(callback: (data: { from: ActorId; value: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToBurnedEvent(
+    callback: (data: { from: ActorId; value: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Vft' && getFnNamePrefix(payload) === 'Burned') {
-        callback(this._program.registry.createType('(String, String, {"from":"[u8;32]","value":"U256"})', message.payload)[2].toJSON() as unknown as { from: ActorId; value: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"from":"[u8;32]","value":"U256"})', message.payload)[2]
+            .toJSON() as unknown as { from: ActorId; value: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToApprovalEvent(callback: (data: { owner: ActorId; spender: ActorId; value: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToApprovalEvent(
+    callback: (data: { owner: ActorId; spender: ActorId; value: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Vft' && getFnNamePrefix(payload) === 'Approval') {
-        callback(this._program.registry.createType('(String, String, {"owner":"[u8;32]","spender":"[u8;32]","value":"U256"})', message.payload)[2].toJSON() as unknown as { owner: ActorId; spender: ActorId; value: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"owner":"[u8;32]","spender":"[u8;32]","value":"U256"})', message.payload)[2]
+            .toJSON() as unknown as { owner: ActorId; spender: ActorId; value: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToTransferEvent(callback: (data: { from: ActorId; to: ActorId; value: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToTransferEvent(
+    callback: (data: { from: ActorId; to: ActorId; value: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Vft' && getFnNamePrefix(payload) === 'Transfer') {
-        callback(this._program.registry.createType('(String, String, {"from":"[u8;32]","to":"[u8;32]","value":"U256"})', message.payload)[2].toJSON() as unknown as { from: ActorId; to: ActorId; value: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"from":"[u8;32]","to":"[u8;32]","value":"U256"})', message.payload)[2]
+            .toJSON() as unknown as { from: ActorId; to: ActorId; value: number | string | bigint },
+        );
       }
     });
   }
