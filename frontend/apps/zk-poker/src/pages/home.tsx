@@ -9,7 +9,7 @@ import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } fr
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
 import { useUserName } from '@/features/game/hooks';
 import { GetPlayerByIdQuery } from '@/features/game/queries';
-import { useGetBalanceQuery } from '@/features/game/sails';
+import { useGetBalanceQuery, useLobbiesQuery } from '@/features/game/sails';
 import { ClaimPtsButton } from '@/features/pts';
 import { useVaranWallet } from '@/features/wallet';
 
@@ -28,6 +28,9 @@ export default function Home() {
   const onEditProfile = () => {
     setIsEditProfileModalOpen(true);
   };
+
+  const { lobbies } = useLobbiesQuery();
+  const lobbiesCount = lobbies?.length || 0;
 
   const [playerData] = useQuery({
     query: GetPlayerByIdQuery,
@@ -62,7 +65,7 @@ export default function Home() {
         <div className={styles.buttons}>
           <MenuButton
             title="Join game"
-            subtitle="12 rooms"
+            subtitle={`${lobbiesCount} ${lobbiesCount === 1 ? 'room' : 'rooms'}`}
             onClick={() => {
               navigate(ROUTES.ROOMS);
             }}
