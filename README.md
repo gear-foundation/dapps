@@ -61,4 +61,4 @@ The source code is licensed under the [MIT license](LICENSE).
       Events
     </a> •
 </p>
-</h4>
+</h4> 
