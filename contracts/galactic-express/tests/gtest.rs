@@ -64,7 +64,7 @@ async fn test_play_game() {
         client
             .register(ADMIN.into(), player)
             .with_value(bid)
-            .with_args(GTestArgs::new(player_id.into()))
+            .with_args(|args| args.with_actor_id(player_id.into()))
             .send_recv(galactic_express_id)
             .await
             .unwrap();
@@ -140,7 +140,7 @@ async fn cancel_register_and_delete_player() {
         client
             .register(ADMIN.into(), player)
             .with_value(bid)
-            .with_args(GTestArgs::new(player_id.into()))
+            .with_args(|args| args.with_actor_id(player_id.into()))
             .send_recv(galactic_express_id)
             .await
             .unwrap();
@@ -155,7 +155,7 @@ async fn cancel_register_and_delete_player() {
     // cancel_register
     client
         .cancel_register()
-        .with_args(GTestArgs::new(PLAYERS[0].into()))
+        .with_args(|args| args.with_actor_id(PLAYERS[0].into()))
         .send_recv(galactic_express_id)
         .await
         .unwrap();
@@ -245,7 +245,7 @@ async fn errors() {
 
     let res = client
         .start_game(42, 20)
-        .with_args(GTestArgs::new(PLAYERS[0].into()))
+        .with_args(|args| args.with_actor_id(PLAYERS[0].into()))
         .send_recv(galactic_express_id)
         .await;
 
@@ -271,7 +271,7 @@ async fn errors() {
         client
             .register(ADMIN.into(), player)
             .with_value(bid)
-            .with_args(GTestArgs::new(player_id.into()))
+            .with_args(|args| args.with_actor_id(player_id.into()))
             .send_recv(galactic_express_id)
             .await
             .unwrap();
@@ -309,7 +309,7 @@ async fn errors() {
     let res = client
         .register(ADMIN.into(), player)
         .with_value(bid)
-        .with_args(GTestArgs::new(100.into()))
+        .with_args(|args| args.with_actor_id(100.into()))
         .send_recv(galactic_express_id)
         .await;
 

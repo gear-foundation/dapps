@@ -168,7 +168,7 @@ async fn allow_messages() {
 
     let res = client
         .start_game(None)
-        .with_args(GTestArgs::new(USER_ID.into()))
+        .with_args(|args| args.with_actor_id(USER_ID.into()))
         .send_recv(tic_tac_toe_id)
         .await;
     assert!(res.is_err());

@@ -240,7 +240,7 @@ async fn test_play_tournament() {
     client
         .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(USER_ID.into()))
+        .with_args(|args| args.with_actor_id(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -251,7 +251,7 @@ async fn test_play_tournament() {
     let old_balance = program_space.system().balance_of(USER_ID);
     client
         .cancel_register(None)
-        .with_args(GTestArgs::new(USER_ID.into()))
+        .with_args(|args| args.with_actor_id(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -270,7 +270,7 @@ async fn test_play_tournament() {
     client
         .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(USER_ID.into()))
+        .with_args(|args| args.with_actor_id(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -287,7 +287,7 @@ async fn test_play_tournament() {
         .unwrap();
     client
         .record_tournament_result(1_000, 1, 5, None)
-        .with_args(GTestArgs::new(USER_ID.into()))
+        .with_args(|args| args.with_actor_id(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();

@@ -59,7 +59,7 @@ async fn send_msg_to_counter() {
         let reply_bytes = proxy_client
             .execute_msg(payload_bytes)
             .with_value(10_000_000_000)
-            .with_args(GTestArgs::new((*user).into()))
+            .with_args(|args| args.with_actor_id((*user).into()))(*user).into()))
             .send_recv(proxy_id)
             .await
             .unwrap();
