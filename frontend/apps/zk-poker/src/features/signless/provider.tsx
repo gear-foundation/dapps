@@ -45,7 +45,6 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
 
   const executeWithSessionModal = useCallback(
     async (transaction: Transaction, sessionForAccount: `0x${string}` | null) => {
-      console.log('🚀 ~ signless:', signless);
       if (sessionForAccount) {
         await transaction.signAndSend();
         return;

@@ -57,7 +57,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
         .catch(({ message }: Error) => alert.error(message)),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [programId]);
 
   useEffect(() => {
     if (!accountAddress || !balance) return;

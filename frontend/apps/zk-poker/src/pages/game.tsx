@@ -1,5 +1,5 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
@@ -14,7 +14,7 @@ import {
   YourTurn,
   ZkVerification,
 } from '@/components';
-import { GameEndModal, StartGameModal } from '@/features/game/components';
+import { GameEndModal, StartGameModal, type GameEndData } from '@/features/game/components';
 import { usePlayerCards, useGameStatus, usePlayerSlots, useTurn } from '@/features/game/hooks';
 import {
   useParticipantsQuery,
@@ -44,8 +44,8 @@ import {
   useWaitingParticipantsQuery,
   useEventRegisteredToTheNextRoundSubscription,
   useEventWaitingForCardsToBeDisclosedSubscription,
+  useEventFinishedSubscription,
 } from '@/features/game/sails';
-import { useEventFinishedSubscription } from '@/features/game/sails/poker/events/use-event-finished-subscription';
 import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
 import { getRankFromValue } from '@/features/zk/utils';
 
@@ -55,7 +55,10 @@ function GamePage() {
   const navigate = useNavigate();
   const alert = useAlert();
 
+  const [gameEndData, setGameEndData] = useState<GameEndData | null>(null);
+
   const {
+    isRegistration,
     isWaitingShuffleVerification,
     isWaitingPartialDecryptionsForPlayersCards,
     isWaitingTableCardsAfterPreFlop,
@@ -104,11 +107,18 @@ function GamePage() {
   useEventPlayerDeletedSubscription({ onData: onPlayersChanged });
   useEventRegistrationCanceledSubscription({
     onData: ({ player_id }) => {
-      onPlayersChanged();
-      if (player_id === account?.decodedAddress) {
-        navigate(ROUTES.HOME);
+      const participant = participants?.find(([address]) => address === player_id);
+      // ! TODO: callback acts 2 times on the same event (queryKey), need to fix it
+      if (participant) {
+        const message =
+          account?.decodedAddress === participant?.[0]
+            ? 'You left the game'
+            : `Player ${participant?.[1].name} left the game`;
+        alert.info(message);
       }
+      onPlayersChanged();
     },
+    queryKey: [participants, account?.decodedAddress],
   });
   useEventGameCanceledSubscription({
     onData: () => {
@@ -254,6 +264,23 @@ function GamePage() {
   useEffect(() => {
     if (!isFinished) return;
 
+    // Save game end data when game finishes
+    if (participants && pots && revealedPlayers && commonCardsFields && totalPot) {
+      setGameEndData({
+        pots,
+        revealedPlayers,
+        commonCardsFields,
+        participants,
+        playerSlots,
+        totalPot,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFinished]);
+
+  useEffect(() => {
+    if (!isFinished) return;
+
     if (isAdmin && !isRestartGamePending) {
       setTimeout(() => {
         // ! TODO: refetch on error
@@ -270,7 +297,7 @@ function GamePage() {
             color="danger"
             rounded
             size="medium"
-            onClick={() => killMessage().then(() => navigate(ROUTES.HOME))}
+            onClick={() => killMessage()}
             disabled={isKillPending}
             className={styles.killButton}>
             <Exit />
@@ -280,11 +307,10 @@ function GamePage() {
             color="contrast"
             rounded
             size="medium"
-            onClick={() =>
-              isSpectator ? navigate(ROUTES.HOME) : cancelRegistrationMessage().then(() => navigate(ROUTES.HOME))
-            }
-            disabled={isCancelRegistrationPending}>
-            <BackIcon />
+            onClick={() => (isSpectator ? navigate(ROUTES.HOME) : cancelRegistrationMessage())}
+            disabled={isCancelRegistrationPending}
+            className={styles.backButton}>
+            {isSpectator ? <BackIcon /> : <Exit />}
           </Button>
         )}
       </Header>
@@ -293,9 +319,11 @@ function GamePage() {
       <div className={styles.content}>
         {config && (
           <GameBoard
-            totalPot={totalPot}
-            commonCardsFields={commonCardsFields}
-            playerSlots={playerSlots}
+            totalPot={gameEndData?.totalPot || totalPot}
+            currentBet={current_bet ? Number(current_bet) : undefined}
+            showCurrentBet={!isWaitingZk}
+            commonCardsFields={gameEndData?.commonCardsFields || commonCardsFields}
+            playerSlots={gameEndData?.playerSlots || playerSlots}
             timePerMoveSec={timeToTurnEndSec}
             onTimeEnd={onTimeEnd}
           />
@@ -311,18 +339,11 @@ function GamePage() {
         {isMyTurn && timeToTurnEndSec && <YourTurn timePerMoveSec={timeToTurnEndSec} onTimeEnd={onTimeEnd} />}
       </div>
 
-      {!isGameStarted && participants && config && (
+      {!isGameStarted && !gameEndData && participants && config && (
         <StartGameModal isAdmin={isAdmin} participants={startGameParticipants} />
       )}
 
-      {isFinished && participants && (
-        <GameEndModal
-          pots={pots}
-          revealedPlayers={revealedPlayers}
-          commonCardsFields={commonCardsFields}
-          participants={participants}
-        />
-      )}
+      {gameEndData && <GameEndModal {...gameEndData} onClose={() => setGameEndData(null)} />}
 
       {isWaitingZk &&
         (() => {
@@ -345,7 +366,7 @@ function GamePage() {
           );
         })()}
 
-      <OperationLogs />
+      <OperationLogs isHidden={isRegistration || isMyTurn} />
     </>
   );
 }

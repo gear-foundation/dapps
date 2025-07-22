@@ -2,21 +2,29 @@ import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 
-import { GameCard, Modal } from '@/components';
+import { CrossIcon } from '@/assets/images';
+import { Button, GameCard, Modal } from '@/components';
 import { Card, RevealedPlayer } from '@/features/zk/api/types';
 
+import { PlayerSlot } from '../../hooks';
 import { getWinnersHand } from '../../utils';
 
 import styles from './game-end-modal.module.scss';
 
-type Props = {
-  pots?: [string | number | bigint, `0x${string}`[]][];
-  revealedPlayers?: RevealedPlayer[];
-  commonCardsFields?: (Card | null)[];
+type GameEndData = {
+  pots: [string | number | bigint, `0x${string}`[]][];
+  revealedPlayers: RevealedPlayer[];
+  commonCardsFields: (Card | null)[];
   participants: [`0x${string}`, Participant][];
+  playerSlots: PlayerSlot[];
+  totalPot: number;
 };
 
-const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }: Props) => {
+type Props = GameEndData & {
+  onClose?: () => void;
+};
+
+const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, onClose }: Props) => {
   const { account } = useAccount();
   const myAddress = account?.decodedAddress;
 
@@ -40,6 +48,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
   const renderPotInfo = () => {
     if (myWinningPots.length === 0) {
       const mainPotWinners = pots[0][1];
+      // ! TODO: check it. Has bug.
       const { winnersHand, handRank } = getWinnersHand(mainPotWinners, revealedPlayers, commonCardsFields) || {};
 
       return (
@@ -127,10 +136,17 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants }
   return (
     <Modal
       heading=""
-      className={{ modal: styles.modal, wrapper: clsx(styles.wrapper, myWinningPots.length > 0 && styles.win) }}>
+      className={{ modal: styles.modal, wrapper: clsx(styles.wrapper, myWinningPots.length > 0 && styles.win) }}
+      onClose={onClose}>
       {renderPotInfo()}
+      {onClose && (
+        <Button color="grey" rounded size="x-small" onClick={onClose} className={styles.close}>
+          <CrossIcon />
+        </Button>
+      )}
     </Modal>
   );
 };
 
 export { GameEndModal };
+export type { GameEndData };

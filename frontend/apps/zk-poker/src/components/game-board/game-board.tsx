@@ -2,6 +2,7 @@ import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
+import { BIG_BLIND } from '@/app/consts';
 import { PlayerSlot, PlayerCards, FlipCard } from '@/components';
 import { Card, PlayerStatus } from '@/features/zk/api/types';
 
@@ -20,13 +21,23 @@ type PlayerSlot = {
 
 type Props = {
   totalPot?: number;
+  currentBet?: number;
+  showCurrentBet?: boolean;
   commonCardsFields: (Card | null)[];
   playerSlots: PlayerSlot[];
   timePerMoveSec: number | null;
   onTimeEnd: () => void;
 };
 
-const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveSec, onTimeEnd }: Props) => {
+const GameBoard = ({
+  totalPot,
+  currentBet = BIG_BLIND,
+  showCurrentBet,
+  commonCardsFields,
+  playerSlots,
+  timePerMoveSec,
+  onTimeEnd,
+}: Props) => {
   const isMovedTotalPot = playerSlots.length === 1 || playerSlots.length === 2;
 
   const myIndex = playerSlots.findIndex((playerSlot) => playerSlot.isMe);
@@ -52,6 +63,9 @@ const GameBoard = ({ totalPot, commonCardsFields, playerSlots, timePerMoveSec, o
                       <div className={clsx(styles.totalPot, { [styles.low]: isMovedTotalPot })}>
                         <div className={styles.totalPotValue}>{totalPot}</div>
                         <div className={styles.totalPotText}>Total pot</div>
+                        {currentBet && showCurrentBet && (
+                          <div className={styles.currentBet}>Current bet: {currentBet}</div>
+                        )}
                       </div>
                     )}
 

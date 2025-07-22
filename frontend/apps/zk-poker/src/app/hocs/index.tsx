@@ -52,10 +52,11 @@ function DnsProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
+  const program = usePokerProgram();
 
   return (
     <SharedGaslessTransactionsProvider
-      programId={pokerFactoryProgramId}
+      programId={program?.programId || pokerFactoryProgramId}
       backendAddress={ENV.GASLESS_BACKEND}
       voucherLimit={Number(ENV.VOUCHER_LIMIT)}>
       {children}

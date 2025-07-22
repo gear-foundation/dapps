@@ -1,35 +1,34 @@
 .container {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: 10px;
+  right: 10px;
   z-index: 1000;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 4px;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 .toggleButton {
-  width: 40px;
-  height: 40px;
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: white;
   background: rgba(0, 255, 196, 0.1);
   border: 1px solid rgba(0, 255, 196, 0.2);
-  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    path {
-      fill: #00ffc4;
-    }
-  }
+  font-size: 10px;
 
   &:hover {
     background: rgba(0, 255, 196, 0.15);
@@ -41,10 +40,17 @@
   background: rgba(19, 18, 23, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 12px;
   min-width: 280px;
-  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 196, 0.1) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
 }
 
 .logItem {

@@ -9,7 +9,7 @@ export const GetLobbiesQuery = gql<{
   lobbies: Lobby[];
 }>`
   query GetLobbies {
-    lobbies {
+    lobbies(where: { status_not_eq: "killed" }) {
       address
       currentPlayers {
         address

@@ -35,14 +35,15 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
   };
 
   const handleRaise = (multiplier: number) => {
-    void turnMessage({ action: { raise: { bet: multiplier * (currentBet || bigBlind) } } });
+    void turnMessage({ action: { raise: { bet: multiplier * (currentBet || bigBlind) - myCurrentBet } } });
   };
 
   const getHasEnoughBalance = (multiplier: number) => {
-    return balance >= multiplier * (currentBet || bigBlind) + myCurrentBet;
+    return balance >= multiplier * (currentBet || bigBlind);
   };
 
   const isDisabled = disabled || isPending;
+  const isCallDisabled = balance <= currentBet - myCurrentBet;
   const isCheck = myCurrentBet === currentBet || currentBet === 0;
 
   return (
@@ -70,7 +71,7 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
 
           <Button
             onClick={isCheck ? handleCheck : handleCall}
-            disabled={isDisabled}
+            disabled={isDisabled || isCallDisabled}
             color="transparent"
             className={styles.button}>
             <CallIcon />

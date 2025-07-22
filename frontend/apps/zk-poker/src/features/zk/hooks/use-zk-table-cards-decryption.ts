@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { useSubmitTablePartialDecryptionsMessage, useTableCardsToDecryptQuery } from '@/features/game/sails';
 
-import { logMemory, partialDecryptionsForTableCards } from '../utils';
+import { getZkLog, logMemory, partialDecryptionsForTableCards } from '../utils';
 
 import { useKeys } from './use-keys';
 import { useLogs } from './use-logs';
@@ -46,11 +46,7 @@ const useZkTableCardsDecryption = ({
       const decryptedCards = await partialDecryptionsForTableCards(cards, sk);
       const endTime = performance.now();
       const duration = Math.round(endTime - startTime);
-      // ! TODO: remove this
-      setLogs((prev) => [
-        ...prev,
-        `🔓 Table Cards Decryption completed in ${duration}ms (${(duration / 1000).toFixed(2)}s)`,
-      ]);
+      setLogs((prev) => [getZkLog('🔓 Table Cards Decryption', duration), ...prev]);
       logMemory('after partialDecryptionsForTableCards');
       await submitTablePartialDecryptionsMessage(decryptedCards);
       logMemory('after submitTablePartialDecryptionsMessage');

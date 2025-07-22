@@ -6,16 +6,20 @@ import { ROUTES } from '@/app/consts';
 import { BackIcon, PlusIcon, SearchIcon } from '@/assets/images';
 import { Button, Input, Room } from '@/components';
 import { GetLobbiesQuery, Lobby } from '@/features/game/queries';
-import { useLobbiesQuery } from '@/features/game/sails';
+import {
+  useEventLobbyCreatedSubscription,
+  useEventLobbyDeletedSubscription,
+  useLobbiesQuery,
+} from '@/features/game/sails';
 
 import styles from './rooms.module.scss';
 
 export default function Rooms() {
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
-  const { lobbies } = useLobbiesQuery();
+  const { lobbies, refetch } = useLobbiesQuery();
 
-  const [lobbiesData] = useQuery({
+  const [lobbiesData, refetchLobbies] = useQuery({
     query: GetLobbiesQuery,
   });
 
@@ -37,6 +41,14 @@ export default function Rooms() {
     e.preventDefault();
     searchRef.current?.focus();
   };
+
+  const onLobbyChanged = () => {
+    void refetch();
+    void refetchLobbies();
+  };
+
+  useEventLobbyCreatedSubscription({ onData: onLobbyChanged });
+  useEventLobbyDeletedSubscription({ onData: onLobbyChanged });
 
   return (
     <>
