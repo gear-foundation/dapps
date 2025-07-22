@@ -57,7 +57,7 @@ async fn check_submit_and_confirm() {
     // confirm transaction
     service_client
         .confirm_transaction(0.into())
-        .with_args(GTestArgs::new(USERS[2].into()))
+        .with_args(|args| args.with_actor_id(USERS[2].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -119,7 +119,7 @@ async fn change_required_confirmations_count() {
     // confirm transaction
     service_client
         .confirm_transaction(0.into())
-        .with_args(GTestArgs::new(USERS[2].into()))
+        .with_args(|args| args.with_actor_id(USERS[2].into()))
         .send_recv(program_id)
         .await
         .unwrap();

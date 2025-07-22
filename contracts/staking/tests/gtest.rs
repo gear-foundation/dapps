@@ -112,7 +112,7 @@ async fn test_stake() {
 
     service_client
         .stake(3000)
-        .with_args(GTestArgs::new(ACTOR_IDS[1].into()))
+        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -203,7 +203,7 @@ async fn test_get_reward() {
     let mut service_client = staking_client::Staking::new(remoting.clone());
     service_client
         .stake(1000)
-        .with_args(GTestArgs::new(ACTOR_IDS[1].into()))
+        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -220,7 +220,7 @@ async fn test_get_reward() {
 
     service_client
         .get_reward()
-        .with_args(GTestArgs::new(ACTOR_IDS[1].into()))
+        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();

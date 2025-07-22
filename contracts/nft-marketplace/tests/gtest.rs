@@ -159,7 +159,7 @@ async fn success_buy_with_native_tokens() {
     service_client
         .buy_item(nft_contract_id, 0.into())
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -268,7 +268,7 @@ async fn success_buy_with_fungible_tokens() {
 
     service_client
         .buy_item(nft_contract_id, 0.into())
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -350,7 +350,7 @@ async fn success_offer_native_tokens() {
     service_client
         .add_offer(nft_contract_id, None, 0.into(), 10_000_000_000_000)
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -465,7 +465,7 @@ async fn success_offer_with_fungible_tokens() {
             0.into(),
             10_000_000_000_000,
         )
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -569,7 +569,7 @@ async fn success_auction_with_native_tokens() {
     service_client
         .add_bid(nft_contract_id, 0.into(), 15_000_000_000_000)
         .with_value(15_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[2].into()))
+        .with_args(|args| args.with_actor_id(USERS[2].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -578,7 +578,7 @@ async fn success_auction_with_native_tokens() {
     service_client
         .add_bid(nft_contract_id, 0.into(), 20_000_000_000_000)
         .with_value(20_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -720,7 +720,7 @@ async fn success_auction_with_fungible_tokens() {
 
     service_client
         .add_bid(nft_contract_id, 0.into(), 15_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[2].into()))
+        .with_args(|args| args.with_actor_id(USERS[2].into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -730,7 +730,7 @@ async fn success_auction_with_fungible_tokens() {
     );
     service_client
         .add_bid(nft_contract_id, 0.into(), 20_000_000_000_000)
-        .with_args(GTestArgs::new(USERS[1].into()))
+        .with_args(|args| args.with_actor_id(USERS[1].into()))
         .send_recv(program_id)
         .await
         .unwrap();
