@@ -35,7 +35,7 @@ fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) {
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
     let state = &res.decoded_log::<(String, String, U256)>();
-    println!("STATE {:?}", state)
+    println!("STATE {state:?}")
 }
 
 // TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
