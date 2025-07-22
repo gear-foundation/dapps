@@ -5,20 +5,8 @@ This project demonstrates a minimal frontend for a Fungible Token (VFT) contract
 ## Key Components
 
 - **API Hooks:** Modularized contract logic, all reusable hooks are in `hooks/api.ts`.
-- **libts:** Auto-generated contract interface description (TypeScript), generated using `sails-js-cli` (see below).
+- **Sails JS lib:** Auto-generated contract interface description (TypeScript), generated using `sails-js-cli` (see below).
 - **Home:** The main view component showcasing token operations, transfer, and balance queries.
-
-## How to generate `lib.ts`
-
-Generate TypeScript interface files for your contract using the CLI:
-
-```bash
-npm install -g sails-js-cli
-
-sails-js generate path/to/sails.idl -o path/to/out/dir --no-project
-```
-
-More details: [SailsJS Client Generation Guide](https://wiki.gear.foundation/docs/sails-js/client-generation)
 
 ## Contract Standard
 

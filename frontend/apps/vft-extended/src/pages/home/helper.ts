@@ -1,10 +1,14 @@
-import { u8aToHex } from '@polkadot/util';
-import { decodeAddress } from '@polkadot/util-crypto';
+import { decodeAddress, encodeAddress } from '@gear-js/api';
 
-export function toActorId(address?: string) {
+export const isValidAddress = (address: string): boolean => {
   try {
-    return u8aToHex(decodeAddress(address));
+    encodeAddress(decodeAddress(address));
+    return true;
   } catch {
-    return '0x0000000000000000000000000000000000000000';
+    return false;
   }
+};
+
+export function toActorId(address: string) {
+  return decodeAddress(address);
 }

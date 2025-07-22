@@ -1,163 +1,191 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { Button, Input } from '@gear-js/vara-ui';
 import { useState } from 'react';
 
-import { useTokenActions, useTokenQueries, useTokenEvents, useBalanceOfQuery } from '../../hooks';
+import {
+  useSendMintTransaction,
+  useSendBurnTransaction,
+  useSendTransferTransaction,
+  useTokenQueries,
+  useTokenEvents,
+  useBalanceOfQuery,
+} from '../../hooks';
 
-import { toActorId } from './helper';
-import { styles } from './styles';
+import styles from './Home.module.scss';
+import { toActorId, isValidAddress } from './helper';
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 function isZeroAddress(address: string) {
-  return address === '0x0000000000000000000000000000000000000000';
+  return address === ZERO_ADDRESS;
 }
 
 function Home() {
   const { account } = useAccount();
   const { name, symbol, decimals, totalSupply, isLoading, refetchTotalSupply } = useTokenQueries();
-  const { mint, burn, mintPending, burnPending, transfer, transferPending } = useTokenActions();
   const alert = useAlert();
 
   const [transferTo, setTransferTo] = useState('');
   const [transferValue, setTransferValue] = useState('');
-
-  // Balance Of logic
   const [balanceAddr, setBalanceAddr] = useState('');
-  const [checkedAddr, setCheckedAddr] = useState('');
-  const [showBalance, setShowBalance] = useState(false);
+
+  const { sendTransactionAsync: sendMint, isPending: mintPending } = useSendMintTransaction();
+  const { sendTransactionAsync: sendBurn, isPending: burnPending } = useSendBurnTransaction();
+  const { sendTransactionAsync: sendTransfer, isPending: transferPending } = useSendTransferTransaction();
 
   useTokenEvents({
     onMinted: () => void refetchTotalSupply?.(),
     onBurned: () => void refetchTotalSupply?.(),
   });
 
-  const handleMint = async () => {
+  const handleMint = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      if (!account?.address) return alert.error('No account selected!');
-      await mint(toActorId(account.address), '1000');
+      if (!account?.address) throw new Error('No account selected!');
+      await sendMint({ args: [account.decodedAddress, '1000'] });
       alert.success('Mint success!');
-    } catch (e) {
+    } catch (error) {
       alert.error('Error mint');
-      console.error(e);
+      console.error(error);
     }
   };
 
-  const handleBurn = async () => {
+  const handleBurn = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      if (!account?.address) return alert.error('No account selected!');
-      await burn(toActorId(account.address), '1000');
+      if (!account?.address) throw new Error('No account selected!');
+      await sendBurn({ args: [account.decodedAddress, '1000'] });
+      await refetchTotalSupply?.();
       alert.success('Burn success!');
-    } catch (e) {
+    } catch (error) {
       alert.error('Error burn');
-      console.error(e);
+      console.error(error);
     }
   };
 
-  const handleTransfer = async () => {
+  const handleTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!account?.address) throw new Error('No account selected!');
+    if (!isValidAddress(transferTo)) throw new Error('Invalid recipient address!');
     try {
-      if (!account?.address) return alert.error('No account selected!');
-      await transfer(toActorId(transferTo), transferValue);
+      await sendTransfer({ args: [transferTo as `0x${string}`, transferValue] });
       alert.success('Transfer success!');
       setTransferValue('');
       setTransferTo('');
-    } catch (e) {
+    } catch (error) {
       alert.error('Error transfer');
-      console.error(e);
+      console.error(error);
     }
   };
 
-  const handleBalanceOf = () => {
-    setCheckedAddr(balanceAddr.trim());
-    setShowBalance(true);
-  };
-
-  const actorId = toActorId(checkedAddr);
+  const actorId = isValidAddress(balanceAddr) ? toActorId(balanceAddr) : ZERO_ADDRESS;
   const balanceQuery = useBalanceOfQuery(actorId);
 
   return (
-    <div style={styles.container}>
-      <div style={{ marginBottom: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: 24, fontWeight: 700 }}>Token Metadata</div>
+    <main className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Token Metadata</h1>
         {isLoading ? (
-          <div style={{ fontSize: 18 }}>Loading token data...</div>
+          <p className={styles.loading}>Loading token data...</p>
         ) : (
-          <>
+          <dl className={styles.metaList}>
             <div>
-              <strong>Name:</strong> {name}
+              <dt>Name:</dt>
+              <dd>{name}</dd>
             </div>
             <div>
-              <strong>Symbol:</strong> {symbol}
+              <dt>Symbol:</dt>
+              <dd>{symbol}</dd>
             </div>
             <div>
-              <strong>Decimals:</strong> {decimals}
+              <dt>Decimals:</dt>
+              <dd>{decimals}</dd>
             </div>
             <div>
-              <strong>Total Supply:</strong> {totalSupply}
+              <dt>Total Supply:</dt>
+              <dd>{totalSupply}</dd>
             </div>
-          </>
+          </dl>
         )}
-        <div style={{ marginTop: 12, color: '#6c6c6c', fontSize: 14 }}>
+        <div className={styles.account}>
           <strong>Your Account:</strong> {account?.address ?? 'Not connected'}
         </div>
-      </div>
+      </header>
 
-      <button
-        onClick={handleMint}
-        disabled={mintPending || !account?.address}
-        style={{ ...styles.button, fontSize: 20, padding: '14px 30px', marginBottom: 12 }}>
-        {mintPending ? 'Minting...' : 'Mint 1000 to self'}
-      </button>
-      <button
-        onClick={handleBurn}
-        disabled={burnPending || !account?.address}
-        style={{ ...styles.button, fontSize: 20, padding: '14px 30px', marginBottom: 24 }}>
-        {burnPending ? 'Burning...' : 'Burn 1000 from self'}
-      </button>
+      <form className={styles.section} onSubmit={handleMint} autoComplete="off">
+        <Button type="submit" color="primary" size="medium" isLoading={mintPending} disabled={!account?.address} block>
+          {mintPending ? 'Minting...' : 'Mint 1000 to self'}
+        </Button>
+      </form>
 
-      <div style={styles.section}>
-        <div style={styles.label}>Transfer</div>
-        <input
-          placeholder="To address"
+      <form className={styles.section} onSubmit={handleBurn} autoComplete="off">
+        <Button type="submit" color="contrast" size="medium" isLoading={burnPending} disabled={!account?.address} block>
+          {burnPending ? 'Burning...' : 'Burn 1000 from self'}
+        </Button>
+      </form>
+
+      <form className={styles.section} onSubmit={handleTransfer} autoComplete="off">
+        <Input
+          label="To address"
           value={transferTo}
           onChange={(e) => setTransferTo(e.target.value)}
-          style={styles.input}
+          placeholder="To address"
+          size="medium"
+          block
+          error={transferTo && !isValidAddress(transferTo) ? 'Incorrect address' : undefined}
         />
-        <input
-          placeholder="Amount"
+        <Input
+          label="Amount"
+          type="number"
           value={transferValue}
           onChange={(e) => setTransferValue(e.target.value)}
-          style={styles.input}
+          placeholder="Amount"
+          size="medium"
+          min="0"
+          block
         />
-        <button
-          onClick={handleTransfer}
-          disabled={transferPending || !transferTo || !transferValue}
-          style={styles.button}>
+        <Button
+          type="submit"
+          color="primary"
+          size="medium"
+          isLoading={transferPending}
+          disabled={transferPending || !transferTo || !transferValue || !isValidAddress(transferTo)}
+          block>
           {transferPending ? 'Transferring...' : 'Transfer'}
-        </button>
-      </div>
+        </Button>
+      </form>
 
-      <div style={styles.section}>
-        <div style={styles.label}>Balance Of</div>
-        <input
-          placeholder="Address"
+      <form className={styles.section} autoComplete="off">
+        <Input
+          label="Address"
           value={balanceAddr}
           onChange={(e) => setBalanceAddr(e.target.value)}
-          style={styles.input}
+          placeholder="Address"
+          size="medium"
+          block
+          error={balanceAddr && !isValidAddress(balanceAddr) ? 'Incorrect address' : undefined}
         />
-        <button onClick={handleBalanceOf} style={styles.button}>
+        <Button
+          type="button"
+          color="primary"
+          size="medium"
+          disabled={!isValidAddress(balanceAddr)}
+          block
+          onClick={() => setBalanceAddr(balanceAddr.trim())}>
           Check Balance
-        </button>
-        {showBalance &&
-          checkedAddr &&
+        </Button>
+        {isValidAddress(balanceAddr) &&
           (isZeroAddress(actorId) ? (
-            <div style={styles.error}>
+            <div className={styles.error}>
               Balance: <strong>Error</strong>
             </div>
           ) : (
-            <div style={styles.balance}>
+            <div className={styles.balance}>
               Balance: <strong>{balanceQuery.data !== undefined ? balanceQuery.data?.toString() : ''}</strong>
             </div>
           ))}
-      </div>
-    </div>
+      </form>
+    </main>
   );
 }
 

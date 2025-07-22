@@ -1,3 +1,19 @@
-import { useProgramInstance, useTokenActions, useTokenQueries, useTokenEvents, useBalanceOfQuery } from './api';
+import {
+  useProgramInstance,
+  useSendMintTransaction,
+  useSendBurnTransaction,
+  useSendTransferTransaction,
+  useTokenQueries,
+  useTokenEvents,
+  useBalanceOfQuery,
+} from './api';
 
-export { useProgramInstance, useTokenActions, useTokenQueries, useTokenEvents, useBalanceOfQuery };
+export {
+  useProgramInstance,
+  useSendMintTransaction,
+  useSendBurnTransaction,
+  useSendTransferTransaction,
+  useTokenQueries,
+  useTokenEvents,
+  useBalanceOfQuery,
+};
