@@ -8,7 +8,3 @@ export const isValidAddress = (address: string): boolean => {
     return false;
   }
 };
-
-export function toActorId(address: string) {
-  return decodeAddress(address);
-}

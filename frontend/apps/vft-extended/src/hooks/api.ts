@@ -67,7 +67,6 @@ export function useSendTransferTransaction() {
 
 /**
  * Returns basic token metadata and utility states.
- *
  */
 export function useTokenQueries(): TokenMetaQueries {
   const { data: program } = useProgramInstance();

@@ -12,13 +12,7 @@ import {
 } from '../../hooks';
 
 import styles from './Home.module.scss';
-import { toActorId, isValidAddress } from './helper';
-
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-
-function isZeroAddress(address: string) {
-  return address === ZERO_ADDRESS;
-}
+import { isValidAddress } from './helper';
 
 function Home() {
   const { account } = useAccount();
@@ -34,8 +28,10 @@ function Home() {
   const { sendTransactionAsync: sendTransfer, isPending: transferPending } = useSendTransferTransaction();
 
   useTokenEvents({
-    onMinted: () => void refetchTotalSupply?.(),
-    onBurned: () => void refetchTotalSupply?.(),
+    onMinted: (data) => alert.info(`Mint event: ${JSON.stringify(data)}`),
+    onBurned: (data) => alert.info(`Burn event: ${JSON.stringify(data)}`),
+    onTransfer: (data) => alert.info(`Transfer event: ${JSON.stringify(data)}`),
+    onApproval: (data) => alert.info(`Approval event: ${JSON.stringify(data)}`),
   });
 
   const handleMint = async (e: React.FormEvent) => {
@@ -78,8 +74,7 @@ function Home() {
     }
   };
 
-  const actorId = isValidAddress(balanceAddr) ? toActorId(balanceAddr) : ZERO_ADDRESS;
-  const balanceQuery = useBalanceOfQuery(actorId);
+  const balanceQuery = isValidAddress(balanceAddr) ? useBalanceOfQuery(balanceAddr as `0x{string}`) : null;
 
   return (
     <main className={styles.container}>
@@ -174,16 +169,11 @@ function Home() {
           onClick={() => setBalanceAddr(balanceAddr.trim())}>
           Check Balance
         </Button>
-        {isValidAddress(balanceAddr) &&
-          (isZeroAddress(actorId) ? (
-            <div className={styles.error}>
-              Balance: <strong>Error</strong>
-            </div>
-          ) : (
-            <div className={styles.balance}>
-              Balance: <strong>{balanceQuery.data !== undefined ? balanceQuery.data?.toString() : ''}</strong>
-            </div>
-          ))}
+        {isValidAddress(balanceAddr) && (
+          <div className={styles.balance}>
+            Balance: <strong>{balanceQuery?.data !== undefined ? balanceQuery.data?.toString() : ''}</strong>
+          </div>
+        )}
       </form>
     </main>
   );
