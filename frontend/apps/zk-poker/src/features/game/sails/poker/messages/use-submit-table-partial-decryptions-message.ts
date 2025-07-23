@@ -1,7 +1,7 @@
 import { useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { PrepareEzTransactionParamsResult, usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
 import { usePokerProgram } from '@/app/utils';
 import { useAutoSignless } from '@/features/signless';
@@ -22,14 +22,18 @@ export const useSubmitTablePartialDecryptionsMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ instances }: Params) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { transaction } = await prepareTransactionAsync({
-      args: [instances, sessionForAccount],
-      ...params,
-      gasLimit: { increaseGas: 30 },
-    });
+    const { ...ezParams } = await prepareEzTransactionParams();
+    const getTransaction = (params?: Partial<PrepareEzTransactionParamsResult>) => {
+      const { sessionForAccount, ...rest } = { ...ezParams, ...params };
+      const result = prepareTransactionAsync({
+        args: [instances, sessionForAccount],
+        ...rest,
+        gasLimit: { increaseGas: 30 },
+      });
+      return result;
+    };
 
-    await executeWithSessionModal(transaction, sessionForAccount);
+    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount);
   };
 
   const { mutateAsync, isPending } = useMutation({

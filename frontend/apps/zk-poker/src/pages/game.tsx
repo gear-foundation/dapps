@@ -276,7 +276,7 @@ function GamePage() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFinished]);
+  }, [isFinished, revealedPlayers]);
 
   useEffect(() => {
     if (!isFinished) return;

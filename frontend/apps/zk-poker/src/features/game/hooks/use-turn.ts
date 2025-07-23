@@ -88,7 +88,6 @@ export const useTurn = () => {
 
   useEffect(() => {
     if (contractTurn && last_active_time && config && activeIds) {
-      console.log('🚀 ~ useEffect ~ contractTurn:', contractTurn);
       const timePerMoveMs = Number(config.time_per_move_ms);
       const lastActiveTime = Number(last_active_time);
       const timeLeft = Date.now() - lastActiveTime;
@@ -107,7 +106,6 @@ export const useTurn = () => {
       setAutoFoldPlayers(autoFolded);
       setCurrentTurn(actualTurn);
       if (actualTurn === null && account?.decodedAddress === config?.admin_id) {
-        console.log('!!!!!!!!!!!!! last turn ended');
         sendAutoFoldWithRetry();
       }
       setTimeToTurnEndSec(Math.floor((timePerMoveMs - (timeLeft % timePerMoveMs)) / 1000));
@@ -130,11 +128,9 @@ export const useTurn = () => {
     if (currentTurn) {
       const nextAutoFoldPlayers = [...autoFoldPlayers, currentTurn];
       const nextTurn = getNextActivePlayer(currentTurn, nextAutoFoldPlayers);
-      console.log('🚀 ~ onTimeEnd ~ nextTurn:', nextTurn);
       setAutoFoldPlayers(nextAutoFoldPlayers);
       setCurrentTurn(nextTurn);
       if (!nextTurn && account?.decodedAddress === config?.admin_id) {
-        console.log('!!!!!!!!!!!!! last turn ended', currentTurn);
         sendAutoFoldWithRetry();
       }
     }

@@ -106,9 +106,11 @@ function usePair(programId: HexString, session?: Session | null) {
   const unlockPair = (password: string) => {
     if (!storagePair) throw new Error('Pair not found');
 
-    const result = getUnlockedPair(storagePair, password);
+    const unlockedPair = getUnlockedPair(storagePair, password);
 
-    setPair(result);
+    setPair(unlockedPair);
+
+    return unlockedPair;
   };
 
   const setPairToStorage = (value: KeyringPair$Json | undefined) => {

@@ -1,7 +1,7 @@
 import { useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { PrepareEzTransactionParamsResult, usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
 import { usePokerProgram } from '@/app/utils';
 import { useUserName } from '@/features/game/hooks';
@@ -23,13 +23,17 @@ export const useRegisterMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async () => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { transaction } = await prepareTransactionAsync({
-      args: [userName, getPkBytes(pk), sessionForAccount],
-      ...params,
-    });
+    const { ...ezParams } = await prepareEzTransactionParams();
+    const getTransaction = (params?: Partial<PrepareEzTransactionParamsResult>) => {
+      const { sessionForAccount, ...rest } = { ...ezParams, ...params };
+      const result = prepareTransactionAsync({
+        args: [userName, getPkBytes(pk), sessionForAccount],
+        ...rest,
+      });
+      return result;
+    };
 
-    await executeWithSessionModal(transaction, sessionForAccount);
+    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount);
   };
 
   const { mutateAsync, isPending } = useMutation({

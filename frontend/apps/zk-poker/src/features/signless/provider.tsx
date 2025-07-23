@@ -1,7 +1,15 @@
 import { EnableSessionModal } from '@ez/features/signless-transactions/components/enable-session-modal';
-import { ProviderProps } from '@gear-js/react-hooks';
+import { HexString } from '@gear-js/api';
+import { ProviderProps, useAccount } from '@gear-js/react-hooks';
 import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
-import { CreateSessionModal, SignlessContext, useEzTransactions, useCreateSailsSession } from 'gear-ez-transactions';
+import { IKeyringPair } from '@polkadot/types/types';
+import {
+  CreateSessionModal,
+  SignlessContext,
+  useEzTransactions,
+  useCreateSailsSession,
+  PrepareEzTransactionParamsResult,
+} from 'gear-ez-transactions';
 import { createContext, useContext, useState, useCallback } from 'react';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
@@ -15,8 +23,17 @@ interface TransactionWithSessionOptions {
 
 type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionReturn<null>>;
 
+type PrepareTransactionAsyncResult = Promise<{
+  transaction: Transaction;
+  awaited: {
+    fee: bigint;
+  };
+}>;
 interface AutoSignlessContextType {
-  executeWithSessionModal: (transaction: Transaction, sessionForAccount: `0x${string}` | null) => Promise<void>;
+  executeWithSessionModal: (
+    getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
+    sessionForAccount: HexString | null,
+  ) => Promise<void>;
   closeModal: () => void;
 }
 
@@ -24,19 +41,22 @@ const AutoSignlessContext = createContext<AutoSignlessContextType | undefined>(u
 
 const AutoSignlessProvider = ({ children }: ProviderProps) => {
   const [modalOpen, setModalOpen] = useState<'create-session' | 'enable-session' | null>(null);
-  const [pendingTransaction, setPendingTransaction] = useState<Transaction | null>(null);
+  const [getPendingTransaction, setGetPendingTransaction] = useState<
+    ((params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult) | null
+  >(null);
   const [pendingOptions, setPendingOptions] = useState<TransactionWithSessionOptions>({});
   const { gasless, signless } = useEzTransactions();
   const program = usePokerProgram();
   const { createSession } = useCreateSailsSession(program?.programId || '0x', program);
+  const { account } = useAccount();
 
   const openModalWithExtrinsic = useCallback(
     (
-      transaction: Transaction,
+      getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
       modal: 'create-session' | 'enable-session',
       options: TransactionWithSessionOptions = {},
     ) => {
-      setPendingTransaction(transaction);
+      setGetPendingTransaction(() => getTransaction);
       setPendingOptions(options);
       setModalOpen(modal);
     },
@@ -44,13 +64,17 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
   );
 
   const executeWithSessionModal = useCallback(
-    async (transaction: Transaction, sessionForAccount: `0x${string}` | null) => {
+    async (
+      getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
+      sessionForAccount: HexString | null,
+    ) => {
       if (sessionForAccount) {
+        const { transaction } = await getTransaction({ sessionForAccount });
         await transaction.signAndSend();
         return;
       } else {
         const modal = signless.session && signless.storagePair && !signless.pair ? 'enable-session' : 'create-session';
-        openModalWithExtrinsic(transaction, modal);
+        openModalWithExtrinsic(getTransaction, modal);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,7 +83,7 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
 
   const closeModal = useCallback(() => {
     setModalOpen(null);
-    setPendingTransaction(null);
+    setGetPendingTransaction(null);
     setPendingOptions({});
   }, []);
 
@@ -67,23 +91,40 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
     (): SignlessContext => ({
       ...signless,
       createSession: (...createSessionParams) => {
-        if (pendingTransaction) {
+        if (getPendingTransaction) {
           const [session, voucherValue, params] = createSessionParams;
 
-          void createSession(session, voucherValue, {
-            ...params,
-            additionalExtrinsics: [pendingTransaction.extrinsic],
-            onSuccess: () => {
-              pendingOptions.onSuccess?.();
-              params.onSuccess?.();
-              closeModal();
-            },
+          void getPendingTransaction().then(({ transaction }) => {
+            void createSession(session, voucherValue, {
+              ...params,
+              additionalExtrinsics: [transaction.extrinsic],
+              onSuccess: () => {
+                pendingOptions.onSuccess?.();
+                params.onSuccess?.();
+                closeModal();
+              },
+            });
           });
         }
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [signless, pendingOptions, closeModal, pendingTransaction],
+    [signless, pendingOptions, closeModal, getPendingTransaction],
+  );
+
+  const enableSessionCallback = useCallback(
+    async (pair: IKeyringPair) => {
+      const voucherId = signless.storageVoucher?.id;
+      if (getPendingTransaction && voucherId && account) {
+        const { transaction } = await getPendingTransaction({
+          account: { addressOrPair: pair },
+          sessionForAccount: account.decodedAddress,
+          voucherId,
+        });
+        await transaction.signAndSend();
+      }
+    },
+    [getPendingTransaction, signless.storageVoucher, account],
   );
 
   const contextValue: AutoSignlessContextType = {
@@ -108,7 +149,9 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
           />
         )}
 
-        {modalOpen === 'enable-session' && <EnableSessionModal close={() => closeModal()} maxWidth="375px" />}
+        {modalOpen === 'enable-session' && (
+          <EnableSessionModal callback={enableSessionCallback} close={() => closeModal()} maxWidth="375px" />
+        )}
       </>
     </AutoSignlessContext.Provider>
   );

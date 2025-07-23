@@ -1,7 +1,7 @@
 import { useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { PrepareEzTransactionParamsResult, usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { ActorId } from 'sails-js';
 
 import { usePokerProgram } from '@/app/utils';
@@ -19,10 +19,17 @@ export const useDeletePlayerMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async (playerId: ActorId) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { transaction } = await prepareTransactionAsync({ args: [playerId, sessionForAccount], ...params });
+    const { ...ezParams } = await prepareEzTransactionParams();
+    const getTransaction = (params?: Partial<PrepareEzTransactionParamsResult>) => {
+      const { sessionForAccount, ...rest } = { ...ezParams, ...params };
+      const result = prepareTransactionAsync({
+        args: [playerId, sessionForAccount],
+        ...rest,
+      });
+      return result;
+    };
 
-    await executeWithSessionModal(transaction, sessionForAccount);
+    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount);
   };
 
   const { mutateAsync, isPending } = useMutation({
