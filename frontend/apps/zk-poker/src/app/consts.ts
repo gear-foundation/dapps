@@ -22,7 +22,6 @@ export const ROUTES = {
   CREATE_GAME: '/create-game',
   ROOMS: '/rooms',
   NOTFOUND: '*',
-  COMBINATIONS: '/combinations',
 };
 
 export const SMALL_BLIND = 5;

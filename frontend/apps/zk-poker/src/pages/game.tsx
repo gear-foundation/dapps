@@ -7,6 +7,7 @@ import { BackIcon, Exit } from '@/assets/images';
 import {
   Button,
   CardsLoader,
+  Combinations,
   GameBoard,
   GameButtons,
   Header,
@@ -313,6 +314,7 @@ function GamePage() {
             {isSpectator ? <BackIcon /> : <Exit />}
           </Button>
         )}
+        <Combinations />
       </Header>
 
       {isMyTurn && <div className={styles.bottomGlow} />}

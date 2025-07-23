@@ -1,8 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
-import { ROUTES } from '@/app/consts';
-import { BackIcon } from '@/assets/images';
-import { Button, GameCard, Header } from '@/components';
+import { SpadeLgIcon } from '@/assets/images';
+import { Button, GameCard, Modal } from '@/components';
 import { Card } from '@/features/zk/api/types';
 
 import styles from './combinations.module.scss';
@@ -137,41 +136,52 @@ const combinations: Combination[] = [
   },
 ];
 
-export default function CombinationsPage() {
-  const navigate = useNavigate();
+const Combinations = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
 
   return (
     <>
-      <Header>
-        <Button color="contrast" rounded onClick={() => navigate(ROUTES.HOME)}>
-          <BackIcon />
-        </Button>
-      </Header>
+      <Button onClick={handleOpen} color="grey" rounded size="medium" className={styles.button}>
+        <SpadeLgIcon />
+      </Button>
 
-      <div className={styles.container}>
-        <h1 className={styles.title}>Poker Hand Rankings</h1>
-        <p className={styles.description}>From highest to lowest, here are the winning combinations in poker:</p>
+      {isOpen && (
+        <Modal
+          heading="Poker Hand Rankings"
+          onClose={() => setIsOpen(false)}
+          isDark
+          className={{ wrapper: styles.wrapper }}>
+          <div className={styles.container}>
+            <p className={styles.description}>From highest to lowest, here are the winning combinations in poker:</p>
 
-        <div className={styles.combinations}>
-          {combinations.map((combination) => (
-            <div key={combination.name} className={styles.combination}>
-              <div className={styles.combinationHeader}>
-                <span className={styles.rank}>#{combination.rank}</span>
-                <h2 className={styles.name}>{combination.name}</h2>
-              </div>
-              <p className={styles.description}>{combination.description}</p>
-              <div className={styles.example}>
-                <span className={styles.exampleLabel}>Example:</span>
-                <div className={styles.cards}>
-                  {combination.example.map((card) => (
-                    <GameCard key={`${card.suit}-${card.rank}`} value={card} />
-                  ))}
+            <div className={styles.combinations}>
+              {combinations.map((combination) => (
+                <div key={combination.name} className={styles.combination}>
+                  <div className={styles.combinationHeader}>
+                    <span className={styles.rank}>#{combination.rank}</span>
+                    <h2 className={styles.name}>{combination.name}</h2>
+                  </div>
+                  <p className={styles.description}>{combination.description}</p>
+                  <div className={styles.example}>
+                    <span className={styles.exampleLabel}>Example:</span>
+                    <div className={styles.cards}>
+                      {combination.example.map((card) => (
+                        <GameCard key={`${card.suit}-${card.rank}`} value={card} size="md" />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </Modal>
+      )}
     </>
   );
-}
+};
+
+export { Combinations };

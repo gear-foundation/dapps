@@ -16,7 +16,6 @@ const routes = [
   { path: ROUTES.CREATE_GAME, Page: lazy(() => import('./create-game')), isPrivate: true },
   { path: ROUTES.ROOMS, Page: lazy(() => import('./rooms')), isPrivate: true },
   { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')), isPrivate: true },
-  { path: ROUTES.COMBINATIONS, Page: lazy(() => import('./combinations')), isPrivate: true },
 ];
 
 function RequireAuth({ children }: { children: JSX.Element }) {

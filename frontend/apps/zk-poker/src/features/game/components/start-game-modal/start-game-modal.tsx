@@ -127,7 +127,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
   };
 
   return (
-    <Modal heading={heading} isDark showModalMode={false}>
+    <Modal heading={heading} isDark showModalMode={false} className={{ wrapper: styles.wrapper }}>
       <div
         className={clsx(styles.grab)}
         role="button"
