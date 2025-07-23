@@ -997,7 +997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/wallet-connect@npm:0.4.1":
+"@gear-js/wallet-connect@npm:0.4.1, @gear-js/wallet-connect@npm:^0.4.1":
   version: 0.4.1
   resolution: "@gear-js/wallet-connect@npm:0.4.1"
   dependencies:
@@ -13304,6 +13304,26 @@ __metadata:
     react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     tailwindcss-radix: "npm:3.0.5"
+  languageName: unknown
+  linkType: soft
+
+"vara-vft-app@workspace:apps/vft-extended":
+  version: 0.0.0-use.local
+  resolution: "vara-vft-app@workspace:apps/vft-extended"
+  dependencies:
+    "@dapps-frontend/hooks": "workspace:*"
+    "@dapps-frontend/ui": "workspace:*"
+    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/wallet-connect": "npm:^0.4.1"
+    "@polkadot/api": "npm:16.3.1"
+    "@polkadot/react-identicon": "npm:3.15.1"
+    "@tanstack/react-query": "npm:5.81.5"
+    clsx: "npm:2.1.1"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-router-dom: "npm:6.28.2"
+    sails-js: "npm:0.4.2"
+    sass: "npm:1.83.4"
   languageName: unknown
   linkType: soft
 

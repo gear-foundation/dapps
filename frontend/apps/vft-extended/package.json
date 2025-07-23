@@ -1,0 +1,27 @@
+{
+  "name": "vara-vft-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {
+    "@dapps-frontend/hooks": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
+    "@gear-js/api": "0.42.0",
+    "@gear-js/react-hooks": "0.16.3",
+    "@gear-js/vara-ui": "0.3.1",
+    "@gear-js/wallet-connect": "^0.4.1",
+    "@polkadot/api": "16.3.1",
+    "@polkadot/react-identicon": "3.15.1",
+    "@tanstack/react-query": "5.81.5",
+    "clsx": "2.1.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "6.28.2",
+    "sails-js": "0.4.2"
+  }
+}
