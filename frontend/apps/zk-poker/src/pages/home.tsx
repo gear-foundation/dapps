@@ -9,7 +9,12 @@ import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } fr
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
 import { useUserName } from '@/features/game/hooks';
 import { GetPlayerByIdQuery } from '@/features/game/queries';
-import { useGetBalanceQuery, useLobbiesQuery } from '@/features/game/sails';
+import {
+  useEventLobbyCreatedSubscription,
+  useEventLobbyDeletedSubscription,
+  useGetBalanceQuery,
+  useLobbiesQuery,
+} from '@/features/game/sails';
 import { ClaimPtsButton } from '@/features/pts';
 import { useVaranWallet } from '@/features/wallet';
 
@@ -29,7 +34,15 @@ export default function Home() {
     setIsEditProfileModalOpen(true);
   };
 
-  const { lobbies } = useLobbiesQuery();
+  const { lobbies, refetch: refetchLobbies } = useLobbiesQuery();
+
+  const onLobbyChanged = () => {
+    void refetchLobbies();
+  };
+
+  useEventLobbyCreatedSubscription({ onData: onLobbyChanged });
+  useEventLobbyDeletedSubscription({ onData: onLobbyChanged });
+
   const lobbiesCount = lobbies?.length || 0;
 
   const [playerData] = useQuery({
