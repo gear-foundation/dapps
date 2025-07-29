@@ -3,9 +3,11 @@ import { HexString } from '@gear-js/api';
 // @ts-expect-error
 import { Hand } from 'pokersolver';
 
-import { Card as GameCard, HandRank, Rank } from '@/features/zk/api/types';
+import { Card as GameCard, Rank } from '@/features/zk/api/types';
 import { getRankFromValue } from '@/features/zk/utils';
 import { SUITS } from '@/features/zk/utils/consts';
+
+import { HandRank } from '../types';
 
 const toPokersolverCard = (card: GameCard) => {
   const rank = card.rank === '10' ? 'T' : card.rank;

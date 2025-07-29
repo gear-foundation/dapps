@@ -4,7 +4,8 @@ import { Fragment } from 'react';
 
 import { BIG_BLIND } from '@/app/consts';
 import { PlayerSlot, PlayerCards, FlipCard } from '@/components';
-import { Card, PlayerStatus } from '@/features/zk/api/types';
+import { PlayerStatus } from '@/features/game/types';
+import { Card } from '@/features/zk/api/types';
 
 import styles from './game-board.module.scss';
 import { getCommonCardsMarginTop, getPositionSide, getSlotPositions } from './helpers';

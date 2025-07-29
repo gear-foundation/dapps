@@ -14,7 +14,6 @@ import {
   SpadeLgIcon,
   SpadeSmIcon,
 } from '@/assets/images';
-import { Suit } from '@/features/zk/api/types';
 
 const suitLgIcon: Record<Suit, SVGComponent> = {
   Clubs: ClubLgIcon,

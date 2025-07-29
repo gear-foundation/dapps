@@ -1,5 +1,3 @@
-// ! TODO: check types (some same as global.d.ts)
-
 import { HexString } from '@gear-js/api';
 
 export type ZkProof = {
@@ -76,12 +74,6 @@ export type CipherCard = {
   c1: ECPoint;
 };
 
-// export type OtherPlayersCard = {
-//   cardOwner: HexString;
-//   cardIndex: number;
-//   card: CipherCard;
-// };
-
 export type OtherPlayersCard = {
   c0: ECPoint<string>;
   cardIndex: number;
@@ -128,7 +120,6 @@ export type ZkResultResponse = {
   ok: boolean;
 };
 
-export type Suit = 'Spades' | 'Hearts' | 'Diamonds' | 'Clubs';
 export type Rank = 'A' | 'K' | 'Q' | 'J' | '10' | '9' | '8' | '7' | '6' | '5' | '4' | '3' | '2';
 
 export type CardWithPoint = {
@@ -146,21 +137,6 @@ export type ContractCard = {
   value: number;
   suit: Suit;
 };
-
-// ! TODO: check types and move
-export type HandRank =
-  | 'straight flush'
-  | 'four of a kind'
-  | 'full house'
-  | 'flush'
-  | 'straight'
-  | 'three of a kind'
-  | 'two pair'
-  | 'one pair'
-  | 'high card';
-
-// ! TODO: check types and move
-export type PlayerStatus = 'bet' | 'fold' | 'all-in' | 'winner' | 'check' | 'waiting' | 'thinking';
 
 export type RevealedPlayer = [HexString, [globalThis.Card, globalThis.Card]];
 export type Input = { c0: string[]; sk: string; expected: string[] };

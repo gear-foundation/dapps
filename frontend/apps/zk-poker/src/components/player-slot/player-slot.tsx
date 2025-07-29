@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 
-import { PlayerStatus } from '@/features/zk/api/types';
+import { PlayerStatus } from '@/features/game/types';
 
 import { Avatar } from '../avatar';
 import { GameTimer } from '../game-timer';

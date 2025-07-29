@@ -2,10 +2,11 @@ import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
 
-import { Card, PlayerStatus } from '@/features/zk/api/types';
+import { Card } from '@/features/zk/api/types';
 import { getRankFromValue } from '@/features/zk/utils';
 
 import { useParticipantsQuery, useRevealedPlayersQuery } from '../sails';
+import { PlayerStatus } from '../types';
 
 import { useGameStatus } from './use-game-status';
 import { useGetPlayerStatusAndBet } from './use-get-player-status-and-bet';

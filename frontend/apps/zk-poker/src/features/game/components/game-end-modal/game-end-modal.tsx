@@ -48,7 +48,6 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, 
   const renderPotInfo = () => {
     if (myWinningPots.length === 0) {
       const mainPotWinners = pots[0][1];
-      // ! TODO: check it. Has bug.
       const { winnersHand, handRank } = getWinnersHand(mainPotWinners, revealedPlayers, commonCardsFields) || {};
 
       return (

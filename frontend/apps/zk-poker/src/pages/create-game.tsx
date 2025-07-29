@@ -7,7 +7,7 @@ import { BackIcon } from '@/assets/images';
 import { Button, Input, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
 import { LobbyCreatedPayload, useCreateLobbyMessage, useEventLobbyCreatedSubscription } from '@/features/game/sails';
-import { useKeys } from '@/features/zk/hooks';
+import { useZkKeys } from '@/features/zk/hooks';
 import { getPkBytes } from '@/features/zk/utils';
 
 import styles from './create-game.module.scss';
@@ -46,7 +46,7 @@ function CreateGame() {
   const { account } = useAccount();
   const navigate = useNavigate();
   const { userName } = useUserName();
-  const { pk } = useKeys();
+  const { pk } = useZkKeys();
 
   const onLobbyCreated = (payload: LobbyCreatedPayload) => {
     setIsLoading(false);

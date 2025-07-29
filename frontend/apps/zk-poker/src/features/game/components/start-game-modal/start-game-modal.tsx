@@ -1,10 +1,11 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
+import WebApp from '@twa-dev/sdk';
 import { copyToClipboard } from '@ui/utils';
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { MAX_PLAYERS } from '@/app/consts';
+import { ENV, MAX_PLAYERS } from '@/app/consts';
 import { Copy, Exit } from '@/assets/images';
 import { Button, Modal } from '@/components';
 
@@ -49,9 +50,6 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
   const playersRef = useRef<HTMLDivElement>(null);
 
   const heading = `Players ${participants.length}/${MAX_PLAYERS}`;
-  // ! TODO: move to env
-  const tgBotName = 'zk-poker-bot';
-  const gameLink = `t.me/${tgBotName}/bot?start=${gameId}`;
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
@@ -121,6 +119,9 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
       document.removeEventListener('touchend', handleDragEnd);
     };
   }, [isDragging, dragStartY, isExpanded, throttledHandleDrag, handleDragEnd]);
+
+  const isInTelegram = WebApp.platform !== 'unknown';
+  const gameLink = isInTelegram ? `t.me/${ENV.TELEGRAM_BOT_NAME}/bot?start=${gameId}` : window.location.href;
 
   const onCopy = () => {
     void copyToClipboard({ value: gameLink, alert });

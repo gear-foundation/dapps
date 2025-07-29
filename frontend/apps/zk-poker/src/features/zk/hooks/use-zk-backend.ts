@@ -7,8 +7,8 @@ import { getZkTask, postZkResult } from '../api';
 import { DecryptOtherPlayersCardsResult, ShuffleResult } from '../api/types';
 import { getZkLog, logMemory, partialDecryptionsForPlayersCards, shuffleDeck } from '../utils';
 
-import { useKeys } from './use-keys';
 import { useLogs } from './use-logs';
+import { useZkKeys } from './use-zk-keys';
 
 type Params = {
   isWaitingShuffleVerification: boolean;
@@ -25,13 +25,12 @@ const useZkBackend = ({
 }: Params) => {
   const { gameId } = useParams();
   const { account } = useAccount();
-  const { sk } = useKeys();
+  const { sk } = useZkKeys();
   const alert = useAlert();
 
   const { setLogs } = useLogs();
 
   const { data: zkTask, isLoading: isLoadingZkTask } = useQuery({
-    // ! TODO: add unique key for each game
     queryKey: [
       'zk-task',
       gameId,
@@ -55,7 +54,7 @@ const useZkBackend = ({
           error.message?.includes('No step to process') ||
           error.message?.includes('Player not found or game not started'));
 
-      console.log('isNeedRetryError:', isNeedRetryError, error.message, failureCount);
+      console.log('isNeedRetryError:', failureCount, isNeedRetryError, error.message);
 
       if (isNeedRetryError && failureCount < MAX_RETRY_COUNT) {
         return true;
@@ -127,7 +126,7 @@ const useZkBackend = ({
           setLogs((prev) => [getZkLog('🔓 Partial Decryption', duration), ...prev]);
 
           const result = await postPartialDecryptionsForPlayersCardsResult(decryptedCards);
-          console.log('🚀 ~ postTask ~ result:', result);
+          console.log('postTask result:', result);
         }
       } catch (error) {
         console.error(error);
@@ -135,7 +134,6 @@ const useZkBackend = ({
       }
     };
 
-    // ! TODO: add retry on error
     void postTask();
     logMemory('after zkTask');
   }, [zkTask, postShuffleResult, postPartialDecryptionsForPlayersCardsResult, alert, sk, setLogs]);

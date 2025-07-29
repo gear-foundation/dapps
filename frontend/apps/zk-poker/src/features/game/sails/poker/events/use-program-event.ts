@@ -1,4 +1,4 @@
-// ! TODO: remove this file after updating @gear-js/react-hooks
+// TODO: remove this file after updating @gear-js/react-hooks
 import { UseProgramEventParameters } from '@gear-js/react-hooks';
 import {
   EventReturn,
@@ -20,7 +20,7 @@ function useProgramEvent<
   serviceName,
   functionName,
   onData,
-  // ! TODO: add queryKey to the @gear-js/react-hooks
+  // TODO: add queryKey to the @gear-js/react-hooks
   queryKey,
 }: UseProgramEventParameters<TProgram, TServiceName, TFunctionName, TCallbackArgs> & {
   queryKey?: unknown[];

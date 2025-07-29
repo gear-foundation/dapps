@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useKeys } from '@/features/zk/hooks';
+import { useZkKeys } from '@/features/zk/hooks';
 import { decryptCards } from '@/features/zk/utils';
 import { DecryptedCardsResult } from '@/features/zk/utils/decrypt-player-cards';
 
@@ -8,7 +8,7 @@ import { usePlayerCardsQuery } from '../sails';
 
 const usePlayerCards = (enabled: boolean) => {
   const { playerCards, refetch } = usePlayerCardsQuery({ enabled });
-  const { sk } = useKeys();
+  const { sk } = useZkKeys();
 
   const [decryptedCards, setDecryptedCards] = useState<DecryptedCardsResult>();
 

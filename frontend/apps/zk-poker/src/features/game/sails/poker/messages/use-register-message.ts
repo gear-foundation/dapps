@@ -6,12 +6,12 @@ import { PrepareEzTransactionParamsResult, usePrepareEzTransactionParams } from 
 import { usePokerProgram } from '@/app/utils';
 import { useUserName } from '@/features/game/hooks';
 import { useAutoSignless } from '@/features/signless';
-import { useKeys } from '@/features/zk/hooks';
+import { useZkKeys } from '@/features/zk/hooks';
 import { getPkBytes } from '@/features/zk/utils';
 
 export const useRegisterMessage = () => {
   const program = usePokerProgram();
-  const { pk } = useKeys();
+  const { pk } = useZkKeys();
   const { userName } = useUserName();
   const alert = useAlert();
   const { executeWithSessionModal } = useAutoSignless();

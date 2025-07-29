@@ -1,6 +1,6 @@
 export { Header, Footer } from './layout';
 export { ApiLoader, Loader, CardsLoader } from './loaders';
-export { Modal, Button, buttonStyles, Balance, Input, Select, Slider, Text } from './ui';
+export { Modal, Button, buttonStyles, Balance, Input, Select, Slider } from './ui';
 export { MenuButton } from './menu-button';
 export { Banner } from './banner';
 export { Avatar } from './avatar';

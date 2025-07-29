@@ -4,8 +4,8 @@ import { useSubmitTablePartialDecryptionsMessage, useTableCardsToDecryptQuery } 
 
 import { getZkLog, logMemory, partialDecryptionsForTableCards } from '../utils';
 
-import { useKeys } from './use-keys';
 import { useLogs } from './use-logs';
+import { useZkKeys } from './use-zk-keys';
 
 type Params = {
   isWaitingTableCardsAfterPreFlop?: boolean;
@@ -31,7 +31,7 @@ const useZkTableCardsDecryption = ({
   const { refetch: refetchTableCardsToDecrypt } = useTableCardsToDecryptQuery({ enabled: false });
 
   const { submitTablePartialDecryptionsMessage } = useSubmitTablePartialDecryptionsMessage();
-  const { sk } = useKeys();
+  const { sk } = useZkKeys();
   const { setLogs } = useLogs();
 
   useEffect(() => {

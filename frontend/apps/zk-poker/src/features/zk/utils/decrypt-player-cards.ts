@@ -1,26 +1,13 @@
 import { F1FieldInstance } from 'ffjavascript';
 import { groth16 } from 'snarkjs';
 
-import { Card, CardWithPoint, ContractCard, ECPoint, Input, Rank, Suit } from '../api/types';
+import { Card, CardWithPoint, ContractCard, ECPoint, Input, Rank } from '../api/types';
 import { projectiveAdd, scalarMul, initDeck } from '../lib';
 
+import { hexToBigIntLE } from './common';
 import { curveParams, decryptWasmFilePath, decryptZkeyFilePath, RANKS, SUITS } from './consts';
 import { encodeProof, publicSignalsToBytes } from './partial-decryptions';
 import { getValueFromRank } from './transform';
-
-function bytesToBigIntLE(bytes: Uint8Array): bigint {
-  let result = 0n;
-  for (let i = 0; i < bytes.length; i++) {
-    result += BigInt(bytes[i]) << (8n * BigInt(i));
-  }
-  return result;
-}
-
-function hexToBigIntLE(hex: string): bigint {
-  hex = hex.startsWith('0x') ? hex.slice(2) : hex;
-  const bytes = hex.match(/.{1,2}/g)?.map((b) => parseInt(b, 16)) || [];
-  return bytesToBigIntLE(new Uint8Array(bytes));
-}
 
 function toAffine(F: F1FieldInstance, P: ECPoint) {
   const x = F.div(P.X, P.Z);

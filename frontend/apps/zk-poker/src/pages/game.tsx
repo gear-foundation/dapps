@@ -109,7 +109,7 @@ function GamePage() {
   useEventRegistrationCanceledSubscription({
     onData: ({ player_id }) => {
       const participant = participants?.find(([address]) => address === player_id);
-      // ! TODO: callback acts 2 times on the same event (queryKey), need to fix it
+      // TODO: callback acts 2 times on the same event (queryKey), need to fix it
       if (participant) {
         const message =
           account?.decodedAddress === participant?.[0]
@@ -283,10 +283,7 @@ function GamePage() {
     if (!isFinished) return;
 
     if (isAdmin && !isRestartGamePending) {
-      setTimeout(() => {
-        // ! TODO: refetch on error
-        void restartGameMessage();
-      }, 3000);
+      void restartGameMessage();
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
 

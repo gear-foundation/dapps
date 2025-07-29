@@ -63,7 +63,6 @@ export const useTurn = () => {
       }
 
       const isActed = acted_players?.find((actorId) => actorId === nextPlayer);
-      // ! TODO: check if this is correct
       const isMaxBet = status === 'bet' && bet === current_bet;
 
       if (isActed && isMaxBet) {

@@ -2,7 +2,7 @@ import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useCallback } from 'react';
 
-import { PlayerStatus } from '@/features/zk/api/types';
+import { PlayerStatus } from '@/features/game/types';
 
 import {
   useActiveParticipantsQuery,

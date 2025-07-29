@@ -45,7 +45,6 @@ const zkKeysAtom = atom(() => {
   };
 });
 
-// ! TODO: rename to useZkKeys
-const useKeys = () => useAtomValue(zkKeysAtom);
+const useZkKeys = () => useAtomValue(zkKeysAtom);
 
-export { useKeys };
+export { useZkKeys };

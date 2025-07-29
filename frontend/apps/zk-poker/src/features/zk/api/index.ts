@@ -14,7 +14,7 @@ const getZkTask = async (lobbyAddress?: string, playerAddress?: string): Promise
 
     const proofData = (await res.json()) as ZkTaskApiResponse;
 
-    // ! TODO: check is it fixed on backend (200 response code on error)
+    // TODO: check is it fixed on backend (200 response code on error)
     if ('message' in proofData) {
       throw new Error(proofData.message);
     }

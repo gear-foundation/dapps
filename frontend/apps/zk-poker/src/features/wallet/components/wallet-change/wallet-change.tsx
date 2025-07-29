@@ -7,7 +7,6 @@ import { Suspense } from 'react';
 import { MenuOptions } from '@dapps-frontend/ui';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { Text } from '@/components/ui/text';
 
 import { useWallet } from '../../hooks';
 
@@ -34,7 +33,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
             <Suspense>
               <Identicon value={address} size={30} theme="polkadot" className={styles.accountIcon} />
             </Suspense>
-            <Text>{meta.name}</Text>
+            <span>{meta.name}</span>
           </div>
         </li>
       );
