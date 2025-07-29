@@ -83,7 +83,7 @@ async fn test_basic_function() {
     // approve
     client
         .approve(USER_ID[1].into(), 0.into())
-        .with_args(GTestArgs::new(USER_ID[0].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[0].into()))
         .send_recv(dynamic_nft_id)
         .await
         .unwrap();
@@ -91,7 +91,7 @@ async fn test_basic_function() {
     // transfer from
     client
         .transfer_from(USER_ID[0].into(), ADMIN_ID.into(), 0.into())
-        .with_args(GTestArgs::new(USER_ID[1].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[1].into()))
         .send_recv(dynamic_nft_id)
         .await
         .unwrap();
@@ -157,7 +157,7 @@ async fn test_grant_role() {
     };
     let res = client
         .mint(USER_ID[0].into(), metadata)
-        .with_args(GTestArgs::new(USER_ID[0].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[0].into()))
         .send_recv(extended_vft_id)
         .await;
     assert!(res.is_err());
@@ -181,7 +181,7 @@ async fn test_grant_role() {
                 reference: "token_reference".to_string(),
             },
         )
-        .with_args(GTestArgs::new(USER_ID[0].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[0].into()))
         .send_recv(extended_vft_id)
         .await
         .unwrap();
@@ -196,7 +196,7 @@ async fn test_grant_role() {
     // try burner role
     let res = client
         .burn(USER_ID[0].into(), 0.into())
-        .with_args(GTestArgs::new(USER_ID[0].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[0].into()))
         .send_recv(extended_vft_id)
         .await;
     assert!(res.is_err());
@@ -211,7 +211,7 @@ async fn test_grant_role() {
     assert!(burners.contains(&USER_ID[0].into()));
     client
         .burn(USER_ID[0].into(), 0.into())
-        .with_args(GTestArgs::new(USER_ID[0].into()))
+        .with_args(|args| args.with_actor_id(USER_ID[0].into()))
         .send_recv(extended_vft_id)
         .await
         .unwrap();

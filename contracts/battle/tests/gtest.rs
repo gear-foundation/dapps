@@ -108,7 +108,7 @@ async fn test() {
             None,
         )
         .with_value(10_000_000_000)
-        .with_args(GTestArgs::new(USER_2.into()))
+        .with_args(|args| args.with_actor_id(USER_2.into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -238,7 +238,7 @@ async fn test_both_made_move() {
             None,
         )
         .with_value(10_000_000_000)
-        .with_args(GTestArgs::new(USER_2.into()))
+        .with_args(|args| args.with_actor_id(USER_2.into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -370,7 +370,7 @@ async fn test_three_player() {
             None,
         )
         .with_value(10_000_000_000)
-        .with_args(GTestArgs::new(USER_2.into()))
+        .with_args(|args| args.with_actor_id(USER_2.into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -399,7 +399,7 @@ async fn test_three_player() {
             None,
         )
         .with_value(10_000_000_000)
-        .with_args(GTestArgs::new(USER_3.into()))
+        .with_args(|args| args.with_actor_id(USER_3.into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -446,7 +446,7 @@ async fn test_three_player() {
 
     service_client
         .start_next_fight(None)
-        .with_args(GTestArgs::new(user))
+        .with_args(|args| args.with_actor_id(user))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -537,7 +537,7 @@ async fn test_error() {
             None,
         )
         .with_value(10_000_000_000)
-        .with_args(GTestArgs::new(USER_2.into()))
+        .with_args(|args| args.with_actor_id(USER_2.into()))
         .send_recv(program_id)
         .await
         .unwrap();
@@ -570,7 +570,7 @@ async fn make_move(
 ) -> Result<(), Error> {
     service_client
         .make_move(turn, None)
-        .with_args(GTestArgs::new(user.into()))
+        .with_args(|args| args.with_actor_id(user.into()))
         .send_recv(program_id)
         .await
 }
