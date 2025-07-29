@@ -1,0 +1,47 @@
+export { default as CoinIcon } from './icons/coin.svg?react';
+export { default as PointsIcon } from './icons/points.svg?react';
+export { default as CrossIcon } from './icons/cross.svg?react';
+export { default as CrossBoldIcon } from './icons/cross-bold.svg?react';
+export { default as PlusIcon } from './icons/plus.svg?react';
+export { default as BackIcon } from './icons/back.svg?react';
+export { default as VaraLogoIcon } from './icons/vara-logo.svg?react';
+export { default as ChevronDown } from './icons/chevron-down.svg?react';
+export { default as CopyDecoded } from './icons/copy-decoded.svg?react';
+export { default as Copy } from './icons/copy.svg?react';
+export { default as Exit } from './icons/exit.svg?react';
+export { default as EditIcon } from './icons/edit.svg?react';
+export { default as BurgerMenuIcon } from './icons/burger-menu.svg?react';
+
+export { default as DefaultAvatar0 } from './icons/default-avatar-0.svg';
+export { default as DefaultAvatar1 } from './icons/default-avatar-1.svg';
+export { default as DefaultAvatar2 } from './icons/default-avatar-2.svg';
+export { default as DefaultAvatar3 } from './icons/default-avatar-3.svg';
+export { default as DefaultAvatar4 } from './icons/default-avatar-4.svg';
+export { default as DefaultAvatar5 } from './icons/default-avatar-5.svg';
+export { default as DefaultAvatar6 } from './icons/default-avatar-6.svg';
+export { default as DefaultAvatar7 } from './icons/default-avatar-7.svg';
+
+export { default as AllInIcon } from './icons/button-all-in.svg?react';
+export { default as CallIcon } from './icons/button-call.svg?react';
+export { default as FoldIcon } from './icons/button-fold.svg?react';
+export { default as ChipsIcon } from './icons/chips.svg?react';
+export { default as Chips2xIcon } from './icons/chips-2x.svg?react';
+export { default as Chips3xIcon } from './icons/chips-3x.svg?react';
+export { default as Chips5xIcon } from './icons/chips-5x.svg?react';
+export { default as BannerLock } from './banner-lock.svg?react';
+export { default as BannerSuits } from './banner-suits.png';
+export { default as CreateGameIllustration } from './create-game-illustration.png';
+export { default as JoinGameIllustration } from './join-game-illustration.png';
+export { default as ShowPasswordIcon } from './icons/show-password.svg?react';
+export { default as HidePasswordIcon } from './icons/hide-password.svg?react';
+export { default as MemberIcon } from './icons/member.svg?react';
+export { default as TimeIcon } from './icons/time.svg?react';
+export { default as UserIcon } from './icons/user.svg?react';
+export { default as SearchIcon } from './icons/search.svg?react';
+export * from './icons/cards';
+
+export { default as OnboardingLockIcon } from './onboarding-lock.svg';
+export { default as OnboardingCardsIcon } from './onboarding-cards.svg';
+export { default as OnboardingBlackjackIcon } from './onboarding-blackjack.png';
+export { default as LoginImage } from './login-image.svg?react';
+export { default as LoginLogo } from './login-logo.svg?react';

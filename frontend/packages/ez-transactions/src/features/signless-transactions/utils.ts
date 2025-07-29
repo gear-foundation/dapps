@@ -1,5 +1,5 @@
 import { decodeAddress, GearKeyring, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
-import { AlertContainerFactory } from '@gear-js/react-hooks';
+import { Account, AlertContainerFactory } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { encodeAddress } from '@polkadot/keyring';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
@@ -130,6 +130,17 @@ const copyToClipboard = ({
 
 const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
 
+const signHex = async (_account: Account, hexToSign: `0x${string}`) => {
+  const { signer } = _account;
+  const { signRaw } = signer;
+
+  if (!signRaw) {
+    throw new Error('signRaw is not a function');
+  }
+
+  return signRaw({ address: _account.address, data: hexToSign, type: 'bytes' });
+};
+
 export {
   getMilliseconds,
   getMinutesFromSeconds,
@@ -138,4 +149,5 @@ export {
   shortenString,
   copyToClipboard,
   getUnlockedPair,
+  signHex,
 };

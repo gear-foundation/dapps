@@ -1,0 +1,32 @@
+.playerCards {
+  position: absolute;
+  display: flex;
+  > div:not(:last-child) {
+    margin-right: -8px;
+  }
+
+  &.left {
+    left: 70px;
+  }
+
+  &.right {
+    right: 67px;
+  }
+
+  &.top {
+    left: 208px;
+  }
+}
+
+.back {
+  > div:not(:last-child) {
+    margin-right: -18px;
+    background: transparent;
+  }
+}
+
+.diller {
+  position: absolute;
+  top: -9.5px;
+  left: 12px;
+}
