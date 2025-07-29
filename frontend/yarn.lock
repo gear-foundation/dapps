@@ -15033,6 +15033,8 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.42.0"
+    "@gear-js/react-hooks": "npm:0.16.3"
+    "@gear-js/vara-ui": "npm:0.3.1"
     "@gear-js/wallet-connect": "npm:^0.4.1"
     "@polkadot/api": "npm:16.3.1"
     "@polkadot/react-identicon": "npm:3.15.1"
@@ -15042,7 +15044,6 @@ __metadata:
     react-dom: "npm:19.0.0"
     react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
-    sass: "npm:1.83.4"
   languageName: unknown
   linkType: soft
 
