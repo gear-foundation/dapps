@@ -142,7 +142,7 @@ function useCreateBaseSession(programId: HexString) {
     void batchSend(signedTxs, { ...options, onError });
   };
 
-  return { signAndSendDeleteSession, signAndSendCreateSession, onError, getVoucherExtrinsic };
+  return { signAndSendDeleteSession, signAndSendCreateSession, onError };
 }
 
 export { useCreateBaseSession };

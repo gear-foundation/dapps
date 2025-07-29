@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,

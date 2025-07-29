@@ -1,7 +1,6 @@
 import { EnableSessionModal } from '@ez/features/signless-transactions/components/enable-session-modal';
 import { HexString } from '@gear-js/api';
 import { ProviderProps, useAccount } from '@gear-js/react-hooks';
-import { GenericTransactionReturn, TransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 import { IKeyringPair } from '@polkadot/types/types';
 import {
   CreateSessionModal,
@@ -10,34 +9,17 @@ import {
   useCreateSailsSession,
   PrepareEzTransactionParamsResult,
 } from 'gear-ez-transactions';
-import { createContext, useContext, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePokerProgram } from '@/app/utils';
 
-interface TransactionWithSessionOptions {
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-  onFinally?: () => void;
-}
-
-type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionReturn<null>>;
-
-type PrepareTransactionAsyncResult = Promise<{
-  transaction: Transaction;
-  awaited: {
-    fee: bigint;
-  };
-}>;
-interface AutoSignlessContextType {
-  executeWithSessionModal: (
-    getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
-    sessionForAccount: HexString | null,
-  ) => Promise<void>;
-  closeModal: () => void;
-}
-
-const AutoSignlessContext = createContext<AutoSignlessContextType | undefined>(undefined);
+import {
+  AutoSignlessContext,
+  AutoSignlessContextType,
+  PrepareTransactionAsyncResult,
+  TransactionWithSessionOptions,
+} from './context';
 
 const AutoSignlessProvider = ({ children }: ProviderProps) => {
   const [modalOpen, setModalOpen] = useState<'create-session' | 'enable-session' | null>(null);
@@ -157,13 +139,4 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
   );
 };
 
-const useAutoSignless = (): AutoSignlessContextType => {
-  const context = useContext(AutoSignlessContext);
-
-  if (!context) {
-    throw new Error('useTransactionWithSessionModal must be used within AutoSignlessProvider');
-  }
-  return context;
-};
-
-export { AutoSignlessProvider, useAutoSignless };
+export { AutoSignlessProvider };

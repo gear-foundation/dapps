@@ -6,36 +6,25 @@ import {
   SignlessContext,
   SignlessTransactionsMetadataProviderProps,
   SignlessTransactionsSailsProviderProps,
-  SignlessTransactionsContext,
-  usePair,
 } from './context';
 import {
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
   SendSignlessMessageOptions,
-  useRandomPairOr,
-  useCreateBaseSession,
   useCreateSailsSession,
 } from './hooks';
-import { signHex, getUnlockedPair } from './utils';
 
 export {
   SignlessTransactions,
   SignlessActive,
   CreateSessionModal,
-  SignlessTransactionsContext,
   SignlessTransactionsProvider,
   EnableSignlessSession,
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
   useSignlessTransactions,
-  useRandomPairOr,
   DEFAULT_SIGNLESS_CONTEXT,
-  signHex,
-  getUnlockedPair,
-  useCreateBaseSession,
   useCreateSailsSession,
-  usePair,
 };
 
 export type {

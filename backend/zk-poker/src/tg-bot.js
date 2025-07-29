@@ -16,13 +16,9 @@ bot.command("start", (ctx) => {
 bot.on("callback_query", async (ctx) => {
   try {
     console.log("user started the game", ctx.from.username);
-    // Explicit usage
     await ctx.telegram.answerCbQuery(ctx.callbackQuery.id, undefined, {
       url: APP_URL,
     });
-
-    // Using context shortcut
-    // await ctx.answerCbQuery();
   } catch (error) {
     console.error("Error handling callback_query:", error);
   }

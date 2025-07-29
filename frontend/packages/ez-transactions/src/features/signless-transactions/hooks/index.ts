@@ -1,4 +1,4 @@
-import { Session, UseCreateSessionReturn, useCreateBaseSession } from './use-create-base-session';
+import { Session, UseCreateSessionReturn } from './use-create-base-session';
 import { useCreateMetadataSession } from './use-create-metadata-session';
 import { useCreateSailsSession } from './use-create-sails-session';
 import { useIsAvailable } from './use-is-available';
@@ -10,7 +10,6 @@ import {
 } from './use-signless-send-message';
 
 export {
-  useCreateBaseSession,
   useCreateMetadataSession,
   useCreateSailsSession,
   useSignlessSendMessage,
