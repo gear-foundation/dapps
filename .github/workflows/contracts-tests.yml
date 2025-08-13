@@ -3,12 +3,10 @@ name: Contracts CI - Tests
 on:
   pull_request:
     branches: [master, main]
-    paths:
-      - contracts/**
+    paths: [contracts/**]
   push:
     branches: [master, main]
-    paths:
-      - contracts/**
+    paths: [contracts/**]
   workflow_dispatch:
 
 env:
@@ -32,39 +30,32 @@ jobs:
   all:
     name: Tests
     runs-on: kuberunner
+    env:
+      RUSTFLAGS: "-Clinker=rust-lld -Clink-self-contained=yes"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Rust (Stable)
-        uses: actions-rs/toolchain@v1
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: stable
-          target: wasm32v1-none
-          profile: minimal
-          components: rustfmt, clippy
-
-      - name: Set up Rust (Nightly)
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: rustfmt
-          profile: minimal
+          toolchain: 1.88.0
+          components: rustfmt,clippy
+          targets: wasm32v1-none
 
       - name: Install rust-src component
-        run: rustup component add rust-src --toolchain stable-x86_64-unknown-linux-gnu
+        run: rustup component add rust-src --toolchain 1.88.0-x86_64-unknown-linux-gnu
 
       - name: Prepare Gear Binary
         run: |
           mkdir -p target/tmp
           wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz | tar xJ -C target/tmp
 
-
       - name: Fmt
-        run: cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021
+        run: cargo fmt --all -- --config imports_granularity=Crate,edition=2021
 
       - name: Clippy
         run: cargo clippy --release --workspace --all-targets --all-features -- -D warnings
 
       - name: Test
-        run: cargo test --release --workspace
+        run: cargo test --release --workspace -vv
