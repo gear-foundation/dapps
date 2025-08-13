@@ -218,8 +218,7 @@ impl ZkLoaderData {
                 assert_eq!(
                     bytes.len(),
                     G1_UNCOMPRESSED_SIZE,
-                    "IC point must be {} bytes",
-                    G1_UNCOMPRESSED_SIZE
+                    "IC point must be {G1_UNCOMPRESSED_SIZE} bytes"
                 );
                 bytes
             })
@@ -300,8 +299,8 @@ impl ZkLoaderData {
     }
 
     fn read_json<T: serde::de::DeserializeOwned>(path: &str) -> T {
-        let raw = fs::read_to_string(path).unwrap_or_else(|_| panic!("Failed to read {}", path));
-        serde_json::from_str(&raw).unwrap_or_else(|_| panic!("Invalid JSON in {}", path))
+        let raw = fs::read_to_string(path).unwrap_or_else(|_| panic!("Failed to read {path}"));
+        serde_json::from_str(&raw).unwrap_or_else(|_| panic!("Invalid JSON in {path}"))
     }
 
     fn serialize_uncompressed<T: CanonicalSerialize>(value: &T) -> Vec<u8> {
@@ -330,7 +329,7 @@ impl ECPointConverter {
         let b = n.to_bytes_be();
 
         if b.len() > FIELD_ELEMENT_SIZE {
-            panic!("Number too large for {} bytes", FIELD_ELEMENT_SIZE);
+            panic!("Number too large for {FIELD_ELEMENT_SIZE} bytes");
         }
 
         let mut buf = [0u8; FIELD_ELEMENT_SIZE];

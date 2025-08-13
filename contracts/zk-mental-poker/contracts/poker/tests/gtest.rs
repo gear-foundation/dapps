@@ -111,7 +111,7 @@ async fn test_basic_poker_workflow() {
         .await
         .unwrap();
 
-    println!("participants {:?}", participants);
+    println!("participants {participants:?}");
 
     if let Status::Finished { pots } = result {
         assert_eq!(pots.len(), 1);
@@ -199,7 +199,7 @@ async fn gtest_check_null_balance() {
         .recv(env.program_id)
         .await
         .unwrap();
-    println!("result {:?}", result);
+    println!("result {result:?}");
     assert!(
         matches!(result, Status::Finished { .. }),
         "Wrong status: {result:?}"
@@ -329,7 +329,7 @@ async fn gtest_one_player_left() {
             });
         }
     }
-    println!("participants {:?}", participants);
+    println!("participants {participants:?}");
 }
 
 #[tokio::test]
@@ -417,7 +417,7 @@ async fn gtest_check_cancel_registration_and_turn() {
         .recv(env.program_id)
         .await
         .unwrap();
-    println!("active_participants: {:?}", active_participants);
+    println!("active_participants: {active_participants:?}");
     assert_eq!(active_participants.first_index, 2);
 
     // Cancel registration
@@ -434,7 +434,7 @@ async fn gtest_check_cancel_registration_and_turn() {
         .recv(env.program_id)
         .await
         .unwrap();
-    println!("active_participants: {:?}", active_participants);
+    println!("active_participants: {active_participants:?}");
     assert_eq!(active_participants.first_index, 1);
 }
 
@@ -624,8 +624,8 @@ impl TestData {
             TestDataProfile::SixPlayersNew => "tests/test_data_gtest/6_players_new_shuffle",
         };
 
-        let table_path = format!("{}/table_decryptions.json", prefix);
-        let player_path = format!("{}/player_decryptions.json", prefix);
+        let table_path = format!("{prefix}/table_decryptions.json");
+        let player_path = format!("{prefix}/player_decryptions.json");
 
         let table_cards_proofs = if Path::new(&table_path).exists() {
             Some(ZkLoaderData::load_table_cards_proofs(&table_path))
@@ -640,18 +640,15 @@ impl TestData {
         };
 
         Self {
-            pks: ZkLoaderData::load_player_public_keys(&format!("{}/player_pks.json", prefix)),
+            pks: ZkLoaderData::load_player_public_keys(&format!("{prefix}/player_pks.json")),
             shuffle_proofs: ZkLoaderData::load_shuffle_proofs(&format!(
-                "{}/shuffle_proofs.json",
-                prefix
+                "{prefix}/shuffle_proofs.json"
             )),
             encrypted_deck: ZkLoaderData::load_encrypted_table_cards(&format!(
-                "{}/encrypted_deck.json",
-                prefix
+                "{prefix}/encrypted_deck.json"
             )),
             decrypt_proofs: ZkLoaderData::load_partial_decrypt_proofs(&format!(
-                "{}/partial_decrypt_proofs.json",
-                prefix
+                "{prefix}/partial_decrypt_proofs.json"
             )),
             table_cards_proofs,
             player_cards,
@@ -859,7 +856,7 @@ impl TestEnvironment {
 
     pub async fn run_actions(&mut self, moves: Vec<(u64, poker_client::Action)>) {
         for (user_id, action) in moves {
-            println!("action {:?}", action);
+            println!("action {action:?}");
             self.service_client
                 .turn(action, None)
                 .with_args(|args| args.with_actor_id(user_id.into()))
@@ -912,7 +909,7 @@ impl TestEnvironment {
             .recv(self.program_id)
             .await
             .unwrap();
-        println!("Cards on table {:?}", table_cards);
+        println!("Cards on table {table_cards:?}");
     }
 
     async fn verify_game_finished(&mut self) -> Status {
@@ -922,7 +919,7 @@ impl TestEnvironment {
             .recv(self.program_id)
             .await
             .unwrap();
-        println!("Final result: {:?}", result);
+        println!("Final result: {result:?}");
         assert!(
             matches!(result, Status::Finished { .. }),
             "Game should be finished"

@@ -88,7 +88,7 @@ async fn upload_contracts_to_testnet() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
     let pts_id_bytes: [u8; 32] = pts_program_id.into();
     let pts_id: ActorId = pts_id_bytes.into();
-    println!("pts_program_id {:?}", pts_program_id);
+    println!("pts_program_id {pts_program_id:?}");
 
     // Factory
 
@@ -112,7 +112,7 @@ async fn upload_contracts_to_testnet() -> Result<()> {
         .expect("Error upload program bytes");
     assert!(listener.message_processed(message_id).await?.succeed());
 
-    println!("factory_id {:?}", factory_program_id);
+    println!("factory_id {factory_program_id:?}");
 
     // make admin in PTS
     println!("add admin");
@@ -147,7 +147,7 @@ async fn upload_contracts_to_testnet() -> Result<()> {
     let gas = api
         .calculate_handle_gas(None, factory_program_id, request, 1_000_000_000_000, true)
         .await?;
-    println!("GAS {:?}", gas);
+    println!("GAS {gas:?}");
 
     let message_id = send_request!(api: &api, program_id: factory_program_id, service_name: "PokerFactory", action: "CreateLobby", payload: (config, pks[0].1.clone(), None::<SignatureInfo>), value: 1_000_000_000_000);
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -191,19 +191,19 @@ async fn test_basic_workflow() -> Result<()> {
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call, session_for_account.clone()));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call, session_for_account.clone()));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_1, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Check, session_for_account.clone()));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(
         status,
         Status::Play {
@@ -211,16 +211,16 @@ async fn test_basic_workflow() -> Result<()> {
         }
     );
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     assert_eq!(stage.last_active_time, None);
     assert_eq!(stage.acted_players, vec![]);
     assert_eq!(stage.current_bet, 0);
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 990);
     assert_eq!(participants[1].1.balance, 990);
     assert_eq!(participants[2].1.balance, 990);
@@ -241,13 +241,13 @@ async fn test_basic_workflow() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs, session_for_account.clone()));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
-    println!("table_cards after preflop: {:?}", table_cards);
+    println!("table_cards after preflop: {table_cards:?}");
 
     // Flop
     // check: Raise -> Raise -> Call -> Call
@@ -265,7 +265,7 @@ async fn test_basic_workflow() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(
         status,
         Status::Play {
@@ -273,16 +273,16 @@ async fn test_basic_workflow() -> Result<()> {
         }
     );
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     assert_eq!(stage.last_active_time, None);
     assert_eq!(stage.acted_players, vec![]);
     assert_eq!(stage.current_bet, 0);
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 890);
     assert_eq!(participants[1].1.balance, 890);
     assert_eq!(participants[2].1.balance, 890);
@@ -300,13 +300,13 @@ async fn test_basic_workflow() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs, session_for_account.clone()));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
-    println!("table_cards after flop: {:?}", table_cards);
+    println!("table_cards after flop: {table_cards:?}");
 
     all_players_check(&api, &program_id, &mut listener).await?;
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
@@ -329,17 +329,17 @@ async fn test_basic_workflow() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs, session_for_account.clone()));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
-    println!("table_cards after turn: {:?}", table_cards);
+    println!("table_cards after turn: {table_cards:?}");
 
     all_players_check(&api, &program_id, &mut listener).await?;
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(status, Status::WaitingForCardsToBeDisclosed);
 
     println!("Players reveal their cards..");
@@ -359,12 +359,12 @@ async fn test_basic_workflow() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "CardDisclosure", payload: (instances, session_for_account.clone()));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No cards found for public key: {:?}", pk);
+            panic!("No cards found for public key: {pk:?}");
         }
     }
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(
         status,
         Status::Finished {
@@ -405,7 +405,7 @@ async fn test_time_limit() -> Result<()> {
     let time_skip = time::Duration::from_secs(60);
     sleep(time_skip);
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let api = api
         .clone()
@@ -414,9 +414,9 @@ async fn test_time_limit() -> Result<()> {
     let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(
         status,
         Status::Finished {
@@ -561,27 +561,27 @@ async fn test_all_in_case_1() -> Result<()> {
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::AllIn));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::AllIn));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_1, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::AllIn));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 0);
     assert_eq!(participants[1].1.balance, 0);
     assert_eq!(participants[2].1.balance, 0);
@@ -600,21 +600,21 @@ async fn test_all_in_case_1() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
 
-    println!(" revealed table_cards: {:?}", table_cards);
+    println!(" revealed table_cards: {table_cards:?}");
 
     println!("Players reveal their cards..");
 
     reveal_player_cards(program_id, &api, &mut listener, pk_to_actor_id).await?;
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     assert_eq!(
         status,
@@ -652,19 +652,19 @@ async fn test_all_in_case_2() -> Result<()> {
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_1, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Check));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(
         status,
         Status::Play {
@@ -672,16 +672,16 @@ async fn test_all_in_case_2() -> Result<()> {
         }
     );
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     assert_eq!(stage.last_active_time, None);
     assert_eq!(stage.acted_players, vec![]);
     assert_eq!(stage.current_bet, 0);
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 990);
     assert_eq!(participants[1].1.balance, 990);
     assert_eq!(participants[2].1.balance, 990);
@@ -702,13 +702,13 @@ async fn test_all_in_case_2() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
-    println!("table_cards after preflop: {:?}", table_cards);
+    println!("table_cards after preflop: {table_cards:?}");
 
     // Flop
     // check: Raise -> Raise -> Call -> Call
@@ -729,15 +729,15 @@ async fn test_all_in_case_2() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 0);
     assert_eq!(participants[1].1.balance, 0);
     assert_eq!(participants[2].1.balance, 0);
@@ -756,21 +756,21 @@ async fn test_all_in_case_2() -> Result<()> {
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "SubmitTablePartialDecryptions", payload: (proofs));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No decryptions found for public key: {:?}", pk);
+            panic!("No decryptions found for public key: {pk:?}");
         }
     }
 
     // get revealed cards
     let table_cards = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "RevealedTableCards", return_type: Vec<Card>, payload: ());
 
-    println!(" revealed table_cards: {:?}", table_cards);
+    println!(" revealed table_cards: {table_cards:?}");
 
     println!("Players reveal their cards..");
 
     reveal_player_cards(program_id, &api, &mut listener, pk_to_actor_id).await?;
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     assert_eq!(
         status,
@@ -808,24 +808,24 @@ async fn test_restart_and_all_in_case() -> Result<()> {
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Fold));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Fold));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 995);
     assert_eq!(participants[1].1.balance, 1005);
     assert_eq!(participants[2].1.balance, 1000);
@@ -855,33 +855,33 @@ async fn test_restart_and_all_in_case() -> Result<()> {
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::AllIn));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_1, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::AllIn));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_1, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Call));
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
 
     let bank = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "BettingBank", return_type: Vec<(ActorId, u128)>, payload: ());
-    println!("bank: {:?}", bank);
+    println!("bank: {bank:?}");
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ()).unwrap();
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 0);
     assert_eq!(participants[1].1.balance, 5);
     assert_eq!(participants[2].1.balance, 0);
@@ -912,16 +912,16 @@ async fn test_cancel_game() -> Result<()> {
     let message_id = send_request!(api: &api_2, program_id: program_id, service_name: "Poker", action: "Turn", payload: (Action::Fold));
     assert!(listener.message_processed(message_id).await?.succeed());
     let stage = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Betting", return_type: Option<BettingStage>, payload: ());
-    println!("stage: {:?}", stage);
+    println!("stage: {stage:?}");
 
     let message_id = send_request!(api: &api_0, program_id: program_id, service_name: "Poker", action: "CancelGame", payload: ());
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let status = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Status", return_type: Status, payload: ());
-    println!("status: {:?}", status);
+    println!("status: {status:?}");
     assert_eq!(status, Status::WaitingShuffleVerification);
     let participants = get_state!(api: &api, listener: listener, program_id: program_id, service_name: "Poker", action: "Participants", return_type:  Vec<(ActorId, Participant)>, payload: ());
-    println!("participants: {:?}", participants);
+    println!("participants: {participants:?}");
     assert_eq!(participants[0].1.balance, 1000);
     assert_eq!(participants[1].1.balance, 1000);
     assert_eq!(participants[2].1.balance, 1000);
@@ -950,7 +950,7 @@ async fn reveal_player_cards(
             let message_id = send_request!(api: &api, program_id: program_id, service_name: "Poker", action: "CardDisclosure", payload: (instances));
             assert!(listener.message_processed(message_id).await?.succeed());
         } else {
-            panic!("No cards found for public key: {:?}", pk);
+            panic!("No cards found for public key: {pk:?}");
         }
     }
     Ok(())
