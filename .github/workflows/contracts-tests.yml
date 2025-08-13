@@ -30,8 +30,6 @@ jobs:
   all:
     name: Tests
     runs-on: kuberunner
-    env:
-      RUSTFLAGS: "-Clinker=rust-lld"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
