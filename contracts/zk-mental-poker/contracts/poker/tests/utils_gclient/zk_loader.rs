@@ -1,3 +1,4 @@
+#![allow(clippy::type_complexity)]
 use ark_bls12_381::Bls12_381;
 use ark_bls12_381::{Fq, Fq2, Fr, G1Affine, G2Affine};
 use ark_ec::pairing::Pairing;
@@ -382,7 +383,7 @@ impl CurvePointDeserializer {
         G2Affine::new(x, y)
     }
 }
-pub fn deserialize_g1(point: &Vec<String>) -> G1Affine {
+pub fn deserialize_g1(point: &[String]) -> G1Affine {
     let x_biguint = BigUint::from_str_radix(&point[0], 10).unwrap();
     let y_biguint = BigUint::from_str_radix(&point[1], 10).unwrap();
 

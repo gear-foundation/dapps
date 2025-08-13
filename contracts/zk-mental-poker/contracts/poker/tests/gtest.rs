@@ -199,9 +199,10 @@ async fn gtest_check_null_balance() {
         .await
         .unwrap();
     println!("result {:?}", result);
-    if !matches!(result, Status::Finished { .. }) {
-        assert!(true, "Wrong Status!");
-    }
+    assert!(
+        matches!(result, Status::Finished { .. }),
+        "Wrong status: {result:?}"
+    );
     let participants = env
         .service_client
         .participants()

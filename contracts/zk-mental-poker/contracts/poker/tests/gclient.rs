@@ -381,10 +381,10 @@ async fn all_players_check(
     listener: &mut EventListener,
 ) -> Result<()> {
     let session_for_account: Option<SignatureInfo> = None;
-    for i in 0..3 {
+    for user in USERS_STR.iter().take(3) {
         let api = api
             .clone()
-            .with(USERS_STR[i])
+            .with(user)
             .expect("Unable to change signer.");
 
         let message_id = send_request!(api: &api, program_id: *program_id, service_name: "Poker", action: "Turn", payload: (Action::Check, session_for_account.clone()));
