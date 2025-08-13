@@ -1,3 +1,4 @@
+#![allow(clippy::type_complexity)]
 use gtest::Program;
 use gtest::WasmProgram;
 use hex_literal::hex;
