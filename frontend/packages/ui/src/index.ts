@@ -11,7 +11,7 @@ import {
   Switcher,
 } from './components';
 import { QueryProvider } from './providers';
-import { getErrorMessage, useClickOutside } from './utils';
+import { getErrorMessage, copyToClipboard, useClickOutside } from './utils';
 
 export {
   Footer,
@@ -25,5 +25,6 @@ export {
   Switcher,
   QueryProvider,
   getErrorMessage,
+  copyToClipboard,
   useClickOutside,
 };

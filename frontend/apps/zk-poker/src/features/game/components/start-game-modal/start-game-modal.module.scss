@@ -1,0 +1,105 @@
+.wrapper {
+  border-radius: 40px 40px 0 0;
+  padding: 32px 30px 26px 30px;
+}
+
+.buttons {
+  display: flex;
+  gap: 5px;
+
+  > div {
+    flex: 1;
+  }
+
+  button {
+    padding: 10px;
+    width: 100%;
+  }
+}
+
+.gameId {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #00ffc4;
+  border-radius: 12px;
+  gap: 10px;
+  background-color: #18171c;
+}
+
+.gameIdLink {
+  font-family: 'Urbanist', sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.copyButton {
+  padding: 0;
+  background: transparent;
+  background-image: none;
+}
+
+.exitButton {
+  button {
+    color: #89849f;
+  }
+
+  svg {
+    height: 22px;
+    width: 22px;
+  }
+}
+
+.grab {
+  position: absolute;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  z-index: 10;
+  outline: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.grabLine {
+  width: 112px;
+  height: 2px;
+  background-color: #d9d9d9;
+  opacity: 0.2;
+  transition: width 0.3s ease;
+}
+
+.expanded .grabLine {
+  width: 80px;
+}
+
+.playersContainer {
+  max-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 10px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+
+  &.visible {
+    max-height: 350px;
+    margin-bottom: 10px;
+  }
+}

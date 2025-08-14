@@ -1,0 +1,13 @@
+.modal {
+  font-family: 'Geist', sans-serif;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+
+  button {
+    flex: 1;
+  }
+}

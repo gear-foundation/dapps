@@ -9,14 +9,14 @@
     "preview": "npx vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.41.1",
-    "@gear-js/react-hooks": "0.16.0",
+    "@gear-js/api": "0.42.0",
+    "@gear-js/react-hooks": "0.16.3",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
   "dependencies": {
     "@gear-js/vara-ui": "0.3.1",
-    "@polkadot/keyring": "13.3.1",
+    "@polkadot/keyring": "13.5.3",
     "@polkadot/react-identicon": "3.15.1",
     "clsx": "2.1.1",
     "react-hook-form": "7.54.2"
