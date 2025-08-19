@@ -21,6 +21,7 @@ interface AutoSignlessContextType {
   executeWithSessionModal: (
     getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
     sessionForAccount: HexString | null,
+    options?: TransactionWithSessionOptions,
   ) => Promise<void>;
   closeModal: () => void;
 }

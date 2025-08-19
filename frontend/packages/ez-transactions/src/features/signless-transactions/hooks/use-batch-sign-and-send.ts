@@ -7,7 +7,7 @@ import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 
 type Options = Partial<{
   onSuccess: () => void;
-  onError: (error: string) => void;
+  onError: (error: Error) => void;
   onFinally: () => void;
   pair?: KeyringPair;
 }>;
@@ -51,7 +51,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
         if (method === 'ExtrinsicFailed') {
           const message = getExtrinsicFailedError(event);
 
-          onError(message);
+          onError(new Error(message));
           console.error(message);
         }
       });
@@ -67,16 +67,17 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
-    const signAndSend = pair
-      ? batch(txs).signAndSend(pair, statusCallback)
-      : batch(txs).signAndSend(address, { signer }, statusCallback);
-
-    signAndSend.catch(({ message }: Error) => {
-      const { onError = () => {}, onFinally = () => {} } = options;
-
-      onError(message);
-      onFinally();
-    });
+    try {
+      const signAndSend = pair
+        ? batch(txs).signAndSend(pair, statusCallback)
+        : batch(txs).signAndSend(address, { signer }, statusCallback);
+      await signAndSend;
+    } catch (error) {
+      options.onError?.(error as Error);
+    } finally {
+      options.onFinally?.();
+    }
+    options.onSuccess?.();
   };
 
   const batchSign = async (
@@ -93,7 +94,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     return signAsync.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
 
-      onError(message);
+      onError(new Error(message));
       onFinally();
     });
   };
@@ -105,7 +106,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     return send.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
 
-      onError(message);
+      onError(new Error(message));
       onFinally();
     });
   };

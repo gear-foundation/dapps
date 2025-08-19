@@ -18,6 +18,7 @@ type Session = {
 type Options = {
   onSuccess?: () => void;
   onFinally?: () => void;
+  onError?: (error: Error) => void;
 };
 
 type CreeateSessionOptions = {
@@ -46,7 +47,7 @@ function useCreateBaseSession(programId: HexString) {
   const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
   const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
 
-  const onError = (message: string) => alert.error(message);
+  const onError = (error: Error) => alert.error(error.message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -103,7 +104,7 @@ function useCreateBaseSession(programId: HexString) {
       ? [...messageExtrinsics, await getVoucherExtrinsic(session, voucherValue)]
       : messageExtrinsics;
 
-    void batchSignAndSend(txs, { ...options, onError });
+    await batchSignAndSend(txs, { ...options, onError: (error) => onError(error) });
   };
 
   const signAndSendDeleteSession = async (
@@ -139,7 +140,7 @@ function useCreateBaseSession(programId: HexString) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
       await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
     }
-    void batchSend(signedTxs, { ...options, onError });
+    await batchSend(signedTxs, { ...options, onError });
   };
 
   return { signAndSendDeleteSession, signAndSendCreateSession, onError };

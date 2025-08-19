@@ -49,6 +49,7 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
     async (
       getTransaction: (params?: Partial<PrepareEzTransactionParamsResult>) => PrepareTransactionAsyncResult,
       sessionForAccount: HexString | null,
+      options: TransactionWithSessionOptions = {},
     ) => {
       if (sessionForAccount) {
         const { transaction } = await getTransaction({ sessionForAccount });
@@ -56,7 +57,7 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
         return;
       } else {
         const modal = signless.session && signless.storagePair && !signless.pair ? 'enable-session' : 'create-session';
-        openModalWithExtrinsic(getTransaction, modal);
+        openModalWithExtrinsic(getTransaction, modal, options);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,17 +77,34 @@ const AutoSignlessProvider = ({ children }: ProviderProps) => {
         if (getPendingTransaction) {
           const [session, voucherValue, params] = createSessionParams;
 
-          void getPendingTransaction().then(({ transaction }) => {
-            void createSession(session, voucherValue, {
-              ...params,
-              additionalExtrinsics: [transaction.extrinsic],
-              onSuccess: () => {
-                pendingOptions.onSuccess?.();
-                params.onSuccess?.();
-                closeModal();
-              },
-            });
-          });
+          const onSuccess = () => {
+            pendingOptions.onSuccess?.();
+            params.onSuccess?.();
+            closeModal();
+          };
+
+          const onError = (error: Error) => {
+            pendingOptions.onError?.(error);
+            params.onError?.(error);
+          };
+
+          const onFinally = () => {
+            pendingOptions.onFinally?.();
+            params.onFinally?.();
+          };
+
+          getPendingTransaction()
+            .then(({ transaction }) => {
+              return createSession(session, voucherValue, {
+                ...params,
+                additionalExtrinsics: [transaction.extrinsic],
+                onSuccess,
+                onError,
+                onFinally,
+              });
+            })
+            .catch(onError)
+            .finally(onFinally);
         }
       },
     }),

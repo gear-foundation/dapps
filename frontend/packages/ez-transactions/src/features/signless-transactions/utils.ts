@@ -7,7 +7,7 @@ import { Codec } from '@polkadot/types/types';
 
 type Options = Partial<{
   onSuccess: () => void;
-  onError: (error: string) => void;
+  onError: (error: Error) => void;
   onFinally: () => void;
   pair?: KeyringPair;
 }>;
@@ -36,7 +36,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           if (methods.includes(method as E) && status.isInBlock) {
             result[methods.indexOf(method as E)] = data;
           } else if (method === 'ExtrinsicFailed') {
-            onError('ExtrinsicFailed');
+            onError(new Error('ExtrinsicFailed'));
             onFinally();
             reject(new Error(data.toString()));
           }
@@ -49,7 +49,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
       .catch((error) => {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.log(error);
-        onError(errorMessage);
+        onError(new Error(errorMessage));
         onFinally();
         reject(new Error(errorMessage));
       });

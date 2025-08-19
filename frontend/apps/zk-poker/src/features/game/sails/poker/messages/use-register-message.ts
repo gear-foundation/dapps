@@ -22,35 +22,37 @@ export const useRegisterMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
+  const onError = (error: Error) => {
+    if (error.message?.includes('Actor id must be exist')) {
+      alert.error('Low pts balance. Claim your free PTS');
+      return;
+    }
+
+    if (error.message?.includes('Low pts balance')) {
+      alert.error('Low pts balance');
+      return;
+    }
+
+    alert.error(getErrorMessage(error));
+  };
+
   const tx = async () => {
     const { ...ezParams } = await prepareEzTransactionParams();
-    const getTransaction = (params?: Partial<PrepareEzTransactionParamsResult>) => {
+    const getTransaction = async (params?: Partial<PrepareEzTransactionParamsResult>) => {
       const { sessionForAccount, ...rest } = { ...ezParams, ...params };
-      const result = prepareTransactionAsync({
+      const result = await prepareTransactionAsync({
         args: [userName, getPkBytes(pk), sessionForAccount],
         ...rest,
       });
       return result;
     };
 
-    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount);
+    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount, { onError });
   };
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: tx,
-    onError: (error) => {
-      if (error.message?.includes('Actor id must be exist')) {
-        alert.error('Low pts balance. Claim your free PTS');
-        return;
-      }
-
-      if (error.message?.includes('Low pts balance')) {
-        alert.error('Low pts balance');
-        return;
-      }
-
-      alert.error(getErrorMessage(error));
-    },
+    onError,
   });
 
   return { registerMessage: mutateAsync, isPending };

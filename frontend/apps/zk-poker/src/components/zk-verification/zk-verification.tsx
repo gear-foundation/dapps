@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { GameProgressEvent } from '../../features/zk/api/types';
+
 import styles from './zk-verification.module.scss';
 
 const variants = {
@@ -30,6 +32,8 @@ type Props = {
   isWaitingForCardsToBeDisclosed?: boolean;
   isWaitingForAllTableCardsToBeDisclosed?: boolean;
   isInLoader?: boolean;
+  zkProgress?: GameProgressEvent;
+  waitingPlayerName?: string;
 };
 
 export function ZkVerification({
@@ -39,6 +43,8 @@ export function ZkVerification({
   isWaitingForCardsToBeDisclosed,
   isWaitingForAllTableCardsToBeDisclosed,
   isInLoader,
+  zkProgress,
+  waitingPlayerName,
 }: Props) {
   const getAction = () => {
     if (isWaitingShuffleVerification) {
@@ -60,6 +66,8 @@ export function ZkVerification({
     throw new Error('Unknown action');
   };
 
+  const showProgress = zkProgress && (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards);
+
   return (
     <AnimatePresence>
       <motion.div
@@ -76,6 +84,17 @@ export function ZkVerification({
         <p className={styles.description}>
           Your action is being cryptographically verified without revealing any private information — pure ZK magic.
         </p>
+
+        {showProgress && (
+          <>
+            <p className={styles.progress}>
+              {zkProgress.completedTasks} / {zkProgress.totalTasks}
+            </p>
+            <p className={styles.progress}>
+              {waitingPlayerName ? `Waiting for ${waitingPlayerName}` : 'Sending transaction...'}
+            </p>
+          </>
+        )}
       </motion.div>
     </AnimatePresence>
   );

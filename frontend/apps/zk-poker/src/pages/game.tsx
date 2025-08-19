@@ -148,7 +148,6 @@ function GamePage() {
   // waitingPartialDecryptionsForPlayersCards -> play.PreFlop
   useEventAllPartialDecryptionsSubmitedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventAllPartialDecryptionsSubmitedSubscription');
       void refetchStatus();
       void refetchPlayerCards();
       void refetchBetting();
@@ -171,7 +170,6 @@ function GamePage() {
   // Get table cards after PreFlop, Flop, Turn
   useEventTablePartialDecryptionsSubmitedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventTablePartialDecryptionsSubmitedSubscription');
       void refetchStatus();
       void refetchBetting();
       void refetchRevealedTableCards();
@@ -180,7 +178,6 @@ function GamePage() {
 
   useEventCardsDisclosedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventCardsDisclosedSubscription');
       void refetchStatus();
       void refetchRevealedPlayers();
     },
@@ -188,7 +185,6 @@ function GamePage() {
 
   useEventFinishedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventFinishedSubscription');
       void refetchStatus();
       void refetchParticipants();
       void refetchBetting();
@@ -199,7 +195,6 @@ function GamePage() {
 
   useEventGameRestartedSubscription({
     onData: () => {
-      console.log('!!!!! ~ useEventGameRestartedSubscription');
       void refetchStatus();
       void refetchBetting();
       void refetchBettingBank();
@@ -224,11 +219,10 @@ function GamePage() {
 
   useEventWaitingForCardsToBeDisclosedSubscription({
     onData: () => {
-      console.log('!!!! ~ waiting for cards to be disclosed');
       void refetchStatus();
     },
   });
-  useZkBackend({
+  const { gameProgress: zkProgress } = useZkBackend({
     isWaitingShuffleVerification,
     isWaitingPartialDecryptionsForPlayersCards,
     isDisabled: isSpectator,
@@ -352,6 +346,9 @@ function GamePage() {
             isWaitingTableCards,
             isWaitingForCardsToBeDisclosed,
             isWaitingForAllTableCardsToBeDisclosed,
+            zkProgress,
+            waitingPlayerName: participants?.find(([address]) => address === zkProgress?.currentPlayerAddress)?.[1]
+              .name,
           };
 
           const showInLoader = isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards;

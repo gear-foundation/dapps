@@ -69,12 +69,12 @@ function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
 
     const messageExtrinsics = [transaction.extrinsic, ...(additionalExtrinsics || [])];
 
-    void signAndSendCreateSession(messageExtrinsics, session, voucherValue, options, shouldIssueVoucher);
+    await signAndSendCreateSession(messageExtrinsics, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
     const { transaction } = await prepareDeleteSession({ args: [], gasLimit });
-    void signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
+    await signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
   };
 
   return { createSession, deleteSession };

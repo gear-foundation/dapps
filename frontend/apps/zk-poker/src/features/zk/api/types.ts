@@ -24,13 +24,7 @@ export type DecryptOtherPlayersCardsResult = {
   publicSignals: string[];
 };
 
-export type ZkStep =
-  | 'SHUFFLE'
-  | 'SEND_SHUFFLED_DECK'
-  | 'WAIT_FOR_CARDS_DISTRIBUTION'
-  | 'DECRYPT_OTHER_PLAYERS_CARDS'
-  | 'SEND_DECRYPTED_CARDS'
-  | 'DECRYPT_MY_CARDS';
+export type ZkStep = 'SHUFFLE' | 'DECRYPT_OTHER_PLAYERS_CARDS';
 
 export type ZkResultRequest = {
   lobbyAddress: string;
@@ -118,6 +112,51 @@ export type ZkTaskApiResponse = ZkTaskResponse | ZkTaskError;
 
 export type ZkResultResponse = {
   ok: boolean;
+};
+
+// WebSocket event types
+export type SubscribeToTasksPayload = {
+  lobbyAddress: string;
+  playerAddress: string;
+};
+
+export type SubmitResultPayload = {
+  lobbyAddress: string;
+  playerAddress: string;
+  step: ZkStep;
+  result: {
+    SHUFFLE?: ShuffleResult;
+    DECRYPT_OTHER_PLAYERS_CARDS?: DecryptOtherPlayersCardsResult[];
+  };
+};
+
+export type UnsubscribeFromTasksPayload = {
+  lobbyAddress: string;
+  playerAddress: string;
+};
+
+export type SubscriptionStatusResponse = {
+  subscribed: boolean;
+  lobbyAddress: string;
+  playerAddress: string;
+};
+
+export type ResultProcessedResponse = {
+  success: boolean;
+  message?: string;
+};
+
+export interface GameProgressEvent {
+  lobbyAddress: string;
+  currentPlayerAddress: string;
+  completedTasks: number;
+  totalTasks: number;
+  currentStep: string;
+}
+
+export type WebSocketError = {
+  message: string;
+  code?: string;
 };
 
 export type Rank = 'A' | 'K' | 'Q' | 'J' | '10' | '9' | '8' | '7' | '6' | '5' | '4' | '3' | '2';

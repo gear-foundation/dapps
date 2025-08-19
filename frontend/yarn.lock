@@ -15821,6 +15821,7 @@ __metadata:
     react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
     snarkjs: "npm:0.7.5"
+    socket.io-client: "npm:4.8.1"
     urql: "npm:4.2.1"
   languageName: unknown
   linkType: soft
