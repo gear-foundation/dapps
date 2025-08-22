@@ -2,13 +2,12 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button as VaraButton } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from 'urql';
 
 import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } from '@/assets/images';
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
 import { useUserName } from '@/features/game/hooks';
-import { GetPlayerByIdQuery } from '@/features/game/queries';
+import { useGetPlayerByIdQuery } from '@/features/game/queries';
 import {
   useEventLobbyCreatedSubscription,
   useEventLobbyDeletedSubscription,
@@ -45,13 +44,8 @@ export default function Home() {
 
   const lobbiesCount = lobbies?.length || 0;
 
-  const [playerData] = useQuery({
-    query: GetPlayerByIdQuery,
-    variables: {
-      id: account?.decodedAddress,
-    },
-  });
-  const { gamesToday, wins, games } = playerData.data?.playerById || { gamesToday: 0, wins: 0, games: 0 };
+  const { data: playerData } = useGetPlayerByIdQuery(account?.decodedAddress);
+  const { gamesToday, wins, games } = playerData?.playerById || { gamesToday: 0, wins: 0, games: 0 };
 
   const stats = [
     { value: games ? `${Math.round((wins / games) * 100)}%` : '-', label: 'Your Winrate' },

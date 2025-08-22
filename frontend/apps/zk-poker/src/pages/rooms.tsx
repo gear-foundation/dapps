@@ -1,11 +1,10 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from 'urql';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, PlusIcon, SearchIcon } from '@/assets/images';
 import { Button, Input, Room } from '@/components';
-import { GetLobbiesQuery, Lobby } from '@/features/game/queries';
+import { useGetLobbiesQuery, Lobby } from '@/features/game/queries';
 import {
   useEventLobbyCreatedSubscription,
   useEventLobbyDeletedSubscription,
@@ -19,11 +18,9 @@ export default function Rooms() {
   const searchRef = useRef<HTMLInputElement>(null);
   const { lobbies, refetch } = useLobbiesQuery();
 
-  const [lobbiesData, refetchLobbies] = useQuery({
-    query: GetLobbiesQuery,
-  });
+  const { data: lobbiesData, refetch: refetchLobbies } = useGetLobbiesQuery();
 
-  const lobbiesMap = lobbiesData?.data?.lobbies.reduce(
+  const lobbiesMap = lobbiesData?.lobbies.reduce(
     (acc, lobby) => {
       acc[lobby.address] = lobby;
       return acc;

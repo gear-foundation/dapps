@@ -1025,6 +1025,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-typed-document-node/core@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@graphql-typed-document-node/core@npm:3.2.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10c0/94e9d75c1f178bbae8d874f5a9361708a3350c8def7eaeb6920f2c820e82403b7d4f55b3735856d68e145e86c85cbfe2adc444fdc25519cd51f108697e99346c
+  languageName: node
+  linkType: hard
+
 "@headlessui-float/react@npm:0.15.0":
   version: 0.15.0
   resolution: "@headlessui-float/react@npm:0.15.0"
@@ -9071,6 +9080,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-request@npm:7.1.2":
+  version: 7.1.2
+  resolution: "graphql-request@npm:7.1.2"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.2.0"
+  peerDependencies:
+    graphql: 14 - 16
+  checksum: 10c0/d87ae2a5603bf5e69a91ff9e2b7a3902ed285d6ea470daf7df37cfa48e71a674a8b026f3fe76881a450484b52e90eff43f950faa6851cd6c79bd5b4ab9d19451
+  languageName: node
+  linkType: hard
+
 "graphql@npm:16.10.0":
   version: 16.10.0
   resolution: "graphql@npm:16.10.0"
@@ -15793,7 +15813,6 @@ __metadata:
     "@gear-js/api": "npm:0.42.0"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
-    "@mantine/form": "npm:7.16.2"
     "@polkadot/api": "npm:16.3.1"
     "@polkadot/extension-inject": "npm:0.60.1"
     "@polkadot/react-identicon": "npm:3.15.1"
@@ -15813,6 +15832,7 @@ __metadata:
     framer-motion: "npm:12.3.1"
     gear-ez-transactions: "workspace:*"
     graphql: "npm:16.10.0"
+    graphql-request: "npm:7.1.2"
     jotai: "npm:2.11.3"
     lucide-react: "npm:0.474.0"
     pokersolver: "npm:2.1.4"
@@ -15822,6 +15842,5 @@ __metadata:
     sails-js: "npm:0.4.2"
     snarkjs: "npm:0.7.5"
     socket.io-client: "npm:4.8.1"
-    urql: "npm:4.2.1"
   languageName: unknown
   linkType: soft
