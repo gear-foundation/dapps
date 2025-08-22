@@ -1,0 +1,32 @@
+.image {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  vertical-align: baseline;
+}
+
+.sm {
+  width: 24px;
+  height: 24px;
+}
+
+.md {
+  width: 39px;
+  height: 39px;
+}
+
+.lg {
+  width: 61px;
+  height: 61px;
+}
+
+.empty {
+  background-color: #3b3848;
+  border-radius: 50%;
+}
+
+.hidden {
+  opacity: 0;
+}

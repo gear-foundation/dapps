@@ -1,0 +1,53 @@
+.timerContainer {
+  position: relative;
+  border-radius: 50%;
+}
+
+.lg {
+  width: 82px;
+  height: 82px;
+  padding: 6px;
+  background: linear-gradient(180deg, #8e8e9a 0%, #3b3b42 100%);
+  border: 1px solid #8f8f99;
+}
+
+.md {
+  width: 60px;
+  height: 60px;
+}
+
+.timerInner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #2b2934 0.11%, #141318 100.55%);
+  border-radius: 50%;
+}
+
+.timerSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(180deg);
+}
+
+.timerBackground {
+  stroke: rgba(62, 59, 72, 0.5);
+  stroke-width: 1px;
+}
+
+.timerProgress {
+  stroke: #eab671;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  width: 39px;
+}

@@ -2,6 +2,7 @@ import { useContext, ReactElement } from 'react';
 
 import { DEFAULT_SIGNLESS_CONTEXT } from './consts';
 import { SignlessTransactionsContext } from './context';
+import { usePair } from './hooks';
 import { SignlessTransactionsMetadataProvider, SignlessTransactionsMetadataProviderProps } from './metadata-provider';
 import { SignlessTransactionsSailsProvider, SignlessTransactionsSailsProviderProps } from './sails-provider';
 import { BaseProgram, SignlessContext } from './types';
@@ -25,5 +26,11 @@ function SignlessTransactionsProvider<TProgram extends BaseProgram>(
 
 const useSignlessTransactions = () => useContext(SignlessTransactionsContext);
 
-export { SignlessTransactionsProvider, useSignlessTransactions, DEFAULT_SIGNLESS_CONTEXT };
+export {
+  SignlessTransactionsProvider,
+  useSignlessTransactions,
+  DEFAULT_SIGNLESS_CONTEXT,
+  SignlessTransactionsContext,
+  usePair,
+};
 export type { SignlessContext, SignlessTransactionsMetadataProviderProps, SignlessTransactionsSailsProviderProps };

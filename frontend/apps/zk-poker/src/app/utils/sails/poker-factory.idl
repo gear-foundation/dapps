@@ -1,0 +1,82 @@
+type Config = struct {
+  lobby_code_id: code_id,
+  gas_for_program: u64,
+  gas_for_reply_deposit: u64,
+};
+
+type LobbyConfig = struct {
+  admin_id: actor_id,
+  admin_name: str,
+  lobby_name: str,
+  small_blind: u128,
+  big_blind: u128,
+  starting_bank: u128,
+  time_per_move_ms: u64,
+};
+
+type ZkPublicKey = struct {
+  x: [u8, 32],
+  y: [u8, 32],
+  z: [u8, 32],
+};
+
+type SignatureInfo = struct {
+  signature_data: SignatureData,
+  signature: opt vec u8,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  AllActions,
+};
+
+constructor {
+  New : (config: Config, pts_actor_id: actor_id, zk_verification_id: actor_id);
+};
+
+service PokerFactory {
+  AddAdmin : (new_admin_id: actor_id) -> null;
+  /// Creates new poker lobby with provided config.
+  /// 
+  /// Panics if:
+  /// - Insufficient PTS balance
+  /// - Program creation fails
+  /// 
+  /// Performs:
+  /// 1. Checks player's PTS balance
+  /// 2. Deploys new lobby program
+  /// 3. Sets lobby as PTS admin
+  /// 4. Transfers starting bank to lobby
+  /// 5. Stores lobby info and emits LobbyCreated event
+  CreateLobby : (init_lobby: LobbyConfig, pk: ZkPublicKey, session: opt SignatureInfo) -> null;
+  DeleteAdmin : (id: actor_id) -> null;
+  /// Deletes lobby from registry. Admin or lobby itself only.
+  /// Panics if:
+  /// - Lobby doesn't exist
+  /// - Caller lacks permissions
+  /// 
+  /// Emits LobbyDeleted event on success.
+  DeleteLobby : (lobby_address: actor_id) -> null;
+  query Admins : () -> vec actor_id;
+  query Config : () -> Config;
+  query Lobbies : () -> vec struct { actor_id, LobbyConfig };
+  query PtsActorId : () -> actor_id;
+
+  events {
+    LobbyCreated: struct {
+      lobby_address: actor_id,
+      admin: actor_id,
+      pk: ZkPublicKey,
+      lobby_config: LobbyConfig,
+    };
+    LobbyDeleted: struct {
+      lobby_address: actor_id
+    };
+  }
+};
+

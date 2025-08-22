@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 30px 28px 30px;
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.welcome {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 150%;
+  color: #ffffff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.editIcon {
+  color: #00dba8;
+}
+
+.avatar {
+  margin-top: 4px;
+}
+
+.claim {
+  margin-top: 34px;
+  align-self: center;
+}

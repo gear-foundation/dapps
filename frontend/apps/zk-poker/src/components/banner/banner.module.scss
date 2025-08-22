@@ -1,0 +1,66 @@
+.banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2px;
+  flex: 143px 0 0;
+  padding: 19px;
+
+  border: 1px solid transparent;
+  border-radius: 20px;
+
+  background-image: linear-gradient(180deg, #2a2a32 0%, #17161c 100%), linear-gradient(180deg, #3c3a42 0%, #1b1a1f 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 148px;
+  z-index: 1;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 150%;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  color: #6b6581;
+}
+
+.button {
+  font-family: 'Urbanist', sans-serif;
+  color: #00ffc4;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.image {
+  position: absolute;
+  top: 15px;
+  right: 23px;
+  width: 112px;
+  height: 112px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.center {
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  bottom: 50%;
+}

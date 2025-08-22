@@ -1,0 +1,44 @@
+.container {
+  position: absolute;
+  top: 380px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(rgba(249, 200, 136, 0.5) 30%, transparent 70%),
+    radial-gradient(rgba(122, 85, 30, 0.7) 30%, transparent 70%),
+    radial-gradient(rgba(176, 127, 52, 0.9) 0%, transparent 80%),
+    radial-gradient(rgba(249, 200, 136, 0.7) 0%, transparent 90%);
+  background-blend-mode: overlay, normal;
+  width: 303px;
+  height: 141px;
+  padding: 43px 42px 22px 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.text {
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 100%;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.hint {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 150%;
+  color: #f5d38c;
+  margin-top: 8px;
+}
+
+.timer {
+  position: absolute;
+  top: 337px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
