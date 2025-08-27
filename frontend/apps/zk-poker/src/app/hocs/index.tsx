@@ -38,9 +38,11 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
+const dnsNames = { pokerFactoryProgramId: ENV.DNS_NAME };
+
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ pokerFactoryProgramId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
+    <SharedDnsProvider names={dnsNames} dnsApiUrl={ENV.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );
