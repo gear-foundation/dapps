@@ -75,7 +75,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL_POKER }}
+            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_ZK_POKER }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
             VITE_ZK_POKER_BACKEND_ADDRESS=${{ secrets.VITE_ZK_POKER_BACKEND_ADDRESS }}
