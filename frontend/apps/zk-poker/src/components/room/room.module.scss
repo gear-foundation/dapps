@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  gap: 10px;
+  background-color: #18171c;
+  color: #fff;
+  font-family: 'Urbanist', sans-serif;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.roomInfo {
+  flex: 1;
+}
+
+.roomHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+
+  background-image: linear-gradient(to right, #3b3848 1px, transparent 1px);
+  background-size: 4px 1px;
+  background-repeat: repeat-x;
+  background-position: 0 bottom;
+}
+
+.roomTitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 150%;
+}
+
+.buyIn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  padding: 2px 4px 2px 2px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+}
+
+.haveSeat {
+  color: #edb258;
+}

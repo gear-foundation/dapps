@@ -5,7 +5,9 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   storagePair: undefined,
   savePair: () => {},
   deletePair: () => {},
-  unlockPair: () => {},
+  unlockPair: () => {
+    throw new Error('unlockPair is not implemented');
+  },
   session: undefined,
   isSessionReady: false,
   isVoucherExists: false,
@@ -20,6 +22,8 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isActive: false,
   isSessionActive: false,
   allowedActions: [],
+  voucherIssueAmount: 0,
+  voucherReissueThreshold: 0,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

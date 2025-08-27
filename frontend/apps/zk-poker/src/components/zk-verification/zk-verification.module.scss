@@ -1,0 +1,40 @@
+.container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Urbanist', sans-serif;
+  padding: 10px 20px 50px 20px;
+  background-color: #131217;
+  border-radius: 10px;
+
+  &.inLoader {
+    background-color: transparent;
+    padding-top: 20px;
+    position: unset;
+  }
+}
+
+.title {
+  color: #ffffffbf;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 150%;
+}
+
+.description {
+  color: #ffffff40;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 120%;
+  margin-top: 1px;
+}
+
+.progress {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 120%;
+  margin-top: 1px;
+}

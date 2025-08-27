@@ -1,0 +1,82 @@
+.wrapper {
+  width: fit-content;
+  height: fit-content;
+  border-radius: 40px;
+  border: 1px solid #3b3848;
+  padding: 3px;
+  background: transparent;
+}
+
+.button {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 700;
+  line-height: 150%;
+  border-radius: 40px;
+  padding: 10px 40px;
+  transition: opacity 0.3s ease;
+  &:disabled {
+    background: #3b3848;
+    color: #6b6581;
+    opacity: 1;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.small {
+  font-size: 14px;
+}
+
+.default {
+  font-size: 16px;
+}
+
+.rounded {
+  &.x-small {
+    padding: 0;
+    height: 30px;
+    width: 30px;
+  }
+
+  &.small {
+    padding: 8px;
+  }
+
+  &.default {
+    padding: 10px;
+  }
+
+  &.medium {
+    padding: 11px;
+  }
+}
+
+.primary {
+  background-image: linear-gradient(90deg, #f9c88804 0%, #7a551e04 100%),
+    linear-gradient(90deg, #b07f3404 52.5%, #f9c88804 100%);
+  background-color: #00ffc4;
+  background-blend-mode: color;
+}
+
+.contrast {
+  background-color: #3b3848;
+}
+
+.danger {
+  background-color: #ea534b;
+  color: #000000;
+}
+
+.transparent {
+  background-color: transparent;
+  color: #00ffc4;
+  padding: 0;
+}
+
+.plain {
+  background-color: transparent;
+  color: #00ffc4;
+  border: 1px solid #00ffc4;
+}

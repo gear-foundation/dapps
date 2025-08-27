@@ -118,7 +118,7 @@ export function Registration() {
   };
 
   const handleCopyAddress = (value: string) => {
-    copyToClipboard({ alert, value });
+    void copyToClipboard({ alert, value });
   };
 
   useEffect(() => {
@@ -143,7 +143,7 @@ export function Registration() {
               </Text>
               <span className={styles.addressWrapper}>
                 <Text className={styles.mainText}>
-                  Share the game's address:{' '}
+                  Share the game&apos;s address:{' '}
                   <span className={styles.mainTextAddress}>({stringShorten(getVaraAddress(game.admin), 4)})</span>
                 </Text>
                 <Button

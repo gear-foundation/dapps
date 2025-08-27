@@ -1,5 +1,5 @@
 import { decodeAddress, GearKeyring, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
-import { AlertContainerFactory } from '@gear-js/react-hooks';
+import { Account, AlertContainerFactory } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { encodeAddress } from '@polkadot/keyring';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
@@ -7,7 +7,7 @@ import { Codec } from '@polkadot/types/types';
 
 type Options = Partial<{
   onSuccess: () => void;
-  onError: (error: string) => void;
+  onError: (error: Error) => void;
   onFinally: () => void;
   pair?: KeyringPair;
 }>;
@@ -36,7 +36,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           if (methods.includes(method as E) && status.isInBlock) {
             result[methods.indexOf(method as E)] = data;
           } else if (method === 'ExtrinsicFailed') {
-            onError('ExtrinsicFailed');
+            onError(new Error('ExtrinsicFailed'));
             onFinally();
             reject(new Error(data.toString()));
           }
@@ -49,7 +49,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
       .catch((error) => {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.log(error);
-        onError(errorMessage);
+        onError(new Error(errorMessage));
         onFinally();
         reject(new Error(errorMessage));
       });
@@ -130,6 +130,17 @@ const copyToClipboard = ({
 
 const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
 
+const signHex = async (_account: Account, hexToSign: `0x${string}`) => {
+  const { signer } = _account;
+  const { signRaw } = signer;
+
+  if (!signRaw) {
+    throw new Error('signRaw is not a function');
+  }
+
+  return signRaw({ address: _account.address, data: hexToSign, type: 'bytes' });
+};
+
 export {
   getMilliseconds,
   getMinutesFromSeconds,
@@ -138,4 +149,5 @@ export {
   shortenString,
   copyToClipboard,
   getUnlockedPair,
+  signHex,
 };
