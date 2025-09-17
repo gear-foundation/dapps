@@ -132,7 +132,6 @@ impl CounterService {
         self.get().value
     }
 
-    #[export]
     fn get_msg_source(&self, msg_source: Option<ActorId>) -> ActorId {
         if self.get().proxy_address.is_some() {
             msg_source.expect("msg_source must be set through proxy")
@@ -141,14 +140,12 @@ impl CounterService {
         }
     }
 
-    #[export]
     fn check_if_proxy(&self) {
         if let Some(proxy_address) = self.get().proxy_address {
             assert_eq!(msg::source(), proxy_address, "Only proxy can send messages")
         }
     }
 
-    #[export]
     fn only_admin(&self, msg_source: ActorId) {
         assert_eq!(
             msg_source,
