@@ -7,9 +7,11 @@ use core::fmt::Debug;
 use gstd::{exec, msg, ActorId, Decode, Encode, TypeInfo, Vec};
 use sails_rs::gstd::service;
 use storage::configuration::ConfigurationStorage;
+use sails_rs::{export, event};
 
 pub mod storage;
 
+#[event]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -27,6 +29,9 @@ pub enum Event {
 pub struct AdminService(());
 
 impl AdminService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn seed(
         admin: ActorId,
         builtin_bls381: ActorId,
@@ -49,16 +54,16 @@ impl AdminService {
 
 #[service(events = Event)]
 impl AdminService {
-    pub fn new() -> Self {
-        Self(())
-    }
 
+    #[export]
     pub fn delete_single_game(&mut self, player_address: ActorId) {
         Self::check_admin(msg::source());
         services::single::storage::SingleGamesStorage::as_mut().remove(&player_address);
         self.emit_event(Event::GameDeleted)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn delete_single_games(&mut self, time: u64) {
         Self::check_admin(msg::source());
         let games = services::single::storage::SingleGamesStorage::as_mut();
@@ -67,6 +72,8 @@ impl AdminService {
         self.emit_event(Event::GamesDeleted)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn delete_multiple_game(&mut self, game_id: ActorId) {
         Self::check_admin(msg::source());
         services::multiple::storage::MultipleGamesStorage::as_mut().remove(&game_id);
@@ -74,6 +81,8 @@ impl AdminService {
         self.emit_event(Event::GameDeleted)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn delete_multiple_games_by_time(&mut self, time: u64) {
         Self::check_admin(msg::source());
         let games = services::multiple::storage::MultipleGamesStorage::as_mut();
@@ -100,6 +109,7 @@ impl AdminService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_multiple_games_in_batches(&mut self, divider: u64) {
         Self::check_admin(msg::source());
         let games = services::multiple::storage::MultipleGamesStorage::as_mut();
@@ -123,6 +133,8 @@ impl AdminService {
         self.emit_event(Event::GamesDeleted)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn change_admin(&mut self, new_admin: ActorId) {
         Self::check_admin(msg::source());
         let admin = AdminStorage::get_mut();
@@ -130,6 +142,8 @@ impl AdminService {
         self.emit_event(Event::AdminChanged)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn change_builtin_address(&mut self, new_builtin_address: ActorId) {
         Self::check_admin(msg::source());
         let builtin = BuiltinStorage::get_mut();
@@ -137,6 +151,8 @@ impl AdminService {
         self.emit_event(Event::BuiltinAddressChanged)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn change_configuration(&mut self, configuration: Configuration) {
         Self::check_admin(msg::source());
         let config = ConfigurationStorage::get_mut();
@@ -144,6 +160,8 @@ impl AdminService {
         self.emit_event(Event::ConfigurationChanged)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn change_verification_key(
         &mut self,
         new_vk_for_start: Option<services::verify::VerifyingKeyBytes>,
@@ -162,12 +180,14 @@ impl AdminService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn kill(&mut self, inheritor: ActorId) {
         Self::check_admin(msg::source());
         self.emit_event(Event::Killed { inheritor })
             .expect("Notification Error");
         exec::exit(inheritor);
     }
+
     fn check_admin(source: ActorId) {
         assert!(
             source == AdminStorage::get(),
@@ -175,15 +195,22 @@ impl AdminService {
         );
     }
 
+    #[export]
     pub fn admin(&self) -> ActorId {
         AdminStorage::get()
     }
+
+    #[export]
     pub fn builtin(&self) -> ActorId {
         BuiltinStorage::get()
     }
+
+    #[export]
     pub fn configuration(&self) -> Configuration {
         ConfigurationStorage::get()
     }
+
+    #[export]
     pub fn verification_key(&self) -> (VerifyingKeyBytes, VerifyingKeyBytes) {
         (
             VerificationKeyStorage::get_vk_for_start().clone(),

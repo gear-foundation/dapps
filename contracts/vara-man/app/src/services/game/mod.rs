@@ -44,6 +44,7 @@ pub struct Tournament {
 
 static mut STORAGE: Option<GameStorage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -105,6 +106,9 @@ pub enum Event {
 pub struct Service(());
 
 impl Service {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(GameStorage {
@@ -141,10 +145,7 @@ impl Service {
 
 #[service(events = Event)]
 impl Service {
-    pub fn new() -> Self {
-        Self(())
-    }
-
+    #[export]
     pub fn create_new_tournament(
         &mut self,
         tournament_name: String,
@@ -169,6 +170,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn register_for_tournament(
         &mut self,
         admin_id: ActorId,
@@ -183,6 +185,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn cancel_register(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -192,6 +195,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn cancel_tournament(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -201,6 +205,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_player(&mut self, player_id: ActorId, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -210,6 +215,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn finish_single_game(
         &mut self,
         gold_coins: u16,
@@ -236,6 +242,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn start_tournament(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -245,6 +252,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn finish_tournament(&mut self, admin_id: ActorId, time_start: u64) {
         let storage = self.get_mut();
         let event =
@@ -252,6 +260,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn record_tournament_result(
         &mut self,
         time: u128,
@@ -274,6 +283,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn leave_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -283,24 +293,28 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn change_status(&mut self, status: Status) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::change_status(storage, status));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn change_config(&mut self, config: Config) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::change_config(storage, config));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn add_admin(&mut self, new_admin_id: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_admin(storage, new_admin_id));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if !storage.admins.contains(&msg::source()) {
@@ -320,18 +334,22 @@ impl Service {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn config(&self) -> &'static Config {
         &self.get().config
     }
 
+    #[export]
     pub fn admins(&self) -> &'static Vec<ActorId> {
         &self.get().admins
     }
 
+    #[export]
     pub fn status(&self) -> &'static Status {
         &self.get().status
     }
 
+    #[export]
     pub fn get_tournament(&self, player_id: ActorId) -> Option<(TournamentState, Option<u64>)> {
         let storage = self.get();
         if let Some(admin_id) = storage.players_to_game_id.get(&player_id) {
@@ -358,6 +376,7 @@ impl Service {
         }
     }
 
+    #[export]
     pub fn all(&self) -> VaraManState {
         (*self.get()).clone().into()
     }

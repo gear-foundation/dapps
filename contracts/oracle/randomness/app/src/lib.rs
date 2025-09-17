@@ -14,6 +14,7 @@ pub struct RandomnessOracle {
     pub manager: ActorId,
 }
 
+#[event]
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -35,6 +36,10 @@ pub struct Random {
 struct RandomnessService(());
 
 impl RandomnessService {
+    pub fn new() -> Self {
+        Self(())
+    }
+
     pub async fn init(manager: ActorId) -> Self {
         unsafe {
             RANDOMNESS_ORACLE = Some(RandomnessOracle {
@@ -63,10 +68,8 @@ impl RandomnessService {
 
 #[sails_rs::service(events = Event)]
 impl RandomnessService {
-    pub fn new() -> Self {
-        Self(())
-    }
 
+    #[export]
     pub fn set_random_value(&mut self, round: u128, value: Random) {
         let randomness_oracle = self.get_mut();
         self.assert_manager();
@@ -89,6 +92,7 @@ impl RandomnessService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn get_last_round_with_random_value(&mut self) -> (u128, u128) {
         let randomness_oracle = self.get_mut();
         let round = randomness_oracle.last_round;
@@ -102,6 +106,7 @@ impl RandomnessService {
         (round, random_value)
     }
 
+    #[export]
     pub fn update_manager(&mut self, new_manager: ActorId) {
         let randomness_oracle = self.get_mut();
         self.assert_owner();
@@ -133,18 +138,22 @@ impl RandomnessService {
         }
     }
 
+    #[export]
     pub fn get_owner(&self) -> ActorId {
         self.get().owner
     }
 
+    #[export]
     pub fn get_last_round(&self) -> u128 {
         self.get().last_round
     }
 
+    #[export]
     pub fn get_manager(&self) -> ActorId {
         self.get().manager
     }
 
+    #[export]
     pub fn get_values(&self) -> Vec<(u128, Random)> {
         self.get().values.clone().into_iter().collect()
     }

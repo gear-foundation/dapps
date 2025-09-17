@@ -11,7 +11,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  GEAR_VERSION: 1.8.1
+  GEAR_VERSION: 1.9.1
 
 defaults:
   run:

@@ -32,6 +32,7 @@ pub struct TokenMetadata {
 
 static mut EXTENDED_STORAGE: Option<ExtendedStorage> = None;
 
+#[event]
 #[derive(Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -60,6 +61,11 @@ pub struct ExtendedService {
 }
 
 impl ExtendedService {
+    pub fn new() -> Self {
+        Self {
+            dynamic_nft: VnftService::new(),
+        }
+    }
     pub fn init(name: String, symbol: String, gas_for_one_time_updating: u64) -> Self {
         let admin = msg::source();
         unsafe {
@@ -92,13 +98,16 @@ impl ExtendedService {
     }
 }
 
+impl From<ExtendedService> for VnftService {
+    fn from(value: ExtendedService) -> Self {
+        value.dynamic_nft
+    }
+}
+
 #[service(extends = VnftService, events = Event)]
 impl ExtendedService {
-    pub fn new() -> Self {
-        Self {
-            dynamic_nft: VnftService::new(),
-        }
-    }
+
+    #[export]
     pub fn mint(&mut self, to: ActorId, token_metadata: TokenMetadata) {
         if !self.get().minters.contains(&msg::source()) {
             panic!("Not allowed to mint")
@@ -120,6 +129,7 @@ impl ExtendedService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn burn(&mut self, from: ActorId, token_id: TokenId) {
         if !self.get().burners.contains(&msg::source()) {
             panic!("Not allowed to burn")
@@ -137,31 +147,43 @@ impl ExtendedService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn grant_admin_role(&mut self, to: ActorId) {
         self.ensure_is_admin();
         self.get_mut().admins.insert(to);
     }
+
+    #[export]
     pub fn grant_minter_role(&mut self, to: ActorId) {
         self.ensure_is_admin();
         self.get_mut().minters.insert(to);
     }
+
+    #[export]
     pub fn grant_burner_role(&mut self, to: ActorId) {
         self.ensure_is_admin();
         self.get_mut().burners.insert(to);
     }
 
+    #[export]
     pub fn revoke_admin_role(&mut self, from: ActorId) {
         self.ensure_is_admin();
         self.get_mut().admins.remove(&from);
     }
+
+    #[export]
     pub fn revoke_minter_role(&mut self, from: ActorId) {
         self.ensure_is_admin();
         self.get_mut().minters.remove(&from);
     }
+
+    #[export]
     pub fn revoke_burner_role(&mut self, from: ActorId) {
         self.ensure_is_admin();
         self.get_mut().burners.remove(&from);
     }
+
+    #[export]
     pub fn start_metadata_update(
         &mut self,
         updates_count: u32,
@@ -194,6 +216,7 @@ impl ExtendedService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn update_metadata(
         &mut self,
         token_id: TokenId,
@@ -222,23 +245,32 @@ impl ExtendedService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn minters(&self) -> Vec<ActorId> {
         self.get().minters.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn burners(&self) -> Vec<ActorId> {
         self.get().burners.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn admins(&self) -> Vec<ActorId> {
         self.get().admins.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn token_id(&self) -> TokenId {
         self.get().token_id
     }
+
+    #[export]
     pub fn token_metadata_by_id(&self, token_id: TokenId) -> Option<TokenMetadata> {
         self.get().token_metadata_by_id.get(&token_id).cloned()
     }
+
+    #[export]
     pub fn tokens_for_owner(&self, owner: ActorId) -> Vec<(TokenId, TokenMetadata)> {
         Storage::tokens_for_owner()
             .get(&owner)
@@ -257,10 +289,5 @@ impl ExtendedService {
         if !self.get().admins.contains(&msg::source()) {
             panic!("Not admin")
         };
-    }
-}
-impl AsRef<VnftService> for ExtendedService {
-    fn as_ref(&self) -> &VnftService {
-        &self.dynamic_nft
     }
 }

@@ -117,6 +117,7 @@ pub struct ZkPublicKey {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -162,7 +163,11 @@ pub enum Event {
 
 pub struct PokerService(());
 
+#[allow(clippy::new_without_default)]
 impl PokerService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(
         config: Config,
         pts_actor_id: ActorId,
@@ -348,9 +353,6 @@ fn get_player(session_for_account: &Option<ActorId>) -> ActorId {
 #[sails_rs::service(events = Event)]
 #[allow(clippy::new_without_default)]
 impl PokerService {
-    pub fn new() -> Self {
-        Self(())
-    }
     /// Registers a player by sending a transfer request to the PTS contract (starting_bank points).
     ///
     /// Panics if:
@@ -359,6 +361,7 @@ impl PokerService {
     ///
     /// Sends a message to the PTS contract (pts_actor_id) to transfer points to this contract.
     /// On success, updates participant data and emits a `Registered` event.
+    #[export]
     pub async fn register(
         &mut self,
         player_name: String,
@@ -421,6 +424,7 @@ impl PokerService {
     ///
     /// Sends a transfer request to PTS contract to return points to the player.
     /// Removes player data and emits `RegistrationCanceled` event on success.
+    #[export]
     pub async fn cancel_registration(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let player_id = get_player(&session_for_account);
@@ -447,6 +451,7 @@ impl PokerService {
     /// Panics if caller is not admin.
     /// Resets game to WaitingShuffleVerification (if full) or Registration status.
     /// Emits GameRestarted event with new status.
+    #[export]
     pub fn restart_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let player_id = get_player(&session_for_account);
@@ -498,6 +503,7 @@ impl PokerService {
     /// 3. Emits Killed event and transfers remaining funds to admin
     ///
     /// WARNING: Irreversible operation
+    #[export]
     pub async fn kill(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get();
         let player_id = get_player(&session_for_account);
@@ -543,6 +549,7 @@ impl PokerService {
         exec::exit(storage.config.admin_id);
     }
 
+    #[export]
     pub async fn cancel_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let player_id = get_player(&session_for_account);
@@ -576,6 +583,7 @@ impl PokerService {
     /// 2. Removes player from all participant lists
     /// 3. Resets status to Registration
     /// 4. Emits PlayerDeleted event
+    #[export]
     pub async fn delete_player(
         &mut self,
         player_id: ActorId,
@@ -618,6 +626,7 @@ impl PokerService {
             .expect("Event Invocation Error");
     }
 
+    #[export]
     pub async fn shuffle_deck(
         &mut self,
         encrypted_deck: Vec<EncryptedCard>,
@@ -663,6 +672,7 @@ impl PokerService {
     /// 3. Updates game status and emits GameStarted event
     ///
     /// Note: Handles edge cases where players can't cover blinds
+    #[export]
     pub async fn start_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         if get_player(&session_for_account) != storage.config.admin_id {
@@ -735,6 +745,7 @@ impl PokerService {
             .expect("Event Invocation Error");
     }
 
+    #[export]
     pub async fn submit_all_partial_decryptions(&mut self, instances: Vec<VerificationVariables>) {
         let storage = self.get_mut();
 
@@ -761,6 +772,7 @@ impl PokerService {
             .expect("Event Invocation Error");
     }
 
+    #[export]
     pub async fn submit_table_partial_decryptions(
         &mut self,
         instances: Vec<VerificationVariables>,
@@ -875,6 +887,7 @@ impl PokerService {
     /// - Stage transitions
     ///
     /// Emits TurnIsMade and NextStage events
+    #[export]
     pub fn turn(&mut self, action: Action, session_for_account: Option<ActorId>) {
         let player = get_player(&session_for_account);
         let storage = self.get_mut();
@@ -1117,6 +1130,7 @@ impl PokerService {
             .expect("Event Error");
     }
 
+    #[export]
     pub async fn card_disclosure(
         &mut self,
         instances: Vec<(Card, VerificationVariables)>,
@@ -1197,6 +1211,7 @@ impl PokerService {
     }
 
     // Query
+    #[export]
     pub fn player_cards(&self, player_id: ActorId) -> Option<[EncryptedCard; 2]> {
         self.get()
             .partially_decrypted_cards
@@ -1204,10 +1219,12 @@ impl PokerService {
             .cloned()
     }
 
+    #[export]
     pub fn encrypted_table_cards(&self) -> Vec<EncryptedCard> {
         self.get().table_cards.clone()
     }
 
+    #[export]
     pub fn table_cards_to_decrypt(&self) -> Vec<EncryptedCard> {
         let storage = self.get();
         let (base_index, expected_count) = match &storage.status {
@@ -1232,37 +1249,57 @@ impl PokerService {
             .clone()
     }
 
+    #[export]
     pub fn revealed_table_cards(&self) -> Vec<Card> {
         self.get().revealed_table_cards.clone()
     }
 
+    #[export]
     pub fn participants(&self) -> Vec<(ActorId, Participant)> {
         self.get().participants.clone()
     }
+
+    #[export]
     pub fn waiting_participants(&self) -> Vec<(ActorId, Participant)> {
         self.get().waiting_participants.clone()
     }
+
+    #[export]
     pub fn active_participants(&self) -> &'static TurnManager<ActorId> {
         &self.get().active_participants
     }
+
+    #[export]
     pub fn status(&self) -> &'static Status {
         &self.get().status
     }
+
+    #[export]
     pub fn config(&self) -> &'static Config {
         &self.get().config
     }
+
+    #[export]
     pub fn round(&self) -> u64 {
         self.get().round
     }
+
+    #[export]
     pub fn betting(&self) -> &'static Option<BettingStage> {
         &self.get().betting
     }
+
+    #[export]
     pub fn betting_bank(&self) -> Vec<(ActorId, u128)> {
         self.get().betting_bank.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn all_in_players(&self) -> &'static Vec<ActorId> {
         &self.get().all_in_players
     }
+
+    #[export]
     pub fn already_invested_in_the_circle(&self) -> Vec<(ActorId, u128)> {
         self.get()
             .already_invested_in_the_circle
@@ -1270,17 +1307,23 @@ impl PokerService {
             .into_iter()
             .collect()
     }
+
+    #[export]
     pub fn factory_actor_id(&self) -> ActorId {
         self.get().factory_actor_id
     }
+
+    #[export]
     pub fn pts_actor_id(&self) -> ActorId {
         self.get().pts_actor_id
     }
 
+    #[export]
     pub fn revealed_players(&self) -> Vec<(ActorId, (Card, Card))> {
         self.get().revealed_players.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn agg_pub_key(&self) -> ZkPublicKey {
         self.get().agg_pub_key.clone()
     }

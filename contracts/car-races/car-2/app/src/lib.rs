@@ -3,13 +3,16 @@
 
 use sails_rs::{collections::BTreeMap, prelude::*};
 struct CarStrategyService(());
-
-#[sails_rs::service]
 impl CarStrategyService {
     pub fn new() -> Self {
         Self(())
     }
+}
 
+#[sails_rs::service]
+impl CarStrategyService {
+
+    #[export]
     pub fn make_move(&mut self, _cars: BTreeMap<ActorId, Car>) -> StrategyAction {
         let random_choice = get_random_value(10);
         match random_choice {

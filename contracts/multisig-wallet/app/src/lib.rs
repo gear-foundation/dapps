@@ -10,6 +10,7 @@ static mut STORAGE: Option<MultisigWallet> = None;
 
 struct MultisigWalletService(());
 
+#[event]
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -45,17 +46,7 @@ impl MultisigWalletService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn get_mut(&mut self) -> &'static mut MultisigWallet {
-        unsafe { STORAGE.as_mut().expect("Storage is not initialized") }
-    }
-    pub fn get(&self) -> &'static MultisigWallet {
-        unsafe { STORAGE.as_ref().expect("Storage is not initialized") }
-    }
-}
-
-#[sails_rs::service(events = Event)]
-impl MultisigWalletService {
-    fn init(owners: Vec<ActorId>, required: u32) -> Self {
+    pub fn init(owners: Vec<ActorId>, required: u32) -> Self {
         let owners_count = owners.len();
 
         validate_requirement(owners_count, required);
@@ -75,7 +66,18 @@ impl MultisigWalletService {
         unsafe { STORAGE = Some(wallet) };
         Self(())
     }
+    pub fn get_mut(&mut self) -> &'static mut MultisigWallet {
+        unsafe { STORAGE.as_mut().expect("Storage is not initialized") }
+    }
+    pub fn get(&self) -> &'static MultisigWallet {
+        unsafe { STORAGE.as_ref().expect("Storage is not initialized") }
+    }
+}
 
+#[sails_rs::service(events = Event)]
+impl MultisigWalletService {
+
+    #[export]
     pub fn add_owner(&mut self, owner: ActorId) {
         let wallet = self.get_mut();
         wallet.validate_only_wallet();
@@ -85,6 +87,8 @@ impl MultisigWalletService {
         self.emit_event(Event::OwnerAddition { owner })
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn remove_owner(&mut self, owner: ActorId) {
         let wallet = self.get_mut();
         wallet.validate_only_wallet();
@@ -106,6 +110,7 @@ impl MultisigWalletService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn replace_owner(&mut self, old_owner: ActorId, new_owner: ActorId) {
         let wallet = self.get_mut();
         wallet.validate_only_wallet();
@@ -121,6 +126,8 @@ impl MultisigWalletService {
         })
         .expect("Notification Error");
     }
+
+    #[export]
     pub fn change_required_confirmations_count(&mut self, count: u32) {
         let wallet = self.get_mut();
         wallet.change_requirement(count);
@@ -128,6 +135,7 @@ impl MultisigWalletService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn submit_transaction(
         &mut self,
         destination: ActorId,
@@ -143,6 +151,8 @@ impl MultisigWalletService {
         self.emit_event(Event::Submission { transaction_id })
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn confirm_transaction(&mut self, transaction_id: U256) {
         let wallet = self.get_mut();
         let msg_source = msg::source();
@@ -153,6 +163,8 @@ impl MultisigWalletService {
         })
         .expect("Notification Error");
     }
+
+    #[export]
     pub fn revoke_confirmation(&mut self, transaction_id: U256) {
         let wallet = self.get_mut();
         let msg_source = msg::source();
@@ -173,6 +185,8 @@ impl MultisigWalletService {
         })
         .expect("Notification Error");
     }
+
+    #[export]
     pub fn execute_transaction(&mut self, transaction_id: U256) {
         let wallet = self.get_mut();
         let completion = || {
@@ -184,6 +198,7 @@ impl MultisigWalletService {
     }
 
     // Service's query
+    #[export]
     pub fn get_state(&self) -> State {
         self.get().clone().into()
     }

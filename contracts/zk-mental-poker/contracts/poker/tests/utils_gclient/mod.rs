@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 use crate::send_request;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gear_core::ids::ProgramId;
 use poker_client::{Card, GameConfig, SessionConfig, Suit, ZkPublicKey};
 use sails_rs::{ActorId, Encode};
 pub mod zk_loader;
@@ -48,7 +47,7 @@ pub async fn get_new_client(api: &GearApi, name: &str) -> GearApi {
             .encode()
             .as_slice()
             .try_into()
-            .expect("Unexpected invalid `ProgramId`."),
+            .expect("Unexpected invalid `ActorId`."),
         amount,
     )
     .await
@@ -61,7 +60,7 @@ pub async fn init(
     api: &GearApi,
     pk: ZkPublicKey,
     listener: &mut EventListener,
-) -> Result<(ProgramId, ProgramId)> {
+) -> Result<(ActorId, ActorId)> {
     // ZK VERIFICATION
     println!("Upload zk verification contract");
     let path = "../target/wasm32-gear/release/zk_verification.opt.wasm";
@@ -164,7 +163,7 @@ pub async fn init(
 pub async fn make_zk_actions(
     api: &GearApi,
     listener: &mut EventListener,
-) -> Result<(ProgramId, Vec<(ZkPublicKey, ActorId, &'static str)>)> {
+) -> Result<(ActorId, Vec<(ZkPublicKey, ActorId, &'static str)>)> {
     let pks = ZkLoaderData::load_player_public_keys("tests/test_data/player_pks.json");
     let proofs = ZkLoaderData::load_shuffle_proofs("tests/test_data/shuffle_proofs.json");
     let deck = ZkLoaderData::load_encrypted_table_cards("tests/test_data/encrypted_deck.json");

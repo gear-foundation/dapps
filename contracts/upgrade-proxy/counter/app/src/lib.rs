@@ -20,6 +20,9 @@ struct CounterState {
 struct CounterService(());
 
 impl CounterService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(limit: u128) -> Self {
         unsafe {
             COUNTER = Some(CounterState {
@@ -42,15 +45,14 @@ impl CounterService {
 
 #[sails_rs::service]
 impl CounterService {
-    pub fn new() -> Self {
-        Self(())
-    }
 
+    #[export]
     pub fn set_proxy(&mut self, proxy_address: Option<ActorId>) {
         self.only_admin(msg::source());
         self.get_mut().proxy_address = proxy_address;
     }
 
+    #[export]
     pub fn contribute(&mut self, msg_source: Option<ActorId>) -> u128 {
         self.check_if_proxy();
         let msg_source = self.get_msg_source(msg_source);
@@ -63,6 +65,7 @@ impl CounterService {
         state.value
     }
 
+    #[export]
     pub fn distribute(&mut self, msg_source: Option<ActorId>) {
         self.check_if_proxy();
         let msg_source = self.get_msg_source(msg_source);
@@ -89,6 +92,7 @@ impl CounterService {
     /// This function is used in the old program to export the migration state.
     /// It serializes only the essential fields (`value`, `limit`, and `contributions`)
     /// needed for transferring to the new program.
+    #[export]
     pub fn export_migration_state(&self) -> Vec<u8> {
         let state = self.get();
         let export_data = (state.value, state.limit, state.contributions.clone());
@@ -98,6 +102,7 @@ impl CounterService {
     /// This function is used in the new program to import the migration state.
     /// It decodes the provided serialized data and updates the program's internal state
     /// with the `value`, `limit`, and `contributions` from the previous program.
+    #[export]
     pub fn import_migration_state(&mut self, encoded_state: Vec<u8>) {
         self.only_admin(msg::source());
         let (value, limit, contributions) =
@@ -114,6 +119,7 @@ impl CounterService {
     /// Stops the execution of the current program and transfers its remaining `value`
     /// (balance) to an indicated address (for example, new inheritor program). This can be used, for example, when deploying
     /// a new version of the program.
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId, msg_source: Option<ActorId>) {
         self.check_if_proxy();
         let msg_source = self.get_msg_source(msg_source);
@@ -121,10 +127,12 @@ impl CounterService {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn get_value(&self) -> u128 {
         self.get().value
     }
 
+    #[export]
     fn get_msg_source(&self, msg_source: Option<ActorId>) -> ActorId {
         if self.get().proxy_address.is_some() {
             msg_source.expect("msg_source must be set through proxy")
@@ -132,12 +140,15 @@ impl CounterService {
             msg::source()
         }
     }
+
+    #[export]
     fn check_if_proxy(&self) {
         if let Some(proxy_address) = self.get().proxy_address {
             assert_eq!(msg::source(), proxy_address, "Only proxy can send messages")
         }
     }
 
+    #[export]
     fn only_admin(&self, msg_source: ActorId) {
         assert_eq!(
             msg_source,

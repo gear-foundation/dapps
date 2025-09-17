@@ -6,7 +6,7 @@ use crate::{
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
 use sails_rs::gstd::service;
-
+use sails_rs::{export, event};
 pub use utils::*;
 
 use self::storage::{GamePairsStorage, MultipleGamesStorage};
@@ -17,6 +17,7 @@ pub mod funcs;
 pub mod storage;
 pub(crate) mod utils;
 
+#[event]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -63,6 +64,9 @@ pub enum Event {
 pub struct MultipleService(());
 
 impl MultipleService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn seed() -> Self {
         let _res = MultipleGamesStorage::default();
         debug_assert!(_res.is_ok());
@@ -74,14 +78,13 @@ impl MultipleService {
 
 #[service(events = Event)]
 impl MultipleService {
-    pub fn new() -> Self {
-        Self(())
-    }
+
     /// Creates a new game instance for a player and stores it in the game storage.
     ///
     /// # Arguments
     ///
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    #[export]
     pub fn create_game(&mut self, name: String, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -110,6 +113,7 @@ impl MultipleService {
     ///
     /// * `game_id` - The `ActorId` representing the ID of the game to join.
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    #[export]
     pub fn join_game(
         &mut self,
         game_id: ActorId,
@@ -141,6 +145,7 @@ impl MultipleService {
     /// # Arguments
     ///
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    #[export]
     pub fn leave_game(&mut self, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -163,6 +168,7 @@ impl MultipleService {
     /// # Arguments
     ///
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    #[export]
     pub fn cancel_game(&mut self, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -188,6 +194,7 @@ impl MultipleService {
     /// * `public_input` - Public input data required for the verification process.
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     /// * `game_id` - The `ActorId` representing the ID of the game to verify.
+    #[export]
     pub async fn verify_placement(
         &mut self,
         proof: services::verify::ProofBytes,
@@ -255,6 +262,7 @@ impl MultipleService {
     /// * `verify_variables` - Optional verification data used for proof verification.
     /// * `step` - Optional step value representing the player's move.
     /// * `session_for_account` - Optional session identifier for the account making the move.
+    #[export]
     pub async fn make_move(
         &mut self,
         game_id: ActorId,
@@ -348,6 +356,7 @@ impl MultipleService {
     ///
     /// # Note
     /// The source of the message can only be the program itself.
+    #[export]
     pub fn delete_game(&mut self, game_id: ActorId, create_time: u64) {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
@@ -372,6 +381,7 @@ impl MultipleService {
     ///     
     /// # Note
     /// The source of the message can only be the program itself.
+    #[export]
     pub fn check_out_timing(&mut self, game_id: ActorId, check_time: u64) {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
@@ -390,6 +400,7 @@ impl MultipleService {
         }
     }
 
+    #[export]
     pub fn delete_player(
         &mut self,
         removable_player: ActorId,
@@ -413,6 +424,7 @@ impl MultipleService {
         self.emit_event(event).expect("Notification Error");
     }
 
+    #[export]
     pub fn games(&self) -> Vec<(ActorId, MultipleGameState)> {
         MultipleGamesStorage::as_ref()
             .iter()
@@ -430,12 +442,16 @@ impl MultipleService {
             })
             .collect()
     }
+
+    #[export]
     pub fn games_pairs(&self) -> Vec<(ActorId, ActorId)> {
         GamePairsStorage::as_ref()
             .iter()
             .map(|(player_1, player_2)| (*player_1, *player_2))
             .collect()
     }
+
+    #[export]
     pub fn game(&self, player_id: ActorId) -> Option<MultipleGameState> {
         GamePairsStorage::as_ref()
             .get(&player_id)
@@ -450,6 +466,8 @@ impl MultipleService {
                 bid: game.bid,
             })
     }
+
+    #[export]
     pub fn get_remaining_time(&self, player_id: ActorId) -> Option<u64> {
         let current_time = exec::block_timestamp();
         let time_to_move = ConfigurationStorage::get().delay_for_check_time as u64 * 3_000;

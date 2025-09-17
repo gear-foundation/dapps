@@ -18,6 +18,7 @@ pub struct Storage {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -35,6 +36,9 @@ pub enum Event {
 pub struct Service(());
 
 impl Service {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
@@ -68,14 +72,15 @@ impl Service {
 
 #[service(events = Event)]
 impl Service {
-    pub fn new() -> Self {
-        Self(())
-    }
+
+    #[export]
     pub fn add_token_data(&mut self, token_id: ActorId, price: Price) {
         let storage = self.get_mut();
         let event = panicking(|| funcs::add_token_data(storage, token_id, price));
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub async fn register_subscription(
         &mut self,
         period: Period,
@@ -92,6 +97,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn update_subscription(&mut self, subscriber: ActorId) {
         let storage = self.get_mut();
         let res = funcs::update_subscription(storage, subscriber).await;
@@ -103,12 +109,14 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn cancel_subscription(&mut self) {
         let storage = self.get_mut();
         let event = panicking(|| funcs::cancel_subscription(storage));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn manage_pending_subscription(&mut self, enable: bool) {
         let storage = self.get_mut();
         let res = funcs::manage_pending_subscription(storage, enable).await;
@@ -120,6 +128,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn update_config(
         &mut self,
         gas_for_token_transfer: Option<u64>,
@@ -138,6 +147,7 @@ impl Service {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if let Some((id, _name)) = &storage.dns_info {
@@ -158,25 +168,32 @@ impl Service {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn admins(&self) -> &'static Vec<ActorId> {
         &self.get().admins
     }
 
+    #[export]
     pub fn config(&self) -> &'static Config {
         &self.get().config
     }
 
+    #[export]
     pub fn currencies(&self) -> Vec<(ActorId, Price)> {
         self.get().currencies.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn subscribers(&self) -> Vec<(ActorId, SubscriberData)> {
         self.get().subscribers.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn get_subscriber(&self, account: ActorId) -> Option<SubscriberData> {
         self.get().subscribers.get(&account).cloned()
     }
+
+    #[export]
     pub fn all_subscriptions(&self) -> Vec<(ActorId, SubscriberDataState)> {
         let state = self.get();
         state

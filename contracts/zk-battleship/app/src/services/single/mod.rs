@@ -10,13 +10,14 @@ use crate::{
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, TypeInfo, Vec};
 use sails_rs::gstd::service;
-
+use sails_rs::{export, event};
 pub use utils::*;
 
 pub mod funcs;
 pub mod storage;
 pub(crate) mod utils;
 
+#[event]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -43,6 +44,9 @@ pub enum Event {
 pub struct SingleService(());
 
 impl SingleService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn seed() -> Self {
         let _res = SingleGamesStorage::default();
         debug_assert!(_res.is_ok());
@@ -52,10 +56,6 @@ impl SingleService {
 
 #[service(events = Event)]
 impl SingleService {
-    pub fn new() -> Self {
-        Self(())
-    }
-
     /// Function for creating a single-player game using Zero Knowledge (ZK) proofs.
     ///
     /// # Arguments
@@ -63,6 +63,7 @@ impl SingleService {
     /// * `proof` - Zero Knowledge proof represented as a byte array. Used to verify the correctness of the public input.
     /// * `public_input` - Public input data to start the game.
     /// * `session_for_account` - An optional parameter representing an account associated with the game session. This is an account abstraction that can be used for identification or session data storage.
+    #[export]
     pub async fn start_single_game(
         &mut self,
         proof: services::verify::ProofBytes,
@@ -125,6 +126,7 @@ impl SingleService {
     ///                        proof bytes and public input required for zk-proof verification.
     /// * `session_for_account` - An optional `ActorId` representing the session account
     ///                           being used to make the move.
+    #[export]
     pub async fn make_move(
         &mut self,
         step: Option<u8>,
@@ -208,6 +210,7 @@ impl SingleService {
     ///
     /// This function checks that the message source is the program itself (`exec::program_id()`).
     /// If not, it panics with a message indicating that the function can only be called by the program.
+    #[export]
     pub fn delete_game(&mut self, player: ActorId, start_time: u64) {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
@@ -217,6 +220,7 @@ impl SingleService {
         });
     }
 
+    #[export]
     pub fn check_out_timing(&mut self, actor_id: ActorId, check_time: u64) {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
@@ -229,16 +233,22 @@ impl SingleService {
         }
     }
 
+    #[export]
     pub fn start_time(&self, player_id: ActorId) -> Option<u64> {
         crate::generate_getter_game!(start_time, player_id)
     }
+
+    #[export]
     pub fn total_shots(&self, player_id: ActorId) -> Option<u8> {
         crate::generate_getter_game!(total_shots, player_id)
     }
+
+    #[export]
     pub fn game(&self, player_id: ActorId) -> Option<SingleGame> {
         crate::generate_getter_game!(player_id)
     }
 
+    #[export]
     pub fn games(&self) -> Vec<(ActorId, SingleGameState)> {
         SingleGamesStorage::as_ref()
             .iter()
@@ -256,6 +266,8 @@ impl SingleService {
             })
             .collect()
     }
+
+    #[export]
     pub fn get_remaining_time(&self, player_id: ActorId) -> Option<u64> {
         let current_time = exec::block_timestamp();
         let time_to_move = ConfigurationStorage::get().delay_for_check_time as u64 * 3_000;

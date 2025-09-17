@@ -26,31 +26,7 @@ impl W3bstreamingService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn get_mut(&mut self) -> &'static mut Program {
-        unsafe { PROGRAM.as_mut().expect("Ping counter is not initialized") }
-    }
-    pub fn get(&self) -> &'static Program {
-        unsafe { PROGRAM.as_ref().expect("Ping counter is not initialized") }
-    }
-}
-
-#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum Event {
-    StreamIsScheduled { id: String },
-    StreamDeleted { id: String },
-    StreamEdited,
-    Subscribed,
-    Unsubscribed,
-    ProfileEdited,
-    AdminAdded { new_admin_id: ActorId },
-    Killed { inheritor: ActorId },
-}
-
-#[sails_rs::service(events = Event)]
-impl W3bstreamingService {
-    async fn init(dns_id_and_name: Option<(ActorId, String)>) -> Self {
+    pub async fn init(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             PROGRAM = Some(Program {
                 dns_info: dns_id_and_name.clone(),
@@ -74,7 +50,32 @@ impl W3bstreamingService {
 
         Self(())
     }
+    pub fn get_mut(&mut self) -> &'static mut Program {
+        unsafe { PROGRAM.as_mut().expect("Ping counter is not initialized") }
+    }
+    pub fn get(&self) -> &'static Program {
+        unsafe { PROGRAM.as_ref().expect("Ping counter is not initialized") }
+    }
+}
 
+#[event]
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub enum Event {
+    StreamIsScheduled { id: String },
+    StreamDeleted { id: String },
+    StreamEdited,
+    Subscribed,
+    Unsubscribed,
+    ProfileEdited,
+    AdminAdded { new_admin_id: ActorId },
+    Killed { inheritor: ActorId },
+}
+
+#[sails_rs::service(events = Event)]
+impl W3bstreamingService {
+    #[export]
     pub fn new_stream(
         &mut self,
         title: String,
@@ -106,6 +107,7 @@ impl W3bstreamingService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_stream(&mut self, stream_id: String) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -129,6 +131,8 @@ impl W3bstreamingService {
         self.emit_event(Event::StreamDeleted { id: stream_id })
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn edit_stream(
         &mut self,
         stream_id: String,
@@ -167,6 +171,7 @@ impl W3bstreamingService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn subscribe(&mut self, account_id: ActorId) {
         let storage = self.get_mut();
         if !storage.users.contains_key(&account_id) {
@@ -195,6 +200,7 @@ impl W3bstreamingService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn unsubscribe(&mut self, account_id: ActorId) {
         let storage = self.get_mut();
         if !storage.users.contains_key(&account_id) {
@@ -222,6 +228,7 @@ impl W3bstreamingService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn edit_profile(
         &mut self,
         name: Option<String>,
@@ -253,6 +260,8 @@ impl W3bstreamingService {
         self.emit_event(Event::ProfileEdited)
             .expect("Notification Error");
     }
+
+    #[export]
     pub fn add_admin(&mut self, new_admin_id: ActorId) {
         let storage = self.get_mut();
         if !storage.admins.contains(&msg::source()) {
@@ -262,6 +271,8 @@ impl W3bstreamingService {
         self.emit_event(Event::AdminAdded { new_admin_id })
             .expect("Notification Error");
     }
+
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if !storage.admins.contains(&msg::source()) {
@@ -281,6 +292,7 @@ impl W3bstreamingService {
         exec::exit(inheritor);
     }
     // Service's query
+    #[export]
     pub fn get_state(&self) -> ProgramState {
         self.get().clone().into()
     }

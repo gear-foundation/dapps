@@ -16,6 +16,7 @@ pub struct Oracle {
     dns_info: Option<(ActorId, String)>,
 }
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -27,6 +28,9 @@ pub enum Event {
 struct OracleService(());
 
 impl OracleService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub async fn init(
         owner: ActorId,
         manager: ActorId,
@@ -65,10 +69,8 @@ impl OracleService {
 
 #[sails_rs::service(events = Event)]
 impl OracleService {
-    pub fn new() -> Self {
-        Self(())
-    }
 
+    #[export]
     pub async fn request_value(&mut self) -> u128 {
         let request = randomness_io::GetLastRoundWithRandomValue::encode_call();
         let bytes_reply = msg::send_bytes_for_reply(self.get().manager, request, 0, 0)
@@ -82,6 +84,7 @@ impl OracleService {
         value
     }
 
+    #[export]
     pub fn change_manager(&mut self, new_manager: ActorId) {
         let oracle = self.get_mut();
         oracle.manager = new_manager;
@@ -89,12 +92,17 @@ impl OracleService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn get_owner(&self) -> ActorId {
         self.get().owner
     }
+
+    #[export]
     pub fn get_manager(&self) -> ActorId {
         self.get().manager
     }
+
+    #[export]
     pub fn get_dns_info(&self) -> Option<(ActorId, String)> {
         self.get().dns_info.clone()
     }

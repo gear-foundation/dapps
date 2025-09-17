@@ -44,6 +44,7 @@ pub struct TokenMetadata {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -76,6 +77,9 @@ pub enum ConcertError {
 struct ConcertService(());
 
 impl ConcertService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(owner_id: ActorId, vmt_contract: ActorId) -> Self {
         let storage = Storage {
             owner_id,
@@ -95,9 +99,8 @@ impl ConcertService {
 
 #[service(events = Event)]
 impl ConcertService {
-    pub fn new() -> Self {
-        Self(())
-    }
+
+    #[export]
     pub fn create(
         &mut self,
         creator: ActorId,
@@ -131,6 +134,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn hold_concert(&mut self) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -195,6 +199,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn buy_tickets(&mut self, amount: U256, mtd: Vec<Option<TokenMetadata>>) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -239,6 +244,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn get_storage(&self) -> State {
         self.get().clone().into()
     }

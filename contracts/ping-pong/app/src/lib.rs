@@ -11,6 +11,12 @@ impl PingPongService {
     pub fn new() -> Self {
         Self(())
     }
+    pub fn init() -> Self {
+        unsafe {
+            PING_COUNTER = Some(U256::zero());
+        }
+        Self(())
+    }
     pub fn get_mut(&mut self) -> &'static mut U256 {
         unsafe {
             PING_COUNTER
@@ -29,13 +35,9 @@ impl PingPongService {
 
 #[sails_rs::service]
 impl PingPongService {
-    fn init() -> Self {
-        unsafe {
-            PING_COUNTER = Some(U256::zero());
-        }
-        Self(())
-    }
+
     // Service's method (command)
+    #[export]
     pub fn ping(&mut self) -> String {
         let ping_counter = self.get_mut();
         *ping_counter += U256::one();
@@ -43,6 +45,7 @@ impl PingPongService {
     }
 
     // Service's query
+    #[export]
     pub fn get_ping_count(&self) -> U256 {
         *self.get()
     }

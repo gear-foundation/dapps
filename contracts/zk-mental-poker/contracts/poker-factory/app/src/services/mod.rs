@@ -41,6 +41,7 @@ pub struct LobbyConfig {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -68,7 +69,11 @@ pub enum Event {
 
 pub struct PokerFactoryService(());
 
+#[allow(clippy::new_without_default)]
 impl PokerFactoryService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(config: Config, pts_actor_id: ActorId, zk_verification_id: ActorId) -> Self {
         unsafe {
             STORAGE = Some(Storage {
@@ -90,12 +95,7 @@ impl PokerFactoryService {
 }
 
 #[sails_rs::service(events = Event)]
-#[allow(clippy::new_without_default)]
 impl PokerFactoryService {
-    pub fn new() -> Self {
-        Self(())
-    }
-
     /// Creates new poker lobby with provided config.
     ///
     /// Panics if:
@@ -108,6 +108,7 @@ impl PokerFactoryService {
     /// 3. Sets lobby as PTS admin
     /// 4. Transfers starting bank to lobby
     /// 5. Stores lobby info and emits LobbyCreated event
+    #[export]
     pub async fn create_lobby(
         &mut self,
         init_lobby: LobbyConfig,
@@ -196,6 +197,7 @@ impl PokerFactoryService {
     /// - Caller lacks permissions
     ///
     /// Emits LobbyDeleted event on success.
+    #[export]
     pub async fn delete_lobby(&mut self, lobby_address: ActorId) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -215,6 +217,7 @@ impl PokerFactoryService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub async fn change_config(&mut self, config: Config) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -227,6 +230,7 @@ impl PokerFactoryService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub async fn change_zk_verification_id(&mut self, zk_verification_id: ActorId) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -239,6 +243,7 @@ impl PokerFactoryService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub async fn change_pts_actor_id(&mut self, pts_actor_id: ActorId) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -251,24 +256,34 @@ impl PokerFactoryService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn add_admin(&mut self, new_admin_id: ActorId) {
         let storage = self.get_mut();
         storage.admins.insert(new_admin_id);
     }
+
+    #[export]
     pub fn delete_admin(&mut self, id: ActorId) {
         let storage = self.get_mut();
         storage.admins.remove(&id);
     }
 
+    #[export]
     pub fn pts_actor_id(&self) -> ActorId {
         self.get().pts_actor_id
     }
+
+    #[export]
     pub fn lobbies(&self) -> Vec<(ActorId, LobbyConfig)> {
         self.get().lobbies.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn admins(&self) -> Vec<ActorId> {
         self.get().admins.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn config(&self) -> Config {
         self.get().config.clone()
     }
