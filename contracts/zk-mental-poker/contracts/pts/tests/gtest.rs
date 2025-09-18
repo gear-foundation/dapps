@@ -12,8 +12,8 @@ const USER_ID: u64 = 43;
 async fn test_transfer() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(ACTOR_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let remoting = GTestRemoting::new(system, ACTOR_ID.into());
 
     // Submit program code into the system

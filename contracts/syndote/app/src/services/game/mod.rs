@@ -44,6 +44,7 @@ pub struct Storage {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -79,6 +80,9 @@ pub enum Event {
 pub struct GameService(());
 
 impl GameService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub async fn init(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             let mut storage = Storage {
@@ -116,27 +120,28 @@ impl GameService {
 
 #[service(events = Event)]
 impl GameService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub fn register(&mut self, player: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::register(storage, &player));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn reserve_gas(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::reserve_gas(storage));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn start_registration(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::start_registration(storage));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn play(&mut self) {
         let storage = self.get_mut();
         let res = funcs::play(storage).await;
@@ -148,6 +153,7 @@ impl GameService {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Event {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
@@ -157,36 +163,42 @@ impl GameService {
         event
     }
 
+    #[export]
     pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_gear(storage, properties_for_sale));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::upgrade(storage, properties_for_sale));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::buy_cell(storage, properties_for_sale));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::pay_rent(storage, properties_for_sale));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn change_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::change_admin(storage, admin));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if storage.admin != msg::source() {
@@ -206,10 +218,12 @@ impl GameService {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn get_storage(&self) -> StorageState {
         self.get().clone().into()
     }
 
+    #[export]
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
         self.get().dns_info.clone()
     }

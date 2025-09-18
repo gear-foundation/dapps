@@ -9,7 +9,7 @@ const USER_ID: u64 = 3;
 fn test() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
 
     let battleship = Program::from_file(
         &system,

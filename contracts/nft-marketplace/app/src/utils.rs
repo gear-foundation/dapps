@@ -100,6 +100,7 @@ pub struct Item {
     pub offers: HashMap<(Option<ContractId>, Price), ActorId>,
 }
 
+#[event]
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]

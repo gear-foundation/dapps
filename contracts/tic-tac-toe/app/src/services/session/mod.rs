@@ -17,6 +17,7 @@ impl Storage {
 
 static mut STORAGE: Option<SessionMap> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -29,6 +30,9 @@ pub enum Event {
 pub struct SessionService(());
 
 impl SessionService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init() -> Self {
         unsafe {
             STORAGE = Some(HashMap::new());
@@ -45,9 +49,7 @@ impl SessionService {
 
 #[service(events = Event)]
 impl SessionService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub fn create_session(&mut self, signature_data: SignatureData, signature: Option<Vec<u8>>) {
         let sessions = self.as_mut();
         let config = GameStorage::get_config();
@@ -57,6 +59,7 @@ impl SessionService {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_session_from_program(&mut self, session_for_account: ActorId) {
         let sessions = self.as_mut();
         let event = services::utils::panicking(|| {
@@ -65,16 +68,19 @@ impl SessionService {
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_session_from_account(&mut self) {
         let sessions = self.as_mut();
         let event = services::utils::panicking(|| funcs::delete_session_from_account(sessions));
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
+    #[export]
     pub fn sessions(&self) -> Vec<(ActorId, SessionData)> {
         self.as_ref().clone().into_iter().collect()
     }
 
+    #[export]
     pub fn session_for_the_account(&self, account: ActorId) -> Option<SessionData> {
         self.as_ref().get(&account).cloned()
     }

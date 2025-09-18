@@ -14,8 +14,8 @@ pub const USER_ID: u64 = 11;
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
     let code_id = program_space
         .system()
@@ -79,8 +79,8 @@ async fn test_play_game() {
 async fn add_and_remove_admin() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
     let code_id = program_space
@@ -128,8 +128,8 @@ async fn add_and_remove_admin() {
 async fn allow_messages() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
     let code_id = program_space

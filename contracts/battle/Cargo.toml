@@ -16,6 +16,7 @@ gstd.workspace = true
 tokio = { workspace = true, features = ["rt", "macros"] }
 
 [build-dependencies]
+warrior = { path = "warrior/wasm" }
 battle-app = { path = "app" }
 sails-rs = { workspace = true, features = ["wasm-builder"] }
 sails-idl-gen.workspace = true

@@ -91,14 +91,14 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.8.1"
-gear-wasm-builder = "1.8.1"
-gclient = "1.8.1"
-gtest = "1.8.1"
-gear-core = "1.8.1"
-sails-idl-gen = "0.8.1"
-sails-rs = "0.8.1"
-sails-client-gen = "0.8.1"
+gstd = "=1.9.1"
+gear-wasm-builder = "=1.9.1"
+gclient = "=1.9.1"
+gtest = "=1.9.1"
+gear-core = "=1.9.1"
+sails-idl-gen = "=0.9.1"
+sails-rs = "=0.9.1"
+sails-client-gen = "=0.9.1"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}

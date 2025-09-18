@@ -14,9 +14,9 @@ pub const USER_ID: [u64; 2] = [11, 12];
 async fn test_basic_function() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
     let code_id = program_space
@@ -129,9 +129,9 @@ async fn test_basic_function() {
 async fn test_grant_role() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
     let mut client = DynamicNftClient::new(program_space.clone());
@@ -260,9 +260,9 @@ async fn test_grant_role() {
 async fn test_metadata_update() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
     let code_id = program_space

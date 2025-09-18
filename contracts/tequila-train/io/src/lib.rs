@@ -140,6 +140,7 @@ pub enum Command {
     LeaveGame,
 }
 
+#[event]
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
 pub enum Event {
     GameFinished {

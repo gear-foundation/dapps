@@ -12,3 +12,5 @@ sails-rs.workspace = true
 gclient.workspace = true
 syndote = { path = "../wasm" }
 tokio.workspace = true
+sails-rs = { workspace = true, features = ["gtest"] }
+syndote-player = { path = "../player/wasm" }

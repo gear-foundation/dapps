@@ -187,10 +187,10 @@ fn success_test() {
     let system = System::new();
 
     system.init_logger();
-    system.mint_to(2, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(2, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -251,10 +251,10 @@ fn cancel_register() {
     let system = System::new();
 
     system.init_logger();
-    system.mint_to(2, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(2, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
     let program = Program::current_opt(&system);
 
     let config = Config {
@@ -296,10 +296,10 @@ fn delete_player() {
     let system = System::new();
 
     system.init_logger();
-    system.mint_to(2, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(2, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -342,10 +342,10 @@ fn cancel_game() {
     let system = System::new();
 
     system.init_logger();
-    system.mint_to(2, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(2, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -393,10 +393,10 @@ fn failures_test() {
     let system = System::new();
 
     system.init_logger();
-    system.mint_to(2, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(2, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
 
     let program = Program::current_opt(&system);
 

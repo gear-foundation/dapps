@@ -44,6 +44,7 @@ pub struct TokenMetadata {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -76,6 +77,9 @@ pub enum ConcertError {
 struct ConcertService(());
 
 impl ConcertService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(owner_id: ActorId, vmt_contract: ActorId) -> Self {
         let storage = Storage {
             owner_id,
@@ -95,9 +99,7 @@ impl ConcertService {
 
 #[service(events = Event)]
 impl ConcertService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub fn create(
         &mut self,
         creator: ActorId,
@@ -131,6 +133,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn hold_concert(&mut self) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -153,7 +156,7 @@ impl ConcertService {
         // we know each user balance now
         for (i, balance) in balances.iter().enumerate() {
             let request = vmt_io::Burn::encode_call(msg_src, tokens[i], *balance);
-            msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+            msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
                 .expect("Error in async message to Mtk contract")
                 .await
                 .expect("CONCERT: Error burning balances");
@@ -181,7 +184,7 @@ impl ConcertService {
                     meta.push(token_meta_vmt);
                 }
                 let request = vmt_io::MintBatch::encode_call(*actor, ids, amounts, meta);
-                msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+                msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
                     .expect("Error in async message to Mtk contract")
                     .await
                     .expect("CONCERT: Error minting tickets");
@@ -195,6 +198,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn buy_tickets(&mut self, amount: U256, mtd: Vec<Option<TokenMetadata>>) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -227,7 +231,7 @@ impl ConcertService {
         storage.tickets_left -= amount;
         let request =
             vmt_io::Mint::encode_call(msg_src, storage.token_id, amount, None::<TokenMetadataVmt>);
-        msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+        msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
             .expect("Error in async message to Mtk contract")
             .await
             .expect("CONCERT: Error minting concert tokens");
@@ -239,6 +243,7 @@ impl ConcertService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn get_storage(&self) -> State {
         self.get().clone().into()
     }

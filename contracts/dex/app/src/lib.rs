@@ -36,47 +36,6 @@ impl DexService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn get_mut(&mut self) -> &'static mut Storage {
-        unsafe { STORAGE.as_mut().expect("Dex is not initialized") }
-    }
-    pub fn get(&self) -> &'static Storage {
-        unsafe { STORAGE.as_ref().expect("Dex is not initialized") }
-    }
-}
-
-#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum Event {
-    AddedLiquidity {
-        sender: ActorId,
-        amount_a: U256,
-        amount_b: U256,
-        liquidity: U256,
-    },
-    RemovedLiquidity {
-        sender: ActorId,
-        amount_a: U256,
-        amount_b: U256,
-        to: ActorId,
-    },
-    Swap {
-        kind: SwapKind,
-        sender: ActorId,
-        in_amount: U256,
-        out_amount: U256,
-    },
-    Sync {
-        reserve_a: U256,
-        reserve_b: U256,
-    },
-    Killed {
-        inheritor: ActorId,
-    },
-}
-
-#[sails_rs::service(events = Event)]
-impl DexService {
     async fn init(
         token_a: ActorId,
         token_b: ActorId,
@@ -115,10 +74,52 @@ impl DexService {
 
         Self(())
     }
+    pub fn get_mut(&mut self) -> &'static mut Storage {
+        unsafe { STORAGE.as_mut().expect("Dex is not initialized") }
+    }
+    pub fn get(&self) -> &'static Storage {
+        unsafe { STORAGE.as_ref().expect("Dex is not initialized") }
+    }
+}
 
+#[event]
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub enum Event {
+    AddedLiquidity {
+        sender: ActorId,
+        amount_a: U256,
+        amount_b: U256,
+        liquidity: U256,
+    },
+    RemovedLiquidity {
+        sender: ActorId,
+        amount_a: U256,
+        amount_b: U256,
+        to: ActorId,
+    },
+    Swap {
+        kind: SwapKind,
+        sender: ActorId,
+        in_amount: U256,
+        out_amount: U256,
+    },
+    Sync {
+        reserve_a: U256,
+        reserve_b: U256,
+    },
+    Killed {
+        inheritor: ActorId,
+    },
+}
+
+#[sails_rs::service(events = Event)]
+impl DexService {
     /// Adds liquidity to the pool.
     /// Transfers token amounts `amount_a` and `amount_b` from the user to the DEX contract.
     /// Updates the user's liquidity balance and reserves.
+    #[export]
     pub async fn add_liquidity(&mut self, amount_a: U256, amount_b: U256) -> bool {
         let storage = self.get_mut();
 
@@ -241,6 +242,7 @@ impl DexService {
 
     /// Removes liquidity from the pool.
     /// Transfers proportional token amounts back to the user.
+    #[export]
     pub async fn remove_liquidity(&mut self, amount: U256) {
         let storage = self.get_mut();
 
@@ -308,6 +310,7 @@ impl DexService {
     /// Determines the output token based on `out_is_a`.
     /// Calculates the output amount using the reserves and updates them accordingly.
     /// Transfers the input token to the DEX and the output token to the user.
+    #[export]
     pub async fn swap(&mut self, in_amount: U256, out_is_a: bool) {
         let storage = self.get_mut();
         let sender = msg::source();
@@ -400,6 +403,7 @@ impl DexService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn continue_swap(&mut self) {
         let storage = self.get_mut();
 
@@ -455,6 +459,7 @@ impl DexService {
     /// Fetches the current balances of tokens A and B in the DEX contract.
     /// Updates the reserves based on the fetched balances.
     /// Notifies about the sync event.
+    #[export]
     pub async fn sync(&mut self) {
         let storage = self.get_mut();
 
@@ -484,6 +489,7 @@ impl DexService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if storage.admin != msg::source() {
@@ -503,39 +509,52 @@ impl DexService {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn admin(&self) -> ActorId {
         self.get().admin
     }
 
+    #[export]
     pub fn reserve_a(&self) -> U256 {
         self.get().reserve_a
     }
 
+    #[export]
     pub fn reserve_b(&self) -> U256 {
         self.get().reserve_b
     }
 
+    #[export]
     pub fn total_liquidity(&self) -> U256 {
         self.get().total_liquidity
     }
 
+    #[export]
     pub fn liquidity_providers(&self) -> Vec<(ActorId, U256)> {
         self.get().liquidity_providers.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn token_a(&self) -> ActorId {
         self.get().token_a
     }
 
+    #[export]
     pub fn token_b(&self) -> ActorId {
         self.get().token_b
     }
+
+    #[export]
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
         self.get().dns_info.clone()
     }
+
+    #[export]
     pub fn swap_status(&self) -> SwapStatus {
         self.get().swap_status
     }
+
+    #[export]
     pub fn liquidity_action_gas(&self) -> u64 {
         self.get().liquidity_action_gas
     }

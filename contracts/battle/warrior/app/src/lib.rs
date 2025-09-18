@@ -26,6 +26,9 @@ static mut STORAGE: Option<WarriorStorage> = None;
 struct WarriorService(());
 
 impl WarriorService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init() -> Self {
         unsafe {
             STORAGE = Some(WarriorStorage {
@@ -60,12 +63,11 @@ impl WarriorService {
 
 #[sails_rs::service]
 impl WarriorService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub fn get_owner(&self) -> ActorId {
         self.get_warrior_storage().owner
     }
+    #[export]
     pub fn get_appearance(&self) -> &'static Appearance {
         &self.get_warrior_storage().appearance
     }

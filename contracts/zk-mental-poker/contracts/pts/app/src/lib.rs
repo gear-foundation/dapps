@@ -18,6 +18,7 @@ struct Storage {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -51,6 +52,9 @@ pub enum Event {
 }
 
 impl PtsService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(accrual: u128, time_ms_between_balance_receipt: u64) -> Self {
         unsafe {
             STORAGE = Some(Storage {
@@ -72,10 +76,7 @@ impl PtsService {
 
 #[sails_rs::service(events = Event)]
 impl PtsService {
-    pub fn new() -> Self {
-        Self(())
-    }
-
+    #[export]
     pub fn get_accural(&mut self) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -93,6 +94,7 @@ impl PtsService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn transfer(&mut self, from: ActorId, to: ActorId, amount: u128) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -116,6 +118,7 @@ impl PtsService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn batch_transfer(&mut self, from: ActorId, to_ids: Vec<ActorId>, amounts: Vec<u128>) {
         let storage = self.get_mut();
         let msg_src = msg::source();
@@ -144,6 +147,7 @@ impl PtsService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn add_admin(&mut self, new_admin: ActorId) {
         let storage = self.get_mut();
         if !storage.admins.contains(&msg::source()) {
@@ -154,6 +158,7 @@ impl PtsService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn delete_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         if !storage.admins.contains(&msg::source()) {
@@ -164,6 +169,7 @@ impl PtsService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn change_accrual(&mut self, new_accrual: u128) {
         let storage = self.get_mut();
         if !storage.admins.contains(&msg::source()) {
@@ -174,6 +180,7 @@ impl PtsService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn change_time_between_balance_receipt(&mut self, new_time_between_balance_receipt: u64) {
         let storage = self.get_mut();
         if !storage.admins.contains(&msg::source()) {
@@ -186,16 +193,22 @@ impl PtsService {
         .expect("Notification Error");
     }
 
+    #[export]
     pub fn admins(&self) -> Vec<ActorId> {
         self.get().admins.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn accrual(&self) -> u128 {
         self.get().accrual
     }
+
+    #[export]
     pub fn time_ms_between_balance_receipt(&self) -> u64 {
         self.get().time_ms_between_balance_receipt
     }
 
+    #[export]
     pub fn get_balance(&self, id: ActorId) -> u128 {
         let (balance, _) = self
             .get()
@@ -204,6 +217,8 @@ impl PtsService {
             .expect("Actor id must be exist");
         *balance
     }
+
+    #[export]
     pub fn get_remaining_time_ms(&self, id: ActorId) -> Option<u64> {
         let storage = self.get();
         let (_, last_time) = storage.balances.get(&id).expect("Actor id must be exist");

@@ -24,6 +24,7 @@ impl Storage {
 
 static mut STORAGE: Option<Storage> = None;
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -52,6 +53,9 @@ pub enum Event {
 pub struct GameService(());
 
 impl GameService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
@@ -88,9 +92,7 @@ impl GameService {
 
 #[service(events = Event)]
 impl GameService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -99,6 +101,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn turn(&mut self, step: u8, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -107,6 +111,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn skip(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
         let sessions = SessionStorage::get_session_map();
@@ -115,6 +121,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn remove_game_instance(&mut self, account: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
@@ -122,6 +130,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn remove_game_instances(&mut self, accounts: Option<Vec<ActorId>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
@@ -129,17 +139,23 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn add_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_admin(storage, msg::source(), admin));
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn remove_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event =
             services::utils::panicking(|| funcs::remove_admin(storage, msg::source(), admin));
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn update_config(
         &mut self,
         s_per_block: Option<u64>,
@@ -162,6 +178,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
@@ -169,6 +187,8 @@ impl GameService {
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
+
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
         if !storage.admins.contains(&msg::source()) {
@@ -188,21 +208,32 @@ impl GameService {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn admins(&self) -> &'static Vec<ActorId> {
         &self.get().admins
     }
+
+    #[export]
     pub fn game(&self, player_id: ActorId) -> Option<GameInstance> {
         self.get().current_games.get(&player_id).cloned()
     }
+
+    #[export]
     pub fn all_games(&self) -> Vec<(ActorId, GameInstance)> {
         self.get().current_games.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn config(&self) -> &'static Config {
         &self.get().config
     }
+
+    #[export]
     pub fn messages_allowed(&self) -> &'static bool {
         &self.get().messages_allowed
     }
+
+    #[export]
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
         self.get().dns_info.clone()
     }

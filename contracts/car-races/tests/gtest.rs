@@ -16,7 +16,7 @@ const PATH_TO_CAR_RACES: &str = "../target/wasm32-gear/release/car_races.opt.was
 fn test_car_races_without_session() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(10, 100_000_000_000_000);
+    system.mint_to(10, 1_000_000_000_000_000);
 
     // upload strategy 1
     let car_strategy_1 = Program::from_file(&system, PATH_TO_STRATEGIES[0]);

@@ -39,7 +39,7 @@ fn init_battleship(sys: &System) {
 fn failures_location_ships() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
     // outfield
@@ -143,8 +143,8 @@ fn failures_location_ships() {
 fn failures_test() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
 
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
@@ -262,7 +262,7 @@ fn failures_test() {
 fn success_test() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
     let ships = Ships {
@@ -313,7 +313,7 @@ fn success_test() {
 fn create_session_success() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
 
@@ -349,7 +349,7 @@ fn create_session_success() {
 fn create_session_failures() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
 
@@ -449,7 +449,7 @@ fn create_session_failures() {
 fn session_deletion_on_expiration() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
 
@@ -484,8 +484,8 @@ fn session_deletion_on_expiration() {
 fn disallow_game_without_required_actions() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
 
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
@@ -611,8 +611,8 @@ fn disallow_game_without_required_actions() {
 fn complete_session_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
 
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();
@@ -703,8 +703,8 @@ fn complete_session_game() {
 fn premature_session_deletion_by_user() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID[0], 100_000_000_000_000);
-    system.mint_to(USER_ID[1], 100_000_000_000_000);
+    system.mint_to(USER_ID[0], 1_000_000_000_000_000);
+    system.mint_to(USER_ID[1], 1_000_000_000_000_000);
 
     init_battleship(&system);
     let battleship = system.get_program(1).unwrap();

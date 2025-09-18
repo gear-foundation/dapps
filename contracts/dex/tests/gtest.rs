@@ -51,7 +51,7 @@ async fn test_add_liquidity() {
     system.init_logger();
 
     // Mint some initial tokens for the user
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
 
     // Initialize the program space and upload the contract
     let program_space = GTestRemoting::new(system, USER_ID.into());
@@ -153,7 +153,7 @@ async fn test_add_liquidity() {
 async fn test_swap() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
@@ -246,7 +246,7 @@ async fn test_swap() {
 async fn test_remove_liquidity() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()

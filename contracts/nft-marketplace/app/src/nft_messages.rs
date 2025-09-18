@@ -10,7 +10,7 @@ pub async fn nft_transfer(
     token_id: U256,
 ) {
     let request = vnft_io::TransferFrom::encode_call(*from, *to, token_id);
-    msg::send_bytes_with_gas_for_reply(*nft_contract_id, request, 5_000_000_000, 0, 0)
+    msg::send_bytes_with_gas_for_reply(*nft_contract_id, request, 5_000_000_000, 0, 5_000_000_000)
         .expect("Error in sending message to nft contract: `TransferFrom`")
         .await
         .expect("Error in receiving message to nft contract: `TransferFrom`");

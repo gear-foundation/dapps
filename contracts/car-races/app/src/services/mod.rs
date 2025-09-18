@@ -45,6 +45,7 @@ pub struct Config {
     pub gas_for_reply_deposit: u64,
 }
 
+#[event]
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum Event {
     RoundInfo(RoundInfo),
@@ -53,12 +54,14 @@ pub enum Event {
 }
 #[service(events = Event)]
 impl CarRacesService {
+    #[export]
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
         self.data_mut().messages_allowed = messages_allowed;
     }
 
+    #[export]
     pub async fn kill(&mut self, inheritor: ActorId) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
@@ -77,6 +80,7 @@ impl CarRacesService {
         exec::exit(inheritor);
     }
 
+    #[export]
     pub fn add_strategy_ids(&mut self, car_ids: Vec<ActorId>) {
         let msg_src = msg::source();
         assert!(self.data().messages_allowed, "Message processing suspended");
@@ -85,6 +89,7 @@ impl CarRacesService {
         self.data_mut().strategy_ids = car_ids;
     }
 
+    #[export]
     pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
         assert!(self.data().messages_allowed, "Message processing suspended");
         let msg_src = msg::source();
@@ -126,6 +131,7 @@ impl CarRacesService {
         game.state = GameState::PlayerAction;
     }
 
+    #[export]
     pub async fn player_move(
         &mut self,
         strategy_move: StrategyAction,
@@ -188,6 +194,7 @@ impl CarRacesService {
         }
     }
 
+    #[export]
     pub fn remove_game_instance(&mut self, account: ActorId) {
         assert_eq!(msg::source(), exec::program_id(), "Not program");
 
@@ -202,6 +209,7 @@ impl CarRacesService {
         };
     }
 
+    #[export]
     pub fn remove_instances(&mut self, player_ids: Option<Vec<ActorId>>) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
@@ -219,18 +227,21 @@ impl CarRacesService {
         }
     }
 
+    #[export]
     pub fn add_admin(&mut self, admin: ActorId) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
         self.data_mut().admins.push(admin);
     }
 
+    #[export]
     pub fn remove_admin(&mut self, admin: ActorId) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
         self.data_mut().admins.retain(|id| *id != admin);
     }
 
+    #[export]
     pub fn update_config(&mut self, config: Config) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
@@ -240,28 +251,39 @@ impl CarRacesService {
         }
     }
 
+    #[export]
     pub fn admins(&self) -> Vec<ActorId> {
         self.data().admins.clone()
     }
 
+    #[export]
     pub fn strategy_ids(&self) -> Vec<ActorId> {
         self.data().strategy_ids.clone()
     }
 
+    #[export]
     pub fn game(&self, account_id: ActorId) -> Option<Game> {
         self.data().games.get(&account_id).cloned()
     }
 
+    #[export]
     pub fn all_games(&self) -> Vec<(ActorId, Game)> {
         self.data().games.clone().into_iter().collect()
     }
 
+    #[export]
     pub fn config_state(&self) -> Config {
         config().clone()
     }
 
+    #[export]
     pub fn messages_allowed(&self) -> bool {
         self.data().messages_allowed
+    }
+
+    #[export]
+    pub fn dns_info(&self) -> Option<(ActorId, String)> {
+        self.data().dns_info.clone()
     }
 
     fn get_game(&mut self, account: &ActorId) -> &mut Game {
@@ -269,10 +291,6 @@ impl CarRacesService {
             .games
             .get_mut(account)
             .expect("Game does not exist")
-    }
-
-    pub fn dns_info(&self) -> Option<(ActorId, String)> {
-        self.data().dns_info.clone()
     }
 }
 

@@ -48,7 +48,7 @@ fn init_randomness(sys: &System) -> (ActorId, Program<'_>) {
 async fn test_request_value() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ACTOR_ID, 100_000_000_000_000);
+    system.mint_to(ACTOR_ID, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, ACTOR_ID.into());
     remoting.system().init_logger();

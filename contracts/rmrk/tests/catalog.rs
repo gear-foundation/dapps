@@ -5,7 +5,7 @@ pub const ADMIN: u64 = 10;
 
 pub fn init_catalog(sys: &System, admin: u64) {
     sys.init_logger();
-    sys.mint_to(admin, 100_000_000_000_000);
+    sys.mint_to(admin, 1_000_000_000_000_000);
     let catalog = Program::from_file(
         sys,
         "../target/wasm32-gear/release/rmrk_catalog.opt.wasm",

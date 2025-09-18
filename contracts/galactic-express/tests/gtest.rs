@@ -17,10 +17,10 @@ pub const PLAYERS: [u64; 3] = [12, 13, 14];
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(ADMIN, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
     let code_id = program_space
@@ -93,10 +93,10 @@ async fn test_play_game() {
 async fn cancel_register_and_delete_player() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(ADMIN, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
     let code_id = program_space
@@ -186,10 +186,10 @@ async fn cancel_register_and_delete_player() {
 async fn errors() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN, 100_000_000_000_000);
-    system.mint_to(PLAYERS[0], 100_000_000_000_000);
-    system.mint_to(PLAYERS[1], 100_000_000_000_000);
-    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    system.mint_to(ADMIN, 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
+    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
     let code_id = program_space
@@ -304,7 +304,7 @@ async fn errors() {
         fuel_amount: 42,
         payload_amount: 20,
     };
-    program_space.system().mint_to(100, 100_000_000_000_000);
+    program_space.system().mint_to(100, 1_000_000_000_000_000);
 
     let res = client
         .register(ADMIN.into(), player)

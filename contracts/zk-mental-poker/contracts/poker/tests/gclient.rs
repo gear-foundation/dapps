@@ -8,7 +8,7 @@ use crate::zk_loader::ZkLoaderData;
 use crate::{build_player_card_disclosure, init_deck_and_card_map};
 use gclient::EventProcessor;
 use gear_core::ids::prelude::CodeIdExt;
-use gear_core::ids::{CodeId, ProgramId};
+use gear_core::ids::CodeId;
 use poker_client::ZkPublicKey;
 use poker_client::{Action, BettingStage, Card, Participant, Stage, Status};
 use sails_rs::TypeInfo;
@@ -377,15 +377,12 @@ async fn test_basic_workflow() -> Result<()> {
 
 async fn all_players_check(
     api: &GearApi,
-    program_id: &ProgramId,
+    program_id: &ActorId,
     listener: &mut EventListener,
 ) -> Result<()> {
     let session_for_account: Option<SignatureInfo> = None;
     for user in USERS_STR.iter().take(3) {
-        let api = api
-            .clone()
-            .with(user)
-            .expect("Unable to change signer.");
+        let api = api.clone().with(user).expect("Unable to change signer.");
 
         let message_id = send_request!(api: &api, program_id: *program_id, service_name: "Poker", action: "Turn", payload: (Action::Check, session_for_account.clone()));
         assert!(listener.message_processed(message_id).await?.succeed());
@@ -930,7 +927,7 @@ async fn test_cancel_game() -> Result<()> {
 }
 
 async fn reveal_player_cards(
-    program_id: ProgramId,
+    program_id: ActorId,
     api: &GearApi,
     listener: &mut EventListener,
     pk_to_actor_id: Vec<(ZkPublicKey, ActorId, &'static str)>,

@@ -140,7 +140,7 @@ async fn test() {
     let state = get_battle(&service_client, remoting.actor_id(), program_id)
         .await
         .unwrap();
-    assert_eq!(state.pairs[0].1.round, 2);
+    assert_eq!(state.pairs[0].1.round, 1);
 
     remoting
         .system()

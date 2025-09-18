@@ -34,6 +34,7 @@ pub enum Gear {
     Gold,
 }
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -68,6 +69,9 @@ pub enum Event {
 struct PlayerService(());
 
 impl PlayerService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init() -> Self {
         Self(())
     }
@@ -75,9 +79,7 @@ impl PlayerService {
 
 #[sails_rs::service]
 impl PlayerService {
-    pub fn new() -> Self {
-        Self(())
-    }
+    #[export]
     pub async fn your_turn(
         &self,
         players: Vec<(ActorId, PlayerInfo)>,

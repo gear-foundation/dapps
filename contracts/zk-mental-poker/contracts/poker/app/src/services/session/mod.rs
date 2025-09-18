@@ -20,6 +20,7 @@ pub struct SignatureInfo {
 generate_session_system!(ActionsForSession);
 
 impl SessionService {
+    #[export]
     pub fn create_session_for_admin(
         signature_data: SignatureData,
         signature: Option<Vec<u8>>,

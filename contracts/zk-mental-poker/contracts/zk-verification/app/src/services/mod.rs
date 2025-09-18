@@ -23,12 +23,6 @@ struct Storage {
 }
 pub struct ZkVerificationService(());
 
-impl ZkVerificationService {
-    fn get(&self) -> &'static Storage {
-        unsafe { STORAGE.as_ref().expect("Storage is not initialized") }
-    }
-}
-#[sails_rs::service]
 #[allow(clippy::new_without_default)]
 impl ZkVerificationService {
     pub fn new() -> Self {
@@ -50,7 +44,15 @@ impl ZkVerificationService {
         }
         Self(())
     }
+    fn get(&self) -> &'static Storage {
+        unsafe { STORAGE.as_ref().expect("Storage is not initialized") }
+    }
+}
 
+#[sails_rs::service]
+#[allow(clippy::new_without_default)]
+impl ZkVerificationService {
+    #[export]
     pub async fn verify_shuffle(&mut self, instances: Vec<VerificationVariables>) {
         let storage = self.get();
         storage
@@ -59,6 +61,7 @@ impl ZkVerificationService {
             .await;
     }
 
+    #[export]
     pub async fn verify_decrypt(&mut self, instances: Vec<VerificationVariables>) {
         let storage = self.get();
         storage
