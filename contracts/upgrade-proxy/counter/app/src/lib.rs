@@ -45,7 +45,6 @@ impl CounterService {
 
 #[sails_rs::service]
 impl CounterService {
-
     #[export]
     pub fn set_proxy(&mut self, proxy_address: Option<ActorId>) {
         self.only_admin(msg::source());

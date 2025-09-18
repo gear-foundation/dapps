@@ -72,7 +72,6 @@ impl Service {
 
 #[service(events = Event)]
 impl Service {
-
     #[export]
     pub fn add_token_data(&mut self, token_id: ActorId, price: Price) {
         let storage = self.get_mut();

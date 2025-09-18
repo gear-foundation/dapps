@@ -69,7 +69,6 @@ impl OracleService {
 
 #[sails_rs::service(events = Event)]
 impl OracleService {
-
     #[export]
     pub async fn request_value(&mut self) -> u128 {
         let request = randomness_io::GetLastRoundWithRandomValue::encode_call();

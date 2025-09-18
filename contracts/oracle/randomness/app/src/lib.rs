@@ -68,7 +68,6 @@ impl RandomnessService {
 
 #[sails_rs::service(events = Event)]
 impl RandomnessService {
-
     #[export]
     pub fn set_random_value(&mut self, round: u128, value: Random) {
         let randomness_oracle = self.get_mut();

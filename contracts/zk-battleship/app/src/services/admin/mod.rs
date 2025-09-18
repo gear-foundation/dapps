@@ -6,8 +6,8 @@ use crate::{services, VerifyingKeyBytes};
 use core::fmt::Debug;
 use gstd::{exec, msg, ActorId, Decode, Encode, TypeInfo, Vec};
 use sails_rs::gstd::service;
+use sails_rs::{event, export};
 use storage::configuration::ConfigurationStorage;
-use sails_rs::{export, event};
 
 pub mod storage;
 
@@ -54,7 +54,6 @@ impl AdminService {
 
 #[service(events = Event)]
 impl AdminService {
-
     #[export]
     pub fn delete_single_game(&mut self, player_address: ActorId) {
         Self::check_admin(msg::source());

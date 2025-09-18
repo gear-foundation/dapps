@@ -6,7 +6,7 @@ use crate::{
 use core::fmt::Debug;
 use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
 use sails_rs::gstd::service;
-use sails_rs::{export, event};
+use sails_rs::{event, export};
 pub use utils::*;
 
 use self::storage::{GamePairsStorage, MultipleGamesStorage};
@@ -78,7 +78,6 @@ impl MultipleService {
 
 #[service(events = Event)]
 impl MultipleService {
-
     /// Creates a new game instance for a player and stores it in the game storage.
     ///
     /// # Arguments

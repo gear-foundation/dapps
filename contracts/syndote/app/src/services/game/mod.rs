@@ -120,7 +120,6 @@ impl GameService {
 
 #[service(events = Event)]
 impl GameService {
-
     #[export]
     pub fn register(&mut self, player: ActorId) {
         let storage = self.get_mut();

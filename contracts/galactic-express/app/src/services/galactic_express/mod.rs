@@ -96,7 +96,6 @@ impl GameService {
 
 #[service(events = Event)]
 impl GameService {
-
     #[export]
     pub fn create_new_session(&mut self, name: String) {
         let storage = self.get_mut();

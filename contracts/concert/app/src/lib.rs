@@ -99,7 +99,6 @@ impl ConcertService {
 
 #[service(events = Event)]
 impl ConcertService {
-
     #[export]
     pub fn create(
         &mut self,

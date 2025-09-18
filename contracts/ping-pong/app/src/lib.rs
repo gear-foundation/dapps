@@ -35,7 +35,6 @@ impl PingPongService {
 
 #[sails_rs::service]
 impl PingPongService {
-
     // Service's method (command)
     #[export]
     pub fn ping(&mut self) -> String {

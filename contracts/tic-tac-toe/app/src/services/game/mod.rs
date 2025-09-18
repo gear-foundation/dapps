@@ -92,7 +92,6 @@ impl GameService {
 
 #[service(events = Event)]
 impl GameService {
-
     #[export]
     pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();

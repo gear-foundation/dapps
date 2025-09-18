@@ -103,7 +103,6 @@ impl BattleService {
 
 #[service(events = Event)]
 impl BattleService {
-
     #[export]
     pub async fn create_new_battle(
         &mut self,

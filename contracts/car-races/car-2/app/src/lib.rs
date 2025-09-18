@@ -11,7 +11,6 @@ impl CarStrategyService {
 
 #[sails_rs::service]
 impl CarStrategyService {
-
     #[export]
     pub fn make_move(&mut self, _cars: BTreeMap<ActorId, Car>) -> StrategyAction {
         let random_choice = get_random_value(10);

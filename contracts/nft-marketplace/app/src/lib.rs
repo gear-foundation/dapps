@@ -40,7 +40,6 @@ impl MarketService {
 
 #[sails_rs::service(events = MarketEvent)]
 impl MarketService {
-
     #[export]
     pub fn add_nft_contract(&mut self, nft_contract_id: ContractId) {
         let market = self.get_mut();

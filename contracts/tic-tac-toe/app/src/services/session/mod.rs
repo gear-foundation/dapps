@@ -49,7 +49,6 @@ impl SessionService {
 
 #[service(events = Event)]
 impl SessionService {
-
     #[export]
     pub fn create_session(&mut self, signature_data: SignatureData, signature: Option<Vec<u8>>) {
         let sessions = self.as_mut();

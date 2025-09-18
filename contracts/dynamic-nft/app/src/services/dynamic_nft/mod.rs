@@ -106,7 +106,6 @@ impl From<ExtendedService> for VnftService {
 
 #[service(extends = VnftService, events = Event)]
 impl ExtendedService {
-
     #[export]
     pub fn mint(&mut self, to: ActorId, token_metadata: TokenMetadata) {
         if !self.get().minters.contains(&msg::source()) {

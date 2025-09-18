@@ -76,7 +76,6 @@ impl MultisigWalletService {
 
 #[sails_rs::service(events = Event)]
 impl MultisigWalletService {
-
     #[export]
     pub fn add_owner(&mut self, owner: ActorId) {
         let wallet = self.get_mut();

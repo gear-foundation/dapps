@@ -3,7 +3,7 @@ use crate::services;
 use core::fmt::Debug;
 use gstd::{msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
 use sails_rs::gstd::service;
-use sails_rs::{export, event};
+use sails_rs::{event, export};
 pub use utils::*;
 
 use super::admin::storage::configuration::ConfigurationStorage;

@@ -54,7 +54,6 @@ pub enum Event {
 }
 #[service(events = Event)]
 impl CarRacesService {
-
     #[export]
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let msg_src = msg::source();
@@ -286,7 +285,7 @@ impl CarRacesService {
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
         self.data().dns_info.clone()
     }
-        
+
     fn get_game(&mut self, account: &ActorId) -> &mut Game {
         self.data_mut()
             .games
