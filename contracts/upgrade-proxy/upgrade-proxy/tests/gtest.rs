@@ -12,7 +12,7 @@ const USERS: [u64; 5] = [43, 44, 45, 46, 47];
 async fn send_msg_to_counter() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ACTOR_ID, 100_000_000_000_000);
+    system.mint_to(ACTOR_ID, 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, ACTOR_ID.into());
     remoting.system().init_logger();
@@ -53,7 +53,7 @@ async fn send_msg_to_counter() {
     let mut amount = 0;
     // Contribute through proxy
     for user in USERS.iter() {
-        remoting.system().mint_to(*user, 100_000_000_000_000);
+        remoting.system().mint_to(*user, 1_000_000_000_000_000);
         let payload_bytes =
             counter_client::counter::io::Contribute::encode_call(Some((*user).into()));
         let reply_bytes = proxy_client

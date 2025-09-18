@@ -47,7 +47,7 @@ fn get_balance(sys: &System, vmt: &Program, account: ActorId, id: U256) -> U256 
 async fn create_concert() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
@@ -91,7 +91,7 @@ async fn create_concert() {
 async fn buy_tickets() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()
@@ -154,7 +154,7 @@ async fn buy_tickets() {
 async fn hold_concert() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(USER_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 1_000_000_000_000_000);
     let program_space = GTestRemoting::new(system, USER_ID.into());
     let code_id = program_space
         .system()

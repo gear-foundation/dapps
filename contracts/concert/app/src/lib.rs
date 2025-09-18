@@ -157,7 +157,7 @@ impl ConcertService {
         // we know each user balance now
         for (i, balance) in balances.iter().enumerate() {
             let request = vmt_io::Burn::encode_call(msg_src, tokens[i], *balance);
-            msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+            msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
                 .expect("Error in async message to Mtk contract")
                 .await
                 .expect("CONCERT: Error burning balances");
@@ -185,7 +185,7 @@ impl ConcertService {
                     meta.push(token_meta_vmt);
                 }
                 let request = vmt_io::MintBatch::encode_call(*actor, ids, amounts, meta);
-                msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+                msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
                     .expect("Error in async message to Mtk contract")
                     .await
                     .expect("CONCERT: Error minting tickets");
@@ -232,7 +232,7 @@ impl ConcertService {
         storage.tickets_left -= amount;
         let request =
             vmt_io::Mint::encode_call(msg_src, storage.token_id, amount, None::<TokenMetadataVmt>);
-        msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
+        msg::send_bytes_for_reply(storage.contract_id, request, 0, 5_000_000_000)
             .expect("Error in async message to Mtk contract")
             .await
             .expect("CONCERT: Error minting concert tokens");

@@ -11,6 +11,7 @@ vara-man-app = { path = "app" }
 vara-man-app = { path = "app" }
 sails-rs = { workspace = true, features = ["wasm-builder"] }
 sails-idl-gen.workspace = true
+extended-vft.workspace = true
 
 [dev-dependencies]
 vara-man = { path = ".", features = ["wasm-binary"] }
