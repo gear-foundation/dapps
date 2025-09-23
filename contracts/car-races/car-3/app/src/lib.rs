@@ -3,14 +3,16 @@
 
 use sails_rs::{collections::BTreeMap, prelude::*};
 struct CarStrategyService(());
-
-#[sails_rs::service]
 impl CarStrategyService {
     pub fn new() -> Self {
         Self(())
     }
+}
 
+#[sails_rs::service]
+impl CarStrategyService {
     // this car only accelerates
+    #[export]
     pub fn make_move(&mut self, cars: BTreeMap<ActorId, Car>) -> StrategyAction {
         let my_car_id = gstd::exec::program_id();
         let my_car = cars.get(&my_car_id).expect("Unable to get my car");

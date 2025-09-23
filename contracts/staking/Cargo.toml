@@ -10,6 +10,7 @@ staking-app = { path = "app" }
 staking-app = { path = "app" }
 sails-rs = { workspace = true, features = ["wasm-builder"] }
 sails-idl-gen.workspace = true
+extended-vft.workspace = true
 
 [dev-dependencies]
 staking = { path = ".", features = ["wasm-binary"] }

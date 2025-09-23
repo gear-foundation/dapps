@@ -46,9 +46,9 @@ fn ft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 
 async fn test_stake() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 100_000_000_000_000);
+    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
 
@@ -132,9 +132,9 @@ async fn test_stake() {
 async fn test_get_reward() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 100_000_000_000_000);
+    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
 
@@ -241,9 +241,9 @@ async fn test_get_reward() {
 async fn test_withdraw() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 100_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 100_000_000_000_000);
+    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
+    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
 
     let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
 

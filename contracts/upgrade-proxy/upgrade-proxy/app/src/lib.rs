@@ -14,6 +14,10 @@ struct State {
 struct UpgradeProxyService(());
 
 impl UpgradeProxyService {
+    pub fn new() -> Self {
+        Self(())
+    }
+
     pub fn init(logic_address: ActorId, admin: ActorId) -> Self {
         unsafe {
             STATE = Some(State {
@@ -33,10 +37,7 @@ impl UpgradeProxyService {
 
 #[sails_rs::service]
 impl UpgradeProxyService {
-    pub fn new() -> Self {
-        Self(())
-    }
-
+    #[export]
     pub async fn execute_msg(&mut self, bytes: Vec<u8>) -> Vec<u8> {
         let original_sender = Some(msg::source());
         let sender_encoded = original_sender.encode();
@@ -53,6 +54,7 @@ impl UpgradeProxyService {
         .expect("Error during getting the reply")
     }
 
+    #[export]
     pub async fn read_state(&self, bytes: Vec<u8>) -> Vec<u8> {
         msg::send_bytes_for_reply(self.get().logic_address, bytes, 0, 0)
             .expect("Error during message sending")
@@ -60,6 +62,7 @@ impl UpgradeProxyService {
             .expect("Error during getting the reply")
     }
 
+    #[export]
     pub fn update_logic(&mut self, new_logic_address: ActorId) {
         assert_eq!(
             self.get().admin,
@@ -69,15 +72,18 @@ impl UpgradeProxyService {
         self.get_mut().logic_address = new_logic_address;
     }
 
+    #[export]
     pub fn get_logic_address(&self) -> ActorId {
         self.get().logic_address
     }
 
+    #[export]
     pub fn get_admin(&self) -> ActorId {
         self.get().admin
     }
 
     // This function must check whether the new logic contract (new_logic_address) is compatible with the requirements of the proxy.
+    #[export]
     pub fn check_compatibility(&mut self, _new_logic_address: ActorId) -> bool {
         // TODO: Implement compatibility checks for the new logic contract
         true

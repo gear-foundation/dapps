@@ -496,11 +496,11 @@ pub fn rmrk_chain(
 pub fn mint_value_to_users(system: &System) {
     USERS
         .iter()
-        .for_each(|id| system.mint_to(*id, 100_000_000_000_000));
+        .for_each(|id| system.mint_to(*id, 1_000_000_000_000_000));
     let child_token_id: u64 = 1;
     let parent_token_id: u64 = 10;
-    system.mint_to(child_token_id, 100_000_000_000_000);
-    system.mint_to(parent_token_id, 100_000_000_000_000);
-    system.mint_to(200, 100_000_000_000_000);
-    system.mint_to(8, 100_000_000_000_000);
+    system.mint_to(child_token_id, 1_000_000_000_000_000);
+    system.mint_to(parent_token_id, 1_000_000_000_000_000);
+    system.mint_to(200, 1_000_000_000_000_000);
+    system.mint_to(8, 1_000_000_000_000_000);
 }

@@ -32,6 +32,7 @@ pub struct Staker {
     pub distributed: u128,
 }
 
+#[event]
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -45,6 +46,9 @@ pub enum Event {
 struct StakingService(());
 
 impl StakingService {
+    pub fn new() -> Self {
+        Self(())
+    }
     pub fn init(reward_token_address: ActorId, distribution_time: u64, reward_total: u128) -> Self {
         if reward_total == 0 {
             panic!("Reward is zero");
@@ -74,13 +78,10 @@ impl StakingService {
 
 #[service(events = Event)]
 impl StakingService {
-    pub fn new() -> Self {
-        Self(())
-    }
-
     /// Stakes the tokens
     /// Arguments:
     /// `amount`: the number of tokens for the stake
+    #[export]
     pub async fn stake(&mut self, amount: u128) {
         if amount == 0 {
             panic!("Amount is zero");
@@ -125,6 +126,7 @@ impl StakingService {
     /// Withdraws the staked the tokens
     /// Arguments:
     /// `amount`: the number of withdrawn tokens
+    #[export]
     pub async fn withdraw(&mut self, amount: u128) {
         if amount == 0 {
             panic!("Amount is zero");
@@ -164,6 +166,7 @@ impl StakingService {
     /// Updates the staking contract.
     /// Sets the reward to be distributed within distribution time
     /// param 'config' - updated configuration
+    #[export]
     pub fn update_staking(
         &mut self,
         reward_token_address: ActorId,
@@ -195,6 +198,7 @@ impl StakingService {
     }
 
     /// Sends reward to the staker
+    #[export]
     pub async fn get_reward(&mut self) {
         let storage = self.get_mut();
         storage.update_reward();
@@ -228,36 +232,57 @@ impl StakingService {
             .expect("Notification Error");
     }
 
+    #[export]
     pub fn owner(&self) -> ActorId {
         self.get().owner
     }
+
+    #[export]
     pub fn reward_token_address(&self) -> ActorId {
         self.get().reward_token_address
     }
+
+    #[export]
     pub fn tokens_per_stake(&self) -> u128 {
         self.get().tokens_per_stake
     }
+
+    #[export]
     pub fn total_staked(&self) -> u128 {
         self.get().total_staked
     }
+
+    #[export]
     pub fn distribution_time(&self) -> u64 {
         self.get().distribution_time
     }
+
+    #[export]
     pub fn produced_time(&self) -> u64 {
         self.get().produced_time
     }
+
+    #[export]
     pub fn reward_total(&self) -> u128 {
         self.get().reward_total
     }
+
+    #[export]
     pub fn all_produced(&self) -> u128 {
         self.get().all_produced
     }
+
+    #[export]
     pub fn reward_produced(&self) -> u128 {
         self.get().reward_produced
     }
+
+    #[export]
     pub fn stakers(&self) -> Vec<(ActorId, Staker)> {
         self.get().stakers.clone().into_iter().collect()
     }
+
+    #[export]
     pub fn calc_reward(&self, id: ActorId) -> u128 {
         self.get().calc_reward(&id)
     }
