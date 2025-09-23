@@ -23,7 +23,6 @@
     "@radix-ui/react-scroll-area": "1.2.2",
     "@reown/walletkit": "1.2.4",
     "@tanstack/react-query": "5.81.5",
-    "@twa-dev/sdk": "8.0.2",
     "@walletconnect/core": "2.20.2",
     "@walletconnect/modal": "2.7.0",
     "@walletconnect/universal-provider": "2.20.2",

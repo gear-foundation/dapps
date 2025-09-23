@@ -12,7 +12,6 @@ import { ModalBottom } from '@/components/ui/modal';
 
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
-import { varanWallet } from '../../varan-wallet';
 
 import styles from './wallet-connect.module.scss';
 
@@ -30,15 +29,9 @@ export function WalletConnect({ onClose }: Props) {
 
   useEffect(() => {
     const isNovaWallet = window?.walletExtension?.isNovaWallet;
-    const varanWallets = varanWallet.parseWalletsFromStartParam();
-    console.log('🚀 ~ useEffect ~ varanWallets:', varanWallets);
 
     if (isNovaWallet) {
       setWalletId('polkadot-js');
-    }
-
-    if (varanWallets) {
-      setWalletId('varan');
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

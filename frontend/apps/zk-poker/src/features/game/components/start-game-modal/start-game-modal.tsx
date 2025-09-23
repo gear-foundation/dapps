@@ -1,5 +1,4 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import WebApp from '@twa-dev/sdk';
 import { copyToClipboard } from '@ui/utils';
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -120,7 +119,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
     };
   }, [isDragging, dragStartY, isExpanded, throttledHandleDrag, handleDragEnd]);
 
-  const isInTelegram = WebApp.platform !== 'unknown';
+  const isInTelegram = false;
   const gameLink = isInTelegram ? `t.me/${ENV.TELEGRAM_BOT_NAME}/bot?start=${gameId}` : window.location.href;
 
   const onCopy = () => {

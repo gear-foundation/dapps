@@ -4210,24 +4210,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@twa-dev/sdk@npm:8.0.2":
-  version: 8.0.2
-  resolution: "@twa-dev/sdk@npm:8.0.2"
-  dependencies:
-    "@twa-dev/types": "npm:^8.0.1"
-  peerDependencies:
-    react: ^18.0.0 || ^19.0.0
-  checksum: 10c0/32f1ae0ebf0e73061608d1feac38aa55cfcfdcac2325035d549752a04f2145ee725d6772fd38769a242c5600238961715adc58c1b41ce7b93c5750b4240c01a6
-  languageName: node
-  linkType: hard
-
-"@twa-dev/types@npm:^8.0.1":
-  version: 8.0.2
-  resolution: "@twa-dev/types@npm:8.0.2"
-  checksum: 10c0/7e3750373d466dcd5279cf7121920dee89be6f64111002ade82e2ef5564d03e751341a4edcc1e145ede1c488c3bfc4a9c91af6d53321908bc8b514c3ec62db1d
-  languageName: node
-  linkType: hard
-
 "@tybys/wasm-util@npm:^0.9.0":
   version: 0.9.0
   resolution: "@tybys/wasm-util@npm:0.9.0"
@@ -15821,7 +15803,6 @@ __metadata:
     "@radix-ui/react-scroll-area": "npm:1.2.2"
     "@reown/walletkit": "npm:1.2.4"
     "@tanstack/react-query": "npm:5.81.5"
-    "@twa-dev/sdk": "npm:8.0.2"
     "@types/snarkjs": "npm:0.7.9"
     "@walletconnect/core": "npm:2.20.2"
     "@walletconnect/modal": "npm:2.7.0"

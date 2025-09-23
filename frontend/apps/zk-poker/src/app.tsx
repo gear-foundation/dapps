@@ -4,13 +4,10 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { withProviders } from '@/app/hocs';
 import { ApiLoader } from '@/components';
 import { useAccountAvailableBalanceSync } from '@/features/wallet/hooks';
-import { varanWallet } from '@/features/wallet/varan-wallet';
 
 import { usePokerFactoryProgram } from './app/utils/sails';
 import { Routing } from './pages';
 import './app.scss';
-
-varanWallet.injectVaranWallet();
 
 function Component() {
   const { isApiReady } = useApi();

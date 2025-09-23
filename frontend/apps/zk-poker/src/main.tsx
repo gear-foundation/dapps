@@ -1,12 +1,9 @@
-import WebApp from '@twa-dev/sdk';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend/error-tracking';
 
 import { App } from './app';
-
-WebApp.ready();
 
 initAnalytics();
 initErrorTracking();
