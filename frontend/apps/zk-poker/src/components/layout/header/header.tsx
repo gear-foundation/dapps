@@ -1,10 +1,12 @@
+import { EzGaslessTransactions, EzSignlessTransactions } from '@ez/components';
+import { WalletModal } from '@gear-js/wallet-connect';
 import clsx from 'clsx';
-import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
-import { WalletChange, WalletConnect } from '@/features/wallet/components';
+import { MenuOptions, MobileMenu } from '@dapps-frontend/ui';
 
-import ModalBackground from './ModalBackground';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+
 import { AccountInfo } from './account-info';
 import styles from './header.module.scss';
 import { Logo } from './logo';
@@ -12,28 +14,37 @@ import { Logo } from './logo';
 type HeaderProps = BaseComponentProps;
 
 export function Header({ children }: HeaderProps) {
-  const [isOpenChange, setIsOpenChange] = useState(false);
-  const openAndCloseChange = () => setIsOpenChange(!isOpenChange);
-  const closeChange = () => setIsOpenChange(false);
+  const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const openAndCloseMenu = () => setIsOpenMenu(!isOpenMenu);
+  const closeMenu = () => setIsOpenMenu(false);
 
-  const [isOpenConnectWallet, setIsOpenConnectWallet] = useState(false);
-  const openConnectWallet = () => setIsOpenConnectWallet(true);
-  const closConnectWallet = () => setIsOpenConnectWallet(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const openWalletModal = () => setIsWalletModalOpen(true);
+  const closeWalletModal = () => setIsWalletModalOpen(false);
 
   return (
     <>
-      <header className={clsx(styles.header, isOpenChange && styles.open)}>
+      <header className={clsx(styles.header, isOpenMenu && styles.open)}>
         <div className={styles.header__container}>
-          {isOpenChange ? <Logo className={styles.header__logo} /> : children}
-          <AccountInfo openWallet={openAndCloseChange} isOpen={isOpenChange} className={styles.accountInfo} />
+          {isOpenMenu ? <Logo className={styles.header__logo} /> : children}
+          <AccountInfo openWallet={openAndCloseMenu} isOpen={isOpenMenu} className={styles.accountInfo} />
         </div>
 
-        {isOpenChange && <WalletChange onClose={openAndCloseChange} openConnectWallet={openConnectWallet} />}
+        {isOpenMenu && (
+          <div className={clsx(styles.mobileWrapper)}>
+            <MobileMenu onClose={closeMenu} onChangeAccountClick={openWalletModal}>
+              <MenuOptions
+                customItems={[
+                  { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
+                  { key: 'gasless', option: <EzGaslessTransactions /> },
+                ]}
+                onClose={closeMenu}
+              />
+            </MobileMenu>
+          </div>
+        )}
       </header>
-
-      <ModalBackground isOpen={isOpenChange} onClick={closeChange} />
-
-      <AnimatePresence>{isOpenConnectWallet && <WalletConnect onClose={closConnectWallet} />}</AnimatePresence>
+      {isWalletModalOpen && <WalletModal close={closeWalletModal} />}
     </>
   );
 }

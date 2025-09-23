@@ -1,20 +1,15 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { Wallet } from '@gear-js/wallet-connect';
+import clsx from 'clsx';
 import { Navigate } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { LoginImage, LoginLogo, VaraLogoIcon } from '@/assets/images';
-import { Button, Footer } from '@/components';
-import { WalletConnect } from '@/features/wallet';
+import { Footer } from '@/components';
 
 import styles from './login.module.scss';
 
 export default function Login() {
-  const [isOpen, setIsOpen] = useState(false);
-  const openWallet = () => setIsOpen(true);
-  const closeWallet = () => setIsOpen(false);
-
   const { account } = useAccount();
 
   if (account) {
@@ -37,14 +32,12 @@ export default function Login() {
         <h1 className={styles.title}>Welcome to ZK Poker</h1>
         <p className={styles.description}>To get started, connect your wallet.</p>
 
-        <Button className={styles.button} onClick={openWallet}>
-          Connect wallet
-        </Button>
+        <div className={clsx(styles.wallet)}>
+          <Wallet theme="vara" displayBalance={false} />
+        </div>
       </div>
 
       <Footer />
-
-      <AnimatePresence>{isOpen && <WalletConnect onClose={closeWallet} />}</AnimatePresence>
     </div>
   );
 }

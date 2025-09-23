@@ -1,3 +1,5 @@
+@use '../components/ui/button/button.module.scss' as button;
+
 .container {
   position: relative;
   display: flex;
@@ -65,6 +67,10 @@
   line-height: 150%;
 }
 
-.button {
+.wallet {
   margin-top: 10px;
+  @extend .wrapper;
+  button[type='button'] {
+    @extend .button;
+  }
 }

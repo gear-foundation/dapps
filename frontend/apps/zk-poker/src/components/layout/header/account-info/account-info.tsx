@@ -1,9 +1,8 @@
-import { useApi, useAccount } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 
 import { BurgerMenuIcon, CoinIcon, CrossIcon } from '@/assets/images';
 import { Balance, Button } from '@/components/ui';
-import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 import styles from './account-info.module.scss';
 
@@ -13,10 +12,11 @@ type AccountInfoProps = BaseComponentProps & {
 };
 
 export function AccountInfo({ className, openWallet, isOpen }: AccountInfoProps) {
-  const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { availableBalance: balance } = useAccountAvailableBalance();
-  const formattedBalance = isApiReady && (balance || undefined);
+  const { data: balance } = useDeriveBalancesAll({ address: account?.address, watch: true });
+  const value = balance?.transferable || balance?.availableBalance;
+  const { getFormattedBalance } = useBalanceFormat();
+  const formattedBalance = value && getFormattedBalance(value);
 
   return (
     <>

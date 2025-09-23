@@ -3,7 +3,6 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 
 import { withProviders } from '@/app/hocs';
 import { ApiLoader } from '@/components';
-import { useAccountAvailableBalanceSync } from '@/features/wallet/hooks';
 
 import { usePokerFactoryProgram } from './app/utils/sails';
 import { Routing } from './pages';
@@ -13,8 +12,6 @@ function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const program = usePokerFactoryProgram();
-
-  useAccountAvailableBalanceSync();
 
   const isAppReady = isApiReady && isAccountReady && program;
 
