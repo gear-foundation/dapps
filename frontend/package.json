@@ -10,7 +10,7 @@
     "bump:hooks": "yarn bump @gear-js/react-hooks",
     "bump:ui": "yarn bump @gear-js/ui",
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
-    "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
+    "bump:polkadot": "yarn bump @polkadot/api@16.4.6 @polkadot/types@16.4.6",
     "bump:sails": "yarn bump sails-js",
     "bump:query": "yarn bump @tanstack/react-query",
     "bump:wallet-connect": "yarn bump @gear-js/wallet-connect",
@@ -26,12 +26,12 @@
     "./templates/*"
   ],
   "resolutions": {
-    "@polkadot/api": "16.3.1",
-    "@polkadot/types": "16.3.1"
+    "@polkadot/api": "16.4.6",
+    "@polkadot/types": "16.4.6"
   },
   "devDependencies": {
     "@eslint/js": "9.19.0",
-    "@polkadot/types": "16.3.1",
+    "@polkadot/types": "16.4.6",
     "@types/eslint-plugin-jsx-a11y": "6.10.0",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
