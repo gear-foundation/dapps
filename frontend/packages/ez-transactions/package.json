@@ -10,7 +10,7 @@
   },
   "peerDependencies": {
     "@gear-js/api": "0.44.1",
-    "@gear-js/react-hooks": "0.16.0",
+    "@gear-js/react-hooks": "0.18.3",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
