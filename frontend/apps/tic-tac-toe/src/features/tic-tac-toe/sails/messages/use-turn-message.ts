@@ -14,12 +14,11 @@ export const useTurnMessage = () => {
 
   const turnMessage = async (step: number) => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { result } = await sendTransactionAsync({
+
+    return sendTransactionAsync({
       args: [step, sessionForAccount],
       ...params,
     });
-    await result.response();
-    return;
   };
 
   return { turnMessage };

@@ -22,11 +22,11 @@ export const usePlayerMoveMessage = () => {
   const playerMoveMessage = async (strategyMove: StrategyAction, { onError }: Options) => {
     try {
       const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-      const { result } = await sendTransactionAsync({
+
+      return sendTransactionAsync({
         args: [strategyMove, sessionForAccount],
         ...params,
       });
-      return result.response();
     } catch (error) {
       onError?.();
       alert.error(getErrorMessage(error));
