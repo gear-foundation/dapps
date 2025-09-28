@@ -11742,9 +11742,9 @@ __metadata:
   linkType: hard
 
 "sails-js-util@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "sails-js-util@npm:0.4.2"
-  checksum: 10c0/021df6106babb5f0b31142460fa45712ca1cb0c8ba091777b9bc1037c167d9eb47174f10aef878110a417e3e1d7c7ff821830752cc1505a44879fda2d4e6d55d
+  version: 0.4.3
+  resolution: "sails-js-util@npm:0.4.3"
+  checksum: 10c0/6a0279c809de5a36df74368b497f48f9854cfdb3da451c4f6580aeaa2ad8ee86621f30359d404ceb565ebb4e5fe337b44de6fc297c06224750044a7087e36343
   languageName: node
   linkType: hard
 
