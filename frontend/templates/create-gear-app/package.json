@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gear-js/api": "0.42.0",
+    "@gear-js/api": "0.44.1",
     "@gear-js/react-hooks": "0.16.3",
     "@gear-js/ui": "0.7.0",
     "@gear-js/wallet-connect": "0.4.1",

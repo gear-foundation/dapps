@@ -463,7 +463,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
   peerDependencies:
-    "@gear-js/api": 0.42.0
+    "@gear-js/api": 0.44.1
     "@gear-js/react-hooks": 0.16.3
     "@polkadot/types": 16.3.1
     "@polkadot/util": 13.5.2
@@ -485,7 +485,7 @@ __metadata:
     clsx: "npm:2.1.1"
     framer-motion: "npm:12.3.1"
   peerDependencies:
-    "@gear-js/api": 0.42.0
+    "@gear-js/api": 0.44.1
     "@gear-js/react-hooks": 0.16.3
     "@tanstack/react-query": 5.81.5
     react: 19.0.0
@@ -940,14 +940,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/api@npm:0.42.0":
-  version: 0.42.0
-  resolution: "@gear-js/api@npm:0.42.0"
+"@gear-js/api@npm:0.44.1":
+  version: 0.44.1
+  resolution: "@gear-js/api@npm:0.44.1"
   peerDependencies:
-    "@polkadot/api": ^15.9.1
-    "@polkadot/wasm-crypto": ^7.4.1
+    "@polkadot/api": ^16.4.1
+    "@polkadot/wasm-crypto": ^7.5.1
     rxjs: ^7.8.2
-  checksum: 10c0/33288f9db711a5c981fb6e3343039c5e27e2db9f711efcfefdbcf7f044f8a97735cdfc3ecf46dbc701b0abc989665a03e6367466f884de7c04525569d5ed8650
+  checksum: 10c0/eb57ef8fb2e93db3b1ce3a4361121d7e1a8d7201bd49a9c77ebb7de47e751788001f66c3e6bf61680125f8f256d6055d82d0b933e7f4edb76d164c8df4eeabb2
   languageName: node
   linkType: hard
 
@@ -5156,7 +5156,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
@@ -5187,7 +5187,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@polkadot/api": "npm:16.3.1"
@@ -7576,7 +7576,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
@@ -7714,7 +7714,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@mantine/form": "npm:7.16.2"
@@ -7735,7 +7735,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "gear-dapp@workspace:templates/create-gear-app"
   dependencies:
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@gear-js/wallet-connect": "npm:0.4.1"
@@ -7780,7 +7780,7 @@ __metadata:
     clsx: "npm:2.1.1"
     react-hook-form: "npm:7.54.2"
   peerDependencies:
-    "@gear-js/api": 0.41.1
+    "@gear-js/api": 0.44.1
     "@gear-js/react-hooks": 0.16.0
     react: 19.0.0
     react-dom: 19.0.0
@@ -9944,7 +9944,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@polkadot/api": "npm:16.3.1"
@@ -9967,7 +9967,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
@@ -10127,7 +10127,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@polkadot/api": "npm:16.3.1"
@@ -10894,7 +10894,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@headlessui/react": "npm:2.2.0"
     "@polkadot/api": "npm:16.3.1"
@@ -12406,7 +12406,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
@@ -12488,7 +12488,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@fireworks-js/react": "npm:2.10.8"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@mantine/form": "npm:7.16.2"
@@ -12516,7 +12516,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@headlessui-float/react": "npm:0.15.0"
@@ -12556,7 +12556,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@headlessui/react": "npm:2.2.0"
@@ -12606,7 +12606,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@polkadot/api": "npm:16.3.1"
@@ -13241,7 +13241,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vara-dapp@workspace:templates/create-vara-app"
   dependencies:
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@gear-js/wallet-connect": "npm:0.4.1"
@@ -13283,7 +13283,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
@@ -13313,7 +13313,9 @@ __metadata:
   dependencies:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
+    "@gear-js/react-hooks": "npm:0.16.3"
+    "@gear-js/vara-ui": "npm:0.3.1"
     "@gear-js/wallet-connect": "npm:^0.4.1"
     "@polkadot/api": "npm:16.3.1"
     "@polkadot/react-identicon": "npm:3.15.1"
@@ -13323,7 +13325,6 @@ __metadata:
     react-dom: "npm:19.0.0"
     react-router-dom: "npm:6.28.2"
     sails-js: "npm:0.4.2"
-    sass: "npm:1.83.4"
   languageName: unknown
   linkType: soft
 
@@ -13334,7 +13335,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/ui": "npm:0.7.0"
     "@mantine/form": "npm:7.16.2"
@@ -13695,7 +13696,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.42.0"
+    "@gear-js/api": "npm:0.44.1"
     "@gear-js/react-hooks": "npm:0.16.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@mantine/form": "npm:7.16.2"
