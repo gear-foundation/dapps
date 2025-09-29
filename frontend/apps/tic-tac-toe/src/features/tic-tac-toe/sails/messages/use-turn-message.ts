@@ -1,26 +1,24 @@
-import { useSendProgramTransaction } from '@gear-js/react-hooks';
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { useAutoSignless, type PrepareEzTransactionParamsResult } from 'gear-ez-transactions';
 
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { useProgram } from '@/app/utils';
 
 export const useTurnMessage = () => {
   const program = useProgram();
-  const { sendTransactionAsync } = useSendProgramTransaction({
+  const { executeWithSessionModal } = useAutoSignless({
+    allowedActions: SIGNLESS_ALLOWED_ACTIONS,
+  });
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
     program,
     serviceName: 'ticTacToe',
     functionName: 'turn',
   });
-  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const turnMessage = async (step: number) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { result } = await sendTransactionAsync({
-      args: [step, sessionForAccount],
-      ...params,
-    });
-    await result.response();
-    return;
-  };
+  const turnMessage = async (step: number) =>
+    executeWithSessionModal(({ sessionForAccount, ...params }: PrepareEzTransactionParamsResult) =>
+      prepareTransactionAsync({ args: [step, sessionForAccount], ...params }),
+    );
 
   return { turnMessage };
 };
