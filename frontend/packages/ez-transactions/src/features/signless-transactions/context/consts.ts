@@ -5,13 +5,15 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   storagePair: undefined,
   savePair: () => {},
   deletePair: () => {},
-  unlockPair: () => {},
+  unlockPair: () => {
+    throw new Error('Context not initialized');
+  },
   session: undefined,
   isSessionReady: false,
   isVoucherExists: false,
   voucherBalance: 0,
-  createSession: () => {},
-  deleteSession: () => {},
+  createSession: () => Promise.resolve(),
+  deleteSession: () => Promise.resolve(),
   voucher: undefined,
   storageVoucher: undefined,
   storageVoucherBalance: 0,
@@ -20,6 +22,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isActive: false,
   isSessionActive: false,
   allowedActions: [],
+  openSessionModal: async () => {},
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

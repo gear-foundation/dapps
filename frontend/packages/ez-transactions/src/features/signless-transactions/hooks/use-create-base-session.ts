@@ -4,11 +4,12 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
+import { usePrepareEzTransactionParams } from '../../../hooks';
+import { GetPendingTransaction } from '../context/types';
 import { sendTransaction } from '../utils';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
-
-import { useIsAvailable } from '.';
+import { useIsAvailable } from './use-is-available';
 
 type Session = {
   key: HexString;
@@ -25,13 +26,14 @@ type CreeateSessionOptions = {
   pair?: KeyringPair;
   voucherId?: `0x${string}`;
   shouldIssueVoucher: boolean;
+  getPendingTransaction?: GetPendingTransaction;
 };
 
 type UseCreateSessionReturn = {
   createSession: (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
+    { shouldIssueVoucher, voucherId, pair, getPendingTransaction, ...options }: Options & CreeateSessionOptions,
   ) => Promise<void>;
   deleteSession: (key: HexString, pair: KeyringPair, options: Options) => Promise<void>;
 };
@@ -40,6 +42,7 @@ function useCreateBaseSession(programId: HexString) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const minRequiredBalanceToDeleteSession =
     getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
@@ -104,12 +107,21 @@ function useCreateBaseSession(programId: HexString) {
     voucherValue: number,
     options: Options,
     shouldIssueVoucher?: boolean,
+    getPendingTransaction?: GetPendingTransaction,
   ) => {
-    const txs = shouldIssueVoucher
-      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
-      : [messageExtrinsic];
+    const txs = [messageExtrinsic];
 
-    batchSignAndSend(txs, { ...options, onError });
+    if (getPendingTransaction) {
+      const params = await prepareEzTransactionParams();
+      const { transaction: pendingTransaction } = await getPendingTransaction(params);
+      txs.push(pendingTransaction.extrinsic);
+    }
+
+    if (shouldIssueVoucher) {
+      txs.push(await getVoucherExtrinsic(session, voucherValue));
+    }
+
+    await batchSignAndSend(txs, { ...options, onError });
   };
 
   const signAndSendDeleteSession = async (
@@ -145,7 +157,7 @@ function useCreateBaseSession(programId: HexString) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
       await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
     }
-    batchSend(signedTxs, { ...options, onError });
+    await batchSend(signedTxs, { ...options, onError });
   };
 
   return { signAndSendDeleteSession, signAndSendCreateSession, onError, signHex };

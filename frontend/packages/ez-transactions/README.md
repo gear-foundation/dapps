@@ -107,6 +107,44 @@ const signlessContext = useSignlessTransactions();
 const { pair, session, isSessionReady, voucher, isLoading, setIsLoading, isActive, isSessionActive } = signlessContext;
 ```
 
+### useAutoSignless
+
+To automatically prompt the user to create or unlock a signless session before executing a transaction, you can use the `useAutoSignless` hook.
+It renders the required signless modals on demand and resolves only after the session becomes active.
+
+```tsx
+import { useAutoSignless, type PrepareEzTransactionParamsResult } from 'gear-ez-transactions';
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+
+const allowedActions = ['ActionOne', 'ActionTwo'];
+
+const { executeWithSessionModal } = useAutoSignless({ allowedActions });
+const { prepareTransactionAsync } = usePrepareProgramTransaction({
+  program,
+  serviceName: 'myService',
+  functionName: 'myMethod',
+});
+
+const handleSubmit = async () => {
+   await executeWithSessionModal(({ sessionForAccount, ...params }: PrepareEzTransactionParamsResult) =>
+      prepareTransactionAsync({ args: [sessionForAccount], ...params }),
+    );
+};
+```
+
+You can provide per-call overrides when a transaction requires a different configuration:
+
+```ts
+await executeWithSessionModal(transaction, {
+  allowedActions: ['Play', 'Pause'],
+  boundSessionDuration: 600000,
+});
+```
+
+If there is no active session, the hook will automatically open the `CreateSessionModal` (for a new session) or the
+`EnableSessionModal` (to unlock an existing session stored locally). The returned promise resolves once the session is
+active and rejects if the modal is closed without enabling signless mode.
+
 ## Use gasless and signless transaction together
 
 Combined Workflow:

@@ -109,6 +109,8 @@ function usePair(programId: HexString, session?: Session | null) {
     const result = getUnlockedPair(storagePair, password);
 
     setPair(result);
+
+    return result;
   };
 
   const setPairToStorage = (value: KeyringPair$Json | undefined) => {
