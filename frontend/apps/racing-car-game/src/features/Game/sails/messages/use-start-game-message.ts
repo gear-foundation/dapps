@@ -22,11 +22,11 @@ export const useStartGameMessage = () => {
   const startGameMessage = async ({ onError }: Options) => {
     try {
       const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-      const { result } = await sendTransactionAsync({
+
+      return sendTransactionAsync({
         args: [sessionForAccount],
         ...params,
       });
-      return result.response();
     } catch (error) {
       onError?.();
       alert.error(getErrorMessage(error));
