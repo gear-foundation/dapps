@@ -13,9 +13,7 @@ type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionR
 
 type PrepareTransactionAsyncResult = Promise<{
   transaction: Transaction;
-  awaited: {
-    fee: bigint;
-  };
+  fee: bigint;
 }>;
 interface AutoSignlessContextType {
   executeWithSessionModal: (

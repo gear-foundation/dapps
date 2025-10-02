@@ -19,9 +19,7 @@ export const useGetAccuralMessage = () => {
   const tx = async () => {
     const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
 
-    const result = await sendTransactionAsync({ args: [], ...params });
-
-    return result.awaited;
+    return sendTransactionAsync({ args: [], ...params });
   };
 
   const { mutateAsync: getAccuralMessage, isPending } = useMutation({

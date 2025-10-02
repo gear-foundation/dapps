@@ -17,8 +17,7 @@ export const useKillMessage = () => {
 
   const tx = async () => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const result = await sendTransactionAsync({ args: [sessionForAccount], ...params });
-    return result.awaited;
+    return sendTransactionAsync({ args: [sessionForAccount], ...params });
   };
 
   const { mutateAsync, isPending } = useMutation({
