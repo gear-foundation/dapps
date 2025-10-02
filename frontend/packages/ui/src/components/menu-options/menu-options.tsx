@@ -22,9 +22,10 @@ export type Props = {
   }[];
   className?: ClassNameProps;
   onClose?: () => void;
+  showDisconnect?: boolean;
 };
 
-export function MenuOptions({ customItems, className, onClose }: Props) {
+export function MenuOptions({ customItems, className, onClose, showDisconnect = true }: Props) {
   const { account, logout } = useAccount();
 
   const handleLogout = () => {
@@ -57,7 +58,7 @@ export function MenuOptions({ customItems, className, onClose }: Props) {
         <GridSVG className={clsx(styles.svg, className?.nativeIcon)} />
         <span>View other projects on Vara</span>
       </a>
-      {account && (
+      {account && showDisconnect && (
         <>
           <hr />
           <Button

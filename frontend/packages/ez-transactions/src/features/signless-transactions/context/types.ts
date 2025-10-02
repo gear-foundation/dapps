@@ -23,7 +23,7 @@ type SignlessContext = {
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
   deletePair: () => void;
-  unlockPair: (password: string) => void;
+  unlockPair: (password: string) => KeyringPair;
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
@@ -36,6 +36,8 @@ type SignlessContext = {
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
+  voucherIssueAmount: number;
+  voucherReissueThreshold: number;
 };
 
 type ActorId = string;

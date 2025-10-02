@@ -1,0 +1,28 @@
+.input {
+  background-color: #18171c;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 12px;
+  line-height: 24px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &:focus {
+    border: 1px solid #3e3b48;
+    box-shadow: 0px 0px 9.4px 0px #c4c1cf33 inset;
+  }
+
+  &::placeholder {
+    color: #b3b0be;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
