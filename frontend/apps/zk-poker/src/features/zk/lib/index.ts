@@ -1,17 +1,4 @@
-export {
-  initDeck,
-  keyGen,
-  samplePermutation,
-  sampleFieldElements,
-  compressDeck,
-  recoverDeck,
-  string2Bigint,
-  assert,
-  decompressDeck,
-  generateRandomScalar,
-  projectiveAdd,
-  scalarMul,
-} from './shuffle/utilities';
+export { initDeck, keyGen, assert, generateRandomScalar, projectiveAdd, scalarMul } from './shuffle/utilities';
 
 export {
   elgamalEncrypt,

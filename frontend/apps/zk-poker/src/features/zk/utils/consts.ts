@@ -12,13 +12,13 @@ const curveParams = {
     Y: BigInt('0x2a6c669eda123e0f157d8b50badcd586358cad81eee464605e3167b6cc974166'),
     Z: 1n,
   },
+  scalarField: BigInt('13108968793781547619861935127046491459309155893440570251786403306729687672801'), // BLS12-381 scalar field
   F: new F1Field(q),
+  FQ_BYTES: 32,
+  FR_BYTES: 32,
 };
 
 const SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
-const decryptWasmFilePath = '/decrypt.wasm';
-const decryptZkeyFilePath = '/decrypt.zkey';
-
-export { curveParams, SUITS, RANKS, decryptWasmFilePath, decryptZkeyFilePath };
+export { curveParams, SUITS, RANKS };

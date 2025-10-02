@@ -1,10 +1,21 @@
-export type Proof = {
-  pi_a: [string, string];
-  pi_b: [[string, string], [string, string]];
-  pi_c: [string, string];
-};
+import { numberToLittleEndianBytes } from './bytes';
 
-export declare type FullProof = {
-  proof: Proof;
-  publicSignals: string[];
-};
+export function cpProofToBytes(proof: {
+  A: { X: bigint; Y: bigint; Z: bigint };
+  B: { X: bigint; Y: bigint; Z: bigint };
+  z: bigint;
+}): ChaumPedersenProofBytes {
+  return {
+    a: [
+      numberToLittleEndianBytes(proof.A.X),
+      numberToLittleEndianBytes(proof.A.Y),
+      numberToLittleEndianBytes(proof.A.Z),
+    ],
+    b: [
+      numberToLittleEndianBytes(proof.B.X),
+      numberToLittleEndianBytes(proof.B.Y),
+      numberToLittleEndianBytes(proof.B.Z),
+    ],
+    z: numberToLittleEndianBytes(proof.z),
+  };
+}

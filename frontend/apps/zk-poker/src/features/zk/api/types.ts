@@ -12,19 +12,7 @@ export type ShuffleResult = {
   publicSignals: string[];
 };
 
-export type DecryptOtherPlayersCardsResult = {
-  playerIndex: number;
-  cardIndex: number;
-  c0: {
-    X: string;
-    Y: string;
-    Z: string;
-  };
-  proof: ZkProof;
-  publicSignals: string[];
-};
-
-export type ZkStep = 'SHUFFLE' | 'DECRYPT_OTHER_PLAYERS_CARDS';
+export type ZkStep = 'SHUFFLE';
 
 export type ZkResultRequest = {
   lobbyAddress: string;
@@ -32,7 +20,6 @@ export type ZkResultRequest = {
   step: ZkStep;
   result: {
     SHUFFLE?: ShuffleResult;
-    DECRYPT_OTHER_PLAYERS_CARDS?: DecryptOtherPlayersCardsResult[];
   };
 };
 
@@ -68,35 +55,8 @@ export type CipherCard = {
   c1: ECPoint;
 };
 
-export type OtherPlayersCard = {
-  c0: ECPoint<string>;
-  cardIndex: number;
-  playerIndex: number;
-};
-
-export type ZkTaskDecryptOtherPlayersCards = {
-  otherPlayersCards: OtherPlayersCard[];
-};
-
-export type ZkTaskPartialDecryption = {
-  c0: ZkTaskAggKey;
-  c1_partial: ZkTaskAggKey;
-};
-
-export type ZkTaskPlayerCard = {
-  c0: ZkTaskAggKey;
-  c1: ZkTaskAggKey;
-};
-
-export type ZkTaskDecryptMyCards = {
-  partialDecryptions: ZkTaskPartialDecryption[];
-  playerCards: ZkTaskPlayerCard[];
-};
-
 export type ZkTaskData = {
   SHUFFLE?: ZkTaskShuffle;
-  DECRYPT_OTHER_PLAYERS_CARDS?: ZkTaskDecryptOtherPlayersCards;
-  DECRYPT_MY_CARDS?: ZkTaskDecryptMyCards;
 };
 
 export type ZkTaskResponse = {
@@ -126,7 +86,6 @@ export type SubmitResultPayload = {
   step: ZkStep;
   result: {
     SHUFFLE?: ShuffleResult;
-    DECRYPT_OTHER_PLAYERS_CARDS?: DecryptOtherPlayersCardsResult[];
   };
 };
 
@@ -172,10 +131,4 @@ export type Card = {
   rank: Rank;
 };
 
-export type ContractCard = {
-  value: number;
-  suit: Suit;
-};
-
 export type RevealedPlayer = [HexString, [globalThis.Card, globalThis.Card]];
-export type Input = { c0: string[]; sk: string; expected: string[] };

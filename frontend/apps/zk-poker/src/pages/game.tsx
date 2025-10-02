@@ -47,7 +47,12 @@ import {
   useEventWaitingForCardsToBeDisclosedSubscription,
   useEventFinishedSubscription,
 } from '@/features/game/sails';
-import { useZkBackend, useZkCardDisclosure, useZkTableCardsDecryption } from '@/features/zk/hooks';
+import {
+  useZkBackend,
+  useZkCardDisclosure,
+  useZkPartialDecryptionsForPlayersCards,
+  useZkTableCardsDecryption,
+} from '@/features/zk/hooks';
 import { getRankFromValue } from '@/features/zk/utils';
 
 import styles from './game.module.scss';
@@ -90,7 +95,7 @@ function GamePage() {
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
 
-  const { playerCards, inputs, refetchPlayerCards } = usePlayerCards(isGameStarted) || {};
+  const { playerCards, myCardsC0, refetchPlayerCards } = usePlayerCards(isGameStarted) || {};
   const { revealedPlayers, refetch: refetchRevealedPlayers } = useRevealedPlayersQuery({
     enabled: isFinished,
   });
@@ -222,11 +227,7 @@ function GamePage() {
       void refetchStatus();
     },
   });
-  const { gameProgress: zkProgress } = useZkBackend({
-    isWaitingShuffleVerification,
-    isWaitingPartialDecryptionsForPlayersCards,
-    isDisabled: isSpectator,
-  });
+  const { gameProgress: zkProgress } = useZkBackend({ isWaitingShuffleVerification, isDisabled: isSpectator });
 
   useZkTableCardsDecryption({
     isWaitingTableCardsAfterPreFlop,
@@ -236,10 +237,11 @@ function GamePage() {
     isDisabled: isSpectator,
   });
 
-  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, inputs, playerCards, isSpectator);
+  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, myCardsC0, isSpectator);
+  useZkPartialDecryptionsForPlayersCards(isWaitingPartialDecryptionsForPlayersCards, isSpectator);
 
   const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress } = useTurn();
-  const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, dillerAddress);
+  const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
     const card = tableCards?.[index];

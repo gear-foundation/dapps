@@ -34,11 +34,11 @@ export class Program {
       SignatureInfo: { signature_data: 'SignatureData', signature: 'Option<Vec<u8>>' },
       SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
       ActionsForSession: { _enum: ['AllActions'] },
-      Card: { value: 'u8', suit: 'Suit' },
-      Suit: { _enum: ['Spades', 'Hearts', 'Diamonds', 'Clubs'] },
+      PartialDec: { c0: '[Vec<u8>; 3]', delta_c0: '[Vec<u8>; 3]', proof: 'ChaumPedersenProofBytes' },
+      ChaumPedersenProofBytes: { a: '[Vec<u8>; 3]', b: '[Vec<u8>; 3]', z: 'Vec<u8>' },
+      EncryptedCard: { c0: '[Vec<u8>; 3]', c1: '[Vec<u8>; 3]' },
       VerificationVariables: { proof_bytes: 'ProofBytes', public_input: 'Vec<Vec<u8>>' },
       ProofBytes: { a: 'Vec<u8>', b: 'Vec<u8>', c: 'Vec<u8>' },
-      EncryptedCard: { c0: '[Vec<u8>; 3]', c1: '[Vec<u8>; 3]' },
       Action: { _enum: { Fold: 'Null', Call: 'Null', Raise: { bet: 'u128' }, Check: 'Null', AllIn: 'Null' } },
       TurnManagerForActorId: { active_ids: 'Vec<[u8;32]>', turn_index: 'u64', first_index: 'u16' },
       BettingStage: {
@@ -48,6 +48,8 @@ export class Program {
         acted_players: 'Vec<[u8;32]>',
       },
       Participant: { name: 'String', balance: 'u128', pk: 'ZkPublicKey' },
+      Card: { value: 'u8', suit: 'Suit' },
+      Suit: { _enum: ['Spades', 'Hearts', 'Diamonds', 'Clubs'] },
       Status: {
         _enum: {
           Registration: 'Null',
@@ -101,6 +103,7 @@ export class Program {
     session_for_admin: SignatureInfo | null,
     zk_verification_id: ActorId,
   ): TransactionBuilder<null> {
+    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
@@ -179,7 +182,7 @@ export class Poker {
   }
 
   public cardDisclosure(
-    instances: Array<[Card, VerificationVariables]>,
+    player_decryptions: Array<PartialDec>,
     session_for_account: ActorId | null,
   ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -187,8 +190,8 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CardDisclosure', instances, session_for_account],
-      '(String, String, Vec<(Card, VerificationVariables)>, Option<[u8;32]>)',
+      ['Poker', 'CardDisclosure', player_decryptions, session_for_account],
+      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -333,21 +336,8 @@ export class Poker {
     );
   }
 
-  public submitAllPartialDecryptions(instances: Array<VerificationVariables>): TransactionBuilder<null> {
-    if (!this._program.programId) throw new Error('Program ID is not set');
-    return new TransactionBuilder<null>(
-      this._program.api,
-      this._program.registry,
-      'send_message',
-      ['Poker', 'SubmitAllPartialDecryptions', instances],
-      '(String, String, Vec<VerificationVariables>)',
-      'Null',
-      this._program.programId,
-    );
-  }
-
-  public submitTablePartialDecryptions(
-    instances: Array<VerificationVariables>,
+  public submitPartialDecryptions(
+    player_decryptions: Array<PartialDec>,
     session_for_account: ActorId | null,
   ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -355,8 +345,24 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitTablePartialDecryptions', instances, session_for_account],
-      '(String, String, Vec<VerificationVariables>, Option<[u8;32]>)',
+      ['Poker', 'SubmitPartialDecryptions', player_decryptions, session_for_account],
+      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public submitTablePartialDecryptions(
+    player_decryptions: Array<PartialDec>,
+    session_for_account: ActorId | null,
+  ): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Poker', 'SubmitTablePartialDecryptions', player_decryptions, session_for_account],
+      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -408,6 +414,25 @@ export class Poker {
     throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
     const result = this._program.registry.createType('(String, String, TurnManagerForActorId)', reply.payload);
     return result[2].toJSON() as unknown as TurnManagerForActorId;
+  }
+
+  public async aggPubKey(
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<ZkPublicKey> {
+    const payload = this._program.registry.createType('(String, String)', ['Poker', 'AggPubKey']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, ZkPublicKey)', reply.payload);
+    return result[2].toJSON() as unknown as ZkPublicKey;
   }
 
   public async allInPlayers(

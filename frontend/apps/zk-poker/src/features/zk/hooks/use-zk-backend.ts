@@ -14,23 +14,18 @@ import {
   type ResultProcessedResponse,
   type WebSocketError,
 } from '../api';
-import { DecryptOtherPlayersCardsResult, GameProgressEvent, ShuffleResult } from '../api/types';
-import { getZkLog, logMemory, partialDecryptionsForPlayersCards, shuffleDeck } from '../utils';
+import { GameProgressEvent, ShuffleResult } from '../api/types';
+import { getZkLog, logMemory, shuffleDeck } from '../utils';
 
 import { useLogs } from './use-logs';
 import { useZkKeys } from './use-zk-keys';
 
 type Params = {
   isWaitingShuffleVerification: boolean;
-  isWaitingPartialDecryptionsForPlayersCards: boolean;
   isDisabled: boolean;
 };
 
-const useZkBackend = ({
-  isWaitingShuffleVerification,
-  isWaitingPartialDecryptionsForPlayersCards,
-  isDisabled,
-}: Params) => {
+const useZkBackend = ({ isWaitingShuffleVerification, isDisabled }: Params) => {
   const { gameId } = useParams();
   const { account } = useAccount();
   const { sk } = useZkKeys();
@@ -105,20 +100,6 @@ const useZkBackend = ({
     [gameId, account?.decodedAddress],
   );
 
-  const postPartialDecryptionsForPlayersCardsResult = useCallback(
-    async (payload: DecryptOtherPlayersCardsResult[]) => {
-      if (!gameId || !account?.decodedAddress) throw new Error('Game ID or account is not defined');
-
-      await submitResult({
-        lobbyAddress: gameId,
-        playerAddress: account.decodedAddress,
-        step: 'DECRYPT_OTHER_PLAYERS_CARDS',
-        result: { DECRYPT_OTHER_PLAYERS_CARDS: payload },
-      });
-    },
-    [gameId, account?.decodedAddress],
-  );
-
   const handleGameProgress = useCallback((progress: GameProgressEvent) => {
     console.log('Game progress received:', progress);
     setGameProgress(progress);
@@ -150,11 +131,7 @@ const useZkBackend = ({
 
   // Handle subscription logic
   useEffect(() => {
-    const shouldSubscribe =
-      (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards) &&
-      !!account?.decodedAddress &&
-      !!gameId &&
-      !isDisabled;
+    const shouldSubscribe = isWaitingShuffleVerification && !!account?.decodedAddress && !!gameId && !isDisabled;
 
     shouldBeSubscribedRef.current = shouldSubscribe;
 
@@ -186,15 +163,7 @@ const useZkBackend = ({
     };
 
     void handleSubscription();
-  }, [
-    isWaitingShuffleVerification,
-    isWaitingPartialDecryptionsForPlayersCards,
-    isDisabled,
-    gameId,
-    account?.decodedAddress,
-    isConnected,
-    alert,
-  ]);
+  }, [isWaitingShuffleVerification, isDisabled, gameId, account?.decodedAddress, isConnected, alert]);
 
   // Handle reconnection
   useEffect(() => {
@@ -215,7 +184,7 @@ const useZkBackend = ({
 
       logMemory('before zkTask');
 
-      const { SHUFFLE, DECRYPT_OTHER_PLAYERS_CARDS } = zkTask.data;
+      const { SHUFFLE } = zkTask.data;
       try {
         if (SHUFFLE) {
           const startTime = performance.now();
@@ -227,20 +196,6 @@ const useZkBackend = ({
           await postShuffleResult(shuffledDeck);
           console.log('Shuffle result submitted via WebSocket');
         }
-
-        if (DECRYPT_OTHER_PLAYERS_CARDS) {
-          const { otherPlayersCards } = DECRYPT_OTHER_PLAYERS_CARDS;
-          const startTime = performance.now();
-
-          const decryptedCards = await partialDecryptionsForPlayersCards(otherPlayersCards, sk);
-
-          const endTime = performance.now();
-          const duration = Math.round(endTime - startTime);
-          setLogs((prev) => [getZkLog('🔓 Partial Decryption', duration), ...prev]);
-
-          await postPartialDecryptionsForPlayersCardsResult(decryptedCards);
-          console.log('Partial decryption result submitted via WebSocket');
-        }
       } catch (error) {
         console.error('Task processing error:', error);
         alert.error((error as Error).message);
@@ -249,7 +204,7 @@ const useZkBackend = ({
 
     void processTask();
     logMemory('after zkTask');
-  }, [zkTask, postShuffleResult, postPartialDecryptionsForPlayersCardsResult, alert, sk, setLogs]);
+  }, [zkTask, postShuffleResult, alert, sk, setLogs]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -269,7 +224,6 @@ const useZkBackend = ({
     isConnected,
     subscriptionStatus: subscriptionStatus || null,
     postShuffleResult,
-    postPartialDecryptionsForPlayersCardsResult,
     gameProgress,
   };
 };

@@ -42,19 +42,17 @@ const timeOptions = [
 
 function CreateGame() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [isLoading, setIsLoading] = useState(false);
   const { account } = useAccount();
   const navigate = useNavigate();
   const { userName } = useUserName();
   const { pk } = useZkKeys();
 
   const onLobbyCreated = (payload: LobbyCreatedPayload) => {
-    setIsLoading(false);
     navigate(ROUTES.GAME.replace(':gameId', payload.lobby_address));
   };
 
   useEventLobbyCreatedSubscription({ onData: onLobbyCreated });
-  const { createLobbyMessage } = useCreateLobbyMessage();
+  const { createLobbyMessage, isPending } = useCreateLobbyMessage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -76,26 +74,18 @@ function CreateGame() {
 
     if (!account) return;
 
-    void createLobbyMessage(
-      {
-        config: {
-          time_per_move_ms: formData.time * 1000,
-          admin_id: account.decodedAddress,
-          admin_name: userName,
-          big_blind: BIG_BLIND,
-          lobby_name: formData.name,
-          small_blind: SMALL_BLIND,
-          starting_bank: formData.buyIn,
-        },
-        pk: getPkBytes(pk),
+    void createLobbyMessage({
+      config: {
+        time_per_move_ms: formData.time * 1000,
+        admin_id: account.decodedAddress,
+        admin_name: userName,
+        big_blind: BIG_BLIND,
+        lobby_name: formData.name,
+        small_blind: SMALL_BLIND,
+        starting_bank: formData.buyIn,
       },
-      {
-        onError: (error) => {
-          console.error('Error creating game:', error);
-          setIsLoading(false);
-        },
-      },
-    );
+      pk: getPkBytes(pk),
+    });
   };
 
   const handleCancel = () => {
@@ -152,10 +142,10 @@ function CreateGame() {
           />
 
           <div className={styles.actions}>
-            <Button color="contrast" onClick={handleCancel}>
+            <Button color="contrast" onClick={handleCancel} disabled={isPending}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isPending}>
               Create lobby
             </Button>
           </div>

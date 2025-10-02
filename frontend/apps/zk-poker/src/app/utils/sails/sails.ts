@@ -1,14 +1,15 @@
 import { useProgram as useGearJsProgram, useProgramQuery } from '@gear-js/react-hooks';
 import { useLocation } from 'react-router-dom';
 
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
+// import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 import { Program as PokerProgram } from './poker';
 import { Program as PokerFactoryProgram } from './poker-factory';
 import { Program as PtsProgram } from './pts';
 
 const usePokerFactoryProgram = () => {
-  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
+  // const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
+  const pokerFactoryProgramId = '0x6b6c0f4aeac5268590614e5e04229c4a59a9ac9725d4c5f956b6f9367ef5b1a2';
   const { data: program } = useGearJsProgram({ library: PokerFactoryProgram, id: pokerFactoryProgramId });
 
   return program;

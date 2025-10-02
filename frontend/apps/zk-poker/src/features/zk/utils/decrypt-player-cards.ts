@@ -1,13 +1,11 @@
 import { F1FieldInstance } from 'ffjavascript';
-import { groth16 } from 'snarkjs';
 
-import { Card, CardWithPoint, ContractCard, ECPoint, Input, Rank } from '../api/types';
+import { Card, CardWithPoint, ECPoint, Rank } from '../api/types';
 import { projectiveAdd, scalarMul, initDeck } from '../lib';
+import { toECPoint } from '../lib/shuffle/ec';
 
-import { hexToBigIntLE } from './common';
-import { curveParams, decryptWasmFilePath, decryptZkeyFilePath, RANKS, SUITS } from './consts';
-import { encodeProof, publicSignalsToBytes } from './partial-decryptions';
-import { getValueFromRank } from './transform';
+import { curveParams, RANKS, SUITS } from './consts';
+import { partialDecryption } from './partial-decryptions';
 
 function toAffine(F: F1FieldInstance, P: ECPoint) {
   const x = F.div(P.X, P.Z);
@@ -54,11 +52,9 @@ const numCards = 52;
 const deck = initDeck(numCards);
 const cardMap = buildCardMap(deck);
 
-type Instances = [ContractCard, VerificationVariables];
-
 export type DecryptedCardsResult = {
   cards: Card[];
-  inputs: Input[];
+  myCardsC0: ECPoint[];
 };
 
 const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promise<DecryptedCardsResult> => {
@@ -66,23 +62,13 @@ const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promis
 
   const result = await Promise.all(
     encryptedCards.map((card) => {
-      const c0 = {
-        X: hexToBigIntLE(card.c0[0]),
-        Y: hexToBigIntLE(card.c0[1]),
-        Z: hexToBigIntLE(card.c0[2]),
-      };
-      const c1 = { X: hexToBigIntLE(card.c1[0]), Y: hexToBigIntLE(card.c1[1]), Z: hexToBigIntLE(card.c1[2]) };
+      const c0 = toECPoint(card.c0);
+      const c1 = toECPoint(card.c1);
       const skC0 = scalarMul(F, a, d, c0, sk);
       const dec: ECPoint = {
         X: F.neg(skC0.X),
         Y: skC0.Y,
         Z: skC0.Z,
-      };
-
-      const input = {
-        c0: [c0.X.toString(), c0.Y.toString(), c0.Z.toString()],
-        sk: sk.toString(),
-        expected: [dec.X.toString(), dec.Y.toString(), dec.Z.toString()],
       };
 
       const decryptedPoint = projectiveAdd(F, a, d, c1, dec);
@@ -91,7 +77,7 @@ const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promis
       if (match) {
         return {
           card: { suit: match.suit, rank: match.rank },
-          input,
+          c0,
         };
       } else {
         throw new Error('Unknown card');
@@ -101,37 +87,12 @@ const decryptCards = async (encryptedCards: EncryptedCard[], sk: bigint): Promis
 
   return {
     cards: result.map(({ card }) => card),
-    inputs: result.map(({ input }) => input),
+    myCardsC0: result.map(({ c0 }) => c0),
   };
 };
 
-const getDecryptedCardsProof = async (inputs: Input[], cards: Card[]) => {
-  const instances = await Promise.all(
-    inputs.map(async (input, index) => {
-      const card = cards[index];
-      const { proof, publicSignals } = await groth16.fullProve(
-        input,
-        decryptWasmFilePath,
-        decryptZkeyFilePath,
-        undefined,
-        { memorySize: 128 },
-      );
-
-      const contractCard: ContractCard = {
-        value: getValueFromRank(card.rank),
-        suit: card.suit,
-      };
-
-      const fullProof: VerificationVariables = {
-        proof_bytes: encodeProof(proof),
-        public_input: publicSignalsToBytes(publicSignals),
-      };
-
-      return [contractCard, fullProof] as Instances;
-    }),
-  );
-
-  return { instances };
+const getMyDecryptedCardsProof = (myCardsC0: ECPoint[], sk: bigint, pk: ECPoint): PartialDec[] => {
+  return myCardsC0.map((c0) => partialDecryption(c0, sk, pk));
 };
 
-export { decryptCards, getDecryptedCardsProof };
+export { decryptCards, getMyDecryptedCardsProof };

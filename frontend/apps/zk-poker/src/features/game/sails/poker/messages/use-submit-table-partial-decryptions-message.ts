@@ -7,7 +7,7 @@ import { usePokerProgram } from '@/app/utils';
 import { useAutoSignless } from '@/features/signless';
 
 type Params = {
-  instances: Array<VerificationVariables>;
+  partialDecs: PartialDec[];
 };
 
 export const useSubmitTablePartialDecryptionsMessage = () => {
@@ -21,12 +21,12 @@ export const useSubmitTablePartialDecryptionsMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const tx = async ({ instances }: Params) => {
+  const tx = async ({ partialDecs }: Params) => {
     const { ...ezParams } = await prepareEzTransactionParams();
     const getTransaction = (params?: Partial<PrepareEzTransactionParamsResult>) => {
       const { sessionForAccount, ...rest } = { ...ezParams, ...params };
       const result = prepareTransactionAsync({
-        args: [instances, sessionForAccount],
+        args: [partialDecs, sessionForAccount],
         ...rest,
         gasLimit: { increaseGas: 30 },
       });
