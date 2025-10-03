@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 
 import { useCreateSailsSession } from '../hooks';
 
-import { SignlessTransactionsContext } from './context';
 import { usePair, useSailsSession } from './hooks';
+import { SignlessTransactionsContextWrapper } from './signless-transactions-context-wrapper';
 import { BaseProgram } from './types';
 
 type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
@@ -30,7 +30,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     isSessionActive,
   };
 
-  return <SignlessTransactionsContext.Provider value={value}>{children}</SignlessTransactionsContext.Provider>;
+  return <SignlessTransactionsContextWrapper value={value}>{children}</SignlessTransactionsContextWrapper>;
 }
 
 export { SignlessTransactionsSailsProvider };

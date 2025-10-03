@@ -7,8 +7,6 @@ import SignlessSVG from '@ez/assets/icons/signless.svg?react';
 
 import { useSignlessTransactions } from '../../context';
 import { useIsAvailable } from '../../hooks';
-import { CreateSessionModal } from '../create-session-modal';
-import { EnableSessionModal } from '../enable-session-modal';
 
 import styles from './enable-signless-session.module.css';
 
@@ -35,18 +33,23 @@ function EnableSignlessSession(props: Props) {
     requiredBalance = 42,
   } = props;
   const { account } = useAccount();
-  const { pair, session, deletePair, deleteSession, isSessionActive } = useSignlessTransactions();
+  const { pair, session, deletePair, deleteSession, isSessionActive, openSessionModal } = useSignlessTransactions();
   const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
-  const [isEnableSessionModalOpen, setIsEnableSessionModalOpen] = useState(false);
+  const openCreateModal = () => {
+    openSessionModal({
+      type: 'create',
+      allowedActions,
+      onSessionCreate,
+      shouldIssueVoucher,
+      boundSessionDuration,
+    }).catch(() => undefined);
+  };
 
-  const openCreateModal = () => setIsCreateSessionModalOpen(true);
-  const closeCreateModal = () => setIsCreateSessionModalOpen(false);
-
-  const openEnableModal = () => setIsEnableSessionModalOpen(true);
-  const closeEnableModal = () => setIsEnableSessionModalOpen(false);
+  const openEnableModal = () => {
+    openSessionModal({ type: 'enable' }).catch(() => undefined);
+  };
 
   const onDeleteSessionSuccess = () => {
     deletePair();
@@ -142,17 +145,6 @@ function EnableSignlessSession(props: Props) {
           </div>
         </div>
       )}
-
-      {isCreateSessionModalOpen && (
-        <CreateSessionModal
-          allowedActions={allowedActions}
-          close={closeCreateModal}
-          onSessionCreate={onSessionCreate}
-          shouldIssueVoucher={shouldIssueVoucher}
-          boundSessionDuration={boundSessionDuration}
-        />
-      )}
-      {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
     </>
   ) : null;
 }

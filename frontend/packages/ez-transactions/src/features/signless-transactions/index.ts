@@ -7,7 +7,14 @@ import {
   SignlessTransactionsMetadataProviderProps,
   SignlessTransactionsSailsProviderProps,
 } from './context';
-import { useSignlessSendMessage, useSignlessSendMessageHandler, SendSignlessMessageOptions } from './hooks';
+import {
+  useSignlessSendMessage,
+  useSignlessSendMessageHandler,
+  SendSignlessMessageOptions,
+  useAutoSignless,
+  AutoSignlessOptions,
+  ExecuteWithSessionModalArg,
+} from './hooks';
 
 export {
   SignlessTransactions,
@@ -17,10 +24,13 @@ export {
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
   useSignlessTransactions,
+  useAutoSignless,
   DEFAULT_SIGNLESS_CONTEXT,
 };
 
 export type {
+  AutoSignlessOptions,
+  ExecuteWithSessionModalArg,
   SendSignlessMessageOptions,
   SignlessContext,
   SignlessTransactionsMetadataProviderProps,

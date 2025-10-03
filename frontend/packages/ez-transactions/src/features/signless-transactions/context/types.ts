@@ -1,10 +1,32 @@
 import { IVoucherDetails } from '@gear-js/api';
+import { TransactionReturn, GenericTransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 import { TypeRegistry } from '@polkadot/types';
 import { HexString } from '@polkadot/util/types';
 import { TransactionBuilder } from 'sails-js';
 
+import { PrepareEzTransactionParamsResult } from '../../../hooks';
 import { UseCreateSessionReturn } from '../hooks';
+
+type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionReturn<null>>;
+
+type PrepareTransactionAsyncResult = Promise<{ transaction: Transaction }>;
+
+type GetPendingTransaction = (params: PrepareEzTransactionParamsResult) => PrepareTransactionAsyncResult;
+
+type SignlessSessionModalConfig =
+  | {
+      type: 'create';
+      allowedActions: string[];
+      shouldIssueVoucher?: boolean;
+      onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
+      boundSessionDuration?: number;
+      getPendingTransaction?: GetPendingTransaction;
+    }
+  | {
+      type: 'enable';
+      getPendingTransaction?: GetPendingTransaction;
+    };
 
 type Session = {
   key: HexString;
@@ -23,12 +45,12 @@ type SignlessContext = {
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
   deletePair: () => void;
-  unlockPair: (password: string) => void;
+  unlockPair: (password: string) => KeyringPair;
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
-  createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => void;
-  deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => void;
+  createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => Promise<void>;
+  deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => Promise<void>;
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,6 +58,7 @@ type SignlessContext = {
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
+  openSessionModal: (config: SignlessSessionModalConfig) => Promise<void>;
 };
 
 type ActorId = string;
@@ -71,4 +94,13 @@ type BaseProgram =
     }
   | undefined;
 
-export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession };
+export type {
+  State,
+  Session,
+  Storage,
+  SignlessContext,
+  BaseProgram,
+  ProgramSession,
+  SignlessSessionModalConfig,
+  GetPendingTransaction,
+};
