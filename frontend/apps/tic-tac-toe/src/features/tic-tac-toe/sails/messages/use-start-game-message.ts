@@ -14,12 +14,11 @@ export const useStartGameMessage = () => {
 
   const startGameMessage = async () => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();
-    const { result } = await sendTransactionAsync({
+
+    return sendTransactionAsync({
       args: [sessionForAccount],
       ...params,
     });
-    await result.response();
-    return;
   };
 
   return { startGameMessage };
