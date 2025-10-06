@@ -232,6 +232,7 @@ service Poker {
   query Betting : () -> opt BettingStage;
   query BettingBank : () -> vec struct { actor_id, u128 };
   query Config : () -> GameConfig;
+  query EncryptedCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
   query EncryptedTableCards : () -> vec EncryptedCard;
   query FactoryActorId : () -> actor_id;
   query Participants : () -> vec struct { actor_id, Participant };

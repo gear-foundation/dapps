@@ -532,6 +532,29 @@ export class Poker {
     return result[2].toJSON() as unknown as GameConfig;
   }
 
+
+  public async encryptedCards(
+    player_id: ActorId,
+    originAddress?: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<Array<EncryptedCard> | null> {
+    const payload = this._program.registry
+      .createType('(String, String, [u8;32])', ['Poker', 'EncryptedCards', player_id])
+      .toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
+    const result = this._program.registry.createType('(String, String, Option<[EncryptedCard; 2]>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<EncryptedCard> | null;
+  }
+
   public async encryptedTableCards(
     originAddress?: string,
     value?: number | string | bigint,

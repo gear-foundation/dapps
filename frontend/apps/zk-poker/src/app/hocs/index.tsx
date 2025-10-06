@@ -50,7 +50,7 @@ function DnsProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   // const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
-  const pokerFactoryProgramId = '0x6b6c0f4aeac5268590614e5e04229c4a59a9ac9725d4c5f956b6f9367ef5b1a2';
+  const pokerFactoryProgramId = '0x54f6ca46a067e2c6c2c7ed9957dacd09e5820eab1897ee0f0504242ea2dc3443';
   const program = usePokerProgram();
 
   return (

@@ -1,13 +1,8 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { getErrorMessage } from '@ui/utils';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import {
-  useEventCardsDealtToPlayersSubscription,
-  useSubmitPartialDecryptionsMessage,
-  type CardsDealtToPlayersPayload,
-  useEventAllPartialDecryptionsSubmitedSubscription,
-} from '@/features/game/sails';
+import { useSubmitPartialDecryptionsMessage, useOtherPlayersEncryptedCardsQuery } from '@/features/game/sails';
 
 import { getZkLog, partialDecryptions } from '../utils';
 
@@ -24,30 +19,17 @@ const useZkPartialDecryptionsForPlayersCards = (
   const { mutateAsync } = useSubmitPartialDecryptionsMessage();
   const { sk, pk } = useZkKeys();
 
-  const [allPlayersEncryptedCards, setAllPlayersEncryptedCards] = useState<CardsDealtToPlayersPayload | null>(null);
-
-  useEventCardsDealtToPlayersSubscription({
-    onData: (payload) => {
-      setAllPlayersEncryptedCards(payload);
-    },
-  });
-
-  useEventAllPartialDecryptionsSubmitedSubscription({
-    onData: () => {
-      setAllPlayersEncryptedCards(null);
-    },
+  const { encryptedCards } = useOtherPlayersEncryptedCardsQuery({
+    enabled: isWaitingPartialDecryptionsForPlayersCards,
   });
 
   useEffect(() => {
-    if (isWaitingPartialDecryptionsForPlayersCards && allPlayersEncryptedCards && account && !isDisabled) {
+    if (isWaitingPartialDecryptionsForPlayersCards && encryptedCards && account && !isDisabled) {
       const decrypt = async () => {
         const startTime = performance.now();
-        const otherPlayersEncryptedCards = allPlayersEncryptedCards
-          .filter(([playerAddress]) => playerAddress !== account.decodedAddress)
-          .flatMap(([_, [card1, card2]]) => [card1, card2]);
 
         try {
-          const partialDecs = partialDecryptions(otherPlayersEncryptedCards, sk, pk);
+          const partialDecs = partialDecryptions(encryptedCards, sk, pk);
           const endTime = performance.now();
           const duration = Math.round(endTime - startTime);
           await mutateAsync({ partialDecs });
@@ -60,7 +42,7 @@ const useZkPartialDecryptionsForPlayersCards = (
       void decrypt();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWaitingPartialDecryptionsForPlayersCards, allPlayersEncryptedCards, isDisabled]);
+  }, [isWaitingPartialDecryptionsForPlayersCards, encryptedCards, isDisabled]);
 };
 
 export { useZkPartialDecryptionsForPlayersCards };

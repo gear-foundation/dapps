@@ -11,3 +11,4 @@ export { useAlreadyInvestedInTheCircleQuery } from './use-already-invested-in-th
 export { useRevealedPlayersQuery } from './use-revealed-players-query';
 export { useTableCardsToDecryptQuery } from './use-table-cards-to-decrypt-query';
 export { useWaitingParticipantsQuery } from './use-waiting-participants-query';
+export { useOtherPlayersEncryptedCardsQuery } from './use-other-players-encrypted-cards-query';

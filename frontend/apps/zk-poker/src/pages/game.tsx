@@ -237,8 +237,8 @@ function GamePage() {
     isDisabled: isSpectator,
   });
 
-  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, myCardsC0, isSpectator);
   useZkPartialDecryptionsForPlayersCards(isWaitingPartialDecryptionsForPlayersCards, isSpectator);
+  useZkCardDisclosure(isWaitingForCardsToBeDisclosed, myCardsC0, isSpectator);
 
   const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress } = useTurn();
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
