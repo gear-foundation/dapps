@@ -1,14 +1,8 @@
-import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { ISubmittableResult } from '@polkadot/types/types';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
-import { useSignlessTransactions } from '@ez/features/signless-transactions';
-import type { SignlessContext, SignlessSessionModalConfig } from '@ez/features/signless-transactions/context';
+import type { SignlessContext, SignlessSessionModalConfig } from '../context/types';
 
-import { usePrepareEzTransactionParams } from '../../../hooks';
-import { GetPendingTransaction } from '../context/types';
-
-type AutoSignlessOptions = {
+export type AutoSignlessOptions = {
   allowedActions?: string[];
   shouldIssueVoucher?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
@@ -20,8 +14,6 @@ type ResolvedAutoSignlessOptions = Required<Pick<AutoSignlessOptions, 'allowedAc
   onSessionCreate?: AutoSignlessOptions['onSessionCreate'];
   boundSessionDuration?: AutoSignlessOptions['boundSessionDuration'];
 };
-
-type ExecuteWithSessionModalArg = SubmittableExtrinsic<'promise', ISubmittableResult>;
 
 type ModalType = 'create' | 'enable';
 
@@ -52,22 +44,16 @@ const toModalConfig = (type: ModalType, options: ResolvedAutoSignlessOptions): S
   };
 };
 
-const useAutoSignless = (defaultOptions?: AutoSignlessOptions) => {
-  const { pair, isSessionActive, openSessionModal, isSessionReady } = useSignlessTransactions();
-  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
-
-  const defaultsRef = useRef<ResolvedAutoSignlessOptions>({
+export const useAutoSignless = (signlessContext: SignlessContext, defaultOptions?: AutoSignlessOptions) => {
+  const defaultAutoSignlessRef = useRef<ResolvedAutoSignlessOptions>({
     allowedActions: defaultOptions?.allowedActions ?? [],
     shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
     onSessionCreate: defaultOptions?.onSessionCreate,
     boundSessionDuration: defaultOptions?.boundSessionDuration,
   });
 
-  const pairRef = useRef(pair);
-  const isSessionActiveRef = useRef(isSessionActive);
-
   useEffect(() => {
-    defaultsRef.current = {
+    defaultAutoSignlessRef.current = {
       allowedActions: defaultOptions?.allowedActions ?? [],
       shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
       onSessionCreate: defaultOptions?.onSessionCreate,
@@ -80,41 +66,31 @@ const useAutoSignless = (defaultOptions?: AutoSignlessOptions) => {
     defaultOptions?.boundSessionDuration,
   ]);
 
-  useEffect(() => {
-    pairRef.current = pair;
-  }, [pair]);
-
-  useEffect(() => {
-    isSessionActiveRef.current = isSessionActive;
-  }, [isSessionActive]);
-
-  const executeWithSessionModal = useCallback(
-    async (getPendingTransaction: GetPendingTransaction, options?: AutoSignlessOptions) => {
-      if (!isSessionReady) return console.error('Session is not ready');
-
-      const params = await prepareEzTransactionParams();
-
-      const { transaction } = await getPendingTransaction(params);
-      if (params.sessionForAccount) {
-        return await transaction.signAndSend();
+  const handleAutoSignless = useCallback(
+    async (overrides?: AutoSignlessOptions): Promise<void> => {
+      if (!signlessContext.isSessionReady) {
+        throw new Error('Signless session is not ready');
       }
 
-      const resolvedOptions = getResolvedOptions(defaultsRef.current, options);
-      const modalType = pickModalType({ pair: pairRef.current, isSessionActive: isSessionActiveRef.current });
+      const resolvedOptions = getResolvedOptions(defaultAutoSignlessRef.current, overrides);
+      const modalType = pickModalType({
+        pair: signlessContext.pair,
+        isSessionActive: signlessContext.isSessionActive,
+      });
 
       if (modalType === 'create' && resolvedOptions.allowedActions.length === 0) {
         throw new Error('Auto signless requires allowedActions to create a session');
       }
 
-      const modalConfig = toModalConfig(modalType, resolvedOptions);
-
-      await openSessionModal({ ...modalConfig, getPendingTransaction });
+      if (!signlessContext.pair || !signlessContext.isSessionActive) {
+        const modalConfig = toModalConfig(modalType, resolvedOptions);
+        await signlessContext.openSessionModal(modalConfig);
+      }
     },
-    [isSessionReady, openSessionModal, prepareEzTransactionParams],
+    [signlessContext],
   );
 
-  return { executeWithSessionModal };
+  return { handleAutoSignless };
 };
 
-export { useAutoSignless };
-export type { AutoSignlessOptions, ExecuteWithSessionModalArg };
+export type { ResolvedAutoSignlessOptions, ModalType };

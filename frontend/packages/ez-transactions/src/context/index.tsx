@@ -12,9 +12,10 @@ const { Provider } = TransactionsContext;
 
 type Props = {
   children: ReactNode;
+  isAutoSignlessEnabled?: boolean;
 };
 
-function EzTransactionsProvider({ children }: Props) {
+function EzTransactionsProvider({ children, isAutoSignlessEnabled = false }: Props) {
   const { account } = useAccount();
 
   const gasless = useGaslessTransactions();
@@ -46,7 +47,7 @@ function EzTransactionsProvider({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, signlessContext.voucher]);
 
-  return <Provider value={{ gasless, signless }}>{children}</Provider>;
+  return <Provider value={{ gasless, signless, isAutoSignlessEnabled }}>{children}</Provider>;
 }
 
 const useEzTransactions = () => useContext(TransactionsContext);

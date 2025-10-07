@@ -1,4 +1,9 @@
-import { AutoSignlessOptions, ExecuteWithSessionModalArg, useAutoSignless } from './use-auto-signless';
+import {
+  useAutoSignless,
+  type ResolvedAutoSignlessOptions,
+  type ModalType,
+  type AutoSignlessOptions,
+} from './use-auto-signless';
 import { Session, UseCreateSessionReturn } from './use-create-base-session';
 import { useCreateMetadataSession } from './use-create-metadata-session';
 import { useCreateSailsSession } from './use-create-sails-session';
@@ -24,5 +29,6 @@ export type {
   Session,
   UseCreateSessionReturn,
   AutoSignlessOptions,
-  ExecuteWithSessionModalArg,
+  ResolvedAutoSignlessOptions,
+  ModalType,
 };
