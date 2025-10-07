@@ -14,7 +14,7 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ENV } from '@/app/consts';
@@ -49,8 +49,7 @@ function DnsProvider({ children }: ProviderProps) {
 }
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
-  // const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
-  const pokerFactoryProgramId = '0x54f6ca46a067e2c6c2c7ed9957dacd09e5820eab1897ee0f0504242ea2dc3443';
+  const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
   const program = usePokerProgram();
 
   return (
