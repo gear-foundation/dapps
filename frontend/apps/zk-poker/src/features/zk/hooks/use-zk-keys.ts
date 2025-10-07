@@ -34,6 +34,8 @@ const zkKeysAtom = atom(() => {
 
   const parsed = JSON.parse(stored) as Keys<string>;
 
+  if (!parsed.sk || !parsed.pk.X || !parsed.pk.Y || !parsed.pk.Z) return generateKeys();
+
   return {
     sk: BigInt(parsed.sk),
     pk: {
