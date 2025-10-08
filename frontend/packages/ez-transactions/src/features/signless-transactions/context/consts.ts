@@ -19,7 +19,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   setIsLoading: () => {},
   isActive: false,
   isSessionActive: false,
-  allowedActions: [],
+  allowedActions: undefined,
   openSessionModal: async () => {},
   isAutoSignlessEnabled: false,
 };

@@ -42,6 +42,7 @@ const usePrepareEzTransactionParams = () => {
       if (shouldHandleAutoSignless) {
         const autoSignlessWithPendingTransaction = {
           ...autoSignlessOverrides,
+          allowedActions: autoSignlessOverrides?.allowedActions ?? signlessSnapshotRef.current.allowedActions,
           getPendingTransaction,
           shouldIssueVoucher: !gaslessState.isEnabled,
           onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),

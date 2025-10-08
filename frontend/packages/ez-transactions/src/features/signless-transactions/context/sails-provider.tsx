@@ -12,6 +12,7 @@ type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   children: ReactNode;
   program: TProgram;
   isAutoSignlessEnabled?: boolean;
+  allowedActions?: string[];
 };
 
 function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
@@ -19,6 +20,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   children,
   program,
   isAutoSignlessEnabled = false,
+  allowedActions,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
   const { session, isSessionReady, isSessionActive } = useSailsSession(program);
   const { createSession, deleteSession } = useCreateSailsSession(programId, program);
@@ -31,6 +33,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     deleteSession,
     isSessionActive,
     isAutoSignlessEnabled,
+    allowedActions,
   };
 
   return <SignlessTransactionsContextWrapper value={value}>{children}</SignlessTransactionsContextWrapper>;

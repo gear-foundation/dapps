@@ -127,7 +127,7 @@ You can enable auto signless globally via `SignlessTransactionsProvider`:
 import { SignlessTransactionsProvider } from 'gear-ez-transactions';
 
 return (
-  <SignlessTransactionsProvider isAutoSignlessEnabled {...restProps}>
+  <SignlessTransactionsProvider isAutoSignlessEnabled allowedActions={['Play', 'Pause']} {...restProps}>
     {children}
   </SignlessTransactionsProvider>
 );
@@ -180,10 +180,7 @@ To work with signless and gasless transactions together, sending transactions re
 ```jsx
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
-const { prepareEzTransactionParams } = usePrepareEzTransactionParams({
-  isAutoSignlessEnabled: true,
-  autoSignless: { allowedActions: ['ActionOne', 'ActionTwo'] },
-});
+const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
 const sendMessage = async () => {
   const params = await prepareEzTransactionParams();

@@ -59,6 +59,7 @@ type SignlessContext = {
   storageVoucherBalance: number;
   openSessionModal: (config: SignlessSessionModalConfig) => Promise<void>;
   isAutoSignlessEnabled: boolean;
+  allowedActions?: string[];
 };
 
 type ActorId = string;

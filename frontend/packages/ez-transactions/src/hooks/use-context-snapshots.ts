@@ -5,7 +5,7 @@ import type { SignlessContext } from '../features/signless-transactions/context/
 
 type SignlessSnapshot = Pick<
   SignlessContext,
-  'pair' | 'voucher' | 'isActive' | 'isSessionActive' | 'isSessionReady' | 'openSessionModal'
+  'pair' | 'voucher' | 'isActive' | 'isSessionActive' | 'isSessionReady' | 'openSessionModal' | 'allowedActions'
 >;
 
 type GaslessSnapshot = Pick<GaslessContext, 'voucherId' | 'isEnabled' | 'requestVoucher' | 'isActive'>;
@@ -18,6 +18,7 @@ export const useContextSnapshots = (signless: SignlessContext, gasless: GaslessC
     isSessionActive: signless.isSessionActive,
     isSessionReady: signless.isSessionReady,
     openSessionModal: signless.openSessionModal,
+    allowedActions: signless.allowedActions,
   });
 
   const gaslessSnapshotRef = useRef<GaslessSnapshot>({
@@ -35,6 +36,7 @@ export const useContextSnapshots = (signless: SignlessContext, gasless: GaslessC
       isSessionActive: signless.isSessionActive,
       isSessionReady: signless.isSessionReady,
       openSessionModal: signless.openSessionModal,
+      allowedActions: signless.allowedActions,
     };
   }, [
     signless.pair,
@@ -43,6 +45,7 @@ export const useContextSnapshots = (signless: SignlessContext, gasless: GaslessC
     signless.isSessionActive,
     signless.isSessionReady,
     signless.openSessionModal,
+    signless.allowedActions,
   ]);
 
   useEffect(() => {

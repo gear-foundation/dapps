@@ -13,6 +13,7 @@ type SignlessTransactionsMetadataProviderProps = {
   metadataSource: string;
   children: ReactNode;
   isAutoSignlessEnabled?: boolean;
+  allowedActions?: string[];
   /**
    * createSignatureType param is used when metadata.types.others.output has multiple types (e.g. tuple) to get the actual type for SignatureData
    */
@@ -24,6 +25,7 @@ function SignlessTransactionsMetadataProvider({
   programId,
   children,
   isAutoSignlessEnabled = false,
+  allowedActions,
   createSignatureType,
 }: SignlessTransactionsMetadataProviderProps) {
   const metadata = useProgramMetadata(metadataSource);
@@ -39,6 +41,7 @@ function SignlessTransactionsMetadataProvider({
     deleteSession,
     isSessionActive,
     isAutoSignlessEnabled,
+    allowedActions,
   };
 
   return <SignlessTransactionsContextWrapper value={value}>{children}</SignlessTransactionsContextWrapper>;

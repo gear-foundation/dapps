@@ -15,7 +15,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
-import { ENV } from '@/app/consts';
+import { ENV, SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
 import { useProgram } from '../utils';
@@ -62,7 +62,11 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
   const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider programId={programId} program={program} isAutoSignlessEnabled>
+    <SharedSignlessTransactionsProvider
+      programId={programId}
+      program={program}
+      isAutoSignlessEnabled
+      allowedActions={SIGNLESS_ALLOWED_ACTIONS}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
