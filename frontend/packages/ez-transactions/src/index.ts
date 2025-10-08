@@ -4,7 +4,6 @@ import {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type UsePrepareEzTransactionParamsOptions,
   type GetPendingTransaction,
 } from './hooks';
 
@@ -19,6 +18,5 @@ export {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type UsePrepareEzTransactionParamsOptions,
   type GetPendingTransaction,
 };

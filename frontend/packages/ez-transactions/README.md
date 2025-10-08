@@ -134,37 +134,7 @@ return (
 
 ```
 
-Or configure it per hook usage:
-
-```tsx
-import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
-import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-
-const { prepareEzTransactionParams } = usePrepareEzTransactionParams({
-  isAutoSignlessEnabled: true,
-  autoSignless: { 
-    allowedActions: ['ActionOne', 'ActionTwo'] 
-  }
-});
-
-const { prepareTransactionAsync } = usePrepareProgramTransaction({
-  program,
-  serviceName: 'myService',
-  functionName: 'myMethod',
-});
-
-const handleSubmit = async () => {
-  const params = await prepareEzTransactionParams();
-  const { transaction } = await prepareTransactionAsync({ 
-    args: [params.sessionForAccount], 
-    ...params 
-  });
-
-  await transaction.signAndSend();
-};
-```
-
-You can override auto-signless settings per transaction:
+Or you can override auto-signless settings per transaction:
 
 ```ts
 const params = await prepareEzTransactionParams({

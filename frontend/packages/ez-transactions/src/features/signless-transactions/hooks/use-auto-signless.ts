@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import type { SignlessContext, SignlessSessionModalConfig, GetPendingTransaction } from '../context/types';
 
@@ -10,30 +10,12 @@ export type AutoSignlessOptions = {
   getPendingTransaction?: GetPendingTransaction;
 };
 
-type ResolvedAutoSignlessOptions = Required<Pick<AutoSignlessOptions, 'allowedActions'>> & {
-  shouldIssueVoucher: boolean;
-  onSessionCreate?: AutoSignlessOptions['onSessionCreate'];
-  boundSessionDuration?: AutoSignlessOptions['boundSessionDuration'];
-  getPendingTransaction?: AutoSignlessOptions['getPendingTransaction'];
-};
-
 type ModalType = 'create' | 'enable';
-
-const getResolvedOptions = (
-  defaults: ResolvedAutoSignlessOptions,
-  overrides?: AutoSignlessOptions,
-): ResolvedAutoSignlessOptions => ({
-  allowedActions: overrides?.allowedActions ?? defaults.allowedActions,
-  shouldIssueVoucher: overrides?.shouldIssueVoucher ?? defaults.shouldIssueVoucher,
-  onSessionCreate: overrides?.onSessionCreate ?? defaults.onSessionCreate,
-  boundSessionDuration: overrides?.boundSessionDuration ?? defaults.boundSessionDuration,
-  getPendingTransaction: overrides?.getPendingTransaction ?? defaults.getPendingTransaction,
-});
 
 const pickModalType = (context: Pick<SignlessContext, 'pair' | 'isSessionActive'>): ModalType =>
   context.isSessionActive && !context.pair ? 'enable' : 'create';
 
-const toModalConfig = (type: ModalType, options: ResolvedAutoSignlessOptions): SignlessSessionModalConfig => {
+const toModalConfig = (type: ModalType, options: AutoSignlessOptions): SignlessSessionModalConfig => {
   if (type === 'enable') {
     return {
       type: 'enable',
@@ -43,57 +25,32 @@ const toModalConfig = (type: ModalType, options: ResolvedAutoSignlessOptions): S
 
   return {
     type: 'create',
-    allowedActions: options.allowedActions,
-    shouldIssueVoucher: options.shouldIssueVoucher,
+    allowedActions: options.allowedActions ?? [],
+    shouldIssueVoucher: options.shouldIssueVoucher ?? true,
     onSessionCreate: options.onSessionCreate,
     boundSessionDuration: options.boundSessionDuration,
     getPendingTransaction: options.getPendingTransaction,
   };
 };
 
-export const useAutoSignless = (signlessContext: SignlessContext, defaultOptions?: AutoSignlessOptions) => {
-  const defaultAutoSignlessRef = useRef<ResolvedAutoSignlessOptions>({
-    allowedActions: defaultOptions?.allowedActions ?? [],
-    shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
-    onSessionCreate: defaultOptions?.onSessionCreate,
-    boundSessionDuration: defaultOptions?.boundSessionDuration,
-    getPendingTransaction: defaultOptions?.getPendingTransaction,
-  });
-
-  useEffect(() => {
-    defaultAutoSignlessRef.current = {
-      allowedActions: defaultOptions?.allowedActions ?? [],
-      shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
-      onSessionCreate: defaultOptions?.onSessionCreate,
-      boundSessionDuration: defaultOptions?.boundSessionDuration,
-      getPendingTransaction: defaultOptions?.getPendingTransaction,
-    };
-  }, [
-    defaultOptions?.allowedActions,
-    defaultOptions?.shouldIssueVoucher,
-    defaultOptions?.onSessionCreate,
-    defaultOptions?.boundSessionDuration,
-    defaultOptions?.getPendingTransaction,
-  ]);
-
+export const useAutoSignless = (signlessContext: SignlessContext) => {
   const handleAutoSignless = useCallback(
-    async (overrides?: AutoSignlessOptions): Promise<void> => {
+    async (options: AutoSignlessOptions): Promise<void> => {
       if (!signlessContext.isSessionReady) {
         throw new Error('Signless session is not ready');
       }
 
-      const resolvedOptions = getResolvedOptions(defaultAutoSignlessRef.current, overrides);
       const modalType = pickModalType({
         pair: signlessContext.pair,
         isSessionActive: signlessContext.isSessionActive,
       });
 
-      if (modalType === 'create' && resolvedOptions.allowedActions.length === 0) {
+      if (modalType === 'create' && !options.allowedActions) {
         throw new Error('Auto signless requires allowedActions to create a session');
       }
 
       if (!signlessContext.pair || !signlessContext.isSessionActive) {
-        const modalConfig = toModalConfig(modalType, resolvedOptions);
+        const modalConfig = toModalConfig(modalType, options);
         await signlessContext.openSessionModal(modalConfig);
       }
     },
@@ -103,4 +60,4 @@ export const useAutoSignless = (signlessContext: SignlessContext, defaultOptions
   return { handleAutoSignless };
 };
 
-export type { ResolvedAutoSignlessOptions, ModalType };
+export type { ModalType };

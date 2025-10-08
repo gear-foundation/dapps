@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { IKeyringPair } from '@polkadot/types/types';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useEzTransactions } from '../context';
 import type { GetPendingTransaction } from '../features/signless-transactions/context/types';
@@ -16,11 +16,6 @@ type PrepareEzTransactionParamsResult = {
   gasLimit: { increaseGas: number };
 };
 
-type UsePrepareEzTransactionParamsOptions = {
-  isAutoSignlessEnabled?: boolean;
-  autoSignless?: AutoSignlessOptions;
-};
-
 type PrepareEzTransactionParamsOptions = {
   sendFromBaseAccount?: boolean;
   isAutoSignlessEnabled?: boolean;
@@ -28,17 +23,12 @@ type PrepareEzTransactionParamsOptions = {
   getPendingTransaction?: GetPendingTransaction;
 };
 
-const usePrepareEzTransactionParams = (options?: UsePrepareEzTransactionParamsOptions) => {
+const usePrepareEzTransactionParams = () => {
   const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
   const isAutoSignlessEnabledGlobal = signless.isAutoSignlessEnabled;
-  const defaultIsAutoSignlessEnabledRef = useRef<boolean | undefined>(options?.isAutoSignlessEnabled);
   const { signlessSnapshotRef, gaslessSnapshotRef } = useContextSnapshots(signless, gasless);
-  const { handleAutoSignless } = useAutoSignless(signless, options?.autoSignless);
-
-  useEffect(() => {
-    defaultIsAutoSignlessEnabledRef.current = options?.isAutoSignlessEnabled;
-  }, [options?.isAutoSignlessEnabled]);
+  const { handleAutoSignless } = useAutoSignless(signless);
 
   const prepareEzTransactionParams = useCallback(
     async (prepareOptions?: PrepareEzTransactionParamsOptions): Promise<PrepareEzTransactionParamsResult> => {
@@ -47,8 +37,7 @@ const usePrepareEzTransactionParams = (options?: UsePrepareEzTransactionParamsOp
       const { sendFromBaseAccount, autoSignless: autoSignlessOverrides, getPendingTransaction } = prepareOptions ?? {};
       const gaslessState = gaslessSnapshotRef.current;
 
-      const shouldHandleAutoSignless =
-        prepareOptions?.isAutoSignlessEnabled ?? defaultIsAutoSignlessEnabledRef.current ?? isAutoSignlessEnabledGlobal;
+      const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
       if (shouldHandleAutoSignless) {
         const autoSignlessWithPendingTransaction = {
@@ -93,6 +82,5 @@ export {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type UsePrepareEzTransactionParamsOptions,
   type GetPendingTransaction,
 };
