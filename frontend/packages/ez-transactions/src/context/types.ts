@@ -6,7 +6,6 @@ type Value = {
   signless: SignlessContext & {
     onSessionCreate: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   };
-  isAutoSignlessEnabled: boolean;
 };
 
 export type { Value };

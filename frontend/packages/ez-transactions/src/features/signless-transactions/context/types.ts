@@ -5,14 +5,13 @@ import { TypeRegistry } from '@polkadot/types';
 import { HexString } from '@polkadot/util/types';
 import { TransactionBuilder } from 'sails-js';
 
-import { PrepareEzTransactionParamsResult } from '../../../hooks';
 import { UseCreateSessionReturn } from '../hooks';
 
 type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionReturn<null>>;
 
 type PrepareTransactionAsyncResult = Promise<{ transaction: Transaction }>;
 
-type GetPendingTransaction = (params: PrepareEzTransactionParamsResult) => PrepareTransactionAsyncResult;
+type GetPendingTransaction = () => PrepareTransactionAsyncResult;
 
 type SignlessSessionModalConfig =
   | {
@@ -45,7 +44,7 @@ type SignlessContext = {
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
   deletePair: () => void;
-  unlockPair: (password: string) => KeyringPair;
+  unlockPair: (password: string) => void;
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
@@ -59,6 +58,7 @@ type SignlessContext = {
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
   openSessionModal: (config: SignlessSessionModalConfig) => Promise<void>;
+  isAutoSignlessEnabled: boolean;
 };
 
 type ActorId = string;

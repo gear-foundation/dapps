@@ -7,7 +7,6 @@ const DEFAULT_VALUES = {
     ...DEFAULT_SIGNLESS_CONTEXT,
     onSessionCreate: async (): Promise<`0x${string}`> => '0x',
   },
-  isAutoSignlessEnabled: false,
 };
 
 export { DEFAULT_VALUES };

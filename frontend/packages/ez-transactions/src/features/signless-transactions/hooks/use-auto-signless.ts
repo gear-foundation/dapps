@@ -1,18 +1,20 @@
 import { useCallback, useRef, useEffect } from 'react';
 
-import type { SignlessContext, SignlessSessionModalConfig } from '../context/types';
+import type { SignlessContext, SignlessSessionModalConfig, GetPendingTransaction } from '../context/types';
 
 export type AutoSignlessOptions = {
   allowedActions?: string[];
   shouldIssueVoucher?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   boundSessionDuration?: number;
+  getPendingTransaction?: GetPendingTransaction;
 };
 
 type ResolvedAutoSignlessOptions = Required<Pick<AutoSignlessOptions, 'allowedActions'>> & {
   shouldIssueVoucher: boolean;
   onSessionCreate?: AutoSignlessOptions['onSessionCreate'];
   boundSessionDuration?: AutoSignlessOptions['boundSessionDuration'];
+  getPendingTransaction?: AutoSignlessOptions['getPendingTransaction'];
 };
 
 type ModalType = 'create' | 'enable';
@@ -25,6 +27,7 @@ const getResolvedOptions = (
   shouldIssueVoucher: overrides?.shouldIssueVoucher ?? defaults.shouldIssueVoucher,
   onSessionCreate: overrides?.onSessionCreate ?? defaults.onSessionCreate,
   boundSessionDuration: overrides?.boundSessionDuration ?? defaults.boundSessionDuration,
+  getPendingTransaction: overrides?.getPendingTransaction ?? defaults.getPendingTransaction,
 });
 
 const pickModalType = (context: Pick<SignlessContext, 'pair' | 'isSessionActive'>): ModalType =>
@@ -32,7 +35,10 @@ const pickModalType = (context: Pick<SignlessContext, 'pair' | 'isSessionActive'
 
 const toModalConfig = (type: ModalType, options: ResolvedAutoSignlessOptions): SignlessSessionModalConfig => {
   if (type === 'enable') {
-    return { type: 'enable' };
+    return {
+      type: 'enable',
+      getPendingTransaction: options.getPendingTransaction,
+    };
   }
 
   return {
@@ -41,6 +47,7 @@ const toModalConfig = (type: ModalType, options: ResolvedAutoSignlessOptions): S
     shouldIssueVoucher: options.shouldIssueVoucher,
     onSessionCreate: options.onSessionCreate,
     boundSessionDuration: options.boundSessionDuration,
+    getPendingTransaction: options.getPendingTransaction,
   };
 };
 
@@ -50,6 +57,7 @@ export const useAutoSignless = (signlessContext: SignlessContext, defaultOptions
     shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
     onSessionCreate: defaultOptions?.onSessionCreate,
     boundSessionDuration: defaultOptions?.boundSessionDuration,
+    getPendingTransaction: defaultOptions?.getPendingTransaction,
   });
 
   useEffect(() => {
@@ -58,12 +66,14 @@ export const useAutoSignless = (signlessContext: SignlessContext, defaultOptions
       shouldIssueVoucher: defaultOptions?.shouldIssueVoucher ?? true,
       onSessionCreate: defaultOptions?.onSessionCreate,
       boundSessionDuration: defaultOptions?.boundSessionDuration,
+      getPendingTransaction: defaultOptions?.getPendingTransaction,
     };
   }, [
     defaultOptions?.allowedActions,
     defaultOptions?.shouldIssueVoucher,
     defaultOptions?.onSessionCreate,
     defaultOptions?.boundSessionDuration,
+    defaultOptions?.getPendingTransaction,
   ]);
 
   const handleAutoSignless = useCallback(

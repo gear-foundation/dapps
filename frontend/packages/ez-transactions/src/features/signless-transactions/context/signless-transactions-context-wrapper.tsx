@@ -1,8 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { IKeyringPair } from '@polkadot/types/types';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { usePrepareEzTransactionParams } from '../../../hooks';
 import { CreateSessionModal } from '../components/create-session-modal';
 import { EnableSessionModal } from '../components/enable-session-modal';
 
@@ -40,7 +38,6 @@ const createDeferred = <T,>(): Deferred<T> => {
 const SignlessTransactionsContextWrapper = ({ value, children }: SignlessTransactionsContextWrapperProps) => {
   const [modalState, setModalState] = useState<ModalState | null>(null);
   const { account } = useAccount();
-  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const modalDeferredRef = useRef<Deferred<void> | null>(null);
   const pairRef = useRef(value.pair);
   const isSessionActiveRef = useRef(value.isSessionActive);
@@ -88,25 +85,14 @@ const SignlessTransactionsContextWrapper = ({ value, children }: SignlessTransac
     return deferred.promise;
   }, []);
 
-  const enableSessionCallback = useCallback(
-    async (pair: IKeyringPair) => {
-      const getPendingTransaction = modalState?.getPendingTransaction;
+  const enableSessionCallback = useCallback(async () => {
+    const getPendingTransaction = modalState?.getPendingTransaction;
 
-      const voucherId = value.storageVoucher?.id;
-
-      if (getPendingTransaction && voucherId && account) {
-        const params = await prepareEzTransactionParams();
-        const { transaction } = await getPendingTransaction({
-          ...params,
-          account: { addressOrPair: pair },
-          sessionForAccount: account.decodedAddress,
-          voucherId,
-        });
-        await transaction.signAndSend();
-      }
-    },
-    [modalState, value.storageVoucher, account, prepareEzTransactionParams],
-  );
+    if (getPendingTransaction && account) {
+      const { transaction } = await getPendingTransaction();
+      await transaction.signAndSend();
+    }
+  }, [modalState, account]);
 
   const contextValue = useMemo<SignlessContext>(
     () => ({

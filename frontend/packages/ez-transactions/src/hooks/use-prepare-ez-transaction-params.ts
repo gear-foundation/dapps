@@ -4,6 +4,7 @@ import { IKeyringPair } from '@polkadot/types/types';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useEzTransactions } from '../context';
+import type { GetPendingTransaction } from '../features/signless-transactions/context/types';
 import { useAutoSignless, type AutoSignlessOptions } from '../features/signless-transactions/hooks/use-auto-signless';
 
 import { useContextSnapshots } from './use-context-snapshots';
@@ -24,12 +25,13 @@ type PrepareEzTransactionParamsOptions = {
   sendFromBaseAccount?: boolean;
   isAutoSignlessEnabled?: boolean;
   autoSignless?: AutoSignlessOptions;
+  getPendingTransaction?: GetPendingTransaction;
 };
 
 const usePrepareEzTransactionParams = (options?: UsePrepareEzTransactionParamsOptions) => {
   const { account } = useAccount();
-  const { signless, gasless, isAutoSignlessEnabled: isAutoSignlessEnabledGlobal } = useEzTransactions();
-
+  const { signless, gasless } = useEzTransactions();
+  const isAutoSignlessEnabledGlobal = signless.isAutoSignlessEnabled;
   const defaultIsAutoSignlessEnabledRef = useRef<boolean | undefined>(options?.isAutoSignlessEnabled);
   const { signlessSnapshotRef, gaslessSnapshotRef } = useContextSnapshots(signless, gasless);
   const { handleAutoSignless } = useAutoSignless(signless, options?.autoSignless);
@@ -42,14 +44,20 @@ const usePrepareEzTransactionParams = (options?: UsePrepareEzTransactionParamsOp
     async (prepareOptions?: PrepareEzTransactionParamsOptions): Promise<PrepareEzTransactionParamsResult> => {
       if (!account) throw new Error('Account not found');
 
-      const { sendFromBaseAccount, autoSignless: autoSignlessOverrides } = prepareOptions ?? {};
+      const { sendFromBaseAccount, autoSignless: autoSignlessOverrides, getPendingTransaction } = prepareOptions ?? {};
       const gaslessState = gaslessSnapshotRef.current;
 
       const shouldHandleAutoSignless =
         prepareOptions?.isAutoSignlessEnabled ?? defaultIsAutoSignlessEnabledRef.current ?? isAutoSignlessEnabledGlobal;
 
       if (shouldHandleAutoSignless) {
-        await handleAutoSignless(autoSignlessOverrides);
+        const autoSignlessWithPendingTransaction = {
+          ...autoSignlessOverrides,
+          getPendingTransaction,
+          shouldIssueVoucher: !gaslessState.isEnabled,
+          onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),
+        };
+        await handleAutoSignless(autoSignlessWithPendingTransaction);
       }
 
       const nextSignlessState = signlessSnapshotRef.current;
@@ -62,7 +70,7 @@ const usePrepareEzTransactionParams = (options?: UsePrepareEzTransactionParamsOp
       if (
         account &&
         gaslessState.isEnabled &&
-        !gaslessState.voucherId &&
+        !gaslessSnapshotRef.current.voucherId &&
         (sendFromBaseAccount || !nextSignlessState.isActive)
       ) {
         voucherId = await gaslessState.requestVoucher(account.address);
@@ -86,4 +94,5 @@ export {
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
   type UsePrepareEzTransactionParamsOptions,
+  type GetPendingTransaction,
 };

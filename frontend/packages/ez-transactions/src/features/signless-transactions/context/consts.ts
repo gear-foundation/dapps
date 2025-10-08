@@ -23,6 +23,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isSessionActive: false,
   allowedActions: [],
   openSessionModal: async () => {},
+  isAutoSignlessEnabled: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

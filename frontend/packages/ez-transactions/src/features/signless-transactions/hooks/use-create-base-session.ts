@@ -4,7 +4,6 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
-import { usePrepareEzTransactionParams } from '../../../hooks';
 import { GetPendingTransaction } from '../context/types';
 import { sendTransaction } from '../utils';
 
@@ -42,7 +41,6 @@ function useCreateBaseSession(programId: HexString) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
-  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const minRequiredBalanceToDeleteSession =
     getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
@@ -112,8 +110,7 @@ function useCreateBaseSession(programId: HexString) {
     const txs = [messageExtrinsic];
 
     if (getPendingTransaction) {
-      const params = await prepareEzTransactionParams();
-      const { transaction: pendingTransaction } = await getPendingTransaction(params);
+      const { transaction: pendingTransaction } = await getPendingTransaction();
       txs.push(pendingTransaction.extrinsic);
     }
 

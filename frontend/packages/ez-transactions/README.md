@@ -104,23 +104,34 @@ import { useSignlessTransactions } from 'gear-ez-transactions';
 
 const signlessContext = useSignlessTransactions();
 
-const { pair, session, isSessionReady, voucher, isLoading, setIsLoading, isActive, isSessionActive } = signlessContext;
+const { 
+  pair, 
+  session, 
+  isSessionReady, 
+  voucher, 
+  isLoading, 
+  setIsLoading, 
+  isActive, 
+  isSessionActive,
+  isAutoSignlessEnabled 
+} = signlessContext;
 ```
 
 ### Auto Signless
 
 The library provides automatic signless session management through the `isAutoSignlessEnabled` flag. When enabled, signless modals are automatically displayed whenever a transaction needs them, without requiring manual session management.
 
-You can enable auto signless globally via `EzTransactionsProvider`:
+You can enable auto signless globally via `SignlessTransactionsProvider`:
 
 ```jsx
-import { EzTransactionsProvider } from 'gear-ez-transactions';
+import { SignlessTransactionsProvider } from 'gear-ez-transactions';
 
 return (
-  <EzTransactionsProvider isAutoSignlessEnabled={true}>
+  <SignlessTransactionsProvider isAutoSignlessEnabled {...restProps}>
     {children}
-  </EzTransactionsProvider>
+  </SignlessTransactionsProvider>
 );
+
 ```
 
 Or configure it per hook usage:
@@ -189,10 +200,8 @@ The package provides a `useEzTransactions` hook that returns both gasless and si
 ```jsx
 import { useEzTransactions } from 'gear-ez-transactions';
 
-const { gasless, signless, isAutoSignlessEnabled } = useEzTransactions();
+const { gasless, signless } = useEzTransactions();
 ```
-
-`isAutoSignlessEnabled` is provided by `EzTransactionsProvider` and can be set globally via the `isAutoSignlessEnabled` prop.
 
 ### usePrepareEzTransactionParams
 

@@ -1,12 +1,11 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
-import { IKeyringPair } from '@polkadot/types/types';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'> & {
-  callback?: (pair: IKeyringPair) => Promise<void>;
+  callback?: () => Promise<void>;
 };
 
 const DEFAULT_VALUES = {
@@ -23,9 +22,9 @@ function EnableSessionModal({ close, callback }: Props) {
     setIsLoading(true);
 
     try {
-      const pair = unlockPair(password);
+      unlockPair(password);
       if (callback) {
-        await callback(pair);
+        await callback();
       }
       setIsLoading(false);
       close();

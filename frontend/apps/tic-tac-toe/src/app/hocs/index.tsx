@@ -62,7 +62,7 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
   const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider programId={programId} program={program}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program} isAutoSignlessEnabled>
       {children}
     </SharedSignlessTransactionsProvider>
   );
