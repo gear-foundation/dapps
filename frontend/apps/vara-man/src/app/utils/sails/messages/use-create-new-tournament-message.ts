@@ -22,8 +22,8 @@ export const useCreateNewTournamentMessage = () => {
     durationMs: number,
     options: Options,
   ) => {
-    const isSendFromBaseAccount = value !== 0n;
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams(isSendFromBaseAccount);
+    const sendFromBaseAccount = value !== 0n;
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ sendFromBaseAccount });
     const { transaction } = await prepareTransactionAsync({
       args: [tournamentName, name, level, durationMs, sessionForAccount],
       ...params,
