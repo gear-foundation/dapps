@@ -74,10 +74,8 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
       await signAndSend;
     } catch (error) {
       options.onError?.(error as Error);
-    } finally {
       options.onFinally?.();
     }
-    options.onSuccess?.();
   };
 
   const batchSign = async (
