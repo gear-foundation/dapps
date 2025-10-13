@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 
 import { BALANCE_VALUE_TO_ISSUE_VOUCHER, BALANCE_VALUE_TO_START_GAME, DURATIONS, REQUIRED_MESSAGE } from '../../consts';
 import { useSignlessTransactions } from '../../context';
-import { GetPendingTransaction } from '../../context/types';
 import { useRandomPairOr } from '../../hooks';
 import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
 import { AccountPair } from '../account-pair';
@@ -20,7 +19,6 @@ type Props = Pick<ModalProps, 'close'> & {
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
   boundSessionDuration?: number;
-  getPendingTransaction?: GetPendingTransaction;
 };
 
 function CreateSessionModal({
@@ -29,7 +27,6 @@ function CreateSessionModal({
   onSessionCreate = async () => '0x',
   shouldIssueVoucher = true,
   boundSessionDuration,
-  getPendingTransaction,
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
@@ -133,7 +130,6 @@ function CreateSessionModal({
         await createSession({ duration, key, allowedActions }, issueVoucherValue, {
           shouldIssueVoucher,
           voucherId,
-          getPendingTransaction,
           onSuccess,
           onFinally,
           pair: pairToSave,
@@ -148,7 +144,6 @@ function CreateSessionModal({
 
     await createSession({ duration, key, allowedActions }, issueVoucherValue, {
       shouldIssueVoucher,
-      getPendingTransaction,
       onSuccess,
       onFinally,
     });

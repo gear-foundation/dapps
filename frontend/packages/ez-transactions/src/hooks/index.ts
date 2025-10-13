@@ -3,14 +3,7 @@ import {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type GetPendingTransaction,
 } from './use-prepare-ez-transaction-params';
 
 export { usePrepareEzTransactionParams, useContextSnapshots };
-export type {
-  PrepareEzTransactionParamsResult,
-  PrepareEzTransactionParamsOptions,
-  GetPendingTransaction,
-  SignlessSnapshot,
-  GaslessSnapshot,
-};
+export type { PrepareEzTransactionParamsResult, PrepareEzTransactionParamsOptions, SignlessSnapshot, GaslessSnapshot };

@@ -1,17 +1,10 @@
 import { IVoucherDetails } from '@gear-js/api';
-import { TransactionReturn, GenericTransactionReturn } from '@gear-js/react-hooks/dist/hooks/sails/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 import { TypeRegistry } from '@polkadot/types';
 import { HexString } from '@polkadot/util/types';
 import { TransactionBuilder } from 'sails-js';
 
 import { UseCreateSessionReturn } from '../hooks';
-
-type Transaction = TransactionReturn<(...args: unknown[]) => GenericTransactionReturn<null>>;
-
-type PrepareTransactionAsyncResult = Promise<{ transaction: Transaction }>;
-
-type GetPendingTransaction = () => PrepareTransactionAsyncResult;
 
 type SignlessSessionModalConfig =
   | {
@@ -20,11 +13,9 @@ type SignlessSessionModalConfig =
       shouldIssueVoucher?: boolean;
       onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
       boundSessionDuration?: number;
-      getPendingTransaction?: GetPendingTransaction;
     }
   | {
       type: 'enable';
-      getPendingTransaction?: GetPendingTransaction;
     };
 
 type Session = {
@@ -95,13 +86,4 @@ type BaseProgram =
     }
   | undefined;
 
-export type {
-  State,
-  Session,
-  Storage,
-  SignlessContext,
-  BaseProgram,
-  ProgramSession,
-  SignlessSessionModalConfig,
-  GetPendingTransaction,
-};
+export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession, SignlessSessionModalConfig };

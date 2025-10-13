@@ -45,7 +45,7 @@ function useCreateMetadataSession(
   const createSession = async (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, getPendingTransaction, ...options }: Options & CreeateSessionOptions,
+    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
@@ -70,14 +70,7 @@ function useCreateMetadataSession(
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
 
-    return signAndSendCreateSession(
-      messageExtrinsic,
-      session,
-      voucherValue,
-      options,
-      shouldIssueVoucher,
-      getPendingTransaction,
-    );
+    return signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {

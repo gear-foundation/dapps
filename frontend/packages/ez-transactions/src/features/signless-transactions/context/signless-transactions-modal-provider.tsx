@@ -1,4 +1,3 @@
-import { useAccount } from '@gear-js/react-hooks';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CreateSessionModal } from '../components/create-session-modal';
@@ -37,7 +36,6 @@ const createDeferred = <T,>(): Deferred<T> => {
 
 const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransactionsModalProviderProps) => {
   const [modalState, setModalState] = useState<ModalState | null>(null);
-  const { account } = useAccount();
   const modalDeferredRef = useRef<Deferred<void> | null>(null);
   const pairRef = useRef(value.pair);
   const isSessionActiveRef = useRef(value.isSessionActive);
@@ -85,15 +83,6 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
     return deferred.promise;
   }, []);
 
-  const enableSessionCallback = useCallback(async () => {
-    const getPendingTransaction = modalState?.getPendingTransaction;
-
-    if (getPendingTransaction && account) {
-      const { transaction } = await getPendingTransaction();
-      await transaction.signAndSend();
-    }
-  }, [modalState, account]);
-
   const contextValue = useMemo<SignlessContext>(
     () => ({
       ...value,
@@ -112,12 +101,9 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
           shouldIssueVoucher={modalState.shouldIssueVoucher}
           onSessionCreate={modalState.onSessionCreate}
           boundSessionDuration={modalState.boundSessionDuration}
-          getPendingTransaction={modalState.getPendingTransaction}
         />
       )}
-      {modalState?.type === 'enable' && (
-        <EnableSessionModal close={handleModalClose} onPairUnlock={enableSessionCallback} />
-      )}
+      {modalState?.type === 'enable' && <EnableSessionModal close={handleModalClose} />}
     </SignlessTransactionsContext.Provider>
   );
 };

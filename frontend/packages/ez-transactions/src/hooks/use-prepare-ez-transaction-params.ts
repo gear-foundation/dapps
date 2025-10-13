@@ -4,7 +4,6 @@ import { IKeyringPair } from '@polkadot/types/types';
 import { useCallback } from 'react';
 
 import { useEzTransactions } from '../context';
-import type { GetPendingTransaction } from '../features/signless-transactions/context/types';
 import { useAutoSignless, type AutoSignlessOptions } from '../features/signless-transactions/hooks/use-auto-signless';
 
 import { useContextSnapshots } from './use-context-snapshots';
@@ -20,7 +19,6 @@ type PrepareEzTransactionParamsOptions = {
   sendFromBaseAccount?: boolean;
   isAutoSignlessEnabled?: boolean;
   autoSignless?: AutoSignlessOptions;
-  getPendingTransaction?: GetPendingTransaction;
 };
 
 const usePrepareEzTransactionParams = () => {
@@ -34,7 +32,7 @@ const usePrepareEzTransactionParams = () => {
     async (prepareOptions?: PrepareEzTransactionParamsOptions): Promise<PrepareEzTransactionParamsResult> => {
       if (!account) throw new Error('Account not found');
 
-      const { sendFromBaseAccount, autoSignless: autoSignlessOverrides, getPendingTransaction } = prepareOptions ?? {};
+      const { sendFromBaseAccount, autoSignless: autoSignlessOverrides } = prepareOptions ?? {};
       const gaslessState = gaslessSnapshotRef.current;
 
       const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
@@ -43,7 +41,6 @@ const usePrepareEzTransactionParams = () => {
         const autoSignlessWithPendingTransaction = {
           ...autoSignlessOverrides,
           allowedActions: autoSignlessOverrides?.allowedActions ?? signlessSnapshotRef.current.allowedActions,
-          getPendingTransaction,
           shouldIssueVoucher: !gaslessState.isEnabled,
           onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),
         };
@@ -79,9 +76,4 @@ const usePrepareEzTransactionParams = () => {
   return { prepareEzTransactionParams };
 };
 
-export {
-  usePrepareEzTransactionParams,
-  type PrepareEzTransactionParamsResult,
-  type PrepareEzTransactionParamsOptions,
-  type GetPendingTransaction,
-};
+export { usePrepareEzTransactionParams, type PrepareEzTransactionParamsResult, type PrepareEzTransactionParamsOptions };

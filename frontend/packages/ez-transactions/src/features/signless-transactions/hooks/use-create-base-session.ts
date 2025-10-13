@@ -4,7 +4,6 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
-import { GetPendingTransaction } from '../context/types';
 import { sendTransaction } from '../utils';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
@@ -25,14 +24,13 @@ type CreeateSessionOptions = {
   pair?: KeyringPair;
   voucherId?: `0x${string}`;
   shouldIssueVoucher: boolean;
-  getPendingTransaction?: GetPendingTransaction;
 };
 
 type UseCreateSessionReturn = {
   createSession: (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, getPendingTransaction, ...options }: Options & CreeateSessionOptions,
+    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => Promise<void>;
   deleteSession: (key: HexString, pair: KeyringPair, options: Options) => Promise<void>;
 };
@@ -105,14 +103,8 @@ function useCreateBaseSession(programId: HexString) {
     voucherValue: number,
     options: Options,
     shouldIssueVoucher?: boolean,
-    getPendingTransaction?: GetPendingTransaction,
   ) => {
     const txs = [messageExtrinsic];
-
-    if (getPendingTransaction) {
-      const { transaction: pendingTransaction } = await getPendingTransaction();
-      txs.push(pendingTransaction.extrinsic);
-    }
 
     if (shouldIssueVoucher) {
       txs.push(await getVoucherExtrinsic(session, voucherValue));

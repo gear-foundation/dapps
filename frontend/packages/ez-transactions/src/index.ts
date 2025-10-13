@@ -4,7 +4,6 @@ import {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type GetPendingTransaction,
 } from './hooks';
 
 export * from './features/gasless-transactions';
@@ -18,5 +17,4 @@ export {
   usePrepareEzTransactionParams,
   type PrepareEzTransactionParamsResult,
   type PrepareEzTransactionParamsOptions,
-  type GetPendingTransaction,
 };

@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 
-import type { SignlessContext, SignlessSessionModalConfig, GetPendingTransaction } from '../context/types';
+import type { SignlessContext, SignlessSessionModalConfig } from '../context/types';
 
 export type AutoSignlessOptions = {
   allowedActions?: string[];
   shouldIssueVoucher?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   boundSessionDuration?: number;
-  getPendingTransaction?: GetPendingTransaction;
 };
 
 type ModalType = 'create' | 'enable';
@@ -23,7 +22,6 @@ const toModalConfig = (
   if (type === 'enable') {
     return {
       type: 'enable',
-      getPendingTransaction: options.getPendingTransaction,
     };
   }
 
@@ -33,7 +31,6 @@ const toModalConfig = (
     shouldIssueVoucher: options.shouldIssueVoucher ?? true,
     onSessionCreate: options.onSessionCreate,
     boundSessionDuration: options.boundSessionDuration,
-    getPendingTransaction: options.getPendingTransaction,
   };
 };
 

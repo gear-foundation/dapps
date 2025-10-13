@@ -4,28 +4,23 @@ import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
-type Props = Pick<ModalProps, 'close'> & {
-  onPairUnlock?: () => Promise<void>;
-};
+type Props = Pick<ModalProps, 'close'>;
 
 const DEFAULT_VALUES = {
   password: '',
 };
 
-function EnableSessionModal({ close, onPairUnlock }: Props) {
+function EnableSessionModal({ close }: Props) {
   const { register, handleSubmit, setError, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
   const { unlockPair, isLoading, setIsLoading } = useSignlessTransactions();
 
-  const onSubmit = async ({ password }: typeof DEFAULT_VALUES) => {
+  const onSubmit = ({ password }: typeof DEFAULT_VALUES) => {
     setIsLoading(true);
 
     try {
       unlockPair(password);
-      if (onPairUnlock) {
-        await onPairUnlock();
-      }
       setIsLoading(false);
       close();
     } catch (error) {
