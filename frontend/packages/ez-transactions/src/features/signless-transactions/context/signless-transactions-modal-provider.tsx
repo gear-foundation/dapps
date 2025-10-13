@@ -51,6 +51,9 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
   const handleModalClose = useCallback(() => {
     setModalState(null);
 
+    // Timeout ensures both React state and signless context refs have time to update
+    // after modal closure. Without this delay, pairRef and isSessionActiveRef might
+    // still contain stale values when resolving the promise.
     setTimeout(() => {
       const deferred = modalDeferredRef.current;
 
