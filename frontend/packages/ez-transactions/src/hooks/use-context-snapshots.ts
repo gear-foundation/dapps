@@ -10,6 +10,11 @@ type SignlessSnapshot = Pick<
 
 type GaslessSnapshot = Pick<GaslessContext, 'voucherId' | 'isEnabled' | 'requestVoucher' | 'isActive'>;
 
+/**
+ * Refs are needed because during prepareEzTransactionParams execution,
+ * both gasless and signless states can change within a single function call.
+ * This ensures closures always have access to the most current state.
+ */
 export const useContextSnapshots = (signless: SignlessContext, gasless: GaslessContext) => {
   const signlessSnapshotRef = useRef<SignlessSnapshot>({
     pair: signless.pair,
