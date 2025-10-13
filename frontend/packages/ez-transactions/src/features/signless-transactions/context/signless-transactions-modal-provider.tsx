@@ -10,7 +10,7 @@ import type { SignlessContext, SignlessSessionModalConfig } from './types';
 type CreateConfig = Extract<SignlessSessionModalConfig, { type: 'create' }>;
 type EnableConfig = Extract<SignlessSessionModalConfig, { type: 'enable' }>;
 
-type SignlessTransactionsContextWrapperProps = {
+type SignlessTransactionsModalProviderProps = {
   value: Omit<SignlessContext, 'openSessionModal'>;
   children: ReactNode;
 };
@@ -35,7 +35,7 @@ const createDeferred = <T,>(): Deferred<T> => {
   return { promise, resolve, reject };
 };
 
-const SignlessTransactionsContextWrapper = ({ value, children }: SignlessTransactionsContextWrapperProps) => {
+const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransactionsModalProviderProps) => {
   const [modalState, setModalState] = useState<ModalState | null>(null);
   const { account } = useAccount();
   const modalDeferredRef = useRef<Deferred<void> | null>(null);
@@ -116,10 +116,10 @@ const SignlessTransactionsContextWrapper = ({ value, children }: SignlessTransac
         />
       )}
       {modalState?.type === 'enable' && (
-        <EnableSessionModal close={handleModalClose} callback={enableSessionCallback} />
+        <EnableSessionModal close={handleModalClose} onPairUnlock={enableSessionCallback} />
       )}
     </SignlessTransactionsContext.Provider>
   );
 };
 
-export { SignlessTransactionsContextWrapper };
+export { SignlessTransactionsModalProvider };

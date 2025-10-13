@@ -6,7 +6,7 @@ import { useProgramMetadata } from '@dapps-frontend/hooks';
 import { Session, useCreateMetadataSession } from '../hooks';
 
 import { usePair, useMetadataSession } from './hooks';
-import { SignlessTransactionsContextWrapper } from './signless-transactions-context-wrapper';
+import { SignlessTransactionsModalProvider } from './signless-transactions-modal-provider';
 
 type SignlessTransactionsMetadataProviderProps = {
   programId: HexString;
@@ -44,7 +44,7 @@ function SignlessTransactionsMetadataProvider({
     allowedActions,
   };
 
-  return <SignlessTransactionsContextWrapper value={value}>{children}</SignlessTransactionsContextWrapper>;
+  return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;
 }
 
 export { SignlessTransactionsMetadataProvider };

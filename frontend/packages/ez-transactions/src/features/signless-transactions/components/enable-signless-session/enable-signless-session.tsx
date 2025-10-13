@@ -1,4 +1,4 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useState } from 'react';
 
@@ -36,6 +36,13 @@ function EnableSignlessSession(props: Props) {
   const { pair, session, deletePair, deleteSession, isSessionActive, openSessionModal } = useSignlessTransactions();
   const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
   const [isLoading, setIsLoading] = useState(false);
+  const alert = useAlert();
+
+  const onError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    alert.error(errorMessage);
+    console.error(errorMessage);
+  };
 
   const openCreateModal = () => {
     openSessionModal({
@@ -44,11 +51,11 @@ function EnableSignlessSession(props: Props) {
       onSessionCreate,
       shouldIssueVoucher,
       boundSessionDuration,
-    }).catch(() => undefined);
+    }).catch(onError);
   };
 
   const openEnableModal = () => {
-    openSessionModal({ type: 'enable' }).catch(() => undefined);
+    openSessionModal({ type: 'enable' }).catch(onError);
   };
 
   const onDeleteSessionSuccess = () => {

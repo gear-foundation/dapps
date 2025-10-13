@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { useCreateSailsSession } from '../hooks';
 
 import { usePair, useSailsSession } from './hooks';
-import { SignlessTransactionsContextWrapper } from './signless-transactions-context-wrapper';
+import { SignlessTransactionsModalProvider } from './signless-transactions-modal-provider';
 import { BaseProgram } from './types';
 
 type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
@@ -36,7 +36,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     allowedActions,
   };
 
-  return <SignlessTransactionsContextWrapper value={value}>{children}</SignlessTransactionsContextWrapper>;
+  return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;
 }
 
 export { SignlessTransactionsSailsProvider };

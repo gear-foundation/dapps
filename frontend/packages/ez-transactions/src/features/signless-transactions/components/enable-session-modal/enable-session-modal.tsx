@@ -5,14 +5,14 @@ import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'> & {
-  callback?: () => Promise<void>;
+  onPairUnlock?: () => Promise<void>;
 };
 
 const DEFAULT_VALUES = {
   password: '',
 };
 
-function EnableSessionModal({ close, callback }: Props) {
+function EnableSessionModal({ close, onPairUnlock }: Props) {
   const { register, handleSubmit, setError, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
@@ -23,8 +23,8 @@ function EnableSessionModal({ close, callback }: Props) {
 
     try {
       unlockPair(password);
-      if (callback) {
-        await callback();
+      if (onPairUnlock) {
+        await onPairUnlock();
       }
       setIsLoading(false);
       close();
