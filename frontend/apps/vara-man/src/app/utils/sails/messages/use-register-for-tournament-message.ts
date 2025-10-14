@@ -15,8 +15,8 @@ export const useRegisterForTournamentMessage = () => {
   const { signAndSend } = useSignAndSend();
 
   const registerForTournamentMessage = async (value: bigint, adminId: string, name: string, options: Options) => {
-    const isSendFromBaseAccount = value !== 0n;
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams(isSendFromBaseAccount);
+    const sendFromBaseAccount = value !== 0n;
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ sendFromBaseAccount });
     const { transaction } = await prepareTransactionAsync({
       args: [adminId, name, sessionForAccount],
       ...params,

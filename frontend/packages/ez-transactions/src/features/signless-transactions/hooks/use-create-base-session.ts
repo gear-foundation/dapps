@@ -93,9 +93,11 @@ function useCreateBaseSession(programId: HexString) {
     options: Options,
     shouldIssueVoucher?: boolean,
   ) => {
-    const txs = shouldIssueVoucher
-      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
-      : [messageExtrinsic];
+    const txs = [messageExtrinsic];
+
+    if (shouldIssueVoucher) {
+      txs.push(await getVoucherExtrinsic(session, voucherValue));
+    }
 
     await batchSignAndSend(txs, { ...options, onError });
   };

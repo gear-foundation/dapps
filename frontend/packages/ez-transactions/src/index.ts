@@ -1,6 +1,10 @@
 import { EzTransactionsSwitch, EzSignlessTransactions, EzGaslessTransactions } from './components';
 import { EzTransactionsProvider, useEzTransactions } from './context';
-import { usePrepareEzTransactionParams } from './hooks';
+import {
+  usePrepareEzTransactionParams,
+  type PrepareEzTransactionParamsResult,
+  type PrepareEzTransactionParamsOptions,
+} from './hooks';
 
 export * from './features/gasless-transactions';
 export * from './features/signless-transactions';
@@ -11,4 +15,6 @@ export {
   EzSignlessTransactions,
   EzGaslessTransactions,
   usePrepareEzTransactionParams,
+  type PrepareEzTransactionParamsResult,
+  type PrepareEzTransactionParamsOptions,
 };

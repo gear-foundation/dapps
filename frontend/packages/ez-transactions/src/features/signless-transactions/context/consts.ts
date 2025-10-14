@@ -10,8 +10,8 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isSessionReady: false,
   isVoucherExists: false,
   voucherBalance: 0,
-  createSession: () => {},
-  deleteSession: () => {},
+  createSession: () => Promise.resolve(),
+  deleteSession: () => Promise.resolve(),
   voucher: undefined,
   storageVoucher: undefined,
   storageVoucherBalance: 0,
@@ -19,9 +19,11 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   setIsLoading: () => {},
   isActive: false,
   isSessionActive: false,
-  allowedActions: [],
+  allowedActions: undefined,
   voucherIssueAmount: 0,
   voucherReissueThreshold: 0,
+  openSessionModal: async () => {},
+  isAutoSignlessEnabled: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

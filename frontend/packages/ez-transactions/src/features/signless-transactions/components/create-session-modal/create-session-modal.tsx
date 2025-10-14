@@ -139,7 +139,7 @@ function CreateSessionModal({
         console.log('voucherId', voucherId);
         console.log('pairToSave: ', pairToSave);
 
-        createSession({ duration, key, allowedActions }, issueVoucherValue, {
+        await createSession({ duration, key, allowedActions }, issueVoucherValue, {
           shouldIssueVoucher,
           voucherId,
           onSuccess,
@@ -154,7 +154,7 @@ function CreateSessionModal({
       return;
     }
 
-    createSession({ duration, key, allowedActions }, issueVoucherValue, {
+    await createSession({ duration, key, allowedActions }, issueVoucherValue, {
       shouldIssueVoucher,
       onSuccess,
       onFinally,

@@ -12,8 +12,6 @@ import SignlessSVG from '@ez/assets/icons/signless.svg?react';
 import { useSignlessTransactions } from '../../context';
 import { getDHMS } from '../../utils';
 import { AccountPair } from '../account-pair';
-import { CreateSessionModal } from '../create-session-modal';
-import { EnableSessionModal } from '../enable-session-modal';
 import { EnableSignlessSession } from '../enable-signless-session';
 import { SignlessParams } from '../signless-params-list';
 
@@ -37,13 +35,21 @@ function SignlessTransactions({
   boundSessionDuration,
 }: Props) {
   const { account } = useAccount();
-  const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
+  const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession, openSessionModal } =
     useSignlessTransactions();
-  const [modal, setModal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const openCreateModal = () => setModal('create');
-  const openEnableModal = () => setModal('enable');
-  const closeModal = () => setModal('');
+  const openCreateModal = () => {
+    void openSessionModal({
+      type: 'create',
+      allowedActions,
+      onSessionCreate,
+      shouldIssueVoucher,
+      boundSessionDuration,
+    });
+  };
+  const openEnableModal = () => {
+    void openSessionModal({ type: 'enable' });
+  };
   const expireTimestamp = +withoutCommas(session?.expires || '0');
   const countdown = useCountdown(expireTimestamp);
 
@@ -173,17 +179,6 @@ function SignlessTransactions({
           shouldIssueVoucher={shouldIssueVoucher}
           disabled={disabled}
           requiredBalance={requiredBalance}
-          boundSessionDuration={boundSessionDuration}
-        />
-      )}
-
-      {modal === 'enable' && <EnableSessionModal close={closeModal} />}
-      {modal === 'create' && (
-        <CreateSessionModal
-          allowedActions={allowedActions}
-          close={closeModal}
-          onSessionCreate={onSessionCreate}
-          shouldIssueVoucher={shouldIssueVoucher}
           boundSessionDuration={boundSessionDuration}
         />
       )}
