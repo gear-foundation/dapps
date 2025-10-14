@@ -16,7 +16,7 @@ export const useStartGameMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async () => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({ args: [sessionForAccount], ...params });
     return result;
   };

@@ -20,7 +20,7 @@ export const useTurnMessage = (withAlert = true) => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ action }: Params) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({ args: [action, sessionForAccount], ...params });
     return result;
   };

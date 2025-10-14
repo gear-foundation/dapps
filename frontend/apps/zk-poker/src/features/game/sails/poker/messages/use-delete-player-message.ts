@@ -17,7 +17,7 @@ export const useDeletePlayerMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async (playerId: ActorId) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({ args: [playerId, sessionForAccount], ...params });
     return result;
   };

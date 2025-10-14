@@ -20,7 +20,7 @@ export const useCardDisclosureMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ instances }: Params) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({ args: [instances, sessionForAccount], ...params });
     return result;
   };

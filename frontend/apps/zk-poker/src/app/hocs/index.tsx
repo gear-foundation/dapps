@@ -17,7 +17,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { QueryProvider } from '@dapps-frontend/ui';
 
-import { ENV } from '@/app/consts';
+import { ENV, SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePokerProgram } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
@@ -68,6 +68,7 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
     <SharedSignlessTransactionsProvider
       programId={program?.programId || '0x'}
       program={program}
+      allowedActions={SIGNLESS_ALLOWED_ACTIONS}
       voucherIssueAmount={ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT}
       voucherReissueThreshold={ENV.VOUCHER_LIMIT}>
       {children}
