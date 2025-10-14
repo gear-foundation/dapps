@@ -18,21 +18,19 @@ type Session = {
 type Options = {
   onSuccess?: () => void;
   onFinally?: () => void;
-  onError?: (error: Error) => void;
 };
 
 type CreeateSessionOptions = {
   pair?: KeyringPair;
   voucherId?: `0x${string}`;
   shouldIssueVoucher: boolean;
-  additionalExtrinsics?: SubmittableExtrinsic<'promise', ISubmittableResult>[];
 };
 
 type UseCreateSessionReturn = {
   createSession: (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, additionalExtrinsics, ...options }: Options & CreeateSessionOptions,
+    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => Promise<void>;
   deleteSession: (key: HexString, pair: KeyringPair, options: Options) => Promise<void>;
 };
@@ -47,7 +45,7 @@ function useCreateBaseSession(programId: HexString) {
   const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
   const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
 
-  const onError = (error: Error) => alert.error(error.message);
+  const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -74,18 +72,13 @@ function useCreateBaseSession(programId: HexString) {
     const blockTimeMs = api.consts.babe.expectedBlockTime.toNumber();
     return (durationMS / blockTimeMs) * 1.05; // +5% to cover transaction time
   };
-  const getVoucherExtrinsic = async (session: Session, voucherValue: number, issuePrograms?: HexString[]) => {
+  const getVoucherExtrinsic = async (session: Session, voucherValue: number) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     const voucher = await getLatestVoucher(session.key);
     const durationBlocks = getDurationBlocks(session.duration);
     if (!voucher || account.decodedAddress !== voucher.owner) {
-      const { extrinsic } = await api.voucher.issue(
-        session.key,
-        voucherValue,
-        durationBlocks,
-        issuePrograms || [programId],
-      );
+      const { extrinsic } = await api.voucher.issue(session.key, voucherValue, durationBlocks, [programId]);
       return extrinsic;
     }
     const prolongDuration = durationBlocks;
@@ -94,17 +87,17 @@ function useCreateBaseSession(programId: HexString) {
   };
 
   const signAndSendCreateSession = async (
-    messageExtrinsics: SubmittableExtrinsic<'promise', ISubmittableResult>[],
+    messageExtrinsic: SubmittableExtrinsic<'promise', ISubmittableResult>,
     session: Session,
     voucherValue: number,
     options: Options,
     shouldIssueVoucher?: boolean,
   ) => {
     const txs = shouldIssueVoucher
-      ? [...messageExtrinsics, await getVoucherExtrinsic(session, voucherValue)]
-      : messageExtrinsics;
+      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
+      : [messageExtrinsic];
 
-    await batchSignAndSend(txs, { ...options, onError: (error) => onError(error) });
+    await batchSignAndSend(txs, { ...options, onError });
   };
 
   const signAndSendDeleteSession = async (

@@ -5,9 +5,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   storagePair: undefined,
   savePair: () => {},
   deletePair: () => {},
-  unlockPair: () => {
-    throw new Error('unlockPair is not implemented');
-  },
+  unlockPair: () => {},
   session: undefined,
   isSessionReady: false,
   isVoucherExists: false,

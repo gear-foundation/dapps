@@ -7,7 +7,7 @@ import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 
 type Options = Partial<{
   onSuccess: () => void;
-  onError: (error: Error) => void;
+  onError: (error: string) => void;
   onFinally: () => void;
   pair?: KeyringPair;
 }>;
@@ -51,7 +51,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
         if (method === 'ExtrinsicFailed') {
           const message = getExtrinsicFailedError(event);
 
-          onError(new Error(message));
+          onError(message);
           console.error(message);
         }
       });
@@ -73,7 +73,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
         : batch(txs).signAndSend(address, { signer }, statusCallback);
       await signAndSend;
     } catch (error) {
-      options.onError?.(error as Error);
+      options.onError?.(error instanceof Error ? error.message : String(error));
       options.onFinally?.();
     }
   };
@@ -92,7 +92,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     return signAsync.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
 
-      onError(new Error(message));
+      onError(message);
       onFinally();
     });
   };
@@ -104,7 +104,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     return send.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
 
-      onError(new Error(message));
+      onError(message);
       onFinally();
     });
   };

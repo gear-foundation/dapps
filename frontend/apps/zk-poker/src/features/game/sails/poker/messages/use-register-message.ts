@@ -1,11 +1,10 @@
-import { useAlert, usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { useAlert, useSendProgramTransaction } from '@gear-js/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@ui/utils';
-import { PrepareEzTransactionParamsResult, usePrepareEzTransactionParams } from 'gear-ez-transactions';
+import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
 import { usePokerProgram } from '@/app/utils';
 import { useUserName } from '@/features/game/hooks';
-import { useAutoSignless } from '@/features/signless';
 import { useZkKeys } from '@/features/zk/hooks';
 import { getPkBytes } from '@/features/zk/utils';
 
@@ -14,45 +13,37 @@ export const useRegisterMessage = () => {
   const { pk } = useZkKeys();
   const { userName } = useUserName();
   const alert = useAlert();
-  const { executeWithSessionModal } = useAutoSignless();
-  const { prepareTransactionAsync } = usePrepareProgramTransaction({
+  const { sendTransactionAsync } = useSendProgramTransaction({
     program,
     serviceName: 'poker',
     functionName: 'register',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const onError = (error: Error) => {
-    if (error.message?.includes('Actor id must be exist')) {
-      alert.error('Low pts balance. Claim your free PTS');
-      return;
-    }
-
-    if (error.message?.includes('Low pts balance')) {
-      alert.error('Low pts balance');
-      return;
-    }
-
-    alert.error(getErrorMessage(error));
-  };
-
   const tx = async () => {
-    const { ...ezParams } = await prepareEzTransactionParams();
-    const getTransaction = async (params?: Partial<PrepareEzTransactionParamsResult>) => {
-      const { sessionForAccount, ...rest } = { ...ezParams, ...params };
-      const result = await prepareTransactionAsync({
-        args: [userName, getPkBytes(pk), sessionForAccount],
-        ...rest,
-      });
-      return result;
-    };
-
-    await executeWithSessionModal(getTransaction, ezParams.sessionForAccount, { onError });
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const result = await sendTransactionAsync({
+      args: [userName, getPkBytes(pk), sessionForAccount],
+      ...params,
+    });
+    return result;
   };
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: tx,
-    onError,
+    onError: (error) => {
+      if (error.message?.includes('Actor id must be exist')) {
+        alert.error('Low pts balance. Claim your free PTS');
+        return;
+      }
+
+      if (error.message?.includes('Low pts balance')) {
+        alert.error('Low pts balance');
+        return;
+      }
+
+      alert.error(getErrorMessage(error));
+    },
   });
 
   return { registerMessage: mutateAsync, isPending };

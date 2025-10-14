@@ -23,7 +23,7 @@ type SignlessContext = {
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
   deletePair: () => void;
-  unlockPair: (password: string) => KeyringPair;
+  unlockPair: (password: string) => void;
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;

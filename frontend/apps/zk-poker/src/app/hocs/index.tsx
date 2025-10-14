@@ -20,7 +20,6 @@ import { QueryProvider } from '@dapps-frontend/ui';
 import { ENV } from '@/app/consts';
 import { usePokerProgram } from '@/app/utils';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { AutoSignlessProvider } from '@/features/signless';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>;
@@ -86,7 +85,6 @@ const providers = [
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
   EzTransactionsProvider,
-  AutoSignlessProvider,
 ];
 
 function withProviders(Component: ComponentType) {
