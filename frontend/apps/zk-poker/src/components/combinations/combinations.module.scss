@@ -1,0 +1,82 @@
+.button {
+  svg {
+    height: 22px;
+    width: 22px;
+  }
+}
+
+.wrapper {
+  padding: 12px 12px 0 12px;
+  border-radius: 16px 16px 0 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.description {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 12px;
+  line-height: 150%;
+  color: #6b6581;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.combinations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.combination {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.combinationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.rank {
+  background: #00ffc4;
+  color: #000;
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 8px;
+  font-size: 10px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.example {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exampleLabel {
+  font-size: 12px;
+  color: #6b6581;
+}
+
+.cards {
+  display: flex;
+  gap: 4px;
+}

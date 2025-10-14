@@ -1,0 +1,86 @@
+import { Button } from '@gear-js/vara-ui';
+import clsx from 'clsx';
+
+import { AllInIcon, CallIcon, Chips2xIcon, Chips3xIcon, Chips5xIcon, FoldIcon } from '@/assets/images';
+import { useTurnMessage } from '@/features/game/sails';
+
+import styles from './game-buttons.module.scss';
+
+type Props = {
+  className?: string;
+  disabled?: boolean;
+  currentBet: number;
+  myCurrentBet: number;
+  bigBlind: number;
+  balance: number;
+};
+
+const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bigBlind, balance }: Props) => {
+  const { turnMessage, isPending } = useTurnMessage();
+
+  const handleAllIn = () => {
+    void turnMessage({ action: { allIn: null } });
+  };
+
+  const handleCall = () => {
+    void turnMessage({ action: { call: null } });
+  };
+
+  const handleCheck = () => {
+    void turnMessage({ action: { check: null } });
+  };
+
+  const handleFold = () => {
+    void turnMessage({ action: { fold: null } });
+  };
+
+  const handleRaise = (multiplier: number) => {
+    void turnMessage({ action: { raise: { bet: multiplier * (currentBet || bigBlind) - myCurrentBet } } });
+  };
+
+  const getHasEnoughBalance = (multiplier: number) => {
+    return balance >= multiplier * (currentBet || bigBlind);
+  };
+
+  const isDisabled = disabled || isPending;
+  const isCallDisabled = balance <= currentBet - myCurrentBet;
+  const isCheck = myCurrentBet === currentBet || currentBet === 0;
+
+  return (
+    <>
+      <div className={clsx(styles.gameButtons, className)}>
+        <div className={styles.allInContainer}>
+          <Button onClick={handleAllIn} disabled={isDisabled} color="transparent">
+            <AllInIcon />
+          </Button>
+        </div>
+        <div className={styles.actionButtons}>
+          <Button onClick={handleFold} disabled={isDisabled} color="transparent">
+            <FoldIcon />
+          </Button>
+
+          <Button onClick={() => handleRaise(2)} disabled={isDisabled || !getHasEnoughBalance(2)} color="transparent">
+            <Chips2xIcon />
+          </Button>
+          <Button onClick={() => handleRaise(3)} disabled={isDisabled || !getHasEnoughBalance(3)} color="transparent">
+            <Chips3xIcon />
+          </Button>
+          <Button onClick={() => handleRaise(5)} disabled={isDisabled || !getHasEnoughBalance(5)} color="transparent">
+            <Chips5xIcon />
+          </Button>
+
+          <Button
+            onClick={isCheck ? handleCheck : handleCall}
+            disabled={isDisabled || isCallDisabled}
+            color="transparent"
+            className={styles.button}>
+            <CallIcon />
+            <span className={styles.text}>{isCheck ? 'Check' : 'Call'}</span>
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export { GameButtons };

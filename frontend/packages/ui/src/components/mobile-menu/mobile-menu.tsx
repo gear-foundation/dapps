@@ -18,8 +18,8 @@ type Props = {
     option: JSX.Element;
   }[];
   className?: ClassNameProps;
-  onClose(): void;
-  onChangeAccountClick(): void;
+  onClose: () => void;
+  onChangeAccountClick: () => void;
 } & PropsWithChildren;
 
 export function MobileMenu({ children, className, onClose, onChangeAccountClick }: Props) {
@@ -67,7 +67,7 @@ export function MobileMenu({ children, className, onClose, onChangeAccountClick 
 
           <div className={clsx(styles.buttons, className?.buttons)}>
             <Button text="Change account" onClick={handleChangeButtonClick} />
-            <Button text="Disconnect" onClick={handleLogoutButtonClick} />
+            <Button color="contrast" text="Disconnect" onClick={handleLogoutButtonClick} />
           </div>
         </div>
       </motion.div>

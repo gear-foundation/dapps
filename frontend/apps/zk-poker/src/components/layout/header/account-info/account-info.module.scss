@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 34.5px;
+
+  &.open {
+    gap: 20px;
+  }
+}
+
+.openWallet {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

@@ -20,6 +20,8 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   isActive: false,
   isSessionActive: false,
   allowedActions: undefined,
+  voucherIssueAmount: 0,
+  voucherReissueThreshold: 0,
   openSessionModal: async () => {},
   isAutoSignlessEnabled: false,
 };

@@ -1,0 +1,42 @@
+constructor {
+  New : (accrual: u128, time_ms_between_balance_receipt: u64);
+};
+
+service Pts {
+  AddAdmin : (new_admin: actor_id) -> null;
+  ChangeAccrual : (new_accrual: u128) -> null;
+  ChangeTimeBetweenBalanceReceipt : (new_time_between_balance_receipt: u64) -> null;
+  DeleteAdmin : (admin: actor_id) -> null;
+  GetAccural : () -> null;
+  Transfer : (from: actor_id, to: actor_id, amount: u128) -> null;
+  query Accrual : () -> u128;
+  query Admins : () -> vec actor_id;
+  query GetBalance : (id: actor_id) -> u128;
+  query GetRemainingTimeMs : (id: actor_id) -> opt u64;
+  query TimeMsBetweenBalanceReceipt : () -> u64;
+
+  events {
+    NewAdminAdded: actor_id;
+    AdminDeleted: actor_id;
+    AccrualChanged: u128;
+    TimeBetweenBalanceReceiptChanged: u64;
+    AccrualReceived: struct {
+      id: actor_id,
+      accrual: u128,
+    };
+    SubtractionIsDone: struct {
+      id: actor_id,
+      amount: u128,
+    };
+    AdditionIsDone: struct {
+      id: actor_id,
+      amount: u128,
+    };
+    Transfered: struct {
+      from: actor_id,
+      to: actor_id,
+      amount: u128,
+    };
+  }
+};
+

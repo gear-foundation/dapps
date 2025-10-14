@@ -38,9 +38,9 @@ function DnsProvider<T extends string = DefaultDnsValueName>({
         throw new Error('dnsApiUrl or names is undefined');
       }
       try {
-        const promises = Object.entries(names).map(async ([key, name]) => {
+        const promises = Object.entries<string>(names).map(async ([key, name]) => {
           const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
-          const dns: DnsResponse = await response.json();
+          const dns = (await response.json()) as DnsResponse;
           return { [key]: dns.address };
         });
 
@@ -55,7 +55,8 @@ function DnsProvider<T extends string = DefaultDnsValueName>({
       }
     };
 
-    init();
+    void init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [names, dnsApiUrl]);
 
   return (

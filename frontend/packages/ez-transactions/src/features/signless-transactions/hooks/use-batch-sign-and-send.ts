@@ -67,16 +67,15 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
-    const signAndSend = pair
-      ? batch(txs).signAndSend(pair, statusCallback)
-      : batch(txs).signAndSend(address, { signer }, statusCallback);
-
-    signAndSend.catch(({ message }: Error) => {
-      const { onError = () => {}, onFinally = () => {} } = options;
-
-      onError(message);
-      onFinally();
-    });
+    try {
+      const signAndSend = pair
+        ? batch(txs).signAndSend(pair, statusCallback)
+        : batch(txs).signAndSend(address, { signer }, statusCallback);
+      await signAndSend;
+    } catch (error) {
+      options.onError?.(error instanceof Error ? error.message : String(error));
+      options.onFinally?.();
+    }
   };
 
   const batchSign = async (

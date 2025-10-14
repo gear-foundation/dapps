@@ -3,19 +3,19 @@ import { Account, useAccount, useApi } from '@gear-js/react-hooks';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { AnyJson } from '@polkadot/types/types';
 
-import { sendTransaction } from '../utils';
+import { sendTransaction, signHex } from '../utils';
 
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
 function useCreateMetadataSession(
   programId: HexString,
   metadata: ProgramMetadata | undefined,
-  createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`,
+  createSignatureType?: (_metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`,
 ) {
   const { api, isApiReady } = useApi();
   const { account } = useAccount();
 
-  const { signAndSendCreateSession, signAndSendDeleteSession, onError, signHex } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession, onError } = useCreateBaseSession(programId);
 
   const getMessageExtrinsic = (payload: AnyJson) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -27,19 +27,19 @@ function useCreateMetadataSession(
     return api.message.send({ destination, payload, gasLimit }, metadata);
   };
 
-  const getAccountSignature = async (metadata: ProgramMetadata, account: Account, payloadToSign: Session) => {
-    if (metadata.types?.others?.output === null) {
+  const getAccountSignature = async (_metadata: ProgramMetadata, _account: Account, payloadToSign: Session) => {
+    if (_metadata.types?.others?.output === null) {
       throw new Error(`Metadata type doesn't exist`);
     }
 
     console.log('metadata.types?.others?.output');
-    console.log(metadata.types?.others?.output);
+    console.log(_metadata.types?.others?.output);
 
     const hexToSign = createSignatureType
-      ? createSignatureType(metadata, payloadToSign)
-      : metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+      ? createSignatureType(_metadata, payloadToSign)
+      : _metadata.createType(_metadata.types.others.output, payloadToSign).toHex();
 
-    return signHex(account, hexToSign);
+    return signHex(_account, hexToSign);
   };
 
   const createSession = async (
@@ -69,7 +69,6 @@ function useCreateMetadataSession(
     }
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
-
     return signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 
+import { DEFAULT_VOUCHER_ISSUE_AMOUNT, DEFAULT_VOUCHER_REISSUE_THRESHOLD } from '../consts';
 import { Session, useCreateMetadataSession } from '../hooks';
 
 import { usePair, useMetadataSession } from './hooks';
@@ -18,6 +19,8 @@ type SignlessTransactionsMetadataProviderProps = {
    * createSignatureType param is used when metadata.types.others.output has multiple types (e.g. tuple) to get the actual type for SignatureData
    */
   createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`;
+  voucherIssueAmount?: number;
+  voucherReissueThreshold?: number;
 };
 
 function SignlessTransactionsMetadataProvider({
@@ -27,6 +30,8 @@ function SignlessTransactionsMetadataProvider({
   isAutoSignlessEnabled = false,
   allowedActions,
   createSignatureType,
+  voucherIssueAmount = DEFAULT_VOUCHER_ISSUE_AMOUNT,
+  voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
 }: SignlessTransactionsMetadataProviderProps) {
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady, isSessionActive } = useMetadataSession(programId, metadata);
@@ -40,6 +45,8 @@ function SignlessTransactionsMetadataProvider({
     createSession,
     deleteSession,
     isSessionActive,
+    voucherIssueAmount,
+    voucherReissueThreshold,
     isAutoSignlessEnabled,
     allowedActions,
   };

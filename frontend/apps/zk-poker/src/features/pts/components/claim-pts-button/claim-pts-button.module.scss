@@ -1,0 +1,30 @@
+.pulseButton {
+  position: relative;
+
+  .ring {
+    border: 1px solid #3b3848;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: auto;
+    width: auto;
+    border-radius: 26px;
+
+    animation: pulse 3s ease-out infinite;
+    animation-delay: calc(1s * var(--i));
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.5, 2);
+  }
+}

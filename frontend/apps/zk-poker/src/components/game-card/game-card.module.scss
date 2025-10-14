@@ -1,0 +1,145 @@
+.card {
+  position: relative;
+  background: #fff;
+  pointer-events: none;
+}
+
+.dashed {
+  background: transparent;
+  border: 0.84px dashed #ffffff;
+}
+
+.black {
+  color: #000;
+  --center-color: #e1dfe6;
+}
+
+.red {
+  color: #e63126;
+  --center-color: #fad8d6;
+}
+
+.sm {
+  width: 32px;
+  height: 45px;
+  border-radius: 3px;
+
+  .suitRightTop {
+    top: 1.7px;
+    right: 1.45px;
+    width: 3.4px;
+    height: 3.4px;
+  }
+
+  .suitLeftBottom {
+    bottom: 2.18px;
+    left: 1.45px;
+    width: 3.4px;
+    height: 3.4px;
+  }
+
+  .center {
+    width: 17px;
+    height: 17px;
+  }
+
+  .centerInner {
+    width: 15px;
+    height: 15px;
+    font-family: 'Urbanist', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+  }
+}
+
+.md {
+  width: 47.44px;
+  height: 66.85px;
+  border-radius: 4.19px;
+}
+
+.lg {
+  width: 66px;
+  height: 93px;
+  border-radius: 5px;
+}
+
+.rank {
+  padding: 0px 3px;
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  top: -4px;
+  left: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 150%;
+  font-family: 'Urbanist', sans-serif;
+
+  & > svg {
+    margin: 7.5px 1px;
+  }
+}
+
+.suitRightTop {
+  position: absolute;
+  top: 3.5px;
+  right: 3px;
+  path {
+    fill: #d4d2dc;
+  }
+}
+
+.suitLeftBottom {
+  position: absolute;
+  bottom: 4.5px;
+  left: 3px;
+  transform: rotate(180deg);
+  path {
+    fill: #d4d2dc;
+  }
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: content-box;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--center-color);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerInner {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding: 0px 0.5px 0.5px 0px;
+  background: var(--center-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suitSmIcon {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8.73px;
+  height: 8.73px;
+}
+
+.back {
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}

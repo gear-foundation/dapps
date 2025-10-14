@@ -3,13 +3,14 @@ import { useAccount, useApi, usePrepareProgramTransaction } from '@gear-js/react
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import { BaseProgram } from '../context/types';
+import { signHex } from '../utils';
 
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
-function useCreateSailsSession(programId: HexString, program: BaseProgram) {
+function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { signAndSendCreateSession, signAndSendDeleteSession, signHex } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession } = useCreateBaseSession(programId);
 
   const { prepareTransactionAsync: prepareCreateSession } = usePrepareProgramTransaction({
     program,
@@ -52,9 +53,9 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
 
       const { response } = await transaction.signAndSend();
 
-      response()
-        .then(() => options.onSuccess())
-        .finally(() => options.onFinally());
+      void response()
+        .then(() => options.onSuccess?.())
+        .finally(() => options.onFinally?.());
 
       return;
     }
@@ -72,7 +73,7 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
     const { transaction } = await prepareDeleteSession({ args: [], gasLimit });
-    signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
+    await signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
   };
 
   return { createSession, deleteSession };

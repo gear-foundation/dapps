@@ -4,13 +4,13 @@ import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
-type Props = Pick<ModalProps, 'close'>;
+type Props = Pick<ModalProps, 'close' | 'maxWidth'>;
 
 const DEFAULT_VALUES = {
   password: '',
 };
 
-function EnableSessionModal({ close }: Props) {
+function EnableSessionModal({ close, maxWidth }: Props) {
   const { register, handleSubmit, setError, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
@@ -32,7 +32,7 @@ function EnableSessionModal({ close }: Props) {
   };
 
   return (
-    <Modal heading="Enable Signless Session" close={close}>
+    <Modal heading="Enable Signless Session" close={close} maxWidth={maxWidth}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <Input
           type="password"

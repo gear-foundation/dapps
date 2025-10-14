@@ -1,0 +1,32 @@
+*,
+::after,
+::before {
+  border: none;
+}
+
+body {
+  color: #000;
+  background-color: #fff;
+
+  &.modal-open {
+    overflow-y: hidden;
+  }
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+a {
+  color: inherit;
+
+  // underline only if link is a part of paragraph
+  &:not(p &) {
+    text-decoration: none;
+  }
+}

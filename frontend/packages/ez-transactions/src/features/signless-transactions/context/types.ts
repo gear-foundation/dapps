@@ -48,6 +48,8 @@ type SignlessContext = {
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
+  voucherIssueAmount: number;
+  voucherReissueThreshold: number;
   openSessionModal: (config: SignlessSessionModalConfig) => Promise<void>;
   isAutoSignlessEnabled: boolean;
   allowedActions?: string[];

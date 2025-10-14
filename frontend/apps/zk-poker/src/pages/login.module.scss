@@ -1,0 +1,76 @@
+@use '../components/ui/button/button.module.scss' as button;
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  color: #fff;
+}
+
+.glow {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 250px;
+  background: radial-gradient(ellipse at bottom, #2a8781 0%, transparent 70%),
+    radial-gradient(rgba(33, 24, 10, 0) 0%, transparent 70%);
+  background-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+.logo {
+  margin-top: 20px;
+
+  svg {
+    height: 40px;
+  }
+}
+
+.image {
+  margin-top: 87px;
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+
+  .spade {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin-top: 25px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 150%;
+}
+
+.description {
+  margin-top: 10px;
+  font-family: 'Urbanist';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.wallet {
+  margin-top: 10px;
+  @extend .wrapper;
+  button[type='button'] {
+    @extend .button;
+  }
+}

@@ -60,6 +60,8 @@ jobs:
             build: build
           - subdir: apps/web3-warriors-battle
             build: build
+          - subdir: apps/zk-poker
+            build: build
 
           # Packages
           - subdir: packages/ez-transactions

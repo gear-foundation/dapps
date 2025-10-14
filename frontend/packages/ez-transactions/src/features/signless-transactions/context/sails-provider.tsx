@@ -1,6 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { ReactNode } from 'react';
 
+import { DEFAULT_VOUCHER_REISSUE_THRESHOLD, DEFAULT_VOUCHER_ISSUE_AMOUNT } from '../consts';
 import { useCreateSailsSession } from '../hooks';
 
 import { usePair, useSailsSession } from './hooks';
@@ -11,6 +12,8 @@ type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   programId: HexString;
   children: ReactNode;
   program: TProgram;
+  voucherIssueAmount?: number;
+  voucherReissueThreshold?: number;
   isAutoSignlessEnabled?: boolean;
   allowedActions?: string[];
 };
@@ -19,6 +22,8 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   programId,
   children,
   program,
+  voucherIssueAmount = DEFAULT_VOUCHER_ISSUE_AMOUNT,
+  voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
   isAutoSignlessEnabled = false,
   allowedActions,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
@@ -32,6 +37,8 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     createSession,
     deleteSession,
     isSessionActive,
+    voucherIssueAmount,
+    voucherReissueThreshold,
     isAutoSignlessEnabled,
     allowedActions,
   };
