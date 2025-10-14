@@ -104,8 +104,49 @@ import { useSignlessTransactions } from 'gear-ez-transactions';
 
 const signlessContext = useSignlessTransactions();
 
-const { pair, session, isSessionReady, voucher, isLoading, setIsLoading, isActive, isSessionActive } = signlessContext;
+const { 
+  pair, 
+  session, 
+  isSessionReady, 
+  voucher, 
+  isLoading, 
+  setIsLoading, 
+  isActive, 
+  isSessionActive,
+  isAutoSignlessEnabled 
+} = signlessContext;
 ```
+
+### Auto Signless
+
+The library provides automatic signless session management through the `isAutoSignlessEnabled` flag. When enabled, signless modals are automatically displayed whenever a transaction needs them, without requiring manual session management.
+
+You can enable auto signless globally via `SignlessTransactionsProvider`:
+
+```jsx
+import { SignlessTransactionsProvider } from 'gear-ez-transactions';
+
+return (
+  <SignlessTransactionsProvider isAutoSignlessEnabled allowedActions={['Play', 'Pause']} {...restProps}>
+    {children}
+  </SignlessTransactionsProvider>
+);
+
+```
+
+Or you can override auto-signless settings per transaction:
+
+```ts
+const params = await prepareEzTransactionParams({
+  isAutoSignlessEnabled: true,
+  autoSignless: {
+    allowedActions: ['Play', 'Pause'],
+    boundSessionDuration: 600000,
+  },
+});
+```
+
+The hook will automatically open the appropriate modal (`CreateSessionModal` or `EnableSessionModal`) when needed.
 
 ## Use gasless and signless transaction together
 
@@ -134,7 +175,7 @@ const { gasless, signless } = useEzTransactions();
 
 ### usePrepareEzTransactionParams
 
-To work with signless and gasless transactions together, sending transactions requires a `sessionForAccount` parameter and using `pair` as the sender's account. Also, the `voucherId` needs to be requested. `usePrepareEzTransactionParams` implements this logic:
+To work with signless and gasless transactions together, sending transactions requires a `sessionForAccount` parameter and using `pair` as the sender's account. Also, the `voucherId` needs to be requested. `usePrepareEzTransactionParams` implements this logic and handles automatic signless session management:
 
 ```jsx
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
@@ -146,6 +187,19 @@ const sendMessage = async () => {
   // Use these parameters to send a message to your program
   const { sessionForAccount, account, voucherId, gasLimit } = params;
 };
+
+// You can disable auto signless per call
+const paramsWithoutAuto = await prepareEzTransactionParams({ 
+  isAutoSignlessEnabled: false 
+});
+
+// Or override auto signless settings per call
+const paramsWithCustomSettings = await prepareEzTransactionParams({
+  autoSignless: {
+    allowedActions: ['CustomAction'],
+    boundSessionDuration: 300000,
+  }
+});
 ```
 
 ### UI components

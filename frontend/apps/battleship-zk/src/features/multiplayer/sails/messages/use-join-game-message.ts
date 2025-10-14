@@ -13,7 +13,7 @@ export const useJoinGameMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const joinGameMessage = async (game_id: string, name: string, value: bigint) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams(true);
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams({ sendFromBaseAccount: true });
     const { transaction } = await prepareTransactionAsync({
       args: [game_id, name, sessionForAccount],
       ...params,

@@ -1,4 +1,4 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useState } from 'react';
 
@@ -7,8 +7,6 @@ import SignlessSVG from '@ez/assets/icons/signless.svg?react';
 
 import { useSignlessTransactions } from '../../context';
 import { useIsAvailable } from '../../hooks';
-import { CreateSessionModal } from '../create-session-modal';
-import { EnableSessionModal } from '../enable-session-modal';
 
 import styles from './enable-signless-session.module.css';
 
@@ -35,18 +33,30 @@ function EnableSignlessSession(props: Props) {
     requiredBalance = 42,
   } = props;
   const { account } = useAccount();
-  const { pair, session, deletePair, deleteSession, isSessionActive } = useSignlessTransactions();
+  const { pair, session, deletePair, deleteSession, isSessionActive, openSessionModal } = useSignlessTransactions();
   const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
   const [isLoading, setIsLoading] = useState(false);
+  const alert = useAlert();
 
-  const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
-  const [isEnableSessionModalOpen, setIsEnableSessionModalOpen] = useState(false);
+  const onError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    alert.error(errorMessage);
+    console.error(errorMessage);
+  };
 
-  const openCreateModal = () => setIsCreateSessionModalOpen(true);
-  const closeCreateModal = () => setIsCreateSessionModalOpen(false);
+  const openCreateModal = () => {
+    openSessionModal({
+      type: 'create',
+      allowedActions,
+      onSessionCreate,
+      shouldIssueVoucher,
+      boundSessionDuration,
+    }).catch(onError);
+  };
 
-  const openEnableModal = () => setIsEnableSessionModalOpen(true);
-  const closeEnableModal = () => setIsEnableSessionModalOpen(false);
+  const openEnableModal = () => {
+    openSessionModal({ type: 'enable' }).catch(onError);
+  };
 
   const onDeleteSessionSuccess = () => {
     deletePair();
@@ -142,17 +152,6 @@ function EnableSignlessSession(props: Props) {
           </div>
         </div>
       )}
-
-      {isCreateSessionModalOpen && (
-        <CreateSessionModal
-          allowedActions={allowedActions}
-          close={closeCreateModal}
-          onSessionCreate={onSessionCreate}
-          shouldIssueVoucher={shouldIssueVoucher}
-          boundSessionDuration={boundSessionDuration}
-        />
-      )}
-      {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
     </>
   ) : null;
 }

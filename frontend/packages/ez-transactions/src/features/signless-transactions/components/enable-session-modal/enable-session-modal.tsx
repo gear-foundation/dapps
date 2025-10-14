@@ -1,32 +1,26 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
-import { IKeyringPair } from '@polkadot/types/types';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
-type Props = Pick<ModalProps, 'close' | 'maxWidth'> & {
-  callback?: (pair: IKeyringPair) => Promise<void>;
-};
+type Props = Pick<ModalProps, 'close' | 'maxWidth'>;
 
 const DEFAULT_VALUES = {
   password: '',
 };
 
-function EnableSessionModal({ close, maxWidth, callback }: Props) {
+function EnableSessionModal({ close, maxWidth }: Props) {
   const { register, handleSubmit, setError, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
   const { unlockPair, isLoading, setIsLoading } = useSignlessTransactions();
 
-  const onSubmit = async ({ password }: typeof DEFAULT_VALUES) => {
+  const onSubmit = ({ password }: typeof DEFAULT_VALUES) => {
     setIsLoading(true);
 
     try {
-      const pair = unlockPair(password);
-      if (callback) {
-        await callback(pair);
-      }
+      unlockPair(password);
       setIsLoading(false);
       close();
     } catch (error) {

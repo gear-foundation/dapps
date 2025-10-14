@@ -4,16 +4,18 @@ import { ReactNode } from 'react';
 import { DEFAULT_VOUCHER_REISSUE_THRESHOLD, DEFAULT_VOUCHER_ISSUE_AMOUNT } from '../consts';
 import { useCreateSailsSession } from '../hooks';
 
-import { SignlessTransactionsContext } from './context';
 import { usePair, useSailsSession } from './hooks';
+import { SignlessTransactionsModalProvider } from './signless-transactions-modal-provider';
 import { BaseProgram } from './types';
 
 type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   programId: HexString;
   children: ReactNode;
-  program?: TProgram;
+  program: TProgram;
   voucherIssueAmount?: number;
   voucherReissueThreshold?: number;
+  isAutoSignlessEnabled?: boolean;
+  allowedActions?: string[];
 };
 
 function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
@@ -22,6 +24,8 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   program,
   voucherIssueAmount = DEFAULT_VOUCHER_ISSUE_AMOUNT,
   voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
+  isAutoSignlessEnabled = false,
+  allowedActions,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
   const { session, isSessionReady, isSessionActive } = useSailsSession(program);
   const { createSession, deleteSession } = useCreateSailsSession(programId, program);
@@ -35,9 +39,11 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     isSessionActive,
     voucherIssueAmount,
     voucherReissueThreshold,
+    isAutoSignlessEnabled,
+    allowedActions,
   };
 
-  return <SignlessTransactionsContext.Provider value={value}>{children}</SignlessTransactionsContext.Provider>;
+  return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;
 }
 
 export { SignlessTransactionsSailsProvider };

@@ -1,8 +1,12 @@
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { IKeyringPair } from '@polkadot/types/types';
+import { useCallback } from 'react';
 
 import { useEzTransactions } from '../context';
+import { useAutoSignless, type AutoSignlessOptions } from '../features/signless-transactions/hooks/use-auto-signless';
+
+import { useContextSnapshots } from './use-context-snapshots';
 
 type PrepareEzTransactionParamsResult = {
   sessionForAccount: HexString | null;
@@ -11,33 +15,65 @@ type PrepareEzTransactionParamsResult = {
   gasLimit: { increaseGas: number };
 };
 
+type PrepareEzTransactionParamsOptions = {
+  sendFromBaseAccount?: boolean;
+  isAutoSignlessEnabled?: boolean;
+  autoSignless?: AutoSignlessOptions;
+};
+
 const usePrepareEzTransactionParams = () => {
   const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
-  const { pair, voucher } = signless;
+  const isAutoSignlessEnabledGlobal = signless.isAutoSignlessEnabled;
+  const { signlessSnapshotRef, gaslessSnapshotRef } = useContextSnapshots(signless, gasless);
+  const { handleAutoSignless } = useAutoSignless(signless);
 
-  const prepareEzTransactionParams = async (
-    sendFromBaseAccount?: boolean,
-  ): Promise<PrepareEzTransactionParamsResult> => {
-    if (!account) throw new Error('Account not found');
+  const prepareEzTransactionParams = useCallback(
+    async (prepareOptions?: PrepareEzTransactionParamsOptions): Promise<PrepareEzTransactionParamsResult> => {
+      if (!account) throw new Error('Account not found');
 
-    const sendFromPair = pair && voucher?.id && !sendFromBaseAccount;
-    const sessionForAccount = sendFromPair ? account.decodedAddress : null;
+      const { sendFromBaseAccount, autoSignless: autoSignlessOverrides } = prepareOptions ?? {};
+      const gaslessState = gaslessSnapshotRef.current;
 
-    let voucherId = sendFromPair ? voucher?.id : gasless.voucherId;
-    if (account && gasless.isEnabled && !gasless.voucherId && (sendFromBaseAccount || !signless.isActive)) {
-      voucherId = await gasless.requestVoucher(account.address);
-    }
+      const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
-    return {
-      sessionForAccount,
-      account: sendFromPair ? { addressOrPair: pair } : undefined,
-      voucherId,
-      gasLimit: { increaseGas: 10 },
-    };
-  };
+      if (shouldHandleAutoSignless) {
+        const autoSignlessWithPendingTransaction = {
+          ...autoSignlessOverrides,
+          allowedActions: autoSignlessOverrides?.allowedActions ?? signlessSnapshotRef.current.allowedActions,
+          shouldIssueVoucher: !gaslessState.isEnabled,
+          onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),
+        };
+        await handleAutoSignless(autoSignlessWithPendingTransaction);
+      }
+
+      const nextSignlessState = signlessSnapshotRef.current;
+      const pair = nextSignlessState.pair;
+      const voucher = nextSignlessState.voucher;
+      const sendFromPair = Boolean(pair && voucher?.id && !sendFromBaseAccount);
+      const sessionForAccount = sendFromPair ? account.decodedAddress : null;
+
+      let voucherId = sendFromPair ? voucher?.id : gaslessState.voucherId;
+      if (
+        account &&
+        gaslessState.isEnabled &&
+        !gaslessSnapshotRef.current.voucherId &&
+        (sendFromBaseAccount || !nextSignlessState.isActive)
+      ) {
+        voucherId = await gaslessState.requestVoucher(account.address);
+      }
+
+      return {
+        sessionForAccount,
+        account: sendFromPair && pair ? { addressOrPair: pair } : undefined,
+        voucherId,
+        gasLimit: { increaseGas: 10 },
+      };
+    },
+    [account, isAutoSignlessEnabledGlobal, handleAutoSignless, signlessSnapshotRef, gaslessSnapshotRef],
+  );
 
   return { prepareEzTransactionParams };
 };
 
-export { usePrepareEzTransactionParams, type PrepareEzTransactionParamsResult };
+export { usePrepareEzTransactionParams, type PrepareEzTransactionParamsResult, type PrepareEzTransactionParamsOptions };
