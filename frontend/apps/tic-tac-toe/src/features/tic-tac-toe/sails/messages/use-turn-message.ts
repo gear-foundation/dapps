@@ -5,12 +5,12 @@ import { useProgram } from '@/app/utils';
 
 export const useTurnMessage = () => {
   const program = useProgram();
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const { sendTransactionAsync } = useSendProgramTransaction({
     program,
     serviceName: 'ticTacToe',
     functionName: 'turn',
   });
-  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const turnMessage = async (step: number) => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams();

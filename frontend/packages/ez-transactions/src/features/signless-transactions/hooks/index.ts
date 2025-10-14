@@ -1,3 +1,4 @@
+import { useAutoSignless, type ModalType, type AutoSignlessOptions } from './use-auto-signless';
 import { Session, UseCreateSessionReturn } from './use-create-base-session';
 import { useCreateMetadataSession } from './use-create-metadata-session';
 import { useCreateSailsSession } from './use-create-sails-session';
@@ -16,5 +17,6 @@ export {
   useSignlessSendMessageHandler,
   useIsAvailable,
   useRandomPairOr,
+  useAutoSignless,
 };
-export type { SendSignlessMessageOptions, Session, UseCreateSessionReturn };
+export type { SendSignlessMessageOptions, Session, UseCreateSessionReturn, AutoSignlessOptions, ModalType };

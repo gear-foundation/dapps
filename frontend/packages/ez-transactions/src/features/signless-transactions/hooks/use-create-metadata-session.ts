@@ -69,7 +69,8 @@ function useCreateMetadataSession(
     }
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
-    signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
+
+    return signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
@@ -80,7 +81,7 @@ function useCreateMetadataSession(
       DeleteSessionFromAccount: null,
     });
 
-    signAndSendDeleteSession(messageExtrinsic, key, pair, options);
+    return signAndSendDeleteSession(messageExtrinsic, key, pair, options);
   };
 
   return { createSession, deleteSession };

@@ -6,6 +6,18 @@ import { TransactionBuilder } from 'sails-js';
 
 import { UseCreateSessionReturn } from '../hooks';
 
+type SignlessSessionModalConfig =
+  | {
+      type: 'create';
+      allowedActions: string[];
+      shouldIssueVoucher?: boolean;
+      onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
+      boundSessionDuration?: number;
+    }
+  | {
+      type: 'enable';
+    };
+
 type Session = {
   key: HexString;
   expires: string;
@@ -27,8 +39,8 @@ type SignlessContext = {
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
-  createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => void;
-  deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => void;
+  createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => Promise<void>;
+  deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => Promise<void>;
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,6 +48,9 @@ type SignlessContext = {
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
   storageVoucherBalance: number;
+  openSessionModal: (config: SignlessSessionModalConfig) => Promise<void>;
+  isAutoSignlessEnabled: boolean;
+  allowedActions?: string[];
 };
 
 type ActorId = string;
@@ -71,4 +86,4 @@ type BaseProgram =
     }
   | undefined;
 
-export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession };
+export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession, SignlessSessionModalConfig };

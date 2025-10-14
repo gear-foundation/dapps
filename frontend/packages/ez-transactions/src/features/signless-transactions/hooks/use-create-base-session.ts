@@ -7,8 +7,7 @@ import { ISubmittableResult } from '@polkadot/types/types';
 import { sendTransaction } from '../utils';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
-
-import { useIsAvailable } from '.';
+import { useIsAvailable } from './use-is-available';
 
 type Session = {
   key: HexString;
@@ -105,11 +104,13 @@ function useCreateBaseSession(programId: HexString) {
     options: Options,
     shouldIssueVoucher?: boolean,
   ) => {
-    const txs = shouldIssueVoucher
-      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
-      : [messageExtrinsic];
+    const txs = [messageExtrinsic];
 
-    batchSignAndSend(txs, { ...options, onError });
+    if (shouldIssueVoucher) {
+      txs.push(await getVoucherExtrinsic(session, voucherValue));
+    }
+
+    await batchSignAndSend(txs, { ...options, onError });
   };
 
   const signAndSendDeleteSession = async (
@@ -145,7 +146,7 @@ function useCreateBaseSession(programId: HexString) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
       await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
     }
-    batchSend(signedTxs, { ...options, onError });
+    await batchSend(signedTxs, { ...options, onError });
   };
 
   return { signAndSendDeleteSession, signAndSendCreateSession, onError, signHex };

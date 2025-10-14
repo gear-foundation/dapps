@@ -67,7 +67,7 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
     });
     const messageExtrinsic = transaction.extrinsic;
 
-    signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
+    await signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
