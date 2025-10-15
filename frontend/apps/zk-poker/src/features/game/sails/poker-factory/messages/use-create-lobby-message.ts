@@ -34,12 +34,11 @@ export const useCreateLobbyMessage = () => {
       account: senderAccount,
       value: 1_000_000_000_000n,
       gasLimit: { increaseGas: 5 },
-      // gasLimit: 705_000_000_000n,
       voucherId,
     });
 
     const result = await transaction.signAndSend();
-    return result.response();
+    return result;
   };
 
   const { mutateAsync: createLobbyMessage, isPending } = useMutation({

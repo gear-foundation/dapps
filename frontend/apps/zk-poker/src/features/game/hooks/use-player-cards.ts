@@ -7,7 +7,6 @@ import { DecryptedCardsResult } from '@/features/zk/utils/decrypt-player-cards';
 
 import { usePlayerCardsQuery } from '../sails';
 
-// ! TODO: divide into 2 hooks for my cards and myCardsC0
 const usePlayerCards = (enabled: boolean) => {
   const { playerCards, refetch } = usePlayerCardsQuery({ enabled });
   const { sk } = useZkKeys();
