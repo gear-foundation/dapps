@@ -10,7 +10,7 @@ import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from '.
 function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { signAndSendCreateSession, signAndSendDeleteSession } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession, updateVoucherBalance } = useCreateBaseSession(programId);
 
   const { prepareTransactionAsync: prepareCreateSession } = usePrepareProgramTransaction({
     program,
@@ -76,7 +76,7 @@ function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
     await signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
   };
 
-  return { createSession, deleteSession };
+  return { createSession, deleteSession, updateVoucherBalance };
 }
 
 export { useCreateSailsSession };

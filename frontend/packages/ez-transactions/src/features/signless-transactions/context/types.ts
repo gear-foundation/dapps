@@ -16,6 +16,13 @@ type SignlessSessionModalConfig =
     }
   | {
       type: 'enable';
+    }
+  | {
+      type: 'topup-balance';
+      allowedActions: string[];
+      shouldIssueVoucher?: boolean;
+      onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
+      boundSessionDuration?: number;
     };
 
 type Session = {
@@ -41,6 +48,7 @@ type SignlessContext = {
   voucherBalance: number;
   createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => Promise<void>;
   deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => Promise<void>;
+  updateVoucherBalance: (...args: Parameters<UseCreateSessionReturn['updateVoucherBalance']>) => Promise<void>;
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

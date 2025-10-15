@@ -8,6 +8,7 @@ import type { SignlessContext, SignlessSessionModalConfig } from './types';
 
 type CreateConfig = Extract<SignlessSessionModalConfig, { type: 'create' }>;
 type EnableConfig = Extract<SignlessSessionModalConfig, { type: 'enable' }>;
+type TopupBalanceConfig = Extract<SignlessSessionModalConfig, { type: 'topup-balance' }>;
 
 type SignlessTransactionsModalProviderProps = {
   value: Omit<SignlessContext, 'openSessionModal'>;
@@ -20,7 +21,7 @@ type Deferred<T> = {
   reject: (reason?: unknown) => void;
 };
 
-type ModalState = CreateConfig | EnableConfig;
+type ModalState = CreateConfig | EnableConfig | TopupBalanceConfig;
 
 const createDeferred = <T,>(): Deferred<T> => {
   let resolve!: Deferred<T>['resolve'];
@@ -48,25 +49,29 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
     isSessionActiveRef.current = value.isSessionActive;
   }, [value.isSessionActive]);
 
-  const handleModalClose = useCallback(() => {
+  const handleModalClose = useCallback((success?: boolean | React.MouseEvent) => {
     setModalState(null);
 
-    // Timeout ensures both React state and signless context refs have time to update
-    // after modal closure. Without this delay, pairRef and isSessionActiveRef might
-    // still contain stale values when resolving the promise.
-    setTimeout(() => {
-      const deferred = modalDeferredRef.current;
+    const deferred = modalDeferredRef.current;
 
-      if (!deferred) return;
+    if (!deferred) return;
 
-      modalDeferredRef.current = null;
+    modalDeferredRef.current = null;
 
-      if (pairRef.current && isSessionActiveRef.current) {
-        deferred.resolve();
-      } else {
-        deferred.reject(new Error('Signless session was not enabled'));
-      }
-    }, 1000);
+    if (success === true) {
+      // Timeout ensures both React state and signless context refs have time to update
+      // after modal closure. Without this delay, pairRef and isSessionActiveRef might
+      // still contain stale values when resolving the promise.
+      setTimeout(() => {
+        if (pairRef.current && isSessionActiveRef.current) {
+          deferred.resolve();
+        } else {
+          deferred.reject(new Error('Signless session was not updated'));
+        }
+      }, 1000);
+    } else {
+      deferred.reject(new Error('Signless session was not enabled'));
+    }
   }, []);
 
   const openSessionModal = useCallback((config: SignlessSessionModalConfig) => {
@@ -97,13 +102,14 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
   return (
     <SignlessTransactionsContext.Provider value={contextValue}>
       {children}
-      {modalState?.type === 'create' && (
+      {(modalState?.type === 'create' || modalState?.type === 'topup-balance') && (
         <CreateSessionModal
           allowedActions={modalState.allowedActions}
           close={handleModalClose}
           shouldIssueVoucher={modalState.shouldIssueVoucher}
           onSessionCreate={modalState.onSessionCreate}
           boundSessionDuration={modalState.boundSessionDuration}
+          modalType={modalState?.type}
         />
       )}
       {modalState?.type === 'enable' && <EnableSessionModal close={handleModalClose} />}

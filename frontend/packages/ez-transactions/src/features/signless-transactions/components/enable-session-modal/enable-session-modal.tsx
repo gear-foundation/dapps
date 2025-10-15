@@ -4,7 +4,9 @@ import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import styles from '../create-session-modal/create-session-modal.module.css';
 
-type Props = Pick<ModalProps, 'close' | 'maxWidth'>;
+type Props = Pick<ModalProps, 'maxWidth'> & {
+  close: (success?: boolean) => void;
+};
 
 const DEFAULT_VALUES = {
   password: '',
@@ -22,7 +24,7 @@ function EnableSessionModal({ close, maxWidth }: Props) {
     try {
       unlockPair(password);
       setIsLoading(false);
-      close();
+      close(true);
     } catch (error) {
       const message = String(error);
 
