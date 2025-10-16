@@ -15,7 +15,8 @@ function useCreateMetadataSession(
   const { api, isApiReady } = useApi();
   const { account } = useAccount();
 
-  const { signAndSendCreateSession, signAndSendDeleteSession, onError } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession, updateVoucherBalance, onError } =
+    useCreateBaseSession(programId);
 
   const getMessageExtrinsic = (payload: AnyJson) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -83,7 +84,7 @@ function useCreateMetadataSession(
     return signAndSendDeleteSession(messageExtrinsic, key, pair, options);
   };
 
-  return { createSession, deleteSession };
+  return { createSession, deleteSession, updateVoucherBalance };
 }
 
 export { useCreateMetadataSession };

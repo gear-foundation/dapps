@@ -1,5 +1,5 @@
 import { HexString } from '@gear-js/api';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { IKeyringPair } from '@polkadot/types/types';
 import { useCallback } from 'react';
 
@@ -24,27 +24,47 @@ type PrepareEzTransactionParamsOptions = {
 const usePrepareEzTransactionParams = () => {
   const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
+  const { voucherReissueThreshold, storageVoucherBalance, isSessionActive } = signless;
   const isAutoSignlessEnabledGlobal = signless.isAutoSignlessEnabled;
   const { signlessSnapshotRef, gaslessSnapshotRef } = useContextSnapshots(signless, gasless);
   const { handleAutoSignless } = useAutoSignless(signless);
+  const { getChainBalanceValue } = useBalanceFormat();
+  const { api } = useApi();
 
   const prepareEzTransactionParams = useCallback(
     async (prepareOptions?: PrepareEzTransactionParamsOptions): Promise<PrepareEzTransactionParamsResult> => {
       if (!account) throw new Error('Account not found');
+      if (!api) throw new Error('API not found');
 
       const { sendFromBaseAccount, autoSignless: autoSignlessOverrides } = prepareOptions ?? {};
       const gaslessState = gaslessSnapshotRef.current;
 
+      const minValue = api.existentialDeposit.toNumber();
+      const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
+      const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
+      const shouldUpdateVoucherBalance = isSessionActive && storageVoucherBalance < totalValueToIssueVoucher;
+
       const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
-      if (shouldHandleAutoSignless) {
-        const autoSignlessWithPendingTransaction = {
-          ...autoSignlessOverrides,
-          allowedActions: autoSignlessOverrides?.allowedActions ?? signlessSnapshotRef.current.allowedActions,
-          shouldIssueVoucher: !gaslessState.isEnabled,
-          onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),
-        };
-        await handleAutoSignless(autoSignlessWithPendingTransaction);
+      const options = {
+        ...autoSignlessOverrides,
+        allowedActions: autoSignlessOverrides?.allowedActions ?? signlessSnapshotRef.current.allowedActions ?? [],
+        shouldIssueVoucher: !gaslessState.isEnabled,
+        onSessionCreate: (signlessAccountAddress: string) => gaslessState.requestVoucher(signlessAccountAddress),
+      };
+
+      if (shouldUpdateVoucherBalance) {
+        if (gaslessState.isEnabled) {
+          // TODO: realize this logic for gasless + signless mode
+          // TODO: delete old session and create new one with updated voucher
+          console.log('Gassless voucher has low balance, you should update signless session manually');
+        } else {
+          await signlessSnapshotRef.current.openSessionModal({ ...options, type: 'topup-balance' });
+        }
+      }
+
+      if (shouldHandleAutoSignless && !shouldUpdateVoucherBalance) {
+        await handleAutoSignless(options);
       }
 
       const nextSignlessState = signlessSnapshotRef.current;
@@ -70,7 +90,18 @@ const usePrepareEzTransactionParams = () => {
         gasLimit: { increaseGas: 10 },
       };
     },
-    [account, isAutoSignlessEnabledGlobal, handleAutoSignless, signlessSnapshotRef, gaslessSnapshotRef],
+    [
+      account,
+      isAutoSignlessEnabledGlobal,
+      handleAutoSignless,
+      signlessSnapshotRef,
+      gaslessSnapshotRef,
+      voucherReissueThreshold,
+      getChainBalanceValue,
+      api,
+      storageVoucherBalance,
+      isSessionActive,
+    ],
   );
 
   return { prepareEzTransactionParams };
