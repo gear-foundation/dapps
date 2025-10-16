@@ -156,7 +156,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
 
         {isAdmin && (
           <div className={styles.buttons}>
-            <Button color="danger" onClick={() => killMessage()} disabled={isKillPending}>
+            <Button color="danger" onClick={() => killMessage()} disabled={isKillPending || isStartGamePending}>
               Cancel game
             </Button>
             <Button
