@@ -20,6 +20,7 @@ export const useSubmitPartialDecryptionsMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ partialDecs }: Params) => {
+    console.log('useSubmitPartialDecryptionsMessage Preparing ez transaction params');
     const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({
       args: [partialDecs, sessionForAccount],

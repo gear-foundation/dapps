@@ -51,6 +51,7 @@ export const useAutoSignless = (signlessContext: SignlessContext) => {
       }
 
       if (!signlessContext.pair || !signlessContext.isSessionActive) {
+        console.log('Opening signless session modal');
         const modalConfig = toModalConfig(modalType, options, signlessContext.allowedActions);
         await signlessContext.openSessionModal(modalConfig);
       }
