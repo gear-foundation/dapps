@@ -1,12 +1,12 @@
 import { decodeAddress } from '@gear-js/api';
 import { useApi, useBalanceFormat, useAccount, useAlert } from '@gear-js/react-hooks';
-import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
+import { Button, Input, Modal, Select } from '@gear-js/vara-ui';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { DURATIONS, REQUIRED_MESSAGE } from '../../consts';
-import { SignlessContext, useSignlessTransactions } from '../../context';
+import { useSignlessTransactions } from '../../context';
 import { useRandomPairOr } from '../../hooks';
 import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
 import { AccountPair } from '../account-pair';
@@ -14,13 +14,14 @@ import { SignlessParams } from '../signless-params-list';
 
 import styles from './create-session-modal.module.css';
 
-type Props = Pick<ModalProps, 'close'> & {
+type Props = {
   allowedActions: string[];
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
   boundSessionDuration?: number;
-  useCustomSignlessContext?: () => SignlessContext;
   maxWidth?: 'small' | 'medium' | 'large' | (string & NonNullable<unknown>);
+  modalType?: 'create' | 'topup-balance';
+  close: (success?: boolean) => void;
 };
 
 function CreateSessionModal({
@@ -29,8 +30,8 @@ function CreateSessionModal({
   onSessionCreate = () => Promise.resolve('0x'),
   shouldIssueVoucher = true,
   boundSessionDuration,
-  useCustomSignlessContext,
   maxWidth,
+  modalType = 'create',
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
@@ -63,16 +64,17 @@ function CreateSessionModal({
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const useSignlessContext = useCustomSignlessContext || useSignlessTransactions;
   const {
     savePair,
     storagePair,
     storageVoucher,
     storageVoucherBalance,
     createSession,
+    updateVoucherBalance,
+    session,
     voucherIssueAmount,
     voucherReissueThreshold,
-  } = useSignlessContext();
+  } = useSignlessTransactions();
 
   const pair = useRandomPairOr(storagePair);
 
@@ -125,12 +127,32 @@ function CreateSessionModal({
 
     const onSuccess = () => {
       savePair(pairToSave, password);
-      close();
+      close(true);
     };
 
     console.log('SUBMITTING');
+    console.log('modalType: ', modalType);
     console.log('shouldIssueVoucher: ', shouldIssueVoucher);
     console.log('issueVoucherValue', issueVoucherValue);
+
+    // Update voucher balance mode - only update balance without creating new session
+    if (modalType === 'topup-balance') {
+      if (!session) throw new Error('Session not found for balance update');
+
+      try {
+        await updateVoucherBalance(
+          { duration, key: session.key, allowedActions: session.allowedActions },
+          issueVoucherValue,
+          { onSuccess: () => close(true), onFinally },
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to update voucher balance';
+        alert.error(message);
+        onFinally();
+      }
+
+      return;
+    }
 
     if (!shouldIssueVoucher) {
       try {

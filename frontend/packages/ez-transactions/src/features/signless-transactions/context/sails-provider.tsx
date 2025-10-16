@@ -28,7 +28,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   allowedActions,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
   const { session, isSessionReady, isSessionActive } = useSailsSession(program);
-  const { createSession, deleteSession } = useCreateSailsSession(programId, program);
+  const { createSession, deleteSession, updateVoucherBalance } = useCreateSailsSession(programId, program);
   const pairData = usePair(programId, session);
   const value = {
     ...pairData,
@@ -36,6 +36,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     isSessionReady,
     createSession,
     deleteSession,
+    updateVoucherBalance,
     isSessionActive,
     voucherIssueAmount,
     voucherReissueThreshold,

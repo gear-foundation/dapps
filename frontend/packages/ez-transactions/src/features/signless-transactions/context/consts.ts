@@ -12,6 +12,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   voucherBalance: 0,
   createSession: () => Promise.resolve(),
   deleteSession: () => Promise.resolve(),
+  updateVoucherBalance: () => Promise.resolve(),
   voucher: undefined,
   storageVoucher: undefined,
   storageVoucherBalance: 0,

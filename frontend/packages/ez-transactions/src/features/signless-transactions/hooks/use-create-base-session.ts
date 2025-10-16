@@ -33,6 +33,7 @@ type UseCreateSessionReturn = {
     { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => Promise<void>;
   deleteSession: (key: HexString, pair: KeyringPair, options: Options) => Promise<void>;
+  updateVoucherBalance: (session: Session, voucherValue: number, options: Options) => Promise<void>;
 };
 
 function useCreateBaseSession(programId: HexString) {
@@ -138,7 +139,15 @@ function useCreateBaseSession(programId: HexString) {
     await batchSend(signedTxs, { ...options, onError });
   };
 
-  return { signAndSendDeleteSession, signAndSendCreateSession, onError };
+  const updateVoucherBalance = async (session: Session, voucherValue: number, options: Options) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+    if (!account) throw new Error('Account not found');
+
+    const voucherExtrinsic = await getVoucherExtrinsic(session, voucherValue);
+    await batchSignAndSend([voucherExtrinsic], { ...options, onError });
+  };
+
+  return { signAndSendDeleteSession, signAndSendCreateSession, updateVoucherBalance, onError };
 }
 
 export { useCreateBaseSession };

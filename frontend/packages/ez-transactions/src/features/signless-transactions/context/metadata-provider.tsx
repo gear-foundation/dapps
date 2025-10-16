@@ -35,7 +35,11 @@ function SignlessTransactionsMetadataProvider({
 }: SignlessTransactionsMetadataProviderProps) {
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady, isSessionActive } = useMetadataSession(programId, metadata);
-  const { createSession, deleteSession } = useCreateMetadataSession(programId, metadata, createSignatureType);
+  const { createSession, deleteSession, updateVoucherBalance } = useCreateMetadataSession(
+    programId,
+    metadata,
+    createSignatureType,
+  );
   const pairData = usePair(programId, session);
 
   const value = {
@@ -44,6 +48,7 @@ function SignlessTransactionsMetadataProvider({
     isSessionReady,
     createSession,
     deleteSession,
+    updateVoucherBalance,
     isSessionActive,
     voucherIssueAmount,
     voucherReissueThreshold,
