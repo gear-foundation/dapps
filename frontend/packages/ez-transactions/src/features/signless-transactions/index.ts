@@ -1,4 +1,10 @@
-import { SignlessTransactions, SignlessActive, EnableSignlessSession, CreateSessionModal } from './components';
+import {
+  SignlessTransactions,
+  SignlessActive,
+  EnableSignlessSession,
+  CreateSessionModal,
+  RevokeExpiredVouchers,
+} from './components';
 import {
   SignlessTransactionsProvider,
   useSignlessTransactions,
@@ -15,6 +21,7 @@ export {
   CreateSessionModal,
   SignlessTransactionsProvider,
   EnableSignlessSession,
+  RevokeExpiredVouchers,
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
   useSignlessTransactions,

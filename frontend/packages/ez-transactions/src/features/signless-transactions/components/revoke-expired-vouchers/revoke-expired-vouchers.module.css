@@ -1,0 +1,35 @@
+.revokeButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19.2px;
+}
+
+.revokeButton:disabled {
+  path {
+    fill: rgba(88, 105, 110, 0.5);
+  }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.8px;
+}
+
+.balance {
+  color: #666666;
+}
