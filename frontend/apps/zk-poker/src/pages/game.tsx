@@ -46,6 +46,7 @@ import {
   useEventRegisteredToTheNextRoundSubscription,
   useEventWaitingForCardsToBeDisclosedSubscription,
   useEventFinishedSubscription,
+  useEventAdminChangedSubscription,
 } from '@/features/game/sails';
 import {
   useZkBackend,
@@ -218,7 +219,8 @@ function GamePage() {
     },
   });
 
-  const { config } = useConfigQuery();
+  const { config, refetch: refetchConfig } = useConfigQuery();
+  useEventAdminChangedSubscription({ onData: () => void refetchConfig() });
 
   const isAdmin = account?.decodedAddress === config?.admin_id;
 
