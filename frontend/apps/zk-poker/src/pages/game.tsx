@@ -40,6 +40,7 @@ import {
   useRevealedPlayersQuery,
   useEventAllPartialDecryptionsSubmitedSubscription,
   useKillMessage,
+  useCancelGameMessage,
   useCancelRegistrationMessage,
   useEventKilledSubscription,
   useWaitingParticipantsQuery,
@@ -83,6 +84,7 @@ function GamePage() {
   } = useGameStatus();
 
   const { killMessage, isPending: isKillPending } = useKillMessage();
+  const { cancelGameMessage, isPending: isCancelGamePending } = useCancelGameMessage();
   const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
 
   const { account } = useAccount();
@@ -126,11 +128,6 @@ function GamePage() {
       onPlayersChanged();
     },
     queryKey: [participants, account?.decodedAddress],
-  });
-  useEventGameCanceledSubscription({
-    onData: () => {
-      alert.info('Game restarted');
-    },
   });
 
   useEventKilledSubscription({
@@ -199,17 +196,23 @@ function GamePage() {
     },
   });
 
-  useEventGameRestartedSubscription({
+  const onGameRestarted = () => {
+    void refetchStatus();
+    void refetchBetting();
+    void refetchBettingBank();
+    void refetchActiveParticipants();
+    void refetchAlreadyInvestedInTheCircle();
+    void refetchRevealedPlayers();
+    void refetchPlayerCards();
+    void refetchRevealedTableCards();
+    void refetchWaitingParticipants();
+  };
+
+  useEventGameRestartedSubscription({ onData: onGameRestarted });
+  useEventGameCanceledSubscription({
     onData: () => {
-      void refetchStatus();
-      void refetchBetting();
-      void refetchBettingBank();
-      void refetchActiveParticipants();
-      void refetchAlreadyInvestedInTheCircle();
-      void refetchRevealedPlayers();
-      void refetchPlayerCards();
-      void refetchRevealedTableCards();
-      void refetchWaitingParticipants();
+      alert.info('Game canceled');
+      onGameRestarted();
     },
   });
 
@@ -293,8 +296,8 @@ function GamePage() {
             color="danger"
             rounded
             size="medium"
-            onClick={() => killMessage()}
-            disabled={isKillPending}
+            onClick={() => (isGameStarted ? cancelGameMessage() : killMessage())}
+            disabled={isKillPending || isCancelGamePending}
             className={styles.killButton}>
             <Exit />
           </Button>
