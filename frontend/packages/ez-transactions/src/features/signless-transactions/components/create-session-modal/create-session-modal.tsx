@@ -53,17 +53,6 @@ function CreateSessionModal({
     [gaslessVoucherDurationMinutes],
   );
 
-  const DEFAULT_VALUES = useMemo(
-    () => ({
-      password: '',
-      durationMinutes: gaslessVoucherDurationMinutes ? `${gaslessVoucherDurationMinutes}` : DURATIONS[0].value,
-    }),
-    [gaslessVoucherDurationMinutes],
-  );
-
-  const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
-  const { errors } = formState;
-
   const {
     savePair,
     storagePair,
@@ -74,7 +63,21 @@ function CreateSessionModal({
     session,
     voucherIssueAmount,
     voucherReissueThreshold,
+    allowIncreaseVoucherValue,
   } = useSignlessTransactions();
+
+  const DEFAULT_VALUES = useMemo(
+    () => ({
+      password: '',
+      durationMinutes: gaslessVoucherDurationMinutes ? `${gaslessVoucherDurationMinutes}` : DURATIONS[0].value,
+      voucherAmount: voucherIssueAmount,
+    }),
+    [gaslessVoucherDurationMinutes, voucherIssueAmount],
+  );
+
+  const { register, handleSubmit, formState, setError, watch } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { errors } = formState;
+  const customVoucherAmount = watch('voucherAmount');
 
   const pair = useRandomPairOr(storagePair);
 
@@ -87,19 +90,20 @@ function CreateSessionModal({
 
     const minValue = api.existentialDeposit.toNumber();
 
-    const valueToStart = getChainBalanceValue(voucherIssueAmount).toNumber();
+    const amountToUse = allowIncreaseVoucherValue ? customVoucherAmount : voucherIssueAmount;
+    const _valueToStart = getChainBalanceValue(amountToUse).toNumber();
     const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
 
-    const totalValueToStart = minValue + valueToStart;
+    const valueToStart = Math.max(minValue, _valueToStart);
 
     const isOwner = storageVoucher?.owner === account.decodedAddress;
-    if (!isOwner) return totalValueToStart;
+    if (!isOwner) return valueToStart;
 
     const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
 
-    return storageVoucherBalance < totalValueToIssueVoucher ? totalValueToStart - storageVoucherBalance : 0;
+    return storageVoucherBalance < totalValueToIssueVoucher ? valueToStart - storageVoucherBalance : 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, storageVoucherBalance, shouldIssueVoucher]);
+  }, [api, storageVoucherBalance, shouldIssueVoucher, customVoucherAmount, allowIncreaseVoucherValue]);
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
@@ -183,12 +187,15 @@ function CreateSessionModal({
     });
   };
 
+  const getModalHeading = () => {
+    if (modalType === 'topup-balance') return 'Top Up Voucher Balance';
+    if (storagePair) return 'Resume Signless Session';
+    return 'Create Signless Session';
+  };
+
   return (
     <>
-      <Modal
-        heading={storagePair ? 'Resume Signless Session' : 'Create Signless Session'}
-        close={close}
-        maxWidth={maxWidth}>
+      <Modal heading={getModalHeading()} close={close} maxWidth={maxWidth}>
         <SignlessParams
           params={[
             {
@@ -210,6 +217,19 @@ function CreateSessionModal({
             options={DURATION_OPTIONS}
             {...register('durationMinutes')}
           />
+
+          {allowIncreaseVoucherValue && shouldIssueVoucher && (
+            <Input
+              type="number"
+              label="Voucher Amount to Issue"
+              error={errors.voucherAmount?.message}
+              {...register('voucherAmount', {
+                valueAsNumber: true,
+                required: REQUIRED_MESSAGE,
+                min: { value: voucherIssueAmount, message: `Minimum value is ${voucherIssueAmount}` },
+              })}
+            />
+          )}
 
           <Input
             type="password"

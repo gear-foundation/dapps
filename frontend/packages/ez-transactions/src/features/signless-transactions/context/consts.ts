@@ -25,6 +25,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   voucherReissueThreshold: 0,
   openSessionModal: async () => {},
   isAutoSignlessEnabled: false,
+  allowIncreaseVoucherValue: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };
