@@ -43,12 +43,6 @@ const usePrepareEzTransactionParams = () => {
       const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
       const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
       const shouldUpdateVoucherBalance = isSessionActive && storageVoucherBalance < totalValueToIssueVoucher;
-      console.log(
-        '🚀 ~ shouldUpdateVoucherBalance:',
-        shouldUpdateVoucherBalance,
-        storageVoucherBalance / 1000000000000,
-        totalValueToIssueVoucher / 1000000000000,
-      );
 
       const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
@@ -65,7 +59,6 @@ const usePrepareEzTransactionParams = () => {
           // TODO: delete old session and create new one with updated voucher
           console.log('Gassless voucher has low balance, you should update signless session manually');
         } else {
-          console.log('Opening topup balance modal');
           await signlessSnapshotRef.current.openSessionModal({ ...options, type: 'topup-balance' });
         }
       }
