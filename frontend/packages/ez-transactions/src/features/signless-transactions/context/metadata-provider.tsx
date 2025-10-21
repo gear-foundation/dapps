@@ -21,6 +21,7 @@ type SignlessTransactionsMetadataProviderProps = {
   createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`;
   voucherIssueAmount?: number;
   voucherReissueThreshold?: number;
+  allowIncreaseVoucherValue?: boolean;
 };
 
 function SignlessTransactionsMetadataProvider({
@@ -32,6 +33,7 @@ function SignlessTransactionsMetadataProvider({
   createSignatureType,
   voucherIssueAmount = DEFAULT_VOUCHER_ISSUE_AMOUNT,
   voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
+  allowIncreaseVoucherValue = false,
 }: SignlessTransactionsMetadataProviderProps) {
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady, isSessionActive } = useMetadataSession(programId, metadata);
@@ -54,6 +56,7 @@ function SignlessTransactionsMetadataProvider({
     voucherReissueThreshold,
     isAutoSignlessEnabled,
     allowedActions,
+    allowIncreaseVoucherValue,
   };
 
   return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;

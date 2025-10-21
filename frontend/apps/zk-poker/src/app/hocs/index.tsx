@@ -70,7 +70,8 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
       program={program}
       allowedActions={SIGNLESS_ALLOWED_ACTIONS}
       voucherIssueAmount={ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT}
-      voucherReissueThreshold={ENV.VOUCHER_LIMIT}>
+      voucherReissueThreshold={ENV.VOUCHER_LIMIT}
+      allowIncreaseVoucherValue>
       {children}
     </SharedSignlessTransactionsProvider>
   );

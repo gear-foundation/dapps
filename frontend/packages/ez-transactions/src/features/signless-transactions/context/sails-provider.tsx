@@ -16,6 +16,7 @@ type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   voucherReissueThreshold?: number;
   isAutoSignlessEnabled?: boolean;
   allowedActions?: string[];
+  allowIncreaseVoucherValue?: boolean;
 };
 
 function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
@@ -26,6 +27,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
   isAutoSignlessEnabled = false,
   allowedActions,
+  allowIncreaseVoucherValue = false,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
   const { session, isSessionReady, isSessionActive } = useSailsSession(program);
   const { createSession, deleteSession, updateVoucherBalance } = useCreateSailsSession(programId, program);
@@ -42,6 +44,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     voucherReissueThreshold,
     isAutoSignlessEnabled,
     allowedActions,
+    allowIncreaseVoucherValue,
   };
 
   return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;
