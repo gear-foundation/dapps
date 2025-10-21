@@ -9,19 +9,24 @@ type Params = {
   partialDecs: PartialDec[];
 };
 
-export const useCardDisclosureMessage = () => {
+export const useSubmitPartialDecryptionsMessage = () => {
   const program = usePokerProgram();
   const alert = useAlert();
   const { sendTransactionAsync } = useSendProgramTransaction({
     program,
     serviceName: 'poker',
-    functionName: 'cardDisclosure',
+    functionName: 'submitPartialDecryptions',
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const tx = async ({ partialDecs }: Params) => {
+    console.log('useSubmitPartialDecryptionsMessage Preparing ez transaction params');
     const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
-    const result = await sendTransactionAsync({ args: [partialDecs, sessionForAccount], ...params });
+    const result = await sendTransactionAsync({
+      args: [partialDecs, sessionForAccount],
+      ...params,
+      gasLimit: { increaseGas: 30 },
+    });
     return result;
   };
 
@@ -30,5 +35,5 @@ export const useCardDisclosureMessage = () => {
     onError: (error) => alert.error(getErrorMessage(error)),
   });
 
-  return { cardDisclosureMessage: mutateAsync, isPending };
+  return { mutateAsync, isPending };
 };

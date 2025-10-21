@@ -1,7 +1,10 @@
 export { useEventRegisteredSubscription } from './use-event-registered-subscription';
 export { useEventFinishedSubscription } from './use-event-finished-subscription';
 export { useEventGameStartedSubscription } from './use-event-game-started-subscription';
-export { useEventCardsDealtToPlayersSubscription } from './use-event-cards-dealt-to-players-subscription';
+export {
+  useEventCardsDealtToPlayersSubscription,
+  type CardsDealtToPlayersPayload,
+} from './use-event-cards-dealt-to-players-subscription';
 export { useEventCardsDealtToTableSubscription } from './use-event-cards-dealt-to-table-subscription';
 export { useEventGameRestartedSubscription } from './use-event-game-restarted-subscription';
 export { useEventSmallBlindIsSetSubscription } from './use-event-small-blind-is-set-subscription';

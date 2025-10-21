@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { type Card } from '@/features/zk/api/types';
 import { useZkKeys } from '@/features/zk/hooks';
 import { decryptCards } from '@/features/zk/utils';
 import { DecryptedCardsResult } from '@/features/zk/utils/decrypt-player-cards';
@@ -23,7 +24,11 @@ const usePlayerCards = (enabled: boolean) => {
     });
   }, [playerCards, sk]);
 
-  return { playerCards: decryptedCards?.cards, inputs: decryptedCards?.inputs, refetchPlayerCards: refetch };
+  return {
+    playerCards: decryptedCards?.cards as [Card, Card] | undefined,
+    myCardsC0: decryptedCards?.myCardsC0,
+    refetchPlayerCards: refetch,
+  };
 };
 
 export { usePlayerCards };

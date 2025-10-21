@@ -38,6 +38,7 @@ export class Program {
     accrual: number | string | bigint,
     time_ms_between_balance_receipt: number | string | bigint,
   ): TransactionBuilder<null> {
+    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,

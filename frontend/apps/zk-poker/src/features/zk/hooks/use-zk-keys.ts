@@ -6,22 +6,21 @@ const ZK_PAIR_KEY = 'zk_keys';
 
 type Keys<T> = {
   sk: T;
-  pk: { x: T; y: T; z: T };
+  pk: { X: T; Y: T; Z: T };
 };
 
 const transformKeys = <T, R>(keys: Keys<T>, transform: (x: T) => R) => ({
   sk: transform(keys.sk),
   pk: {
-    x: transform(keys.pk.x),
-    y: transform(keys.pk.y),
-    z: transform(keys.pk.z),
+    X: transform(keys.pk.X),
+    Y: transform(keys.pk.Y),
+    Z: transform(keys.pk.Z),
   },
 });
 
 const generateKeys = (): Keys<bigint> => {
   const { pk, sk } = keyGen(64);
-  const { X: x, Y: y, Z: z } = pk;
-  const bigintKeys = { sk, pk: { x, y, z } };
+  const bigintKeys = { sk, pk };
   const stringKeys = transformKeys(bigintKeys, (value) => String(value));
   localStorage.setItem(ZK_PAIR_KEY, JSON.stringify(stringKeys));
 
@@ -35,12 +34,14 @@ const zkKeysAtom = atom(() => {
 
   const parsed = JSON.parse(stored) as Keys<string>;
 
+  if (!parsed.sk || !parsed.pk.X || !parsed.pk.Y || !parsed.pk.Z) return generateKeys();
+
   return {
     sk: BigInt(parsed.sk),
     pk: {
-      x: BigInt(parsed.pk.x),
-      y: BigInt(parsed.pk.y),
-      z: BigInt(parsed.pk.z),
+      X: BigInt(parsed.pk.X),
+      Y: BigInt(parsed.pk.Y),
+      Z: BigInt(parsed.pk.Z),
     },
   };
 });

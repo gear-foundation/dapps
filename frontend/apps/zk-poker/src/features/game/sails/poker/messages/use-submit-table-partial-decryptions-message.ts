@@ -6,7 +6,7 @@ import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { usePokerProgram } from '@/app/utils';
 
 type Params = {
-  instances: Array<VerificationVariables>;
+  partialDecs: PartialDec[];
 };
 
 export const useSubmitTablePartialDecryptionsMessage = () => {
@@ -19,10 +19,10 @@ export const useSubmitTablePartialDecryptionsMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const tx = async ({ instances }: Params) => {
+  const tx = async ({ partialDecs }: Params) => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams({ isAutoSignlessEnabled: true });
     const result = await sendTransactionAsync({
-      args: [instances, sessionForAccount],
+      args: [partialDecs, sessionForAccount],
       ...params,
       gasLimit: { increaseGas: 30 },
     });

@@ -157,8 +157,12 @@ function usePair(programId: HexString, session?: Session | null) {
     isLoading,
     setIsLoading,
     isActive,
-    storageVoucher,
-    storageVoucherBalance,
+    // there is case with multiple programs on same pair address (zk-poker),
+    // and useLatestVoucher may not return voucher for the storagePair after session creation
+    // (because programId and storagePair.address are not changed),
+    // so we need to use voucher of the pair.address (which is the same as storagePair.address)
+    storageVoucher: storageVoucher || voucher,
+    storageVoucherBalance: storageVoucherBalance || voucherBalance,
   };
 }
 

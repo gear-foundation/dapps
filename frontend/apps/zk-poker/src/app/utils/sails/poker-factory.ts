@@ -53,6 +53,7 @@ export class Program {
     pts_actor_id: ActorId,
     zk_verification_id: ActorId,
   ): TransactionBuilder<null> {
+    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,

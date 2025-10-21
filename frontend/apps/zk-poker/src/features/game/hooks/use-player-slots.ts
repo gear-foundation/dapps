@@ -10,7 +10,6 @@ import { PlayerStatus } from '../types';
 
 import { useGameStatus } from './use-game-status';
 import { useGetPlayerStatusAndBet } from './use-get-player-status-and-bet';
-import { usePlayerCards } from './use-player-cards';
 
 export interface PlayerSlot {
   address: HexString;
@@ -25,20 +24,20 @@ export interface PlayerSlot {
 export const usePlayerSlots = (
   turn: HexString | null,
   autoFoldPlayers: HexString[],
+  playerCards?: [Card, Card],
   dillerAddress?: HexString,
 ): PlayerSlot[] => {
   const { account } = useAccount();
 
-  const { isActiveGame, isGameStarted, pots } = useGameStatus();
+  const { isActiveGame, pots } = useGameStatus();
   const { participants } = useParticipantsQuery();
   const { revealedPlayers } = useRevealedPlayersQuery({ enabled: isActiveGame });
-  const { playerCards } = usePlayerCards(isGameStarted) || {};
   const getPlayerStatusAndBet = useGetPlayerStatusAndBet(turn, autoFoldPlayers);
 
   const getPlayerCards = useMemo(() => {
     return (address: string): [Card, Card] | null | undefined => {
       if (address === account?.decodedAddress && playerCards) {
-        return playerCards as [Card, Card];
+        return playerCards;
       }
 
       const revealedPlayer = revealedPlayers?.find(([playerAddress]) => playerAddress === address);

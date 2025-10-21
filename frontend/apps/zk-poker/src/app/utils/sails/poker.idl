@@ -35,16 +35,21 @@ type ActionsForSession = enum {
   AllActions,
 };
 
-type Card = struct {
-  value: u8,
-  suit: Suit,
+type PartialDec = struct {
+  c0: [vec u8, 3],
+  delta_c0: [vec u8, 3],
+  proof: ChaumPedersenProofBytes,
 };
 
-type Suit = enum {
-  Spades,
-  Hearts,
-  Diamonds,
-  Clubs,
+type ChaumPedersenProofBytes = struct {
+  a: [vec u8, 3],
+  b: [vec u8, 3],
+  z: vec u8,
+};
+
+type EncryptedCard = struct {
+  c0: [vec u8, 3],
+  c1: [vec u8, 3],
 };
 
 /// Complete verification instance containing proof and public inputs
@@ -58,11 +63,6 @@ type ProofBytes = struct {
   a: vec u8,
   b: vec u8,
   c: vec u8,
-};
-
-type EncryptedCard = struct {
-  c0: [vec u8, 3],
-  c1: [vec u8, 3],
 };
 
 type Action = enum {
@@ -92,6 +92,18 @@ type Participant = struct {
   name: str,
   balance: u128,
   pk: ZkPublicKey,
+};
+
+type Card = struct {
+  value: u8,
+  suit: Suit,
+};
+
+type Suit = enum {
+  Spades,
+  Hearts,
+  Diamonds,
+  Clubs,
 };
 
 type Status = enum {
@@ -141,7 +153,7 @@ service Poker {
   /// Sends a transfer request to PTS contract to return points to the player.
   /// Removes player data and emits `RegistrationCanceled` event on success.
   CancelRegistration : (session_for_account: opt actor_id) -> null;
-  CardDisclosure : (instances: vec struct { Card, VerificationVariables }, session_for_account: opt actor_id) -> null;
+  CardDisclosure : (player_decryptions: vec PartialDec, session_for_account: opt actor_id) -> null;
   /// Admin-only function to forcibly remove a player and refund their balance.
   /// 
   /// Panics if:
@@ -196,8 +208,8 @@ service Poker {
   /// 
   /// Note: Handles edge cases where players can't cover blinds
   StartGame : (session_for_account: opt actor_id) -> null;
-  SubmitAllPartialDecryptions : (instances: vec VerificationVariables) -> null;
-  SubmitTablePartialDecryptions : (instances: vec VerificationVariables, session_for_account: opt actor_id) -> null;
+  SubmitPartialDecryptions : (player_decryptions: vec PartialDec, session_for_account: opt actor_id) -> null;
+  SubmitTablePartialDecryptions : (player_decryptions: vec PartialDec, session_for_account: opt actor_id) -> null;
   /// Processes player actions during betting rounds.
   /// 
   /// Panics if:
@@ -214,11 +226,13 @@ service Poker {
   /// Emits TurnIsMade and NextStage events
   Turn : (action: Action, session_for_account: opt actor_id) -> null;
   query ActiveParticipants : () -> TurnManagerForActorId;
+  query AggPubKey : () -> ZkPublicKey;
   query AllInPlayers : () -> vec actor_id;
   query AlreadyInvestedInTheCircle : () -> vec struct { actor_id, u128 };
   query Betting : () -> opt BettingStage;
   query BettingBank : () -> vec struct { actor_id, u128 };
   query Config : () -> GameConfig;
+  query EncryptedCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
   query EncryptedTableCards : () -> vec EncryptedCard;
   query FactoryActorId : () -> actor_id;
   query Participants : () -> vec struct { actor_id, Participant };

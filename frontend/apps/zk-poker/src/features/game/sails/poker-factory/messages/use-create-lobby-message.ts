@@ -33,10 +33,12 @@ export const useCreateLobbyMessage = () => {
       args: [config, pk, signatureInfo],
       account: senderAccount,
       value: 1_000_000_000_000n,
+      gasLimit: { increaseGas: 5 },
       voucherId,
     });
 
-    await transaction.signAndSend();
+    const result = await transaction.signAndSend();
+    return result;
   };
 
   const { mutateAsync: createLobbyMessage, isPending } = useMutation({

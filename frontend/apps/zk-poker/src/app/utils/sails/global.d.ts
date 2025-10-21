@@ -46,12 +46,22 @@ declare global {
 
   export type ActionsForSession = 'AllActions';
 
-  export interface Card {
-    value: number;
-    suit: Suit;
+  export interface PartialDec {
+    c0: Array<`0x${string}`>;
+    delta_c0: Array<`0x${string}`>;
+    proof: ChaumPedersenProofBytes;
   }
 
-  export type Suit = 'Spades' | 'Hearts' | 'Diamonds' | 'Clubs';
+  export interface ChaumPedersenProofBytes {
+    a: Array<`0x${string}`>;
+    b: Array<`0x${string}`>;
+    z: `0x${string}`;
+  }
+
+  export interface EncryptedCard {
+    c0: Array<`0x${string}`>;
+    c1: Array<`0x${string}`>;
+  }
 
   /**
    * Complete verification instance containing proof and public inputs
@@ -68,11 +78,6 @@ declare global {
     a: `0x${string}`;
     b: `0x${string}`;
     c: `0x${string}`;
-  }
-
-  export interface EncryptedCard {
-    c0: Array<`0x${string}`>;
-    c1: Array<`0x${string}`>;
   }
 
   export type Action =
@@ -100,6 +105,13 @@ declare global {
     balance: number | string | bigint;
     pk: ZkPublicKey;
   }
+
+  export interface Card {
+    value: number;
+    suit: Suit;
+  }
+
+  export type Suit = 'Spades' | 'Hearts' | 'Diamonds' | 'Clubs';
 
   export type Status =
     | { registration: null }

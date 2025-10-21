@@ -1479,6 +1479,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@noble/hashes@npm:2.0.1"
+  checksum: 10c0/e81769ce21c3b1c80141a3b99bd001f17edea09879aa936692ae39525477386d696101cd573928a304806efb2b9fa751e1dd83241c67d0c84d30091e85c79bdb
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -14349,6 +14356,7 @@ __metadata:
     "@gear-js/react-hooks": "npm:0.18.3"
     "@gear-js/vara-ui": "npm:0.3.1"
     "@gear-js/wallet-connect": "npm:0.4.1"
+    "@noble/hashes": "npm:2.0.1"
     "@polkadot/api": "npm:16.4.6"
     "@polkadot/extension-inject": "npm:0.60.1"
     "@polkadot/react-identicon": "npm:3.15.1"
