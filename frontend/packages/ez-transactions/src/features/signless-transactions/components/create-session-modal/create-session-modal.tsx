@@ -92,16 +92,14 @@ function CreateSessionModal({
 
     const amountToUse = allowIncreaseVoucherValue ? customVoucherAmount : voucherIssueAmount;
     const _valueToStart = getChainBalanceValue(amountToUse).toNumber();
-    const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
-
     const valueToStart = Math.max(minValue, _valueToStart);
+    const _valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
+    const valueToIssueVoucher = Math.max(minValue, _valueToIssueVoucher);
 
     const isOwner = storageVoucher?.owner === account.decodedAddress;
     if (!isOwner) return valueToStart;
 
-    const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
-
-    return storageVoucherBalance < totalValueToIssueVoucher ? valueToStart - storageVoucherBalance : 0;
+    return storageVoucherBalance < valueToIssueVoucher ? valueToStart - storageVoucherBalance : 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, storageVoucherBalance, shouldIssueVoucher, customVoucherAmount, allowIncreaseVoucherValue]);
 

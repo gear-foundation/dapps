@@ -40,9 +40,9 @@ const usePrepareEzTransactionParams = () => {
       const gaslessState = gaslessSnapshotRef.current;
 
       const minValue = api.existentialDeposit.toNumber();
-      const valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
-      const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
-      const shouldUpdateVoucherBalance = isSessionActive && storageVoucherBalance < totalValueToIssueVoucher;
+      const _valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
+      const valueToIssueVoucher = Math.max(minValue, _valueToIssueVoucher);
+      const shouldUpdateVoucherBalance = isSessionActive && storageVoucherBalance < valueToIssueVoucher;
 
       const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
