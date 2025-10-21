@@ -22,3 +22,4 @@ export { useEventWaitingForCardsToBeDisclosedSubscription } from './use-event-wa
 export { useEventWaitingForAllTableCardsToBeDisclosedSubscription } from './use-event-waiting-for-all-table-cards-to-be-disclosed-subscription';
 export { useEventKilledSubscription } from './use-event-killed-subscription';
 export { useEventRegisteredToTheNextRoundSubscription } from './use-event-registered-to-the-next-round-subscription';
+export { useEventAdminChangedSubscription } from './use-event-admin-changed-subscription';

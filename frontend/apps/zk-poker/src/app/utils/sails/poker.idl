@@ -283,6 +283,10 @@ service Poker {
       participant_id: actor_id,
       pk: ZkPublicKey,
     };
+    AdminChanged: struct {
+      old_admin: actor_id,
+      new_admin: actor_id,
+    };
   }
 };
 

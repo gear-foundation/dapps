@@ -143,7 +143,7 @@ export class Program {
 }
 
 export class Poker {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public cancelGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -1104,10 +1104,26 @@ export class Poker {
       }
     });
   }
+
+  public subscribeToAdminChangedEvent(callback: (data: { old_admin: ActorId; new_admin: ActorId }) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'AdminChanged') {
+        callback(this._program.registry
+          .createType('(String, String, {"old_admin":"[u8;32]","new_admin":"[u8;32]"})', message.payload)[2]
+          .toJSON() as unknown as { old_admin: ActorId; new_admin: ActorId },
+        );
+      }
+    });
+  }
 }
 
 export class Session {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
