@@ -1,6 +1,6 @@
-import { EzGaslessTransactions, EzSignlessTransactions } from '@ez/components';
 import { WalletModal } from '@gear-js/wallet-connect';
 import clsx from 'clsx';
+import { EzGaslessTransactions, EzSignlessTransactions, RevokeExpiredVouchers } from 'gear-ez-transactions';
 import { useState } from 'react';
 
 import { MenuOptions, MobileMenu } from '@dapps-frontend/ui';
@@ -37,6 +37,7 @@ export function Header({ children }: HeaderProps) {
                 customItems={[
                   { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
                   { key: 'gasless', option: <EzGaslessTransactions /> },
+                  { key: 'revoke-vouchers', option: <RevokeExpiredVouchers /> },
                 ]}
                 onClose={closeMenu}
               />
