@@ -62,8 +62,12 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
   };
 
   const handleSliderConfirm = () => {
+    const callAmount = currentBet - myCurrentBet;
+
     if (sliderValue === balance) {
       void turnMessage({ action: { allIn: null } });
+    } else if (sliderValue === callAmount && callAmount > 0) {
+      void turnMessage({ action: { call: null } });
     } else {
       void turnMessage({ action: { raise: { bet: sliderValue } } });
     }
