@@ -51,8 +51,6 @@ const GameBoard = ({
 
   const commonCardsMarginTop = getCommonCardsMarginTop(reorderedSlots.length);
   const slotPositions = getSlotPositions(reorderedSlots.length);
-
-  // Calculate current hand rank for the player
   const currentHandRank = getCurrentHandRank(mySlot?.cards, commonCardsFields);
 
   return (

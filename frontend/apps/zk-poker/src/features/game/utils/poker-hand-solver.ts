@@ -45,22 +45,16 @@ export const solvePokerHand = (
   }
 };
 
-/**
- * Calculates the current hand rank for the player based on their cards and common cards
- */
 export const getCurrentHandRank = (
   playerCards?: [GameCard, GameCard] | null,
   commonCardsFields?: (GameCard | null)[],
 ): HandRank | null => {
-  // Need at least player cards and some common cards revealed
   if (!playerCards || !commonCardsFields || commonCardsFields.every((card) => card === null)) {
     return null;
   }
 
-  // Filter out null common cards (unrevealed cards)
   const revealedCommonCards = commonCardsFields.filter((card): card is GameCard => card !== null);
 
-  // Need at least player cards + some common cards (minimum 3 for flop)
   if (revealedCommonCards.length < 3) {
     return null;
   }
