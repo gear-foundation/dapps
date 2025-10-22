@@ -24,6 +24,8 @@ export { default as DefaultAvatar7 } from './icons/default-avatar-7.svg';
 export { default as AllInIcon } from './icons/button-all-in.svg?react';
 export { default as CallIcon } from './icons/button-call.svg?react';
 export { default as FoldIcon } from './icons/button-fold.svg?react';
+export { default as ManualIcon } from './icons/button-manual.svg?react';
+export { default as CancelIcon } from './icons/button-cancel.svg?react';
 export { default as ChipsIcon } from './icons/chips.svg?react';
 export { default as Chips2xIcon } from './icons/chips-2x.svg?react';
 export { default as Chips3xIcon } from './icons/chips-3x.svg?react';
