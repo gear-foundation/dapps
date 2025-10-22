@@ -5,6 +5,7 @@ import { Fragment } from 'react';
 import { BIG_BLIND } from '@/app/consts';
 import { PlayerSlot, PlayerCards, FlipCard } from '@/components';
 import { PlayerStatus } from '@/features/game/types';
+import { getCurrentHandRank } from '@/features/game/utils';
 import { Card } from '@/features/zk/api/types';
 
 import styles from './game-board.module.scss';
@@ -50,6 +51,7 @@ const GameBoard = ({
 
   const commonCardsMarginTop = getCommonCardsMarginTop(reorderedSlots.length);
   const slotPositions = getSlotPositions(reorderedSlots.length);
+  const currentHandRank = getCurrentHandRank(mySlot?.cards, commonCardsFields);
 
   return (
     <div className={styles.boardWrapper}>
@@ -90,6 +92,7 @@ const GameBoard = ({
                         onTimeEnd={onTimeEnd}
                       />
                     )}
+                    {currentHandRank && <div className={styles.handRank}>{currentHandRank}</div>}
                   </div>
                 </div>
               </div>
