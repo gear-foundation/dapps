@@ -24,7 +24,7 @@ type PrepareEzTransactionParamsOptions = {
 const usePrepareEzTransactionParams = () => {
   const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
-  const { voucherReissueThreshold, storageVoucherBalance, isSessionActive } = signless;
+  const { voucherReissueThreshold, storageVoucherBalance, isActive } = signless;
   const isAutoSignlessEnabledGlobal = signless.isAutoSignlessEnabled;
   const { signlessSnapshotRef, gaslessSnapshotRef } = useContextSnapshots(signless, gasless);
   const { handleAutoSignless } = useAutoSignless(signless);
@@ -42,7 +42,7 @@ const usePrepareEzTransactionParams = () => {
       const minValue = api.existentialDeposit.toNumber();
       const _valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
       const valueToIssueVoucher = Math.max(minValue, _valueToIssueVoucher);
-      const shouldUpdateVoucherBalance = isSessionActive && storageVoucherBalance < valueToIssueVoucher;
+      const shouldUpdateVoucherBalance = isActive && storageVoucherBalance < valueToIssueVoucher;
 
       const shouldHandleAutoSignless = prepareOptions?.isAutoSignlessEnabled ?? isAutoSignlessEnabledGlobal;
 
@@ -100,7 +100,7 @@ const usePrepareEzTransactionParams = () => {
       getChainBalanceValue,
       api,
       storageVoucherBalance,
-      isSessionActive,
+      isActive,
     ],
   );
 
