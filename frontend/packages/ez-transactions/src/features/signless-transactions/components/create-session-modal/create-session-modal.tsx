@@ -143,7 +143,7 @@ function CreateSessionModal({
 
       try {
         await updateVoucherBalance(
-          { duration, key: session.key, allowedActions: session.allowedActions },
+          { duration: 0, key: session.key, allowedActions: session.allowedActions },
           issueVoucherValue,
           { onSuccess: () => close(true), onFinally },
         );
