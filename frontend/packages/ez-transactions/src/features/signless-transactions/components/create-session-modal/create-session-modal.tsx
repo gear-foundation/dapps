@@ -90,7 +90,7 @@ function CreateSessionModal({
 
     const minValue = api.existentialDeposit.toNumber();
 
-    const amountToUse = allowIncreaseVoucherValue ? customVoucherAmount : voucherIssueAmount;
+    const amountToUse = allowIncreaseVoucherValue ? customVoucherAmount || 0 : voucherIssueAmount;
     const _valueToStart = getChainBalanceValue(amountToUse).toNumber();
     const valueToStart = Math.max(minValue, _valueToStart);
     const _valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
@@ -143,7 +143,7 @@ function CreateSessionModal({
 
       try {
         await updateVoucherBalance(
-          { duration, key: session.key, allowedActions: session.allowedActions },
+          { duration: 0, key: session.key, allowedActions: session.allowedActions },
           issueVoucherValue,
           { onSuccess: () => close(true), onFinally },
         );
@@ -209,25 +209,29 @@ function CreateSessionModal({
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          <Select
-            label="Session duration"
-            disabled={!!boundSessionDuration}
-            options={DURATION_OPTIONS}
-            {...register('durationMinutes')}
-          />
-
-          {allowIncreaseVoucherValue && shouldIssueVoucher && (
-            <Input
-              type="number"
-              label="Voucher Amount to Issue"
-              error={errors.voucherAmount?.message}
-              {...register('voucherAmount', {
-                valueAsNumber: true,
-                required: REQUIRED_MESSAGE,
-                min: { value: voucherIssueAmount, message: `Minimum value is ${voucherIssueAmount}` },
-              })}
+          {modalType !== 'topup-balance' && (
+            <Select
+              label="Session duration"
+              disabled={!!boundSessionDuration}
+              options={DURATION_OPTIONS}
+              {...register('durationMinutes')}
             />
           )}
+
+          {allowIncreaseVoucherValue &&
+            shouldIssueVoucher &&
+            (issueVoucherValue > 0 || modalType === 'topup-balance') && (
+              <Input
+                type="number"
+                label="Voucher Amount to Issue"
+                error={errors.voucherAmount?.message}
+                {...register('voucherAmount', {
+                  valueAsNumber: true,
+                  required: REQUIRED_MESSAGE,
+                  min: { value: voucherIssueAmount, message: `Minimum value is ${voucherIssueAmount}` },
+                })}
+              />
+            )}
 
           <Input
             type="password"
