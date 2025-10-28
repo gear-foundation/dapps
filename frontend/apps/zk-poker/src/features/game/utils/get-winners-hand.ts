@@ -12,7 +12,7 @@ const getWinnersHand = (
   revealedPlayers?: [HexString, [Card, Card]][],
   commonCardsFields?: (GameCard | null)[],
 ): { winnersHand: GameCard[]; handRank: HandRank } | null => {
-  if (!winners?.length || !revealedPlayers || !commonCardsFields || commonCardsFields.includes(null)) return null;
+  if (!winners?.length || !revealedPlayers?.length || !commonCardsFields || commonCardsFields.includes(null)) return null;
 
   const winnersCards: GameCard[] =
     revealedPlayers
