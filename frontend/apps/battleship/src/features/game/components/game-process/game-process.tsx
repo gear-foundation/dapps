@@ -48,18 +48,19 @@ export default function GameProcess() {
         const currentTime = new Date().getTime();
         const startTime = parseInt(gameState.startTime.replace(/,/g, ''));
         const elapsedTimeMilliseconds = currentTime - startTime;
+        const currentFormattedTime = getFormattedTime(elapsedTimeMilliseconds);
 
-        const formattedTime = getFormattedTime(elapsedTimeMilliseconds);
-
-        !gameState.gameOver && setElapsedTime(formattedTime);
+        if (!gameState.gameOver) {
+          setElapsedTime(currentFormattedTime);
+        }
 
         if (gameState.gameOver && !gameOverHandled) {
           const endTime = parseInt(gameState.endTime.replace(/,/g, ''));
-          const elapsedTimeMilliseconds = endTime - startTime;
-          const formattedTime = getFormattedTime(elapsedTimeMilliseconds);
+          const totalElapsedTimeMilliseconds = endTime - startTime;
+          const formattedElapsedTime = getFormattedTime(totalElapsedTimeMilliseconds);
 
-          setElapsedTime(formattedTime);
-          setTotalGameTime(formattedTime);
+          setElapsedTime(formattedElapsedTime);
+          setTotalGameTime(formattedElapsedTime);
           openEndModal();
 
           gameOverHandled = true;
@@ -78,7 +79,7 @@ export default function GameProcess() {
     setDisabledCell(false);
   };
 
-  const onClickCell = async (indexCell: number) => {
+  const onClickCell = (indexCell: number) => {
     const gasLimit = 120000000000;
 
     if (!gasless.isLoading) {
@@ -149,15 +150,14 @@ export default function GameProcess() {
         <div className={styles.listShips}>
           {gameState?.botShips.map(([shipType, shipCount], index) => {
             const numberOfBlocks = parseInt(shipType, 10);
-            const shipsToRender = Array.from({
-              length: parseInt(shipCount, 10),
-            });
+            const shipsToRender = Array.from({ length: parseInt(shipCount, 10) }, (_, shipIndex) => shipIndex);
+            const shipBlocks = Array.from({ length: numberOfBlocks }, (_, blockIndex) => blockIndex);
 
             return (
               <div key={index} className={styles.ship}>
-                {shipsToRender.map((_, shipIndex) => (
+                {shipsToRender.map((shipIndex) => (
                   <div key={shipIndex} className={styles.ship}>
-                    {[...Array(numberOfBlocks)].map((_, blockIndex) => (
+                    {shipBlocks.map((blockIndex) => (
                       <div key={blockIndex} className={styles.block}></div>
                     ))}
                   </div>
