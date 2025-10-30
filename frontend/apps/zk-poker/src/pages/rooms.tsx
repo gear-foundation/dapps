@@ -70,7 +70,7 @@ export default function Rooms() {
         <div className={styles.rooms}>
           {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms }]) => {
             const currentPlayers = lobbiesMap?.[address]?.currentPlayers;
-            const currentPlayersCount = currentPlayers ? currentPlayers.length + 1 : 1;
+            const currentPlayersCount = currentPlayers ? currentPlayers.length : 1;
 
             return (
               <Room
