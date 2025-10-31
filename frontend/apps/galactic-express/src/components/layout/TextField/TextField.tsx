@@ -5,7 +5,6 @@ import styles from './TextField.module.scss';
 
 function TextField({
   label,
-  size,
   placeholder,
   value,
   icon,
