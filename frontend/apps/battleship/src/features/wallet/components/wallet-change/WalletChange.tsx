@@ -15,8 +15,8 @@ import { useWallet } from '../../hooks';
 import styles from './WalletChange.module.scss';
 
 type Props = {
-  onClose(): void;
-  openConnectWallet(): void;
+  onClose: () => void;
+  openConnectWallet: () => void;
 };
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
@@ -47,7 +47,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
   };
 
   const handleLogoutButtonClick = () => {
-    logout();
+    void logout();
     onClose();
   };
 
