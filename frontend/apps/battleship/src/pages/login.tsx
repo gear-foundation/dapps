@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
-import { Button, buttonVariants } from '@/components/ui/button/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';

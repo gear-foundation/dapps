@@ -45,7 +45,7 @@ function useAccountAvailableBalanceSync() {
     if (!api || !isApiReady || !isAccountReady) return;
 
     if (account && balance) {
-      api.query.system.account(account.decodedAddress).then((res) => {
+      void api.query.system.account(account.decodedAddress).then((res) => {
         const systemAccount = res.toJSON() as SystemAccount;
 
         const total = balance.toString();
