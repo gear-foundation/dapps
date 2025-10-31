@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
-import { buttonVariants } from '@/components/ui/button/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 
 import ImageBase from './assets/images/404.jpg';

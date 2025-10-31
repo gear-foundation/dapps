@@ -43,7 +43,7 @@ export default function Login() {
           </Heading>
           <div>
             <Text size="md" className={styles.mainText}>
-              Welcome to the 'Battleship' game, where you can compete with an on-chain program.
+              {'Welcome to the "Battleship" game, where you can compete with an on-chain program.'}
               {!account && ' To start the game, connect your wallet.'}
             </Text>
           </div>

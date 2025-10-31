@@ -30,7 +30,7 @@ export function useEventGameLeft() {
     navigate(ROUTES.HOME);
   };
 
-  const onData = async ({ game_id }: GameLeftEvent) => {
+  const onData = ({ game_id }: GameLeftEvent) => {
     if (!account || game?.admin !== game_id) {
       return;
     }
@@ -40,14 +40,15 @@ export function useEventGameLeft() {
         setIsGameLeft(true);
       } else {
         alert.info('Your opponent has left the game.');
-        onGameLeft();
+        void onGameLeft();
       }
     } else {
-      await triggerGame();
-      clearZkData('multi', account);
-      resetGameState();
-      setIsGameLeft(false);
-      navigate(ROUTES.HOME);
+      void triggerGame().then(() => {
+        clearZkData('multi', account);
+        resetGameState();
+        setIsGameLeft(false);
+        navigate(ROUTES.HOME);
+      });
     }
   };
 

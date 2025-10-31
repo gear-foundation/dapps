@@ -56,8 +56,8 @@ export function useMoveTransaction(
     const hitTransaction = await makeMoveMessage(step, verificationVariables, gameId);
 
     const { response } = await hitTransaction.signAndSend();
-    await response();
     clearProofData(gameType);
+    await response();
 
     return triggerGame();
   };

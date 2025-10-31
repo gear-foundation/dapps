@@ -11,6 +11,7 @@ import { usePending } from '@/features/game/hooks';
 import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
+import { ZkProofData } from '@/features/zk/types';
 
 import { EVENT_NAME, SERVICE_NAME } from '../../consts';
 
@@ -43,12 +44,12 @@ export function useEventMoveMadeSubscription() {
     }
   };
 
-  const generateProofHit = async (step: string) => {
+  const generateProofHit = async (step: string): Promise<ZkProofData | null> => {
     const ships = getPlayerShips(gameType);
     const hits = getPlayerHits(gameType);
 
     if (!ships || !hits) {
-      return;
+      return null;
     }
 
     const proofData = await requestProofHit(
@@ -60,18 +61,20 @@ export function useEventMoveMadeSubscription() {
     return proofData;
   };
 
-  const onData = async (ev: MoveMadeEvent) => {
+  const handleMoveMade = async (ev: MoveMadeEvent) => {
     if (account?.decodedAddress !== ev.player) {
       return;
     }
     try {
       if (!isNull(ev.bot_step)) {
         const proofData = await generateProofHit(ev.bot_step.toString());
-        saveProofData(gameType, proofData);
+        if (proofData) {
+          saveProofData(gameType, proofData);
+        }
       }
       updateBoards(ev);
 
-      triggerGame();
+      await triggerGame();
       setPending(false);
     } catch (error) {
       console.error(error);
@@ -83,12 +86,13 @@ export function useEventMoveMadeSubscription() {
     program,
     serviceName: SERVICE_NAME,
     functionName: EVENT_NAME.SUBSCRIBE_TO_MOVE_MADE_EVENT,
-    onData,
+    onData: (event) => void handleMoveMade(event),
   });
 
   useEffect(() => {
     if (game === null) {
       clearProofData(gameType);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 }

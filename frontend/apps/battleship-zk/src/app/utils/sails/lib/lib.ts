@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
@@ -221,6 +222,7 @@ export class Program {
     verification_key_for_move: VerifyingKeyBytes,
     config: Configuration,
   ): TransactionBuilder<null> {
+    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
@@ -258,7 +260,7 @@ export class Program {
 }
 
 export class Admin {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public changeAdmin(new_admin: ActorId): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -569,7 +571,7 @@ export class Admin {
 }
 
 export class Multiple {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public cancelGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -898,11 +900,11 @@ export class Multiple {
               message.payload,
             )[2]
             .toJSON() as unknown as {
-            game_id: ActorId;
-            step: number | null;
-            verified_result: [number, MultipleUtilsStepResult] | null;
-            turn: ActorId;
-          },
+              game_id: ActorId;
+              step: number | null;
+              verified_result: [number, MultipleUtilsStepResult] | null;
+              turn: ActorId;
+            },
         );
       }
     });
@@ -931,12 +933,12 @@ export class Multiple {
               message.payload,
             )[2]
             .toJSON() as unknown as {
-            admin: ActorId;
-            winner: ActorId;
-            total_time: number | string | bigint;
-            participants_info: Array<[ActorId, ParticipantInfo]>;
-            last_hit: number | null;
-          },
+              admin: ActorId;
+              winner: ActorId;
+              total_time: number | string | bigint;
+              participants_info: Array<[ActorId, ParticipantInfo]>;
+              last_hit: number | null;
+            },
         );
       }
     });
@@ -982,7 +984,7 @@ export class Multiple {
 }
 
 export class Session {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -1092,7 +1094,7 @@ export class Session {
 }
 
 export class Single {
-  constructor(private _program: Program) {}
+  constructor(private _program: Program) { }
 
   public checkOutTiming(actor_id: ActorId, check_time: number | string | bigint): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -1314,13 +1316,13 @@ export class Single {
               message.payload,
             )[2]
             .toJSON() as unknown as {
-            player: ActorId;
-            winner: BattleshipParticipants;
-            time: number | string | bigint;
-            total_shots: number;
-            succesfull_shots: number;
-            last_hit: number | null;
-          },
+              player: ActorId;
+              winner: BattleshipParticipants;
+              time: number | string | bigint;
+              total_shots: number;
+              succesfull_shots: number;
+              last_hit: number | null;
+            },
         );
       }
     });
@@ -1348,11 +1350,11 @@ export class Single {
               message.payload,
             )[2]
             .toJSON() as unknown as {
-            player: ActorId;
-            step: number | null;
-            step_result: SingleUtilsStepResult | null;
-            bot_step: number | null;
-          },
+              player: ActorId;
+              step: number | null;
+              step_result: SingleUtilsStepResult | null;
+              bot_step: number | null;
+            },
         );
       }
     });

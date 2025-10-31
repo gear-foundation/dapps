@@ -31,13 +31,13 @@ export function useEventGameCancelled() {
     navigate(ROUTES.HOME);
   };
 
-  const onData = async ({ game_id }: GameCancelledEvent) => {
+  const onData = ({ game_id }: GameCancelledEvent) => {
     if (!account || game?.admin !== game_id) {
       return;
     }
 
     if (game?.admin === account?.decodedAddress) {
-      onGameCancelled();
+      void onGameCancelled();
     } else {
       setIsGameCancelled(true);
     }

@@ -53,63 +53,83 @@ export const getFormattedTime = (time: number, isPadMinutes = true) => {
   return formattedTime;
 };
 
-export const defineDeadShip = (i: number, board: string[]) => {
+export const defineDeadShip = (cellIndex: number, board: string[]) => {
   const numCols = 5;
   const markedShips: MarkedShips = {};
 
-  const defineDeadShip = (i: number, board: string[]): string[] => {
-    markedShips[i] = 1;
+  const markDeadShip = (position: number, currentBoard: string[]): string[] => {
+    markedShips[position] = 1;
 
-    if (board[i + 1] === 'BoomShip' && !markedShips[i + 1] && (i + 1) % numCols !== 0) {
-      defineDeadShip(i + 1, board);
-    }
-
-    if (board[i - 1] === 'BoomShip' && !markedShips[i - 1] && (i % numCols !== 0 || i === 0)) {
-      defineDeadShip(i - 1, board);
+    if (currentBoard[position + 1] === 'BoomShip' && !markedShips[position + 1] && (position + 1) % numCols !== 0) {
+      markDeadShip(position + 1, currentBoard);
     }
 
-    if (board[i + numCols] === 'BoomShip' && !markedShips[i + numCols]) {
-      defineDeadShip(i + numCols, board);
+    if (
+      currentBoard[position - 1] === 'BoomShip' &&
+      !markedShips[position - 1] &&
+      (position % numCols !== 0 || position === 0)
+    ) {
+      markDeadShip(position - 1, currentBoard);
     }
 
-    if (board[i - numCols] === 'BoomShip' && !markedShips[i - numCols]) {
-      defineDeadShip(i - numCols, board);
+    if (currentBoard[position + numCols] === 'BoomShip' && !markedShips[position + numCols]) {
+      markDeadShip(position + numCols, currentBoard);
     }
 
-    board[i] = 'DeadShip';
-
-    //borders
-    if (board[i + 1] === 'Unknown' && (i + 1) % numCols !== 0) {
-      board[i + 1] = 'Boom';
-    }
-    if (board[i - 1] === 'Unknown' && i % numCols !== 0 && i > 0) {
-      board[i - 1] = 'Boom';
-    }
-    if (board[i + numCols] === 'Unknown') {
-      board[i + numCols] = 'Boom';
-    }
-    if (board[i - numCols] === 'Unknown') {
-      board[i - numCols] = 'Boom';
+    if (currentBoard[position - numCols] === 'BoomShip' && !markedShips[position - numCols]) {
+      markDeadShip(position - numCols, currentBoard);
     }
 
-    //corners
-    if (board[i + 1 + numCols] === 'Unknown' && (i + 1) % numCols !== 0 && (i + 1 + numCols) % numCols !== 0) {
-      board[i + 1 + numCols] = 'Boom';
+    currentBoard[position] = 'DeadShip';
+
+    if (currentBoard[position + 1] === 'Unknown' && (position + 1) % numCols !== 0) {
+      currentBoard[position + 1] = 'Boom';
     }
-    if (board[i + 1 - numCols] === 'Unknown' && (i + 1) % numCols !== 0 && (i + 1 - numCols) % numCols !== 0) {
-      board[i + 1 - numCols] = 'Boom';
+    if (currentBoard[position - 1] === 'Unknown' && position % numCols !== 0 && position > 0) {
+      currentBoard[position - 1] = 'Boom';
     }
-    if (board[i - 1 + numCols] === 'Unknown' && i % numCols !== 0 && (i + numCols) % numCols !== 0 && i > 0) {
-      board[i - 1 + numCols] = 'Boom';
+    if (currentBoard[position + numCols] === 'Unknown') {
+      currentBoard[position + numCols] = 'Boom';
     }
-    if (board[i - 1 - numCols] === 'Unknown' && i % numCols !== 0 && (i - numCols) % numCols !== 0 && i > 0) {
-      board[i - 1 - numCols] = 'Boom';
+    if (currentBoard[position - numCols] === 'Unknown') {
+      currentBoard[position - numCols] = 'Boom';
     }
 
-    return board;
+    if (
+      currentBoard[position + 1 + numCols] === 'Unknown' &&
+      (position + 1) % numCols !== 0 &&
+      (position + 1 + numCols) % numCols !== 0
+    ) {
+      currentBoard[position + 1 + numCols] = 'Boom';
+    }
+    if (
+      currentBoard[position + 1 - numCols] === 'Unknown' &&
+      (position + 1) % numCols !== 0 &&
+      (position + 1 - numCols) % numCols !== 0
+    ) {
+      currentBoard[position + 1 - numCols] = 'Boom';
+    }
+    if (
+      currentBoard[position - 1 + numCols] === 'Unknown' &&
+      position % numCols !== 0 &&
+      (position + numCols) % numCols !== 0 &&
+      position > 0
+    ) {
+      currentBoard[position - 1 + numCols] = 'Boom';
+    }
+    if (
+      currentBoard[position - 1 - numCols] === 'Unknown' &&
+      position % numCols !== 0 &&
+      (position - numCols) % numCols !== 0 &&
+      position > 0
+    ) {
+      currentBoard[position - 1 - numCols] = 'Boom';
+    }
+
+    return currentBoard;
   };
 
-  defineDeadShip(i, board);
+  markDeadShip(cellIndex, board);
 
   return board;
 };
@@ -123,15 +143,15 @@ export function checkDeadShip(index: number, board: string[]): boolean {
 
   const visited = new Set<number>();
 
-  const checkNeighbors = (index: number): boolean => {
-    if (visited.has(index)) {
+  const traverseNeighbors = (cell: number): boolean => {
+    if (visited.has(cell)) {
       return true;
     }
 
-    visited.add(index);
+    visited.add(cell);
 
-    const row = Math.floor(index / boardSize);
-    const col = index % boardSize;
+    const row = Math.floor(cell / boardSize);
+    const col = cell % boardSize;
 
     const directions = [
       [-1, 0], // up,
@@ -148,7 +168,7 @@ export function checkDeadShip(index: number, board: string[]): boolean {
         if (board[newIndex] === 'Ship') {
           return false;
         }
-        if (['BoomShip', 'DeadShip'].includes(board[newIndex]) && !checkNeighbors(newIndex)) {
+        if (['BoomShip', 'DeadShip'].includes(board[newIndex]) && !traverseNeighbors(newIndex)) {
           return false;
         }
       }
@@ -156,5 +176,5 @@ export function checkDeadShip(index: number, board: string[]): boolean {
     return true;
   };
 
-  return checkNeighbors(index);
+  return traverseNeighbors(index);
 }

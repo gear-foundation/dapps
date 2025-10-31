@@ -20,7 +20,8 @@ export const useRemainingTimeQuery = () => {
   });
 
   useEffect(() => {
-    refetch();
+    void refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.last_move_time]);
 
   const remainingTime = gameEndResult && gameEndResult.winner !== address ? 0 : data;

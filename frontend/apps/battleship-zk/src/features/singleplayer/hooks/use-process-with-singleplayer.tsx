@@ -20,14 +20,14 @@ export const useProcessWithSingleplayer = () => {
 
   const { gameEndResult } = useEventGameEndSubscription();
 
-  const totalShoots = useMemo(() => (game ? game.total_shots : gameEndResult?.total_shots || 0), [game]);
-  const successfulShoots = useMemo(() => (game ? game.succesfull_shots : gameEndResult?.succesfull_shots || 0), [game]);
+  const totalShoots = game?.total_shots ?? gameEndResult?.total_shots ?? 0;
+  const successfulShoots = game?.succesfull_shots ?? gameEndResult?.succesfull_shots ?? 0;
 
   const gameUpdatedEvent = useMemo(() => ({ turn: '', verificationRequired: game?.verification_requirement }), [game]);
 
   const remainingTime = useRemainingTimeQuery();
 
-  const exitGame = async () => {
+  const exitGame = () => {
     navigate(ROUTES.HOME);
   };
 

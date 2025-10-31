@@ -21,12 +21,13 @@ export default function VoucherExpiredModal() {
       setIsOpen(true);
       setIsEnabled(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVoucherExpired]);
 
   return isOpen && isVoucherExpired ? (
     <ModalBottom heading="Voucher Expired" onClose={() => setIsOpen(false)}>
       <div className={styles.content}>
-        <Text>Your voucher has expired and couldn't be used.</Text>
+        <Text>Your voucher has expired and couldn&apos;t be used.</Text>
         <div className={styles.buttons}>
           <Button color="contrast" text="Exit" onClick={() => setIsOpen(false)} />
         </div>

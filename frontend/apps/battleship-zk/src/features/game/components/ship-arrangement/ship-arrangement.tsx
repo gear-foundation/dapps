@@ -41,9 +41,9 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
   const [shipsField, setShipsField] = useState<number[][]>([]);
   const [isLoadingGenerate, setLoadingGenerate] = useState(false);
 
-  const onGenerateRandomLayout = async () => {
+  const onGenerateRandomLayout = () => {
     setLoadingGenerate(true);
-    const newLayout = await generateShipsField(5, 5);
+    const newLayout = generateShipsField(5, 5);
     const playerShipsLayout = convertShipsToField(newLayout, 5, 5);
 
     if (newLayout !== null) {
@@ -84,7 +84,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
       setBoard(gameType, 'player', shipsBoard);
       setBoard(gameType, 'enemy', convertShipsToField([], 5, 5, 'Unknown'));
 
-      await triggerGame();
+      triggerGame();
     } catch (error) {
       console.error(error);
       alert.error(getErrorMessage(error));
@@ -98,7 +98,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
       <div className={styles.header}>
         <Heading>Your Ships</Heading>
         <div className={styles.textWrapper}>
-          <Text size="lg">Click 'Generate' to choose a ship arrangement on the board.</Text>
+          <Text size="lg">Click &apos;Generate&apos; to choose a ship arrangement on the board.</Text>
         </div>
       </div>
       <div className={styles.map}>

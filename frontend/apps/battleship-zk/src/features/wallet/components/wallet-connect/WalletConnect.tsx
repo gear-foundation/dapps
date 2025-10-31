@@ -3,8 +3,9 @@ import Identicon from '@polkadot/react-identicon';
 import { Suspense, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { ROUTES } from '@/app/consts';
-import { copyToClipboard } from '@/app/utils/utils';
 import { CopyDecoded } from '@/assets/images/';
 import { Button } from '@/components/ui/button';
 import { ModalBottom } from '@/components/ui/modal';
@@ -15,7 +16,11 @@ import { useWallet } from '../../hooks';
 import styles from './WalletConnect.module.scss';
 
 type Props = {
-  onClose(): void;
+  onClose: () => void;
+};
+
+type LocationState = {
+  from?: { pathname?: string };
 };
 
 export function WalletConnect({ onClose }: Props) {
@@ -73,11 +78,11 @@ export function WalletConnect({ onClose }: Props) {
 
       const isActive = address === account?.address;
 
-      const handleClick = async () => {
+      const handleClick = () => {
         login(_account);
         onClose();
-
-        const from = location.state?.from?.pathname || ROUTES.HOME;
+        const locationState = location.state as LocationState | null;
+        const from = locationState?.from?.pathname ?? ROUTES.HOME;
         navigate(from, { replace: true });
       };
 

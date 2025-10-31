@@ -6,10 +6,9 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getErrorMessage } from '@dapps-frontend/ui';
+import { getErrorMessage, copyToClipboard } from '@dapps-frontend/ui';
 
 import { ROUTES } from '@/app/consts';
-import { copyToClipboard } from '@/app/utils/utils';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
@@ -128,7 +127,7 @@ export function Registration() {
         navigate(ROUTES.GAME);
       }
     }
-  }, [game]);
+  }, [game, navigate]);
 
   return (
     <div className={styles.container}>

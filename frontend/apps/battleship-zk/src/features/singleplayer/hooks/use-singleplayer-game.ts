@@ -2,6 +2,8 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { usePending } from '@/features/game/hooks';
 
 import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
@@ -15,7 +17,7 @@ export function useSingleplayerGame() {
   const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
   const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
   const { setPending } = usePending();
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const triggerGame = async () => {
     if (!account?.address) {
@@ -29,9 +31,10 @@ export function useSingleplayerGame() {
         setIsActiveGame(true);
       }
       setIsGameReady(true);
-    } catch (err) {
-      console.log(err);
-      setError(err);
+    } catch (_error) {
+      const errorMessage = getErrorMessage(_error);
+      console.error(_error);
+      setError(errorMessage);
     }
   };
 
@@ -61,7 +64,8 @@ export function useInitSingleGame() {
   useEffect(() => {
     if (account?.decodedAddress) {
       resetGameState();
-      triggerGame();
+      void triggerGame();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.decodedAddress]);
 }

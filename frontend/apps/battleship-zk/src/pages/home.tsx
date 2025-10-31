@@ -26,7 +26,7 @@ export default function Home() {
     if (game === null && account?.address) {
       clearZkData('multi', account);
     }
-  }, [isActiveGame, account]);
+  }, [account, game]);
 
   return (
     <>
