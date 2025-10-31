@@ -11,9 +11,7 @@ import { getMintDetails, uploadToIpfs } from '@/utils';
 
 import styles from './Create.module.scss';
 import { Attributes } from './attributes';
-
-type AttributesValue = { key: string; value: string };
-type Values = { name: string; description: string; attributes: AttributesValue[]; rarity: string };
+import { FormValues } from './types';
 
 const defaultAttributes = [{ key: '', value: '' }];
 const defaultValues = { name: '', description: '', attributes: defaultAttributes, rarity: '' };
@@ -23,7 +21,7 @@ const IMAGE_FILE_TYPES = ['image/png', 'image/gif', 'image/jpeg'];
 function Create() {
   const alert = useAlert();
 
-  const { formState, control, register, handleSubmit, resetField, reset } = useForm<Values>({ defaultValues });
+  const { formState, control, register, handleSubmit, resetField, reset } = useForm<FormValues>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
   const { errors } = formState;
 
@@ -61,7 +59,7 @@ function Create() {
     setIsRarity(false);
   };
 
-  const onSubmit = async (data: Values) => {
+  const onSubmit = async (data: FormValues) => {
     if (!imageFile) return alert.error('Image is required');
 
     const { name, description, attributes, rarity } = data;
@@ -71,14 +69,13 @@ function Create() {
 
     const files = detailsFile ? [imageFile, detailsFile] : [imageFile];
 
-    uploadToIpfs(files)
-      .then(async ([imageCid, detailsCid]) => {
-        mintMessage({ name, description, media: imageCid, reference: detailsCid || '' }, { onSuccess: resetForm });
-      })
-      .catch((e) => {
-        console.error(e);
-        alert.error(getErrorMessage(e));
-      });
+    try {
+      const [imageCid, detailsCid] = await uploadToIpfs(files);
+      await mintMessage({ name, description, media: imageCid, reference: detailsCid || '' }, { onSuccess: resetForm });
+    } catch (error) {
+      console.error(error);
+      alert.error(getErrorMessage(error));
+    }
   };
 
   return (

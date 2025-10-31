@@ -46,9 +46,9 @@ function Listing() {
   useEffect(() => {
     if (!reference) return;
 
-    fetch(getIpfsAddress(reference))
+    void fetch(getIpfsAddress(reference))
       .then((response) => response.json())
-      .then((result) => setDetails(result));
+      .then((result: NFTDetails) => setDetails(result));
   }, [reference]);
 
   return baseNft && isFetched && isReferenceLoaded ? (
