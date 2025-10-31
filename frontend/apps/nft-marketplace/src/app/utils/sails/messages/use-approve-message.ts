@@ -21,7 +21,7 @@ export const useApproveMessage = () => {
 
   const approveMessage = async ({ tokenId }: Params, options?: Options) =>
     executeWithPending(async () => {
-      if (!account?.decodedAddress) throw 'account is not connected';
+      if (!account?.decodedAddress) throw new Error('Account is not connected');
       const { transaction } = await prepareTransactionAsync({
         args: [ENV.MARKETPLACE_CONTRACT, tokenId],
         gasLimit: { increaseGas: 10 },

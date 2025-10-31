@@ -41,7 +41,7 @@ function Offer({ bidder, listingOwner, price }: Props) {
   };
 
   const accept = () => {
-    acceptOfferMessage({ tokenId: id, price: BigInt(price) }, { onSuccess: closeModal });
+    void acceptOfferMessage({ tokenId: id, price: BigInt(price) }, { onSuccess: closeModal });
   };
 
   return (

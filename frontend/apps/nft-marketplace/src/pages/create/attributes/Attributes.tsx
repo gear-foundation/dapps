@@ -3,11 +3,13 @@ import { FieldArrayWithId, UseFormRegister } from 'react-hook-form';
 
 import MinusSVG from '@/assets/images/form/minus.svg?react';
 
+import { FormValues } from '../types';
+
 import styles from './Attributes.module.scss';
 
 type Props = {
-  register: UseFormRegister<any>;
-  fields: FieldArrayWithId[];
+  register: UseFormRegister<FormValues>;
+  fields: FieldArrayWithId<FormValues, 'attributes', 'id'>[];
   onRemoveButtonClick: (index: number) => void;
 };
 

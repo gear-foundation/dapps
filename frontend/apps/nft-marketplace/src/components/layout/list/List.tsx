@@ -8,7 +8,7 @@ import styles from './List.module.scss';
 import { Header } from './header';
 import { NFT } from './nft';
 
-type NFTs = {
+type NFTCollection = {
   list: NFTType[] | undefined;
   isRead: boolean;
   fallback: string;
@@ -16,7 +16,7 @@ type NFTs = {
 
 type Props = {
   heading: string;
-  NFTs: NFTs;
+  NFTs: NFTCollection;
   filter?: Filter;
 };
 
