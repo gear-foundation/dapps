@@ -35,7 +35,7 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
   const numRows = 5;
   const numCols = 5;
   const [deadShips, setDeadShips] = useState<RenderShips>({});
-  const ships: { [key: string]: string } = {
+  const ships: Record<string, string> = {
     shipX1SVG,
     shipX2SVG,
     shipX3SVG,
@@ -102,6 +102,7 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
           height: sizeBlock,
           transform: `rotate(${degrees}deg) translateX(${translateShip(length)}%)`,
         }}
+        alt={`Destroyed ship of length ${length}`}
       />
     );
   };
@@ -142,14 +143,22 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
         key={`block-${row}-${col}`}
         className={clsx(cellClassName, styles.blockEnemy)}
         style={cellStyle}
-        onClick={() => handleCellClick(cellIndex)}>
+        onClick={() => handleCellClick(cellIndex)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleCellClick(cellIndex);
+          }
+        }}
+        role="button"
+        tabIndex={isDisabledCell ? -1 : 0}>
         {isHit && !isDeadShips && !isHitShips && <div className={styles.hitEmpty} />}
         {isDeadShips && !!deadShips[cellIndex] && handleRenderDeadShip(deadShips[cellIndex])}
         {(isDeadShips || isHitShips) && (
           <>
             <CellCrossSVG className={clsx(styles.cellCross, styles.cellCrossEnemy)} />
             <img src={fireGif} alt="fire" className={styles.cellFire} />
-            {Math.random() >= 0.5 && <img src={smokeSVG} alt="fire" className={styles.cellSmoke} />}
+            {Math.random() >= 0.5 && <img src={smokeSVG} alt="smoke" className={styles.cellSmoke} />}
           </>
         )}
       </div>

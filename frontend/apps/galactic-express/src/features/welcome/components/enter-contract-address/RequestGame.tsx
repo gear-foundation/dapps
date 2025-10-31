@@ -73,9 +73,11 @@ function RequestGame() {
 
   const { errors: createErrors, getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
 
-  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values: joinValues } = joinForm;
 
-  const { refetch } = useGetGameQuery(values.address?.length === 49 ? decodeAddress(values.address) : undefined);
+  const { refetch } = useGetGameQuery(
+    joinValues.address?.length === 49 ? decodeAddress(joinValues.address) : undefined,
+  );
 
   const handleSetStatus = (newStatus: Status) => {
     setStatus(newStatus);
@@ -85,14 +87,17 @@ function RequestGame() {
     setIsJoinSessionModalShown(false);
   };
 
-  const handleCreateSession = (values: CreateFormValues) => {
+  const handleCreateSession = (formValues: CreateFormValues) => {
     if (!account?.decodedAddress) {
       return;
     }
-    void createNewSessionMessage({ name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) });
+    void createNewSessionMessage({
+      name: formValues.name,
+      value: BigInt(getChainBalanceValue(formValues.fee).toFixed()),
+    });
   };
 
-  const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
+  const handleOpenJoinSessionModal = async (formValues: JoinFormValues) => {
     if (!account?.decodedAddress) {
       return;
     }
@@ -102,7 +107,7 @@ function RequestGame() {
 
       if (data) {
         setFoundState(data);
-        setFoundGame(decodeAddress(values.address || ''));
+        setFoundGame(decodeAddress(formValues.address || ''));
         setIsJoinSessionModalShown(true);
         return;
       }
@@ -113,10 +118,10 @@ function RequestGame() {
     }
   };
 
-  const handleJoinSession = (values: JoinModalFormValues) => {
+  const handleJoinSession = (formValues: JoinModalFormValues) => {
     if (foundGame) {
       setCurrentGame(foundGame);
-      setPlayerName(values.name);
+      setPlayerName(formValues.name);
     }
   };
 
@@ -129,6 +134,9 @@ function RequestGame() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const registeredPlayersCount =
+    foundState && 'registration' in foundState.stage ? foundState.stage.registration.length : 0;
 
   return (
     <div className={cx(styles.container)}>
@@ -222,9 +230,7 @@ function RequestGame() {
       {isJoinSessionModalShown && (
         <GameFoundModal
           entryFee={getFormattedBalanceValue(String(foundState?.bid || '')).toFixed()}
-          players={
-            ((foundState && 'registration' in foundState?.stage && foundState?.stage.registration?.length) || 0) + 1
-          }
+          players={registeredPlayersCount + 1}
           gasAmount={1.121}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}

@@ -20,7 +20,7 @@ export const useMintMessage = () => {
 
   const mintMessage = async (tokenMetadata: Params, options?: Options) =>
     executeWithPending(async () => {
-      if (!account?.decodedAddress) throw 'account is not connected';
+      if (!account?.decodedAddress) throw new Error('Account is not connected');
       const { transaction } = await prepareTransactionAsync({
         args: [account.decodedAddress, tokenMetadata],
         gasLimit: { increaseGas: 10 },

@@ -27,48 +27,48 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
   const buy = (onSuccess: () => void) => {
     if (!price) return;
 
-    buyItemMessage(
+    void buyItemMessage(
       { tokenId, value: BigInt(price) },
       {
         onSuccess: () => {
           onSuccess();
-          refetch();
+          void refetch();
         },
       },
     );
   };
 
   const offer = (value: string, onSuccess: () => void) => {
-    addOfferMessage(
+    void addOfferMessage(
       { tokenId, price: BigInt(value), value: BigInt(value) },
       {
         onSuccess: () => {
           onSuccess();
-          refetch();
+          void refetch();
         },
       },
     );
   };
 
   const bid = (value: string, onSuccess: () => void) => {
-    addBidMessage(
+    void addBidMessage(
       { tokenId, price: BigInt(value), value: BigInt(value) },
       {
         onSuccess: () => {
           onSuccess();
-          refetch();
+          void refetch();
         },
       },
     );
   };
 
   const settle = (onSuccess: () => void) => {
-    settleAuctionMessage({ tokenId }, { onSuccess });
+    void settleAuctionMessage({ tokenId }, { onSuccess });
   };
 
   const startSale = (value: string, onSuccess: () => void) => {
     const addMarketData = () => {
-      addMarketDataMessage(
+      void addMarketDataMessage(
         { tokenId, price: BigInt(value), value: BigInt(value) },
         {
           onSuccess: () => {
@@ -81,7 +81,7 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
     if (isMarketOwner) {
       addMarketData();
     } else {
-      approveMessage(
+      void approveMessage(
         { tokenId },
         {
           onSuccess: () => {
@@ -98,7 +98,7 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
     const minPrice = BigInt(values.minPrice);
 
     const sendStartAuctionMessage = () => {
-      createAuctionMessage(
+      void createAuctionMessage(
         { tokenId, minPrice, duration },
         {
           onSuccess: () => {
@@ -110,7 +110,7 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
     };
     const sendAddMarketDataMessage = () => {
       alert.info('NFT approved');
-      addMarketDataMessage(
+      void addMarketDataMessage(
         { tokenId, price: null },
         {
           onSuccess: () => {
@@ -124,7 +124,7 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
     if (isMarketOwner) {
       sendStartAuctionMessage();
     } else {
-      approveMessage({ tokenId }, { onSuccess: sendAddMarketDataMessage });
+      void approveMessage({ tokenId }, { onSuccess: sendAddMarketDataMessage });
     }
   };
 

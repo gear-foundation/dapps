@@ -51,7 +51,7 @@ function useMergedOwnerNFTs() {
 
   const ownerMarketTokens = useMemo(
     () => market?.items.filter(([_, { owner }]) => owner === account?.decodedAddress),
-    [market?.items],
+    [market?.items, account?.decodedAddress],
   );
 
   const { NFTs: ownerMarketNFTs, isEachNFTRead: isMarketNFTRead } = useMergedNFTs(ownerMarketTokens);

@@ -17,7 +17,7 @@ function AuctionModal({ close, onSubmit }: Props) {
     setValues((prevValues) => ({ ...prevValues, [name]: value }));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (minPrice && duration) onSubmit(values, close);
