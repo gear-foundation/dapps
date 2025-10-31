@@ -10,7 +10,22 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'color'> & {
 function Range(props: Props) {
   const { value } = props;
 
-  const style = { backgroundImage: `linear-gradient(to right, #2bd071 ${value}%, #2c2b30 ${value}%)` };
+  const getPercentage = () => {
+    if (Array.isArray(value)) {
+      return Number(value[0] ?? 0);
+    }
+
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    return Number(value ?? 0);
+  };
+
+  const percentage = getPercentage();
+  const style = {
+    backgroundImage: `linear-gradient(to right, #2bd071 ${percentage}%, #2c2b30 ${percentage}%)`,
+  };
 
   return (
     <div>
