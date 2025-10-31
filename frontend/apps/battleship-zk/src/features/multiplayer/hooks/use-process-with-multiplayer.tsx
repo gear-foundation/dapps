@@ -29,8 +29,8 @@ export const useProcessWithMultiplayer = () => {
   const participantsData = gameEndResult?.participants_info || game?.participants_data;
   const participant = participantsData?.find((item) => item[0] === account?.decodedAddress)?.[1];
 
-  const totalShoots = useMemo(() => (participant ? participant?.total_shots : 0), [game]);
-  const successfulShoots = useMemo(() => (participant ? participant?.succesfull_shots : 0), [game]);
+  const totalShoots = participant?.total_shots ?? 0;
+  const successfulShoots = participant?.succesfull_shots ?? 0;
 
   const gameUpdatedEvent = useMemo(() => {
     const [pendingVerification, verificationRequired] =
@@ -41,7 +41,7 @@ export const useProcessWithMultiplayer = () => {
       pendingVerification,
       verificationRequired: pendingVerification === account?.decodedAddress ? verificationRequired : undefined,
     };
-  }, [game]);
+  }, [account?.decodedAddress, game]);
 
   const remainingTime = useRemainingTimeQuery();
 

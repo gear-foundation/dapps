@@ -33,7 +33,7 @@ export function useEventMoveMadeSubscription() {
     const hits = getPlayerHits(gameType);
 
     if (!ships || !hits || isNull(ev.step)) {
-      return;
+      throw new Error('Ships or hits not found');
     }
 
     const proofData = await requestProofHit(
@@ -75,12 +75,13 @@ export function useEventMoveMadeSubscription() {
     program,
     serviceName: SERVICE_NAME,
     functionName: EVENT_NAME.SUBSCRIBE_TO_MOVE_MADE_EVENT,
-    onData,
+    onData: (event) => void onData(event),
   });
 
   useEffect(() => {
     if (game === null) {
       clearProofData(gameType);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 }

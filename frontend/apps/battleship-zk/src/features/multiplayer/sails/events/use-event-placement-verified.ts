@@ -18,7 +18,7 @@ export function useEventPlacementVerified() {
       return;
     }
 
-    triggerGame();
+    void triggerGame();
   };
 
   useProgramEvent({

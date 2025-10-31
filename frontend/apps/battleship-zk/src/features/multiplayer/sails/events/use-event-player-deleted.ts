@@ -32,7 +32,7 @@ export function useEventPlayerDeleted() {
     navigate(ROUTES.HOME);
   };
 
-  const onData = async ({ game_id, removable_player }: PlayerDeletedEvent) => {
+  const onData = ({ game_id, removable_player }: PlayerDeletedEvent) => {
     if (!account || game?.admin !== game_id || removable_player !== account.decodedAddress) {
       return;
     }

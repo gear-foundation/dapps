@@ -55,12 +55,9 @@ export function Multiplayer() {
     navigate(ROUTES.HOME);
   };
 
-  const loadSavedBoard = () => {
-    setSavedPlayerBoard(getBoard(gameType, 'player'));
-  };
-
   useEffect(() => {
-    loadSavedBoard();
+    setSavedPlayerBoard(getBoard(gameType, 'player'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return isPlacementStatus ? (
@@ -74,7 +71,7 @@ export function Multiplayer() {
       {playerInfo?.ship_hash && playerInfo.ship_hash.toString() !== '0x' && (
         <Modal heading="Please Wait" onClose={handleCloseModal} closeOnMissclick={false}>
           <div className={styles.waitModalContent}>
-            The opponent hasn't placed their ships yet.
+            The opponent hasn&apos;t placed their ships yet.
             <Button disabled={pending} className={styles.leaveGameButton} onClick={exitGame}>
               Leave game
             </Button>
@@ -83,15 +80,12 @@ export function Multiplayer() {
       )}
 
       {isPlayerDeleted && (
-        <GameCancelledModal
-          text={'You have been removed from the game by an administrator.'}
-          onClose={onPlayerDeleted}
-        />
+        <GameCancelledModal text="You have been removed from the game by an administrator." onClose={onPlayerDeleted} />
       )}
       {isGameCancelled && (
-        <GameCancelledModal text={'The game was terminated by the administrator.'} onClose={onGameCancelled} />
+        <GameCancelledModal text="The game was terminated by the administrator." onClose={onGameCancelled} />
       )}
-      {isGameLeft && <GameCancelledModal text={'Your opponent has left the game.'} onClose={onGameLeft} />}
+      {isGameLeft && <GameCancelledModal text="Your opponent has left the game." onClose={onGameLeft} />}
     </>
   ) : (
     <GameProcess

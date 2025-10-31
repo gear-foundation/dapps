@@ -10,7 +10,6 @@ import { TextField } from '@/components/layout/text-field';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-
 import { usePending } from '@/features/game/hooks';
 
 import { useMultiplayerGame } from '../../hooks';
@@ -48,7 +47,7 @@ function CreateGameForm({ onCancel }: Props) {
         Number(value) < existentialDeposit + 5 && Number(value) > 0
           ? `value must be more than ${existentialDeposit + 5} or 0`
           : null,
-      name: isNotEmpty(`Name shouldn't be empty`),
+      name: isNotEmpty('Name shouldn&apos;t be empty'),
     },
   });
 
@@ -81,7 +80,7 @@ function CreateGameForm({ onCancel }: Props) {
         <Heading className={styles.mainHeading}>Create a private game</Heading>
         <div>
           <Text className={styles.mainText}>
-            Configure the game settings and click 'Create game'. Share the game's address to invite a friend.
+            {"Configure the game settings and click 'Create game'. Share the game's address to invite a friend."}
           </Text>
         </div>
       </div>

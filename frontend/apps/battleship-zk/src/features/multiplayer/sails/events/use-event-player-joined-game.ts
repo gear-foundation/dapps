@@ -18,7 +18,7 @@ export function useEventPlayerJoinedGame() {
 
   const onData = ({ game_id, player_id }: PlayerJoinedEvent) => {
     if (game?.admin === game_id) {
-      triggerGame();
+      void triggerGame();
 
       if (player_id !== account?.decodedAddress) {
         alert.info('The player has joined.');

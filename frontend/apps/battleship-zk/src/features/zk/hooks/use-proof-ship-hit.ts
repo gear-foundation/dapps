@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 
 import { ENV } from '@/app/consts';
-import { getArrangementShips, getHash, getParsedZkData, setZkData } from '@/features/zk/utils';
+import { getArrangementShips, getHash, getParsedZkData, isZkProofData, setZkData } from '@/features/zk/utils';
 
 import { GameType, ZkProofData } from '../types';
 
@@ -50,24 +50,35 @@ export const useProofShipHit = () => {
     return getParsedZkData(account)?.[gameType]?.['proof-data'] || null;
   };
 
-  const requestProofHit = async (shipsField: number[][], hit: string, hits: string[]) => {
+  const requestProofHit = async (shipsField: number[][], hit: string, hits: string[]): Promise<ZkProofData> => {
     const ships = getArrangementShips(shipsField);
 
     const hash = await getHash(shipsField.flat());
     const payload = { ...ships, hash, hit, hits };
 
     try {
-      const res = await fetch(`${ENV.ZK_PROOF_BACKEND}/api/proof/hit`, {
+      const response = await fetch(`${ENV.ZK_PROOF_BACKEND}/api/proof/hit`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const proofData = await res.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch proof data');
+      }
+      const proofData: unknown = await response.json();
+
+      if (!isZkProofData(proofData)) {
+        throw new Error('Received invalid proof data shape');
+      }
 
       return proofData;
-    } catch (_error) {
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+
       throw new Error('Failed to fetch proof data');
     }
   };

@@ -2,6 +2,8 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 
+import { getErrorMessage } from '@dapps-frontend/ui';
+
 import { usePending } from '@/features/game/hooks';
 
 import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
@@ -16,7 +18,7 @@ export function useMultiplayerGame() {
   const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
   const { setPending } = usePending();
 
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const triggerGame = async () => {
     if (!account?.address) {
@@ -31,9 +33,10 @@ export function useMultiplayerGame() {
         setIsActiveGame(true);
       }
       setIsGameReady(true);
-    } catch (err) {
-      console.log(err);
-      setError(err);
+    } catch (_error) {
+      const errorMessage = getErrorMessage(_error);
+      console.error(_error);
+      setError(errorMessage);
     }
   };
 
@@ -62,8 +65,9 @@ export function useInitMultiplayerGame() {
 
   useEffect(() => {
     if (account?.decodedAddress) {
-      initGame();
+      void initGame();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.decodedAddress]);
 
   return { isLoading, isActiveGame };

@@ -1,6 +1,6 @@
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { isNull } from '@polkadot/util';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useProgram } from '@/app/utils/sails';
 import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
@@ -21,11 +21,10 @@ export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
   const { game, gameEndResult, setGameEndResult, triggerGame } = useMultiplayerGame();
-  const [gameAdmin, setGameAdmin] = useState<string | null>(null);
   const { updateEnemyBoard } = useShips();
 
   const onData = useCallback(
-    async (ev: GameEndEvent) => {
+    (ev: GameEndEvent) => {
       if (!account?.decodedAddress) {
         return;
       }
@@ -43,11 +42,12 @@ export function useEventGameEndSubscription() {
 
         if (ev.winner === account?.decodedAddress && !isNull(ev.last_hit)) {
           updateEnemyBoard('multi', 'DeadShip', ev.last_hit);
-          triggerGame();
+          void triggerGame();
         }
       }
     },
-    [gameAdmin],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [account?.decodedAddress, game?.admin],
   );
 
   useProgramEvent({
@@ -56,12 +56,6 @@ export function useEventGameEndSubscription() {
     functionName: EVENT_NAME.SUBSCRIBE_TO_END_GAME_EVENT,
     onData,
   });
-
-  useEffect(() => {
-    if (game?.admin) {
-      setGameAdmin(game.admin);
-    }
-  }, [game?.admin]);
 
   return { gameEndResult };
 }

@@ -5,15 +5,36 @@ import { buildPoseidon } from '@/features/zk/utils/poseidon';
 
 import { GameType, ZkData, ZkProofData } from '../types';
 
-export const getHash = async (data: number[] | string[]) => {
-  const poseidon = await buildPoseidon();
-  const hash = poseidon(data);
+type PoseidonInstance = {
+  (inputs: Array<number | string>): unknown;
+  F: {
+    toString: (value: unknown) => string;
+  };
+};
 
-  return poseidon.F.toString(hash);
+const isPoseidonInstance = (value: unknown): value is PoseidonInstance =>
+  typeof value === 'function' && typeof (value as { F?: { toString?: unknown } }).F?.toString === 'function';
+
+export const getHash = async (data: Array<number | string>): Promise<string> => {
+  const poseidonResult: unknown = await buildPoseidon();
+
+  if (!isPoseidonInstance(poseidonResult)) {
+    throw new Error('Poseidon instance is not available');
+  }
+
+  const hash = poseidonResult(data);
+
+  return poseidonResult.F.toString(hash);
 };
 
 export const getArrangementShips = (shipsField: number[][]) =>
-  shipsField.reduce((acc, item, i) => ({ ...acc, [`ship_${i + 1}`]: item.map((i) => i.toString()) }), {});
+  shipsField.reduce(
+    (acc, shipCells, index) => ({
+      ...acc,
+      [`ship_${index + 1}`]: shipCells.map((cell) => cell.toString()),
+    }),
+    {} as Record<string, string[]>,
+  );
 
 export const getHitShips = (shipsField: number[][]) => shipsField.flat().map((item) => item.toString());
 
@@ -56,4 +77,25 @@ export const getVerificationVariables = (
       hit: publicContent.results[1][0],
     },
   };
+};
+
+export const isZkProofData = (value: unknown): value is ZkProofData => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const maybeProof = value as Partial<ZkProofData>;
+  const { proofContent, publicContent } = maybeProof;
+
+  if (!proofContent || typeof proofContent !== 'object') {
+    return false;
+  }
+
+  if (!publicContent || typeof publicContent !== 'object') {
+    return false;
+  }
+
+  const { results } = publicContent;
+
+  return Array.isArray(results);
 };

@@ -60,16 +60,16 @@ export default function MapEnemy({
   const definedDeadShips = (board: string[]) => {
     const markedShips: MarkedShips = {};
 
-    const defineShip = (i: number, step: number): [number, number] => {
-      markedShips[i] = 1;
+    const defineShip = (index: number, step: number): [number, number] => {
+      markedShips[index] = 1;
 
-      if (board[i + 1] === 'DeadShip' && !markedShips[i + 1] && (i + 1) % numCols !== 0) {
-        const [length] = defineShip(i + 1, step + 1);
+      if (board[index + 1] === 'DeadShip' && !markedShips[index + 1] && (index + 1) % numCols !== 0) {
+        const [length] = defineShip(index + 1, step + 1);
         return [length, 0];
       }
 
-      if (board[i + numCols] === 'DeadShip' && !markedShips[i + numCols]) {
-        const [length] = defineShip(i + numCols, step + 1);
+      if (board[index + numCols] === 'DeadShip' && !markedShips[index + numCols]) {
+        const [length] = defineShip(index + numCols, step + 1);
         return [length, 90];
       }
 
@@ -104,6 +104,7 @@ export default function MapEnemy({
 
     return (
       <img
+        alt="Destroyed ship"
         src={ships[`shipX${length}SVG`]}
         style={{
           position: 'absolute',
@@ -123,6 +124,7 @@ export default function MapEnemy({
     if (Object.keys(deadShips).length) {
       onDefineDeadShip(deadShips);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deadShips]);
 
   const renderCell = (row: number, col: number) => {
@@ -133,6 +135,7 @@ export default function MapEnemy({
     const isDeadShips = cellStatus === 'DeadShip';
     const isHitShips = cellStatus === 'BoomShip';
     const isPending = lastHit === cellIndex && cellStatus === 'Unknown';
+    const isUnavailable = isDisabledCell || ['Boom', 'BoomShip', 'DeadShip'].includes(cellStatus);
 
     let cellClassName = `${styles.block}`;
 
@@ -153,23 +156,41 @@ export default function MapEnemy({
       height: `${sizeBlock}px`,
     };
 
+    const statusDescription = (() => {
+      switch (cellStatus) {
+        case 'Unknown':
+          return 'unknown';
+        case 'Boom':
+          return 'missed shot';
+        case 'BoomShip':
+          return 'successful hit';
+        case 'DeadShip':
+          return 'destroyed ship';
+        default:
+          return 'untouched';
+      }
+    })();
+
     return (
-      <div
+      <button
+        type="button"
         key={`block-${row}-${col}`}
         className={clsx(cellClassName, styles.blockEnemy, isDisabledCell && styles.blockDisabled)}
         style={cellStyle}
-        onClick={() => handleCellClick(cellIndex)}>
+        onClick={() => handleCellClick(cellIndex)}
+        disabled={isUnavailable}
+        aria-label={`Cell ${row + 1}-${col + 1}: ${statusDescription}`}>
         {isHit && !isDeadShips && !isHitShips && <div className={styles.hitCircle} />}
         {isDeadShips && !!deadShips[cellIndex] && handleRenderDeadShip(deadShips[cellIndex])}
         {(isDeadShips || isHitShips) && (
           <>
             <CellCrossSVG className={clsx(styles.cellCross, styles.cellCrossEnemy)} />
             <img src={fireGif} alt="fire" className={styles.cellFire} />
-            {Math.random() >= 0.5 && <img src={smokeSVG} alt="fire" className={styles.cellSmoke} />}
+            {Math.random() >= 0.5 && <img src={smokeSVG} alt="smoke" className={styles.cellSmoke} />}
           </>
         )}
         {isPending && <div className={styles.pendingCell} />}
-      </div>
+      </button>
     );
   };
 
@@ -199,7 +220,7 @@ export default function MapEnemy({
       {renderMap()}
       {showTimer && (
         <div className={styles.oponentsTurn}>
-          <Text size="sm">Opponent's Turn:</Text>
+          <Text size="sm">Opponent&apos;s Turn:</Text>
           <Text weight="semibold" className={styles.time}>
             <Timer remainingTime={remainingTime} shouldGoOn />
           </Text>

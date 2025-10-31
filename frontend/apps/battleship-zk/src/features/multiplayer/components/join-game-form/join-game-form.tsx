@@ -46,7 +46,7 @@ function JoinGameForm({ onCancel }: Props) {
       address: undefined,
     },
     validate: {
-      address: isNotEmpty(`Address shouldn't be empty`),
+      address: isNotEmpty('Address shouldn&apos;t be empty'),
     },
   });
 
@@ -74,7 +74,7 @@ function JoinGameForm({ onCancel }: Props) {
       }
 
       setGameNotFoundModal(true);
-    } catch (err: any) {
+    } catch (_error) {
       setGameNotFoundModal(true);
     }
   };
@@ -107,7 +107,7 @@ function JoinGameForm({ onCancel }: Props) {
       <div className={styles.header}>
         <Heading className={styles.mainHeading}>Join a peer-to-peer game</Heading>
         <div>
-          <Text className={styles.mainText}>Enter the game's address to join the game.</Text>
+          <Text className={styles.mainText}>{"Enter the game's address to join the game."}</Text>
         </div>
       </div>
       <form className={styles.form} onSubmit={onJoinSubmit(handleOpenJoinSessionModal)}>
@@ -144,7 +144,7 @@ function JoinGameForm({ onCancel }: Props) {
       {gameNotFoundModal && (
         <TextModal
           heading="Game not found"
-          text="Please check the entered address. It&#39;s possible the game has been canceled or does not exist."
+          text="Please check the entered address. It's possible the game has been canceled or does not exist."
           onClose={handleCloseNotFoundModal}
         />
       )}

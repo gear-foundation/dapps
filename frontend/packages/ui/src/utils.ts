@@ -1,7 +1,7 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { RefObject, useEffect, useState } from 'react';
 
-export const copyToClipboard = async ({
+export const copyToClipboard = ({
   alert,
   value,
   successfulText,
@@ -9,7 +9,7 @@ export const copyToClipboard = async ({
   alert?: AlertContainerFactory;
   value: string;
   successfulText?: string;
-}) => {
+}): void => {
   const onSuccess = () => {
     if (alert) {
       alert.success(successfulText || 'Copied');

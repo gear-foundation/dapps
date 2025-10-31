@@ -35,7 +35,7 @@ export function useEventGameEndSubscription() {
       setGameEndResult(ev);
       if (ev.winner === 'Player' && !isNull(ev.last_hit)) {
         updateEnemyBoard('single', 'DeadShip', ev.last_hit);
-        triggerGame();
+        void triggerGame();
       }
     }
   };

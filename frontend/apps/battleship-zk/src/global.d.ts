@@ -36,8 +36,8 @@ declare global {
 // Miscellaneous types.
 declare global {
   interface Window {
-    // Nova Wallet will have this window property.
-    // eslint-disable-next-line
-    walletExtension?: any;
+    walletExtension?: {
+      isNovaWallet?: boolean;
+    };
   }
 }

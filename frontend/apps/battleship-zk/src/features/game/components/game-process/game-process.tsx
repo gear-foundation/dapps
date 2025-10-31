@@ -9,6 +9,7 @@ import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import { VerificationModal } from '@/features/game/components/verification-modal';
 import { useShips } from '@/features/zk/hooks/use-ships';
+
 import { SHIP_LENGTHS } from '../../consts';
 import { usePending } from '../../hooks';
 import { GameType, RenderShips } from '../../types';
@@ -40,7 +41,7 @@ type Props = {
   admin: string | undefined;
   onClickCell: (handleClickCell: number) => Promise<void>;
   onVerifyOponentsHit: () => Promise<void>;
-  onExitGame: () => Promise<void>;
+  onExitGame: () => void;
   resetGameState: () => void;
 };
 
@@ -121,6 +122,7 @@ export default function GameProcess({
     if (boardEnemy) {
       setEnemiesShips(boardEnemy);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameUpdatedEvent]);
 
   useEffect(() => {
@@ -168,7 +170,7 @@ export default function GameProcess({
           </div>
           <div className={styles.gameInfo}>
             <Text size="sm" weight="normal">
-              {gameType === 'single' || isYourTurn ? 'Your Turn:' : `Enemy's Turn:`}
+              {gameType === 'single' || isYourTurn ? 'Your Turn:' : `Enemy&apos;s Turn:`}
               <Timer remainingTime={remainingTime} shouldGoOn={!gameResults} redOnLast />
             </Text>
             <Text size="sm" weight="normal">

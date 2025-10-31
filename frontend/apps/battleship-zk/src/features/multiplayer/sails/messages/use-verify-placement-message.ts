@@ -27,7 +27,7 @@ export const useVerifyPlacementMessage = () => {
     // which will be deducted from the last signing player.
     const requiredGas = calculatedGas + BigInt(config?.gas_for_check_time || 0);
 
-    await transaction.withGas(requiredGas);
+    transaction.withGas(requiredGas);
     return transaction;
   };
 

@@ -24,8 +24,9 @@ export const useRemainingTimeQuery = () => {
 
   useEffect(() => {
     if (!gameEndResult && !pending) {
-      refetch();
+      void refetch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, gameEndResult]);
 
   const remainingTime = gameEndResult?.winner === 'Bot' ? 0 : data;

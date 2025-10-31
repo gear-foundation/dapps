@@ -14,7 +14,7 @@ function useWallet() {
   const [walletId, setWalletId] = useState(defaultWalletId);
 
   const wallet = walletId ? WALLET[walletId] : undefined;
-  const walletAccounts = wallets && walletId ? wallets[walletId].accounts : undefined;
+  const walletAccounts = walletId ? wallets?.[walletId]?.accounts : undefined;
 
   useEffect(() => {
     setWalletId(defaultWalletId);
@@ -45,7 +45,7 @@ function useAccountAvailableBalanceSync() {
     if (!api || !isApiReady || !isAccountReady) return;
 
     if (account && balance) {
-      api.query.system.account(account.decodedAddress).then((res) => {
+      void api.query.system.account(account.decodedAddress).then((res) => {
         const systemAccount = res.toJSON() as SystemAccount;
 
         const total = balance.toString();
