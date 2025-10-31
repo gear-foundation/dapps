@@ -33,7 +33,7 @@ export function useEventMoveMadeSubscription() {
     const hits = getPlayerHits(gameType);
 
     if (!ships || !hits || isNull(ev.step)) {
-      throw new Error('Ships or hits not found');
+      return null;
     }
 
     const proofData = await requestProofHit(
@@ -65,7 +65,9 @@ export function useEventMoveMadeSubscription() {
       updateEnemyBoard(gameType, stepResultToBoardEntityMap[stepResult], lastHit);
     }
 
-    saveProofData(gameType, proofData);
+    if (proofData) {
+      saveProofData(gameType, proofData);
+    }
 
     await triggerGame();
     setPending(false);

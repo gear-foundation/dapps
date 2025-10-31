@@ -49,7 +49,7 @@ export function useEventMoveMadeSubscription() {
     const hits = getPlayerHits(gameType);
 
     if (!ships || !hits) {
-      throw new Error('Ships or hits not found');
+      return null;
     }
 
     const proofData = await requestProofHit(
