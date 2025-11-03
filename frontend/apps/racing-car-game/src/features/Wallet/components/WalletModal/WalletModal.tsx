@@ -3,6 +3,8 @@ import { Dialog } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { PLAY } from '@/App.routes';
 import CopyIcon from '@/assets/icons/binary-code.svg?react';
 import CrossIcon from '@/assets/icons/cross-icon.svg?react';
@@ -11,7 +13,7 @@ import EditIcon from '@/assets/icons/pen-edit-icon.svg?react';
 import { variantsPanel, variantsOverlay } from '@/components/Modal/modal.variants';
 import { ScrollArea } from '@/components/ScrollArea';
 import { useAuth } from '@/features/Auth/hooks';
-import { cx, copyToClipboard, isMobileDevice } from '@/utils';
+import { cx, isMobileDevice } from '@/utils';
 
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
@@ -62,15 +64,15 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
 
       const isActive = address === account?.address;
 
-      const handleClick = async () => {
-        await signIn(_account);
+      const handleClick = () => {
+        signIn(_account);
         navigate(PLAY);
         setOpen(false);
         onClose();
       };
 
-      const handleCopyClick = async () => {
-        await copyToClipboard({ value: address, alert });
+      const handleCopyClick = () => {
+        copyToClipboard({ value: address, alert });
         setOpen(false);
         onClose();
       };

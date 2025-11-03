@@ -1,3 +1,5 @@
+@use 'sass:map';
+
 @use './variables' as *;
 
 @mixin sm {
@@ -31,7 +33,7 @@
 }
 
 @function theme-var($key, $fallback: null, $map: $theme-standard) {
-  @if not map-has-key($map, $key) {
+  @if not map.has-key($map, $key) {
     @error "key: '#{$key}', is not a key in map: #{$map}";
   }
   @if ($fallback) {
@@ -42,7 +44,9 @@
 }
 
 @mixin wings {
-  position: relative;
+  & {
+    position: relative;
+  }
 
   &::before,
   &::after {

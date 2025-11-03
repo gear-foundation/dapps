@@ -17,12 +17,12 @@ export function useAuth() {
     resetWalletId();
   };
 
-  const auth = async () => {
+  const auth = () => {
     setIsAuthReady(true);
   };
 
-  const signIn = async (_account: Account) => {
-    await login(_account);
+  const signIn = (_account: Account) => {
+    login(_account);
   };
 
   return { signIn, signOut, auth, isAuthReady };

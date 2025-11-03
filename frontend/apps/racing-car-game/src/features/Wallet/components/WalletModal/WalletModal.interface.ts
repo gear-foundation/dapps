@@ -1,5 +1,5 @@
 export interface WalletModalProps {
   open: boolean;
-  setOpen(value: boolean): void;
+  setOpen: (value: boolean) => void;
   onClose: () => void;
 }
