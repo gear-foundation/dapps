@@ -78,7 +78,7 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
                 })}
                 is a winner! Take your tequila and enjoy!
                 <div className="bg-[#F7F9FA] rounded-2xl flex items-center gap-5 p-5 mt-5 text-black">
-                  <p>Winner's prize:</p>
+                  <p>Winner&apos;s prize:</p>
                   <p className="font-semibold flex items-center gap-2 ">
                     <Icon name="vara-coin" width={24} height={24} />
                     {bid} VARA

@@ -11,7 +11,7 @@ export const LoginSection = () => {
               height={955}
               className="h-full w-full object-contain"
               src="/images/register.webp"
-              alt="image"
+              alt="Tequila Train welcome illustration"
               loading="lazy"
             />
           </div>

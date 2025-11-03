@@ -24,7 +24,7 @@ const validate: Record<string, typeof stringRequired> = {
 export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
   const { api } = useApi();
   const [isOpenModal, setOpenModal] = useState(false);
-  const [findGame, setFindGame] = useState<GameType | null>(null);
+  const [selectedGame, setSelectedGame] = useState<GameType | null>(null);
   const { state, setPreviousGame } = useGame();
   const { setIsPending, isPending } = useApp();
   const handleMessage = useGameMessage();
@@ -47,11 +47,11 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
   const handleSubmit = form.onSubmit((values) => {
     const [decimals] = api?.registry.chainDecimals ?? [12];
 
-    if (findGame) {
+    if (selectedGame) {
       setIsPending(true);
       handleMessage({
         payload: { Register: { creator: decodeAddress(values.creator) } },
-        value: parseFloat(findGame.bid) * 10 ** decimals,
+        value: parseFloat(selectedGame.bid) * 10 ** decimals,
         onSuccess,
         onError,
       });
@@ -60,9 +60,9 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 
   const onFindGame = () => {
     setPreviousGame(null);
-    const findGame = state?.games.find((game) => game[0] === decodeAddress(form.values.creator));
-    if (findGame) {
-      setFindGame(findGame[1] as GameType);
+    const matchingGameEntry = state?.games.find((game) => game[0] === decodeAddress(form.values.creator));
+    if (matchingGameEntry) {
+      setSelectedGame(matchingGameEntry[1] as GameType);
       setOpenModal(true);
     } else {
       setIsNotFound(true);
@@ -70,7 +70,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
   };
 
   const [decimals] = api?.registry.chainDecimals ?? [12];
-  const bid = parseFloat(findGame?.bid.replace(/,/g, '') || '0') / 10 ** decimals;
+  const bid = parseFloat(selectedGame?.bid.replace(/,/g, '') || '0') / 10 ** decimals;
 
   return (
     <div className="basis-[540px] grow lg:grow-0">
@@ -111,7 +111,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
                 <p>Players already joined the game</p>
                 <div className="flex items-center gap-1">
                   <Icon name="user" width={24} height={24} />
-                  <span className="font-semibold">{findGame?.initialPlayers.length} </span>
+                  <span className="font-semibold">{selectedGame?.initialPlayers.length} </span>
                   /8
                 </div>
               </div>
@@ -135,7 +135,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 
       {isNotFound && (
         <Modal heading="Game not found" onClose={() => setIsNotFound(false)}>
-          <p>Please check the entered address. It's possible the game has been canceled or does not exist.</p>
+          <p>Please check the entered address. It&apos;s possible the game has been canceled or does not exist.</p>
           <Button text="OK" color="grey" className="w-72 mt-5" onClick={() => setIsNotFound(false)} />
         </Modal>
       )}

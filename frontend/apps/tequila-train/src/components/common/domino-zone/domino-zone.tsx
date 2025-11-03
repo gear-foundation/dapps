@@ -16,13 +16,15 @@ export const DominoZone = ({ light, id, disabled, reverse }: Props) => {
 
   const onClick = () => {
     if (playerChoice) {
-      Number(playerChoice.track_id) !== id
-        ? setPlayerChoice({ ...playerChoice, track_id: id.toString(), remove_train: false })
-        : setPlayerChoice({
-            ...playerChoice,
-            track_id: undefined,
-            remove_train: false,
-          });
+      if (Number(playerChoice.track_id) !== id) {
+        setPlayerChoice({ ...playerChoice, track_id: id.toString(), remove_train: false });
+      } else {
+        setPlayerChoice({
+          ...playerChoice,
+          track_id: undefined,
+          remove_train: false,
+        });
+      }
     } else {
       setPlayerChoice({ track_id: id.toString(), remove_train: false });
     }

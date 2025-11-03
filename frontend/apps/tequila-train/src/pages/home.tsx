@@ -25,7 +25,8 @@ export const Home = () => {
       setIsUserCancelled(false);
       setPreviousGame(null);
     }
-  }, [game]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game, account?.decodedAddress]);
 
   const renderSection = () => {
     if (!account) {

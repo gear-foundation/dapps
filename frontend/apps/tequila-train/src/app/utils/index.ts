@@ -1,4 +1,3 @@
-import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -10,15 +9,6 @@ export const cx = (...styles: string[]) => clsx(...styles);
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {
-  try {
-    await navigator.clipboard.writeText(key);
-    alert.success(successfulText || 'Copied');
-  } catch (err) {
-    alert.error('Copy error');
-  }
-};
 
 export const getBgColors = (v: number) => {
   switch (v) {
@@ -61,11 +51,13 @@ const strings = [
 
 export const getTileId = (tile: DominoTileType, tiles: StateDominoTileType[]): number => {
   const objFromArray = { left: strings[+tile[0]], right: strings[+tile[1]] };
-  return tiles.findIndex((tile) => tile.left === objFromArray.left && tile.right === objFromArray.right);
+  return tiles.findIndex((stateTile) => stateTile.left === objFromArray.left && stateTile.right === objFromArray.right);
 };
 
-export const isSubset = (array1: any[], array2: any[]) => array2.every((element) => array1.includes(element));
-export const isPartialSubset = (array1: any[], array2: any[]) => array2.some((element) => array1.includes(element));
+export const isSubset = <T>(array1: readonly T[], array2: readonly T[]) =>
+  array2.every((element) => array1.includes(element));
+export const isPartialSubset = <T>(array1: readonly T[], array2: readonly T[]) =>
+  array2.some((element) => array1.includes(element));
 
 export const hexRequired = (value: string) =>
   !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;

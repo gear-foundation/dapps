@@ -1,45 +1,11 @@
-import { createContext, ReactNode, useState } from 'react';
+import type { PropsWithChildren } from 'react';
 
-import { DominoTileType, PlayerChoiceType, GameType, IState, PlayersGame } from '../types/game';
+import { GameCtx } from './game-context';
+import { useGameState } from './game-state';
 
-const useProgram = () => {
-  const [state, setState] = useState<IState>();
-  const [game, setGame] = useState<GameType | null>(null);
-  const [timer, setTimer] = useState<number>(0);
-  const [players, setPlayers] = useState<PlayersGame[]>([]);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [selectedDomino, setSelectedDomino] = useState<[number, DominoTileType]>();
-  const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
-  const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
+export { GameCtx } from './game-context';
 
-  const [previousGame, setPreviousGame] = useState<GameType | null>(null);
-
-  return {
-    state,
-    setState,
-    game,
-    setGame,
-    timer,
-    setTimer,
-    players,
-    setPlayers,
-    isAdmin,
-    setIsAdmin,
-    playerTiles,
-    setPlayerTiles,
-    selectedDomino,
-    setSelectedDomino,
-    playerChoice,
-    setPlayerChoice,
-
-    previousGame,
-    setPreviousGame,
-  };
-};
-
-export const GameCtx = createContext({} as ReturnType<typeof useProgram>);
-
-export function GameProvider({ children }: { children: ReactNode }) {
+export function GameProvider({ children }: PropsWithChildren) {
   const { Provider } = GameCtx;
-  return <Provider value={useProgram()}>{children}</Provider>;
+  return <Provider value={useGameState()}>{children}</Provider>;
 }
