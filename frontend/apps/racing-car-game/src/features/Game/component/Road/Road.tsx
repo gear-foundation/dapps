@@ -30,10 +30,10 @@ function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
   const imagesCollection: RefObject<Record<string, HTMLImageElement>> = useRef({});
 
   const loadImageSync = (src: string) =>
-    new Promise((resolve, reject) => {
+    new Promise<HTMLImageElement>((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
-      img.onerror = () => reject();
+      img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
       img.src = src;
       imagesCollection.current[src] = img;
     });
@@ -53,7 +53,7 @@ function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
   };
 
   useEffect(() => {
-    loadRoadAssets();
+    void loadRoadAssets();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

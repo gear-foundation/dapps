@@ -23,4 +23,4 @@ function Alert({ alert, close }: AlertProps) {
   );
 }
 
-export { styles as alertStyles, Alert };
+export { Alert };

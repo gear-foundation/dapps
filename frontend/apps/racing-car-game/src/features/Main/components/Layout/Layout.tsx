@@ -19,7 +19,7 @@ function Layout() {
   const { account } = useAccount();
   const { isAvailableBalanceReady, availableBalance } = useAccountAvailableBalance();
 
-  const handleGoToPlay = async () => {
+  const handleGoToPlay = () => {
     if (isAvailableBalanceReady && account?.decodedAddress) {
       navigate(START, { replace: true });
     }

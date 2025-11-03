@@ -16,10 +16,11 @@ import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import { Button } from '@/ui';
 import { cx } from '@/utils';
 
+import { useEventRoundInfoSubscription, useGameQuery, usePlayerMoveMessage, useStartGameMessage } from '../../sails';
 import { Heading } from '../Heading';
-import styles from './Layout.module.scss';
 import { Road } from '../Road';
-import { useEventRoundInfoSubscription, usePlayerMoveMessage, useStartGameMessage, useGameQuery } from '../../sails';
+
+import styles from './Layout.module.scss';
 
 function LayoutComponent() {
   const { signless, gasless } = useEzTransactions();
@@ -35,17 +36,17 @@ function LayoutComponent() {
   const { startGameMessage } = useStartGameMessage();
 
   const subscriptionCallback = useCallback(() => {
-    refetch();
+    void refetch();
     setIsPlayerAction(true);
-  }, []);
+  }, [refetch]);
 
   useEventRoundInfoSubscription(subscriptionCallback);
 
-  const handleActionChoose = async (type: 'accelerate' | 'shoot') => {
+  const handleActionChoose = (type: 'accelerate' | 'shoot') => {
     setIsPlayerAction(false);
 
     const strategyActionMap = { accelerate: 'BuyAcceleration' as const, shoot: 'BuyShell' as const };
-    playerMoveMessage(strategyActionMap[type], { onError: () => setIsPlayerAction(true) });
+    void playerMoveMessage(strategyActionMap[type], { onError: () => setIsPlayerAction(true) });
   };
 
   const defineWinStatus = (): GameResult | null => {
@@ -79,7 +80,7 @@ function LayoutComponent() {
   );
 
   useEffect(() => {
-    handleStartNewGame();
+    void handleStartNewGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCurrentGameRead]);
 
