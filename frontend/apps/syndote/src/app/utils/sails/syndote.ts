@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { GearApi, HexString, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
@@ -132,6 +133,7 @@ export class Program {
     config: Config,
     dns_id_and_name: [ActorId, string] | null,
   ): TransactionBuilder<null> {
+    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,

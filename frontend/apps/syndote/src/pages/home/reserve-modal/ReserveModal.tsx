@@ -35,7 +35,7 @@ function ReserveModal({ onReserve, onClose }: Props) {
       <div className={styles.container}>
         <p className={styles.text}>
           Please reserve a new gas amount to continue the game. Any unused gas will be refunded upon completion of the
-          game. If you don't reserve the required amount of gas before the timer expires, you won't be able to continue
+          game. If you don’t reserve the required amount of gas before the timer expires, you won’t be able to continue
           playing and can only observe the game in progress.
         </p>
         <GameDetails items={items} className={{ item: styles.gameDetailsItem }} />

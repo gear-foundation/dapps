@@ -53,7 +53,7 @@ function CreateGameForm({ onCancel }: Props) {
     if (!account?.decodedAddress) {
       return;
     }
-    createGameSessionMessage({
+    void createGameSessionMessage({
       value: Number(values.fee) ? BigInt(getChainBalanceValue(values.fee).toFixed()) : undefined,
       name: values.name,
       strategyId: decodeAddress(values.strategyId),

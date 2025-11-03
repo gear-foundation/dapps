@@ -4,6 +4,8 @@ import { Button } from '@gear-js/vara-ui';
 import { stringShorten } from '@polkadot/util';
 import clsx from 'clsx';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { useDeletePlayerMessage } from '@/app/utils';
 import CopySVG from '@/assets/images/icons/copy-text.svg?react';
 import UserSVG from '@/assets/images/icons/ic-user-small-24.svg?react';
@@ -12,7 +14,6 @@ import TVaraSVG from '@/assets/images/icons/tvara-coin.svg?react';
 import VaraSVG from '@/assets/images/icons/vara-coin.svg?react';
 import { GameDetails } from '@/components/layout/game-details';
 import { Players } from '@/types';
-import { copyToClipboard } from '@/utils';
 
 import styles from './SessionInfo.module.scss';
 
@@ -31,7 +32,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
 
   const handleCopy = (value: string) => {
-    copyToClipboard({ alert, value });
+    void copyToClipboard({ alert, value });
   };
 
   const items = [
@@ -75,7 +76,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const isAdmin = adminId === account?.decodedAddress;
 
   const removePlayer = (playerId: HexString) => {
-    deletePlayerMessage({ playerId });
+    void deletePlayerMessage({ playerId });
   };
 
   return (

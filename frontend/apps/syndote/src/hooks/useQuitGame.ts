@@ -20,7 +20,7 @@ export const useQuitGame = () => {
       return;
     }
 
-    cancelGameSessionMessage({ adminId });
+    void cancelGameSessionMessage({ adminId });
   };
 
   const exitGame = () => {
@@ -28,7 +28,7 @@ export const useQuitGame = () => {
       return;
     }
 
-    exitGameMessage({ adminId });
+    void exitGameMessage({ adminId });
   };
 
   const deleteGame = () => {
@@ -36,7 +36,7 @@ export const useQuitGame = () => {
       return;
     }
 
-    deleteGameMessage({ adminId });
+    void deleteGameMessage({ adminId });
   };
 
   return { cancelGame, exitGame, deleteGame };

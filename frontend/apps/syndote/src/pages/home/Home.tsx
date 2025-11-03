@@ -91,7 +91,7 @@ function Home() {
     const onSuccess = () => {
       setCurrentGame(null);
     };
-    registerMessage(
+    void registerMessage(
       {
         value: entry_fee ? BigInt(entry_fee) : undefined,
         adminId: admin_id,
@@ -104,12 +104,12 @@ function Home() {
 
   const startGame = () => {
     if (!admin_id) return;
-    playMessage({ adminId: admin_id });
+    void playMessage({ adminId: admin_id });
   };
 
   const exitGame = () => {
     if (!admin_id) return;
-    exitGameMessage(
+    void exitGameMessage(
       { adminId: admin_id },
       {
         onSuccess: () => {
@@ -121,7 +121,7 @@ function Home() {
 
   const addGasToPlayerStrategy = () => {
     if (!admin_id) return;
-    addGasToPlayerStrategyMessage(
+    void addGasToPlayerStrategyMessage(
       { adminId: admin_id },
       {
         onSuccess: () => {
@@ -149,7 +149,7 @@ function Home() {
     if (isFetched && !admin_id) {
       adminRef.current = null;
     }
-  }, [admin_id]);
+  }, [admin_id, isFetched]);
 
   useEffect(() => {
     if (!game_status || !('waitingForGasForGameContract' in game_status)) {
@@ -213,8 +213,8 @@ function Home() {
     setSteps([]);
   });
 
-  useEventStepSubscription((step) => {
-    setSteps((prevSteps) => [...prevSteps, step]);
+  useEventStepSubscription((stepUpdate) => {
+    setSteps((prevSteps) => [...prevSteps, stepUpdate]);
   });
 
   const getColor = (address: HexString) => players?.find((player) => player.address === address)?.color;
@@ -334,9 +334,9 @@ function Home() {
                     {'finished' in state.game_status && (
                       <>
                         {state.winner === playerStrategyId ? (
-                          <p className={clsx(styles.heading, styles.headingWinner)}>You're Winner!</p>
+                          <p className={clsx(styles.heading, styles.headingWinner)}>You’re Winner!</p>
                         ) : (
-                          <p className={clsx(styles.heading, styles.headingBankrupt)}>You're Bankrupt!</p>
+                          <p className={clsx(styles.heading, styles.headingBankrupt)}>You’re Bankrupt!</p>
                         )}
                       </>
                     )}

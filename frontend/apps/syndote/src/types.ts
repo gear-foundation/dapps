@@ -25,7 +25,7 @@ type Step = {
 };
 
 type MessagePayload = ({ GameFinished: { winner: HexString } } & { Step: Step }) | string;
-type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' | 'gameFinished' } & { Err: any };
+type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' | 'gameFinished' } & { Err: unknown };
 type MessageDetails = {
   to: HexString;
 };
