@@ -63,7 +63,7 @@ export type IGameState = {
   startTile: string;
   state: IGamePhase;
   tiles: StateDominoTileType[];
-  tileToPlayer: {};
+  tileToPlayer: Record<string, string>;
   tracks: PlayerTrackType[];
   Winner: null | string[];
 };

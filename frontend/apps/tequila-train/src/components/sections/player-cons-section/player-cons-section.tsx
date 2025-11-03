@@ -23,20 +23,22 @@ export const PlayerConsSection = () => {
       setPlayerChoice(undefined);
       setSelectedDomino(undefined);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setSelectedDomino(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 
   useEffect(() => {
     if (game) {
-      const playersTiles = Object.entries(game.gameState.tileToPlayer)
+      const tilesForCurrentPlayer = Object.entries(game.gameState.tileToPlayer)
         .filter(([, value]) => value === game.gameState.currentPlayer)
         .map(([key]) => findTile(key, game?.gameState?.tiles))
-        .filter((tile) => tile !== null);
+        .filter((tile): tile is DominoTileType => tile !== null);
 
-      setPlayersTiles(playersTiles);
+      setPlayersTiles(tilesForCurrentPlayer);
     }
   }, [game]);
 

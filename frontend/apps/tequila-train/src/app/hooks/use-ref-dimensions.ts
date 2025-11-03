@@ -1,19 +1,24 @@
 import { RefObject, useEffect, useState } from 'react';
 
-function debounce(fn: any, ms: number) {
-  let timer: number | null | ReturnType<typeof setTimeout>;
-  return (_: any) => {
-    clearTimeout(timer as number);
-    timer = setTimeout((_: any) => {
+type DebouncedCallback = () => void;
+
+function debounce(fn: DebouncedCallback, ms: number) {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  return () => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
       timer = null;
-      // @ts-ignore
-      fn.apply(this, arguments);
+      fn();
     }, ms);
   };
 }
 
 const useRefDimensions = (ref: RefObject<HTMLElement | null>) => {
-  const [dimensions, setDimensions] = useState([0, 0]);
+  const [dimensions, setDimensions] = useState<[number, number]>([0, 0]);
 
   useEffect(() => {
     const handleResize = debounce(() => {
@@ -23,7 +28,7 @@ const useRefDimensions = (ref: RefObject<HTMLElement | null>) => {
       }
     }, 150);
 
-    handleResize(() => {});
+    handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);

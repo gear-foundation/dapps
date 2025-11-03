@@ -2,9 +2,11 @@ import { HexString } from '@gear-js/api';
 import { getVaraAddress, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { useApp, useGame } from '@/app/context';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { cn, copyToClipboard, shortenString } from '@/app/utils';
+import { cn, shortenString } from '@/app/utils';
 import { Icon } from '@/components/ui/icon';
 
 import { MockGameSection } from '../game-section/mock/mock-game-section';
@@ -61,7 +63,7 @@ export function RegistrationSection() {
 
   const onCopy = () => {
     if (account) {
-      copyToClipboard(account.address, alert);
+      copyToClipboard({ alert, value: account.address });
     }
   };
 
@@ -85,7 +87,7 @@ export function RegistrationSection() {
                   height={955}
                   className="h-full w-full object-contain"
                   src="/images/register.webp"
-                  alt="image"
+                  alt="Tequila Train registration illustration"
                   loading="lazy"
                 />
               </div>
@@ -122,12 +124,13 @@ export function RegistrationSection() {
                             Your game address
                             <span className="font-bold"> ({account && shortenString(account.address, 4)})</span>
                           </p>
-                          <div
-                            className="cursor-pointer text-[#0ED3A3] font-semibold flex items-center"
+                          <button
+                            type="button"
+                            className="cursor-pointer text-[#0ED3A3] font-semibold flex items-center bg-transparent border-0 p-0"
                             onClick={onCopy}>
                             <Icon name="copy" width={24} height={24} className="mr-2" />
                             Copy
-                          </div>
+                          </button>
                         </div>
                       </div>
                     </div>

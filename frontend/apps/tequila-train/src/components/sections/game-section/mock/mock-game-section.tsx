@@ -1,16 +1,25 @@
 import clsx from 'clsx';
 
-// import { Modal } from '@gear-js/ui';
+import type { PlayerTrackType, StateDominoTileType } from '@/app/types/game';
+
 import { findTile, getBgColors } from '../../../../app/utils';
 import { DominoItem } from '../../../common/domino-item';
 import { Icon } from '../../../ui/icon';
 import mockData from '../mock/mock-data.json';
 
+type MockGameState = {
+  players: Array<{ id: string; name: string; lose: boolean }>;
+  tracks: PlayerTrackType[];
+  shots: string[];
+  startTile: string;
+  tiles: StateDominoTileType[];
+};
+
 export const MockGameSection = () => {
-  const gameState = mockData;
+  const gameState = mockData as MockGameState;
 
   const stateStartTile = gameState.startTile || 0;
-  const startTile = stateStartTile && findTile(stateStartTile, gameState.tiles as any);
+  const startTile = stateStartTile ? findTile(stateStartTile, gameState.tiles) : null;
 
   return (
     <div className="container-xl flex flex-col grow">
@@ -33,7 +42,7 @@ export const MockGameSection = () => {
             </div>
           </div>
         </li>
-        {gameState.tracks.map((_p, i) => {
+        {gameState.tracks.map((_track, i) => {
           return (
             <li key={i}>
               <div

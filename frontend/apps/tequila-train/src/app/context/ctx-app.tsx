@@ -1,29 +1,11 @@
-import { createContext, ReactNode, useState } from 'react';
+import type { PropsWithChildren } from 'react';
 
-export const AppCtx = createContext({} as ReturnType<typeof useProgram>);
+import { AppCtx } from './app-context';
+import { useAppState } from './app-state';
 
-const useProgram = () => {
-  const [isPending, setIsPending] = useState<boolean>(false);
-  const [isAllowed, setIsAllowed] = useState<boolean>(false);
-  const [openEmptyPopup, setOpenEmptyPopup] = useState<boolean>(false);
-  const [openWinnerPopup, setOpenWinnerPopup] = useState<boolean>(false);
-  const [isUserCancelled, setIsUserCancelled] = useState(false);
+export { AppCtx } from './app-context';
 
-  return {
-    isPending,
-    setIsPending,
-    isAllowed,
-    setIsAllowed,
-    openEmptyPopup,
-    setOpenEmptyPopup,
-    openWinnerPopup,
-    setOpenWinnerPopup,
-    isUserCancelled,
-    setIsUserCancelled,
-  };
-};
-
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ children }: PropsWithChildren) {
   const { Provider } = AppCtx;
-  return <Provider value={useProgram()}>{children}</Provider>;
+  return <Provider value={useAppState()}>{children}</Provider>;
 }

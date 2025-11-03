@@ -52,9 +52,9 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
     } else return false;
   };
 
-  const checkIsRowDominoReverse = (tile: DominoTileType, i: number, tiles: DominoTileType[]) => {
+  const checkIsRowDominoReverse = (tile: DominoTileType, i: number, trackTiles: DominoTileType[]) => {
     if (game) {
-      const lastTile = tiles.length > 0 ? (i > 0 ? tiles[i - 1] : false) : game.gameState.startTile;
+      const lastTile = trackTiles.length > 0 ? (i > 0 ? trackTiles[i - 1] : false) : game.gameState.startTile;
       return lastTile ? (lastTile[1] === tile[0] ? false : lastTile[1] === tile[1]) : false;
     } else return false;
   };

@@ -23,7 +23,7 @@ export const GameSection = () => {
     } else {
       setOpenWinnerPopup(false);
     }
-  }, [state]);
+  }, [setOpenWinnerPopup, state]);
 
   const stateStartTile = state?.gameState?.startTile;
   const startTile = state && stateStartTile && findTile(stateStartTile, state.gameState.tiles);
