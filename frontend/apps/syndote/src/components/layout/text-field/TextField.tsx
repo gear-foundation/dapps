@@ -3,16 +3,7 @@ import clsx from 'clsx';
 import { TextFieldProps } from './TextField.interfaces';
 import styles from './TextField.module.scss';
 
-function TextField({
-  label,
-  size,
-  placeholder,
-  value,
-  icon,
-  theme = 'dark',
-  variant = 'default',
-  ...props
-}: TextFieldProps) {
+function TextField({ label, placeholder, value, icon, theme = 'dark', variant = 'default', ...props }: TextFieldProps) {
   return (
     <div className={clsx(styles.inputContainer, styles[`inputContainer-${theme}`])}>
       {icon && <div className={clsx(styles.iconContainer)}>{icon}</div>}

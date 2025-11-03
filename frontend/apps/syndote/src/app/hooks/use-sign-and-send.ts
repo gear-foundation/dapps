@@ -11,14 +11,12 @@ export const useSignAndSend = () => {
     return new Promise<void>((resolve, reject) => {
       checkBalance(
         calculatedGas,
-        async () => {
-          try {
-            const { response } = await transaction.signAndSend();
-            await response();
-            resolve();
-          } catch (e) {
-            reject(e);
-          }
+        () => {
+          transaction
+            .signAndSend()
+            .then(({ response }) => response())
+            .then(() => resolve())
+            .catch((e: Error) => reject(e));
         },
         () => reject(new Error('check balance error')),
       );
