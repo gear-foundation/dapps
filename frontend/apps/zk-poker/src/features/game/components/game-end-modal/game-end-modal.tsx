@@ -33,7 +33,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, 
   const myWinningPots = pots.filter(([_, winners]) => winners.includes(myAddress));
   const isMainPotWinner = myWinningPots.some((pot) => pot === pots[0]);
 
-  const myTotalWinnings = myWinningPots.reduce((sum, pot) => sum + Number(pot[0]), 0);
+  const myTotalWinnings = myWinningPots.reduce((sum, [amount, winners]) => sum + Number(amount) / winners.length, 0);
 
   const getPlayerName = (address: HexString) => participants.find(([addr]) => addr === address)?.[1].name || 'Unknown';
 
@@ -107,7 +107,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, 
         {myWinningPots.length > 1 &&
           myWinningPots.map((pot, index) => {
             const isMainPot = pot === pots[0];
-            const amount = Number(pot[0]);
+            const amount = Number(pot[0]) / pot[1].length;
             return (
               <div key={index} className={styles.potAmount}>
                 {isMainPot ? 'Main Pot' : `Side Pot${isOneSidePot ? '' : ` ${pots.indexOf(pot)}`}`}: +{amount}
