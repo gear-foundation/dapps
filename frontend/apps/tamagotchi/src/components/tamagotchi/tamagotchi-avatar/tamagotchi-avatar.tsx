@@ -53,6 +53,7 @@ export const TamagotchiAvatar = ({
     } else {
       setItemsUsed(hasItem);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tamagotchiItems]);
 
   useEffect(() => {
@@ -94,6 +95,7 @@ export const TamagotchiAvatar = ({
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dead, emotion, isWinner, lesson, tamagotchi]);
 
   const s = 'tamagotchi';

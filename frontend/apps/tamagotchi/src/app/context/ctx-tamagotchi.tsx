@@ -1,34 +1,30 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { JSX, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
-import type { StoreItemsNames } from '@/app/types/ft-store';
-import type { TamagotchiState } from '@/app/types/lessons';
+import { TamagotchiCtx, TamagotchiContextValue } from './ctx-tamagotchi.context';
 
-export const TamagotchiCtx = createContext({} as ReturnType<typeof useProgram>);
-
-const useProgram = () => {
+export function TmgProvider({ children }: PropsWithChildren): JSX.Element {
   const { account, isAccountReady } = useAccount();
 
-  const [tamagotchi, setTamagotchi] = useState<TamagotchiState>();
-  const [tamagotchiItems, setTamagotchiItems] = useState<StoreItemsNames[]>([]);
+  const [tamagotchi, setTamagotchi] = useState<TamagotchiContextValue['tamagotchi']>();
+  const [tamagotchiItems, setTamagotchiItems] = useState<TamagotchiContextValue['tamagotchiItems']>([]);
 
   useEffect(() => {
     if (!isAccountReady) return;
 
     setTamagotchi(undefined);
+    setTamagotchiItems([]);
   }, [account, isAccountReady]);
 
-  return {
-    tamagotchi,
-    setTamagotchi,
-    tamagotchiItems,
-    setTamagotchiItems,
-  };
-};
+  const value = useMemo<TamagotchiContextValue>(
+    () => ({
+      tamagotchi,
+      setTamagotchi,
+      tamagotchiItems,
+      setTamagotchiItems,
+    }),
+    [tamagotchi, tamagotchiItems],
+  );
 
-export const useTamagotchi = () => useContext(TamagotchiCtx);
-
-export function TmgProvider({ children }: { children: ReactNode }) {
-  const { Provider } = TamagotchiCtx;
-  return <Provider value={useProgram()}>{children}</Provider>;
+  return <TamagotchiCtx.Provider value={value}>{children}</TamagotchiCtx.Provider>;
 }

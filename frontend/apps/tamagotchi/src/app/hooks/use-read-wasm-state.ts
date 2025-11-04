@@ -40,7 +40,7 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
 
   const [state, setState] = useState<T>();
   const [isStateRead, setIsStateRead] = useState(true);
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const isPayload = payload !== undefined;
   const isArgument = argument !== undefined;
@@ -50,10 +50,10 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
 
     if (isInitLoad) setIsStateRead(false);
 
-    getStateMetadata(wasm)
+    void getStateMetadata(wasm as Uint8Array)
       .then((stateMetadata) =>
         api.programState.readUsingWasm(
-          { programId, wasm, fn_name: functionName, argument, payload },
+          { programId, wasm: wasm as Uint8Array, fn_name: functionName, argument, payload },
           stateMetadata,
           programMetadata,
         ),
@@ -63,7 +63,7 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
         setState(result as unknown as T);
         if (!isReadOnError) setIsStateRead(true);
       })
-      .catch((error) => setError(getErrorMessage(error)))
+      .catch((error) => setErrorMessage(getErrorMessage(error)))
       .finally(() => {
         if (isReadOnError) setIsStateRead(true);
       });
@@ -82,18 +82,21 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
     const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', handleStateChange);
 
     return () => {
-      unsub.then((unsubCallback) => unsubCallback());
+      void unsub.then((unsubCallback) => unsubCallback());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, programId, wasm, programMetadata, functionName, argument, payload]);
 
   useEffect(() => {
     readWasmState(true);
-    setError('');
+    setErrorMessage('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, programId, wasm, programMetadata, functionName, argument, payload]);
 
   useEffect(() => {
-    if (error) alert.error(error);
-  }, [error]);
+    if (errorMessage) alert.error(errorMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorMessage]);
 
   // contract calculates new state on read without MessagesDispatched events
   useEffect(() => {
@@ -104,9 +107,10 @@ function useReadWasmState<T = AnyJson>(args: Args, isReadOnError?: boolean) {
     return () => {
       clearInterval(interval);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  return { state, isStateRead, error, readWasmState };
+  return { state, isStateRead, error: errorMessage, readWasmState };
 }
 
 export { useReadWasmState };
@@ -127,24 +131,22 @@ export function useThrottleWasmState() {
   });
 
   useEffect(() => {
-    if (lesson && lesson.step < 2) return;
+    if (!state || !lesson || lesson.step < 2) return;
 
-    if (state) {
-      const { fed, rested, entertained } = state;
+    const { fed, rested, entertained } = state;
 
-      setTamagotchi({
-        ...tamagotchi,
-        ...state,
-        isDead:
-          [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)].reduce((sum, a) => sum + +a) === 0,
-      } as TamagotchiState);
+    setTamagotchi({
+      ...tamagotchi,
+      ...state,
+      isDead:
+        [+withoutCommas(fed), +withoutCommas(rested), +withoutCommas(entertained)].reduce((sum, a) => sum + +a) === 0,
+    } as TamagotchiState);
 
-      sleep(1).then(() => {
-        if (lesson && lesson.step > 1) {
-          !isReady && setIsReady(true);
-        }
-      });
-    }
+    void sleep(1).then(() => {
+      if (lesson.step > 1 && !isReady) {
+        setIsReady(true);
+      }
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, lesson, isReady]);

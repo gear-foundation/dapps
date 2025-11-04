@@ -1,24 +1,17 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react';
+import { JSX, PropsWithChildren, useMemo, useState } from 'react';
 
-type Program = {
-  isPending: boolean;
-  setIsPending: Dispatch<SetStateAction<boolean>>;
-};
+import { AppCtx, AppContextValue } from './ctx-app.context';
 
-export const AppCtx = createContext({} as Program);
+export function AppProvider({ children }: PropsWithChildren): JSX.Element {
+  const [isPending, setIsPending] = useState(false);
 
-const useProgram = (): Program => {
-  const [isPending, setIsPending] = useState<boolean>(false);
+  const value = useMemo<AppContextValue>(
+    () => ({
+      isPending,
+      setIsPending,
+    }),
+    [isPending],
+  );
 
-  return {
-    isPending,
-    setIsPending,
-  };
-};
-
-export const useApp = () => useContext(AppCtx);
-
-export function AppProvider({ children }: { children: ReactNode }) {
-  const { Provider } = AppCtx;
-  return <Provider value={useProgram()}>{children}</Provider>;
+  return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

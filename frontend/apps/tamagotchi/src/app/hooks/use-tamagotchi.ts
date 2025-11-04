@@ -22,7 +22,7 @@ export function useTamagotchiInit() {
     if (!tamagotchi && isInit) {
       setIsInit(false);
     }
-  }, [tamagotchi, isInit]);
+  }, [isInit, setIsInit, tamagotchi]);
 
   useEffect(() => {
     if (error) {
@@ -46,6 +46,7 @@ export function useTamagotchiInit() {
       setIsAdmin([owner, allowedAccount].includes(decodedAddress));
       setIsInit((prev) => !prev);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isStateRead, account, error, isInit, lesson]);
 }
 

@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 import { useLessons } from '@/app/context';
+import { LessonState } from '@/app/types/lessons';
 import { useLessonAssets } from '@/app/utils/get-lesson-assets';
 
-const key = 'tmgState';
+const STORAGE_KEY = 'tmgState';
 
 export function useLessonsInit() {
   const { setLesson, lesson } = useLessons();
@@ -12,16 +13,25 @@ export function useLessonsInit() {
 
   useEffect(() => {
     if (lesson && assets.length) {
-      localStorage.setItem(key, JSON.stringify(lesson));
-      // setLessonMeta(assets[+lesson.step || 0])
-    } else {
-      if (!isParsed.current) {
-        const ls = localStorage.getItem(key);
-        if (ls) {
-          setLesson(JSON.parse(ls));
-          isParsed.current = true;
-        }
-      } else localStorage.removeItem(key);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(lesson));
+      return;
     }
-  }, [assets, lesson]);
+
+    if (!isParsed.current) {
+      const ls = localStorage.getItem(STORAGE_KEY);
+
+      if (ls) {
+        try {
+          const parsedLesson = JSON.parse(ls) as LessonState;
+          setLesson(parsedLesson);
+          isParsed.current = true;
+        } catch (error) {
+          console.error('Failed to parse lesson from storage', error);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [assets, lesson, setLesson]);
 }
