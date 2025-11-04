@@ -1,53 +1,49 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { JSX, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { LessonState } from '@/app/types/lessons';
 import meta5 from '@/assets/meta/meta5.txt';
 
 import { useProgramMetadata } from '../hooks/use-metadata';
 
-const key = 'tmgState';
+import { LessonsCtx, LessonsContextValue } from './ctx-lesson.context';
 
-const useProgram = () => {
+const STORAGE_KEY = 'tmgState';
+
+export function LessonsProvider({ children }: PropsWithChildren): JSX.Element {
   const { account, isAccountReady } = useAccount();
 
-  const [lesson, setLesson] = useState<LessonState>();
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isReady, setIsReady] = useState<boolean>(false);
+  const [lesson, setLesson] = useState<LessonsContextValue['lesson']>();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  const resetLesson = () => {
+  const lessonMeta = useProgramMetadata(meta5);
+
+  const resetLesson = useCallback(() => {
     setLesson(undefined);
     setIsAdmin(false);
     setIsReady(false);
-    localStorage.removeItem(key);
-  };
-
-  const lessonMeta = useProgramMetadata(meta5);
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
 
   useEffect(() => {
     if (!isAccountReady) return;
 
     resetLesson();
-  }, [account, isAccountReady]);
+  }, [account, isAccountReady, resetLesson]);
 
-  return {
-    lesson,
-    setLesson,
-    lessonMeta,
-    // setLessonMeta,
-    isAdmin,
-    setIsAdmin,
-    isReady,
-    setIsReady,
-    resetLesson,
-  };
-};
+  const value = useMemo<LessonsContextValue>(
+    () => ({
+      lesson,
+      setLesson,
+      lessonMeta,
+      isAdmin,
+      setIsAdmin,
+      isReady,
+      setIsReady,
+      resetLesson,
+    }),
+    [isAdmin, isReady, lesson, lessonMeta, resetLesson],
+  );
 
-export const LessonsCtx = createContext({} as ReturnType<typeof useProgram>);
-
-export const useLessons = () => useContext(LessonsCtx);
-
-export function LessonsProvider({ children }: PropsWithChildren) {
-  const { Provider } = LessonsCtx;
-  return <Provider value={useProgram()}>{children}</Provider>;
+  return <LessonsCtx.Provider value={value}>{children}</LessonsCtx.Provider>;
 }

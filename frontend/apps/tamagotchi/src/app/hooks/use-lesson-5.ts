@@ -16,19 +16,19 @@ export const useLesson5 = () => {
   const { tamagotchi } = useTamagotchi();
 
   useEffect(() => {
-    if (tamagotchi) {
-      if (tamagotchi.isDead) {
-        setActiveNotification(undefined);
-      } else {
-        if (Object.keys(notification).length) {
-          const minValue = Object.entries(notification)
-            .filter((item) => Boolean(item[1]))
-            .sort(([, v1], [, v2]) => +v1 - +v2)[0];
-          if (minValue) {
-            setActiveNotification(minValue[0] as NotificationResponseTypes);
-          } else setActiveNotification(undefined);
-        }
-      }
+    if (!tamagotchi) return;
+
+    if (tamagotchi.isDead) {
+      setActiveNotification(undefined);
+      return;
+    }
+
+    if (Object.keys(notification).length) {
+      const minValue = Object.entries(notification)
+        .filter((item) => Boolean(item[1]))
+        .sort(([, v1], [, v2]) => +v1 - +v2)[0];
+
+      setActiveNotification(minValue ? (minValue[0] as NotificationResponseTypes) : undefined);
     }
   }, [notification, tamagotchi]);
 
@@ -57,9 +57,9 @@ export const useLesson5 = () => {
     }
 
     return () => {
-      if (unsub) unsub.then((unsubCallback) => unsubCallback());
+      if (unsub) void unsub.then((unsubCallback) => unsubCallback());
     };
-  }, [isApiReady, lesson, lessonMeta, tamagotchi]);
+  }, [isApiReady, api, lesson, lessonMeta, tamagotchi]);
 
   return {
     notification,

@@ -29,7 +29,7 @@ export const CreateTamagotchiForm = () => {
     <form onSubmit={handleSubmit} className="flex items-start justify-center gap-6">
       {+form.values.currentStep === 6 ? (
         <Link to="/battle" className={cn('btn gap-2 whitespace-nowrap', buttonStyles.primary)}>
-          Let's Battle!
+          Let&apos;s Battle!
         </Link>
       ) : (
         <>
