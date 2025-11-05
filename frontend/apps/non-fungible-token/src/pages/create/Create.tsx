@@ -9,20 +9,18 @@ import { getMintDetails, getMintPayload } from '@/utils';
 
 import styles from './Create.module.scss';
 import { Attributes } from './attributes';
+import { AttributeValue, FormValues } from './types';
 
-type AttributesValue = { key: string; value: string };
-type Values = { name: string; description: string; attributes: AttributesValue[]; rarity: string };
-
-const defaultAttributes = [{ key: '', value: '' }];
-const defaultValues = { name: '', description: '', attributes: defaultAttributes, rarity: '' };
+const defaultAttribute: AttributeValue = { key: '', value: '' };
+const defaultValues: FormValues = { name: '', description: '', attributes: [defaultAttribute], rarity: '' };
 
 const IMAGE_FILE_TYPES = ['image/png', 'image/gif', 'image/jpeg'];
 
 function Create() {
   const alert = useAlert();
 
-  const { formState, control, register, handleSubmit, resetField, reset } = useForm<Values>({ defaultValues });
-  const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
+  const { formState, control, register, handleSubmit, resetField, reset } = useForm<FormValues>({ defaultValues });
+  const { fields, append, remove } = useFieldArray<FormValues>({ control, name: 'attributes' });
   const { errors } = formState;
 
   const ipfs = useIPFS();
@@ -59,7 +57,7 @@ function Create() {
     setIsRarity(false);
   };
 
-  const onSubmit = async (data: Values) => {
+  const onSubmit = (data: FormValues) => {
     if (!imageFile) return alert.error('Image is required');
 
     const { name, description, attributes, rarity } = data;
@@ -71,7 +69,8 @@ function Create() {
       .then(({ cid }) => cid)
       .then(async (imageCid) => (details ? { detailsCid: (await ipfs.add(details)).cid, imageCid } : { imageCid }))
       .then(({ imageCid, detailsCid }) => getMintPayload(name, description, imageCid, detailsCid))
-      .then((payload) => sendMessage({ payload, onSuccess: resetForm }));
+      .then((payload) => sendMessage({ payload, onSuccess: resetForm }))
+      .catch(({ message }: Error) => alert.error(`Mint NFT error: ${message}`));
   };
 
   return (
@@ -101,7 +100,7 @@ function Create() {
             className={styles.checkbox}
           />
 
-          {isAnyAttribute && <Button icon={PlusSVG} color="transparent" onClick={() => append(defaultAttributes)} />}
+          {isAnyAttribute && <Button icon={PlusSVG} color="transparent" onClick={() => append(defaultAttribute)} />}
           {isAnyAttribute && <Attributes register={register} fields={fields} onRemoveButtonClick={remove} />}
 
           <Checkbox label="Rarity" checked={isRarity} onChange={toggleRarity} className={styles.checkbox} />

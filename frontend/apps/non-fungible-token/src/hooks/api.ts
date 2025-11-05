@@ -1,4 +1,5 @@
 import { useAccount, useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
+import type { AnyJson } from '@polkadot/types/types';
 import { useParams } from 'react-router-dom';
 
 import metaTxt from '@/assets/meta/meta.txt';
@@ -12,11 +13,11 @@ function useNFTMetadata() {
   return useMetadata(metaTxt);
 }
 
-function useNFTState<T>(functionName: string, argument?: any) {
+function useNFTState<T>(functionName: string, argument?: AnyJson) {
   const { buffer } = useWasmMetadata(stateMetaWasm);
   const programMetadata = useNFTMetadata();
 
-  const result = useReadWasmState<T>({
+  return useReadWasmState<T>({
     programId: ENV.CONTRACT_ADDRESS,
     wasm: buffer,
     programMetadata,
@@ -24,8 +25,6 @@ function useNFTState<T>(functionName: string, argument?: any) {
     argument,
     payload: '0x',
   });
-
-  return result;
 }
 
 function useNFT() {
