@@ -1,14 +1,16 @@
 import { Button, Input } from '@gear-js/ui';
-import { FieldArrayWithId, UseFormRegister } from 'react-hook-form';
+import { FieldArrayWithId, UseFieldArrayRemove, UseFormRegister } from 'react-hook-form';
 
 import MinusSVG from '@/assets/images/form/minus.svg?react';
+
+import type { FormValues } from '../types';
 
 import styles from './Attributes.module.scss';
 
 type Props = {
-  register: UseFormRegister<any>;
-  fields: FieldArrayWithId[];
-  onRemoveButtonClick: (index: number) => void;
+  register: UseFormRegister<FormValues>;
+  fields: FieldArrayWithId<FormValues, 'attributes'>[];
+  onRemoveButtonClick: UseFieldArrayRemove;
 };
 
 function Attributes({ register, fields, onRemoveButtonClick }: Props) {

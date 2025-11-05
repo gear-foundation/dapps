@@ -5,13 +5,16 @@ import { useAlert } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 
 export const useMetadata = (source: RequestInfo | URL) => {
+  const alert = useAlert();
   const [data, setData] = useState<ProgramMetadata>();
 
   useEffect(() => {
     fetch(source)
       .then((res) => res.text())
       .then((raw) => ProgramMetadata.from(`0x${raw}`))
-      .then((meta) => setData(meta));
+      .then((meta) => setData(meta))
+      .catch(({ message }: Error) => alert.error(`Fetch error: ${message}`));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source]);
 
   return data;

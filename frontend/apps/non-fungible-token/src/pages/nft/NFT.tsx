@@ -25,7 +25,8 @@ function NFT() {
     if (reference) {
       fetch(getIpfsAddress(reference))
         .then((response) => response.json())
-        .then(setDetails);
+        .then(setDetails)
+        .catch(({ message }: Error) => console.error('Failed to load NFT details', message));
     }
   }, [reference]);
 
