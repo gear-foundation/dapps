@@ -1,54 +1,23 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { type VariantProps } from 'class-variance-authority';
+import { ButtonHTMLAttributes, ForwardedRef, forwardRef } from 'react';
 
+import { buttonVariants } from './button.variants';
 import styles from './buttons.module.scss';
-
-export const buttonVariants = cva('', {
-  variants: {
-    variant: {
-      primary: styles.primary,
-      white: styles.white,
-      black: styles.black,
-      outline: styles.outline,
-      text: styles.text,
-    },
-    size: {
-      sm: styles.sm,
-      md: styles.md,
-    },
-    width: {
-      normal: '',
-      full: styles.block,
-    },
-    state: {
-      normal: '',
-      loading: styles.loading,
-    },
-  },
-  // compoundVariants: [{ variant: 'primary', size: 'medium', className: styles.primaryMedium }],
-  defaultVariants: {
-    variant: 'primary',
-    size: 'md',
-    state: 'normal',
-    width: 'normal',
-  },
-});
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, className, variant, size, state, isLoading, width, disabled, ...props }, ref) => (
+const ButtonComponent = (
+  { children, className, variant, size, state, isLoading, width, disabled, ...props }: ButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>,
+) => {
+  const resolvedState = isLoading ? 'loading' : (state ?? 'normal');
+
+  return (
     <button
       type="button"
-      className={buttonVariants({
-        variant,
-        size,
-        state: isLoading ? 'loading' : 'normal',
-        width,
-        className,
-      })}
+      className={buttonVariants({ variant, size, state: resolvedState, width, className })}
       disabled={disabled || isLoading}
       ref={ref}
       {...props}>
@@ -69,5 +38,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       )}
       {children}
     </button>
-  ),
-);
+  );
+};
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(ButtonComponent);
+
+Button.displayName = 'Button';

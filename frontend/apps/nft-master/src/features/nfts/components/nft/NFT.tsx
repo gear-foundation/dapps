@@ -5,6 +5,7 @@ import { useQuery } from 'urql';
 
 import { Button, Container, Loader } from '@/components';
 import { GetNFTByIdQuery } from '@/features/nfts/queries';
+import { NftByIdQueryResult, NftByIdQueryVariables } from '@/features/nfts/types';
 
 import BackArrowSVG from '../../assets/back-arrow.svg?react';
 import SearchSVG from '../../assets/search.svg?react';
@@ -24,18 +25,23 @@ function NFT() {
   const [details, setDetails] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [result] = useQuery({
+  const [result] = useQuery<NftByIdQueryResult, NftByIdQueryVariables>({
     query: GetNFTByIdQuery,
     variables: { id: id || '' },
   });
 
   const { data, fetching } = result;
 
-  const [nft] = data?.nfts || [];
-  const { name, collection, description, owner, attribUrl } = nft || {};
+  const nft = (data?.nfts ?? [])[0] ?? null;
+  const name = nft?.name ?? '';
+  const collection = nft?.collection;
+  const description = nft?.description;
+  const owner = nft?.owner;
+  const attribUrl = nft?.attribUrl;
 
   useEffect(() => {
     if (!attribUrl) {
+      setDetails([]);
       return;
     }
 
@@ -46,9 +52,10 @@ function NFT() {
 
       fetch(url)
         .then((response) => response.json())
-        .then((res) => {
+        .then((res: string[]) => {
           setDetails(res);
-        });
+        })
+        .catch(({ message }: Error) => console.error('Failed to load NFT attributes', message));
     } else {
       setDetails(attribUrl);
     }

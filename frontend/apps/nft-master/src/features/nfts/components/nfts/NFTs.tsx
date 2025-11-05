@@ -6,7 +6,7 @@ import { useQuery } from 'urql';
 
 import { Button, buttonVariants, Container, Loader } from '@/components';
 import { GetNftsByNameQuery } from '@/features/nfts/queries';
-import { NFT } from '@/features/nfts/types';
+import { NftsByNameQueryResult, NftsByNameQueryVariables } from '@/features/nfts/types';
 
 import ArrowLeftSVG from '../../assets/arrow-left.svg?react';
 import { useNFTSearch, useNFTs, useMintNFT } from '../../hooks';
@@ -25,16 +25,16 @@ function NFTs({ slider }: Props) {
 
   const { isMintingAvailable, isMinting } = useMintNFT();
 
-  const [result] = useQuery({
+  const [result] = useQuery<NftsByNameQueryResult, NftsByNameQueryVariables>({
     query: GetNftsByNameQuery,
     variables: { search_query: searchQuery || null },
   });
 
   const { data: searchedData, fetching: searching } = result;
 
-  const filteredNFTs = searchQuery ? (searchedData?.nfts as NFT[]) : nfts;
+  const filteredNFTs = searchQuery ? (searchedData?.nfts ?? []) : nfts;
 
-  const nftsCount = filteredNFTs?.length;
+  const nftsCount = filteredNFTs.length;
   const isAnyNFT = nftsCount > 0;
   const middleNFTIndex = Math.floor(nftsCount / 2);
 

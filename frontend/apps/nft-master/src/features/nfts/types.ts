@@ -34,7 +34,27 @@ type TestnetNFTState = NFTContractState & {
   };
 };
 
-export type { NFT, MasterContractState, NFTContractState, TestnetNFTState };
+type AccountNftsQueryResult<T = NFT> = { nfts: T[] | null };
+type AccountNftsQueryVariables = { account_id: string };
+
+type NftByIdQueryResult = { nfts: NFT[] | null };
+type NftByIdQueryVariables = { id: string };
+
+type NftsByNameQueryResult = { nfts: NFT[] | null };
+type NftsByNameQueryVariables = { search_query: string | null };
+
+export type {
+  NFT,
+  MasterContractState,
+  NFTContractState,
+  TestnetNFTState,
+  AccountNftsQueryResult,
+  AccountNftsQueryVariables,
+  NftByIdQueryResult,
+  NftByIdQueryVariables,
+  NftsByNameQueryResult,
+  NftsByNameQueryVariables,
+};
 
 export type IAdminsRequest = {
   Admins: HexString[];

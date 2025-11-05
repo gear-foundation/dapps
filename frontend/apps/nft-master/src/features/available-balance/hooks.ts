@@ -35,7 +35,7 @@ export function useAccountAvailableBalanceSync() {
     if (account?.decodedAddress) {
       setIsLoading(true);
 
-      api.query.system.account(account.decodedAddress).then((res) => {
+      void api.query.system.account(account.decodedAddress).then((res) => {
         const systemAccount = res.toJSON() as ISystemAccount;
         const total = CreateType.create('u128', systemAccount.data.free).toString();
         const fee = CreateType.create('u128', systemAccount.data.feeFrozen).toString();
