@@ -48,8 +48,9 @@ export function useInitBattleData() {
         state.currentPlayers.forEach((p) => queue.push(state.players[p]));
         return queue;
       };
+
       const players = getCurrentQueue();
-      players && setPlayers(players);
+      if (players) setPlayers(players);
 
       if (activePair) {
         const getRivals = () => {
@@ -103,7 +104,7 @@ export function useInitBattleData() {
     }
 
     return () => {
-      if (unsub) unsub.then((unsubCallback) => unsubCallback());
+      if (unsub) void unsub.then((unsubCallback) => unsubCallback());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadata, state, currentPairIdx]);

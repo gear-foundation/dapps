@@ -1,13 +1,16 @@
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState, type RefObject } from 'react';
 
-function debounce(fn: any, ms: number) {
-  let timer: number | null | ReturnType<typeof setTimeout>;
-  return (_: any) => {
-    clearTimeout(timer as number);
-    timer = setTimeout((_) => {
+function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number) {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  return (...args: Parameters<T>) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
       timer = null;
-      // @ts-ignore
-      fn.apply(this, arguments);
+      fn(...args);
     }, ms);
   };
 }
@@ -22,7 +25,7 @@ const useRefDimensions = (ref: RefObject<HTMLElement | null>) => {
       }
     }, 150);
 
-    handleResize(() => {});
+    handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);

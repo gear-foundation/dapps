@@ -1,15 +1,14 @@
-import { TamagotchiQueueCard } from '../tamagotchi-queue-card';
-
 import 'keen-slider/keen-slider.min.css';
+
+import { AnimatePresence, motion } from 'framer-motion';
 import { KeenSliderOptions, useKeenSlider } from 'keen-slider/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 import { useBattle } from '../../context';
-import { useRefDimensions, useIsLarge } from '../../hooks';
-
-import { AnimatePresence, motion } from 'framer-motion';
+import { useIsLarge, useRefDimensions } from '../../hooks';
+import { TamagotchiQueueCard } from '../tamagotchi-queue-card';
 
 const PLAYER_CARD = {
   spacing: {
@@ -112,13 +111,13 @@ const QueueSlider = () => {
     instanceRef.current?.update({ ...options, slides: { perView: 'auto', spacing: space } });
   }, [instanceRef, space]);
 
-  const handlePrev = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handlePrev = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     instanceRef.current?.prev();
   };
 
-  const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+  const handleNext = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     instanceRef.current?.next();
   };
 

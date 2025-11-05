@@ -116,9 +116,9 @@ const BattleTableList = () => {
   const { battle, currentPairIdx } = useBattle();
   const [pairs, setPairs] = useState<PairData[]>([]);
 
-  const getPair = (battle: BattleStateResponse, i: number) =>
-    battle.pairs[i].tmgIds.reduce(
-      (acc: BattleStatePlayer[], player) => (battle.players[player] ? [...acc, battle.players[player]] : acc),
+  const getPair = (battleState: BattleStateResponse, index: number) =>
+    battleState.pairs[index].tmgIds.reduce<BattleStatePlayer[]>(
+      (acc, player) => (battleState.players[player] ? [...acc, battleState.players[player]] : acc),
       [],
     );
 

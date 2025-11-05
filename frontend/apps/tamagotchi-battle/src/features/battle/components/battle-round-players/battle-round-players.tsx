@@ -31,7 +31,7 @@ export const BattleRoundPlayers = () => {
   const onInBlock = () => setIsPending(false);
   const onError = () => setIsPending(false);
 
-  const onNewRound = async () => {
+  const onNewRound = () => {
     const payload = { StartBattle: null };
 
     setIsPending(true);
@@ -39,7 +39,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({
+        void handleMessage({
           payload,
           onInBlock,
           onError,
@@ -51,7 +51,7 @@ export const BattleRoundPlayers = () => {
     );
   };
 
-  const onAttack = async () => {
+  const onAttack = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } };
 
     setIsPending(true);
@@ -59,13 +59,13 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
+        void handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );
   };
 
-  const onDefence = async () => {
+  const onDefence = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } };
 
     setIsPending(true);
@@ -73,7 +73,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
+        void handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );

@@ -18,7 +18,7 @@ export const BattleWaitAdmin = () => {
   const gasless = useGaslessTransactions();
   const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
 
-  const handler = async () => {
+  const handler = () => {
     const payload = { StartBattle: null };
     const onSuccess = () => setIsPending(false);
     const onError = () => setIsPending(false);
@@ -28,7 +28,7 @@ export const BattleWaitAdmin = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({
+        void handleMessage({
           payload,
           onSuccess,
           onError,
