@@ -1,8 +1,12 @@
+@use 'sass:color';
 @use '@/assets/styles';
 @use '@gear-js/ui/variables' as *;
 
 :root {
-  --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
-  --color-primary: #{red($successColor) green($successColor) blue($successColor)};
-  --color-error: #{red($errorColor) green($errorColor) blue($errorColor)};
+  --color-secondary: #{color.channel($textColorSecondary, 'red') color.channel($textColorSecondary, 'green')
+    color.channel($textColorSecondary, 'blue')};
+  --color-primary: #{color.channel($successColor, 'red') color.channel($successColor, 'green')
+    color.channel($successColor, 'blue')};
+  --color-error: #{color.channel($errorColor, 'red') color.channel($errorColor, 'green')
+    color.channel($errorColor, 'blue')};
 }

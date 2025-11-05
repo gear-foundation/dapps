@@ -43,6 +43,9 @@ const cnT = 'm-auto h-full w-full max-w-full';
 export const Test = () => {
   const [active] = useState(false);
   const [show, setShow] = useState(false);
+  const [isBattleFinished] = useState(false);
+  const [canStartNewRound] = useState(false);
+  const [canMakeMove] = useState(true);
 
   return (
     <>
@@ -110,7 +113,7 @@ export const Test = () => {
                       transition={{ duration: 0.5, delay: 0.5 }}
                       className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-3 xxl:gap-6 w-full smh:mt-5 max-w-[200px] xxl:max-w-[250px]">
                       <div className="flex flex-col items-center gap-1 xxl:gap-2">
-                        {!false ? (
+                        {!isBattleFinished ? (
                           <>
                             <p className="smh:hidden font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
                               Round: 1 <span className="normal-case">of</span> 5
@@ -128,7 +131,7 @@ export const Test = () => {
                         )}
                       </div>
                       <div className="space-y-2 xxl:space-y-3">
-                        {false && (
+                        {canStartNewRound && (
                           <button
                             className={cn(
                               'btn items-center gap-2 w-full transition-colors',
@@ -138,7 +141,7 @@ export const Test = () => {
                             Start New Round
                           </button>
                         )}
-                        {true && (
+                        {canMakeMove && (
                           <>
                             <button
                               className={cn(

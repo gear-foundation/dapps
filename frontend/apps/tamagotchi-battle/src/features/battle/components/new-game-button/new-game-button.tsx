@@ -19,7 +19,7 @@ export const NewGameButton = () => {
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
 
-  const handler = async () => {
+  const handler = () => {
     const payload = { StartRegistration: null };
 
     setIsPending(true);
@@ -27,7 +27,7 @@ export const NewGameButton = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({
+        void handleMessage({
           payload,
           onSuccess,
           onError,

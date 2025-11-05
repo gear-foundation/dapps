@@ -37,7 +37,7 @@ export const CreateTamagotchiForm = () => {
   });
   const { getInputProps, errors } = form;
 
-  const handleSubmit = form.onSubmit(async (values) => {
+  const handleSubmit = form.onSubmit((values) => {
     const payload = { Register: { tmg_id: values.programId } };
 
     const onSuccess = () => {
@@ -50,7 +50,7 @@ export const CreateTamagotchiForm = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({
+        void handleMessage({
           payload,
           onSuccess,
           onError,
