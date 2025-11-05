@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { buttonVariants } from '@/components/ui/button/button';
-import { Heading } from '@/components/ui/heading';
+import { buttonVariants, Heading } from '@/components';
 
 import ImageBase from './assets/images/404.jpg';
 import ImageWebp from './assets/images/404.webp';

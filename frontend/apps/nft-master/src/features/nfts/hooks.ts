@@ -12,7 +12,7 @@ import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from '@/
 import { ENV } from '../../consts';
 
 import { IS_MINTING_ATOM, NFTS_ATOM, USER_NFT_QUERY_ATOM } from './consts';
-import { IUserNFTRequest, NFT } from './types';
+import { NFT } from './types';
 
 export function useNFTSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,7 +22,7 @@ export function useNFTSearch() {
 
     try {
       return decodeAddress(searchQuery);
-    } catch (error) {
+    } catch (_error) {
       return undefined;
     }
   }, [searchQuery]);
@@ -47,9 +47,12 @@ export function useNFTs() {
   const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
   const [userNftQuery, setUserNftQuery] = useAtom(USER_NFT_QUERY_ATOM);
 
-  const getIpfsAddress = (cid: string) => `${ENV.IPFS_GATEWAY}/${cid}`;
+  const getIpfsAddress = useCallback((cid: string) => `${ENV.IPFS_GATEWAY}/${cid}`, []);
 
-  const getImageUrl = (value: string) => (value.startsWith('https://') ? value : getIpfsAddress(value));
+  const getImageUrl = useCallback(
+    (value: string) => (value.startsWith('https://') ? value : getIpfsAddress(value)),
+    [getIpfsAddress],
+  );
 
   return {
     nfts: NFTs || [],
@@ -85,16 +88,16 @@ export function useMintNFT() {
       Mint: null,
     };
 
-    calculateGas(payload)
+    void calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
         const limit = withoutCommas(min_limit as string);
-        sendMessage({
+        void sendMessage({
           payload,
           gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
           onSuccess: () => {
             setIsPending(true);
-            sleep(5).then(() => {
+            void sleep(5).then(() => {
               if (userNftQuery.fn) {
                 userNftQuery.fn({ requestPolicy: 'network-only' });
               }
@@ -107,8 +110,8 @@ export function useMintNFT() {
           },
         });
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((error: unknown) => {
+        console.error(error);
         alert.error('Gas calculation error');
         setIsMinting(false);
       });
@@ -124,22 +127,20 @@ export function useMintNFT() {
 export function useNFTSetup() {
   const { setNFTs, setUserNftQuery } = useNFTs();
   const { setIsPending } = usePendingUI();
-  const { state, isStateRead, setIsStateRead, reexecuteQuery } = useReadStateFromApi<IUserNFTRequest | null>();
+  const { state, isStateRead, setIsStateRead, reexecuteQuery } = useReadStateFromApi<NFT>();
 
   const reex = useCallback(reexecuteQuery, [reexecuteQuery]);
 
   useEffect(() => {
-    if (reex) {
-      setUserNftQuery({ fn: reex });
-    }
+    setUserNftQuery({ fn: reex });
   }, [setUserNftQuery, reex]);
 
   useEffect(() => {
-    if (isStateRead) {
-      setNFTs(state ? (state as NFT[]) : []);
-      setIsPending(false);
-      setIsStateRead(false);
-    }
+    if (!isStateRead) return;
+
+    setNFTs(state ?? []);
+    setIsPending(false);
+    setIsStateRead(false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, isStateRead]);

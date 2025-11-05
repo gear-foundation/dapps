@@ -1,6 +1,5 @@
 import { ProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
-import { AnyJson } from '@polkadot/types/types';
 import { stringShorten } from '@polkadot/util';
 import { useAtom } from 'jotai';
 import { useState, useEffect } from 'react';
@@ -11,19 +10,20 @@ import { getErrorMessage } from '@dapps-frontend/ui';
 import { IS_BALANCE_LOW_ATOM, isPendingUI } from '@/consts';
 import { useAccountAvailableBalance } from '@/features/available-balance/hooks';
 import { GetAccountNFTQuery } from '@/features/nfts/queries';
+import { AccountNftsQueryResult, AccountNftsQueryVariables, NFT } from '@/features/nfts/types';
 
 export function usePendingUI() {
   const [isPending, setIsPending] = useAtom(isPendingUI);
   return { isPending, setIsPending };
 }
 
-export function useReadStateFromApi<T = AnyJson>() {
+export function useReadStateFromApi<T = NFT>() {
   const [nft, setNft] = useState<T[] | null>(null);
   const [isStateRead, setIsStateRead] = useState(false);
   const { account } = useAccount();
   const { setIsPending } = usePendingUI();
   const alert = useAlert();
-  const [result, reexecuteQuery] = useQuery({
+  const [result, reexecuteQuery] = useQuery<AccountNftsQueryResult<T>, AccountNftsQueryVariables>({
     query: GetAccountNFTQuery,
     variables: { account_id: account?.decodedAddress || '' },
   });
@@ -42,7 +42,7 @@ export function useReadStateFromApi<T = AnyJson>() {
     if (data) {
       const { nfts } = data;
 
-      setNft(nfts || null);
+      setNft(nfts ?? null);
     }
     if (!fetching) {
       setIsStateRead(true);

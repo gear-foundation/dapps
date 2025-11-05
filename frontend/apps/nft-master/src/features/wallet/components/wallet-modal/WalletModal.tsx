@@ -3,9 +3,11 @@ import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { Button, Modal, ScrollArea, Sprite } from '@/components';
 import { usePendingUI } from '@/hooks';
-import { copyToClipboard, isMobileDevice } from '@/utils';
+import { isMobileDevice } from '@/utils';
 
 import { useAuth } from '../../../auth/hooks';
 import { WALLETS } from '../../consts';
@@ -67,8 +69,8 @@ export function WalletModal({ onClose }: Props) {
         onClose();
       };
 
-      const handleCopyClick = async () => {
-        await copyToClipboard({ value: address });
+      const handleCopyClick = () => {
+        copyToClipboard({ value: address });
         onClose();
       };
 
