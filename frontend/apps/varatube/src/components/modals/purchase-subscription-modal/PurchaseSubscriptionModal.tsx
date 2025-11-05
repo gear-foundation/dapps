@@ -35,8 +35,7 @@ function PurchaseSubscriptionModal({ disabledSubmitButton, close, onSubmit }: Pr
 
   return (
     <Modal heading="Purchase subscription" close={close}>
-      {/* @ts-ignore */}
-      <form className={styles.form} onSubmit={form.onSubmit(onSubmit)}>
+      <form className={styles.form} onSubmit={form.onSubmit((values) => onSubmit(values as FormValues))}>
         <Select label="Period" direction="y" options={periods} {...getInputProps('period')} />
         <Checkbox label="Enable auto-renewal" {...getCheckboxProps('isRenewal')} />
         <p className={styles.text}>

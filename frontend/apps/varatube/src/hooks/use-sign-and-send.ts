@@ -13,27 +13,37 @@ export const useSignAndSend = () => {
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
 
-  const signAndSend = async <T = null>(
+  const signAndSend = <T = null>(
     transaction: TransactionReturn<() => GenericTransactionReturn<T>>,
     options?: Options<T>,
   ) => {
     const { onSuccess, onError } = options || {};
     const calculatedGas = Number(transaction.extrinsic.args[2].toString());
-    checkBalance(
-      calculatedGas,
-      async () => {
-        try {
-          const { response } = await transaction.signAndSend();
-          const result = await response();
-          onSuccess?.(result);
-        } catch (error) {
+
+    return new Promise<void>((resolve, reject) => {
+      checkBalance(
+        calculatedGas,
+        () => {
+          void (async () => {
+            try {
+              const { response } = await transaction.signAndSend();
+              const result = await response();
+              onSuccess?.(result);
+              resolve();
+            } catch (error) {
+              onError?.();
+              console.error(error);
+              alert.error(getErrorMessage(error));
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          })();
+        },
+        () => {
           onError?.();
-          console.error(error);
-          alert.error(getErrorMessage(error));
-        }
-      },
-      onError,
-    );
+          reject(new Error('Balance check failed'));
+        },
+      );
+    });
   };
 
   return { signAndSend };

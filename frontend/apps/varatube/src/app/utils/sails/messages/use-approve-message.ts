@@ -24,8 +24,7 @@ export const useApproveMessage = () => {
 
       gasLimit: { increaseGas: 20 },
     });
-    console.log('SIGN APPROOVE');
-    signAndSend(transaction, options);
+    await signAndSend(transaction, options);
   };
 
   return { approveMessage };

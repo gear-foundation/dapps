@@ -51,10 +51,10 @@ function Subscription() {
   const closeApproveModal = () => setIsApproveModalOpen(false);
   const openApproveModal = () => setIsApproveModalOpen(true);
 
-  const cancelSubscription = () => {
-    cancelSubscriptionMessage({
+  const cancelSubscription = async () => {
+    await cancelSubscriptionMessage({
       onSuccess: () => {
-        refetch();
+        void refetch();
         alert.success('Unsubscribed successfully');
       },
       onError: () => {
@@ -67,12 +67,13 @@ function Subscription() {
     setValuesToTransfer(null);
   };
 
-  const findSelectedPeriodRate = (period: string) => periods.find((item) => item.value === period)?.rate || 1;
+  const findSelectedPeriodRate = (targetPeriod: string) =>
+    periods.find((item) => item.value === targetPeriod)?.rate || 1;
   const price = period && amount ? String(findSelectedPeriodRate(period) * amount) : null;
 
-  const purchaseSubscription = () => {
+  const purchaseSubscription = async () => {
     if (valuesToTransfer) {
-      registerSubscriptionMessage(
+      await registerSubscriptionMessage(
         {
           currency_id: ENV.FT_CONTRACT,
           period: valuesToTransfer.period as Period,
@@ -84,8 +85,8 @@ function Subscription() {
             clearValues();
             setIsSubscribing(false);
             alert.success('Subscribed successfully');
-            refetch();
-            refetchBalance();
+            void refetch();
+            void refetchBalance();
           },
           onError: () => {
             alert.error('Gas calculation error');
@@ -118,16 +119,15 @@ function Subscription() {
 
     const amountToTransfer = findSelectedPeriodRate(valuesToTransfer.period) * amount;
     if (amountToTransfer) {
-      approveMessage(
+      await approveMessage(
         {
           spender: ENV.CONTRACT,
           value: amountToTransfer,
         },
         {
           onSuccess: () => {
-            console.log('onSuccess');
             closeApproveModal();
-            purchaseSubscription();
+            void purchaseSubscription();
           },
           onError: () => {
             clearValues();
