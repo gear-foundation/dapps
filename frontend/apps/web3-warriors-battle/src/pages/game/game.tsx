@@ -103,15 +103,15 @@ export function Game() {
 
   const onAttackClick = () => {
     setTappedButton('Attack');
-    makeMoveMessage('Attack', { onError: () => setTappedButton(null) });
+    void makeMoveMessage('Attack', { onError: () => setTappedButton(null) });
   };
   const onReflectClick = () => {
     setTappedButton('Reflect');
-    makeMoveMessage('Reflect', { onError: () => setTappedButton(null) });
+    void makeMoveMessage('Reflect', { onError: () => setTappedButton(null) });
   };
   const onUltimateClick = () => {
     setTappedButton('Ultimate');
-    makeMoveMessage('Ultimate', { onError: () => setTappedButton(null) });
+    void makeMoveMessage('Ultimate', { onError: () => setTappedButton(null) });
   };
 
   const { round_start_time } = pair || {};
@@ -221,7 +221,7 @@ export function Game() {
               setBattleHistory(null);
               battleHistoryStorage.set(null);
 
-              startNextFightMessage();
+              void startNextFightMessage();
             }}
             disabled={pending}
           />

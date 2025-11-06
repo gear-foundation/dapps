@@ -64,18 +64,21 @@ export function Waiting() {
   const isAdmin = account.decodedAddress === admin;
 
   const onStartTournament = () => {
-    startBattleMessage({ onSuccess: () => navigate(ROUTES.GAME) });
+    void startBattleMessage({ onSuccess: () => navigate(ROUTES.GAME) });
   };
 
   const onCancelTournament = () => {
-    cancelTournamentMessage({
+    void cancelTournamentMessage({
       onSuccess: () => navigate(ROUTES.HOME),
       onError: () => setIsOpenCancelTournamentModal(false),
     });
   };
 
   const onLeaveGame = () => {
-    cancelRegisterMessage({ onSuccess: () => navigate(ROUTES.HOME), onError: () => setIsOpenLeaveModal(false) });
+    void cancelRegisterMessage({
+      onSuccess: () => navigate(ROUTES.HOME),
+      onError: () => setIsOpenLeaveModal(false),
+    });
   };
 
   return (

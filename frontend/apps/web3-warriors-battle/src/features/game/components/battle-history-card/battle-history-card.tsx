@@ -1,4 +1,4 @@
-import { VariantProps, cva } from 'class-variance-authority';
+import { VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 
 import { Move } from '@/app/utils';
@@ -11,14 +11,10 @@ import { HealthIndicator } from '../health-indicator';
 import { PlayerStatus } from '../player-status/player-status';
 
 import styles from './battle-history-card.module.scss';
-
-export const variants = cva('', {
-  variants: { align: { left: styles.left, right: styles.right } },
-  defaultVariants: { align: 'left' },
-});
+import { battleHistoryCardVariants } from './battle-history-card.variants';
 
 type BattleHistoryCardProps = Omit<PlayerState, 'action'> &
-  VariantProps<typeof variants> & {
+  VariantProps<typeof battleHistoryCardVariants> & {
     onClose?: () => void;
     action: Move | null;
   };
@@ -38,7 +34,7 @@ const BattleHistoryCard = ({
   const isAlive = health > 0;
 
   return (
-    <div className={variants({ className: styles.wrapper, align })}>
+    <div className={battleHistoryCardVariants({ className: styles.wrapper, align })}>
       <div className={styles.header}>
         <Text>
           {action ? (

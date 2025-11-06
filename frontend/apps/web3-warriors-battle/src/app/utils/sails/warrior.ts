@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import { TransactionBuilder, ActorId, ZERO_ADDRESS } from 'sails-js';

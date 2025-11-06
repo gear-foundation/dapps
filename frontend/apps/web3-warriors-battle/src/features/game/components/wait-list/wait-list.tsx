@@ -4,7 +4,9 @@ import { stringShorten } from '@polkadot/util';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 
-import { copyToClipboard, useDeletePlayerMessage } from '@/app/utils';
+import { copyToClipboard } from '@dapps-frontend/ui';
+
+import { useDeletePlayerMessage } from '@/app/utils';
 import { Text } from '@/components';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -53,7 +55,7 @@ const WaitList = ({ items, isAdmin }: WaitListProps) => {
                   <Button
                     icon={FilledCrossIcon}
                     className={styles.cross}
-                    onClick={() => deletePlayerMessage(address)}
+                    onClick={() => void deletePlayerMessage(address)}
                     color="transparent"
                   />
                 ) : (

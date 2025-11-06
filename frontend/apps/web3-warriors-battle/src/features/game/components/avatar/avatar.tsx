@@ -1,4 +1,4 @@
-import { VariantProps, cva } from 'class-variance-authority';
+import { VariantProps } from 'class-variance-authority';
 import { Suspense, memo } from 'react';
 
 import { BodyColor } from '../../assets/images';
@@ -6,13 +6,9 @@ import { getLazySvg } from '../../utils';
 import { CharacterView } from '../character/character';
 
 import styles from './avatar.module.scss';
+import { avatarVariants } from './avatar.variants';
 
-export const variants = cva('', {
-  variants: { size: { md: styles.md, sm: styles.sm } },
-  defaultVariants: { size: 'md' },
-});
-
-type AvatarProps = VariantProps<typeof variants> & CharacterView;
+type AvatarProps = VariantProps<typeof avatarVariants> & CharacterView;
 
 export const Avatar = memo((props: AvatarProps) => {
   const { size, hat_index, head_index, body_color } = props;
@@ -21,7 +17,7 @@ export const Avatar = memo((props: AvatarProps) => {
   const Head = getLazySvg('head', head_index);
 
   return (
-    <div className={variants({ className: styles.container, size })}>
+    <div className={avatarVariants({ className: styles.container, size })}>
       <Suspense fallback={null}>
         <div className={styles.wrapper}>
           <BodyColor style={{ color: body_color }} />
@@ -32,3 +28,5 @@ export const Avatar = memo((props: AvatarProps) => {
     </div>
   );
 });
+
+Avatar.displayName = 'Avatar';

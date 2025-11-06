@@ -23,26 +23,28 @@ export const useSignAndSend = () => {
   const { setPending } = usePending();
   const alert = useAlert();
 
-  const signAndSend = async (
-    transaction: TransactionReturn<() => GenericTransactionReturn<null>>,
-    options?: Options,
-  ) => {
+  const signAndSend = (transaction: TransactionReturn<() => GenericTransactionReturn<null>>, options?: Options) => {
     const { onSuccess, onError } = options || {};
     const calculatedGas = Number(transaction.extrinsic.args[2].toString());
+
+    const execute = async () => {
+      try {
+        const { response } = await transaction.signAndSend();
+        await response();
+        onSuccess?.();
+        setPending(false);
+      } catch (error) {
+        onError?.();
+        setPending(false);
+        console.error(error);
+        alert.error(getErrorMessage(error));
+      }
+    };
+
     checkBalance(
       calculatedGas,
-      async () => {
-        try {
-          const { response } = await transaction.signAndSend();
-          await response();
-          onSuccess?.();
-          setPending(false);
-        } catch (error) {
-          onError?.();
-          setPending(false);
-          console.error(error);
-          alert.error(getErrorMessage(error));
-        }
+      () => {
+        void execute();
       },
       onError,
     );
