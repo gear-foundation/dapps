@@ -8,7 +8,7 @@ function PurchaseSubscriptionApproveModal({ disabledSubmitButton, amount, close,
   return (
     <Modal heading="Purchase subscription" close={close}>
       <div className={styles.container}>
-        You're going to transfer {amount} Tokens
+        You&apos;re going to transfer {amount} Tokens
         <Button text="Approve" onClick={onSubmit} disabled={disabledSubmitButton} />
       </div>
     </Modal>

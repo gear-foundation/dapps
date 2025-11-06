@@ -19,7 +19,7 @@ export const useCancelSubscriptionMessage = () => {
       args: [],
       gasLimit: { increaseGas: 20 },
     });
-    signAndSend(transaction, options);
+    await signAndSend(transaction, options);
   };
 
   return { cancelSubscriptionMessage };

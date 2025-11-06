@@ -25,7 +25,7 @@ export const useRegisterSubscriptionMessage = () => {
       args: [period, currency_id, with_renewal],
       gasLimit: { increaseGas: 20 },
     });
-    signAndSend(transaction, options);
+    await signAndSend(transaction, options);
   };
 
   return { registerSubscriptionMessage };
