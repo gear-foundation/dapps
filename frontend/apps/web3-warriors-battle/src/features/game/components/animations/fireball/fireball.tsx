@@ -68,7 +68,7 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
       x: number,
       y: number,
       r: number,
-      o: number,
+      opacity: number,
       c: string,
       xv: number,
       yv: number,
@@ -76,7 +76,7 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
       ov: number,
     ) => {
       const index = ++nextParticleIndex.current;
-      particles.current[index] = { index, x, y, r, o, c, xv, yv, rv, ov };
+      particles.current[index] = { index, x, y, r, o: opacity, c, xv, yv, rv, ov };
     };
 
     const loop = () => {

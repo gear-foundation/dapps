@@ -1,2 +1,3 @@
-export { Text, textVariants } from './text';
+export { Text } from './text';
+export { textVariants } from './text-variants';
 export type { TextProps } from './text';

@@ -42,9 +42,9 @@ function FindGameForm() {
     },
   });
 
-  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values: joinValues } = joinForm;
 
-  const { refetch } = useBattleQuery(getSafeDecodedAddress(values.address));
+  const { refetch } = useBattleQuery(getSafeDecodedAddress(joinValues.address));
   const appearance = useAtomValue(characterAppearanceAtom);
   const characterStats = characterStatsStorage.get();
   const warriorId = warriorIdStorage.get();
@@ -80,13 +80,13 @@ function FindGameForm() {
     }
   };
 
-  const handleJoinSession = async (values: JoinModalFormValues) => {
+  const handleJoinSession = async (modalValues: JoinModalFormValues) => {
     if (foundState && account && appearance && characterStats) {
       setPending(true);
       const gameId = decodeAddress(foundState.admin);
       const { attack, defence, dodge } = characterStats;
-      const { name } = values;
-      registerMessage(
+      const { name } = modalValues;
+      await registerMessage(
         { value: BigInt(foundState.bid), name, appearance, attack, defence, dodge, warriorId, gameId },
         {
           onSuccess: () => {

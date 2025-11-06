@@ -8,7 +8,7 @@ import { Text } from '../text';
 import styles from './card-button.module.scss';
 
 type CardButtonProps = BaseComponentProps & {
-  onClick: React.MouseEventHandler<HTMLDivElement>;
+  onClick: () => void;
   title: string;
   description: string;
   icon: React.ReactNode;
@@ -17,7 +17,14 @@ type CardButtonProps = BaseComponentProps & {
 
 export function CardButton({ onClick, icon, title, className, description, disabled }: CardButtonProps) {
   return (
-    <div onClick={onClick} className={clsx(styles.card, className, disabled && styles.disabled)}>
+    <div
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onClick();
+      }}
+      onClick={onClick}
+      className={clsx(styles.card, className, disabled && styles.disabled)}>
       <div>
         <div className={styles.title}>
           {icon}

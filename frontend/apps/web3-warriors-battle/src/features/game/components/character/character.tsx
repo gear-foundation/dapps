@@ -75,3 +75,5 @@ export const Character = memo(
     prev.hat_index === next.hat_index &&
     prev.head_index === next.head_index,
 );
+
+Character.displayName = 'Character';

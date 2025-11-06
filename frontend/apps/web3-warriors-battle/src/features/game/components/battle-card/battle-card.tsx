@@ -1,4 +1,4 @@
-import { VariantProps, cva } from 'class-variance-authority';
+import { VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 
 import { PlayerSettings } from '@/app/utils';
@@ -9,14 +9,10 @@ import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
 
 import styles from './battle-card.module.scss';
-
-export const variants = cva('', {
-  variants: { align: { left: styles.left, right: styles.right } },
-  defaultVariants: { align: 'left' },
-});
+import { battleCardVariants } from './battle-card.variants';
 
 type BattleCardProps = PlayerSettings &
-  VariantProps<typeof variants> & {
+  VariantProps<typeof battleCardVariants> & {
     name: string;
     winsCount?: number;
     characterView: CharacterView;
@@ -24,7 +20,7 @@ type BattleCardProps = PlayerSettings &
 
 const BattleCard = ({ align, name, attack, health, defence, dodge, winsCount = 0, characterView }: BattleCardProps) => {
   return (
-    <div className={variants({ className: styles.wrapper, align })}>
+    <div className={battleCardVariants({ className: styles.wrapper, align })}>
       <Avatar size="sm" {...characterView} />
       <div className={styles.info}>
         <div className={styles.header}>

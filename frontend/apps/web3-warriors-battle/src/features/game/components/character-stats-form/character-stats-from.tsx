@@ -143,7 +143,7 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
   return (
     <div className={styles.container}>
       <Heading size="xs" weight="bold" className={styles.title}>
-        Set Character's Attributes
+        Set Character&apos;s Attributes
       </Heading>
 
       <Text size="sm" className={styles.subtitle}>

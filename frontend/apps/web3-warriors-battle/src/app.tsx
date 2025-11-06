@@ -2,7 +2,7 @@ import './app.scss';
 import { useApi, useAccount } from '@gear-js/react-hooks';
 import { Container, Footer } from '@ui/components';
 
-import { WithProviders } from '@/app/hocs';
+import { withProviders } from '@/app/hocs';
 import { ApiLoader, Header, Loader, LoadingError } from '@/components';
 import { Routing } from '@/pages';
 
@@ -47,4 +47,4 @@ function Component() {
   );
 }
 
-export const App = WithProviders(Component);
+export const App = withProviders(Component);
