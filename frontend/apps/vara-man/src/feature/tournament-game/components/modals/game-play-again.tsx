@@ -18,7 +18,7 @@ export const GamePlayAgainModal = ({ setIsOpenPlayAgain, restartGame }: GamePlay
         <div className="flex flex-col items-center">
           <h2 className="typo-h2">Game over</h2>
           <div className="flex flex-col gap-5 mt-5">
-            <p className="text-[#555756]">You're doing great, keep it up!</p>
+            <p className="text-[#555756]">You&apos;re doing great, keep it up!</p>
             <div className="flex gap-10">
               <Button
                 text="Play Again"

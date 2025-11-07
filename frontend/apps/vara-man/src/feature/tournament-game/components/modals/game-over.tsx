@@ -1,7 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useEzTransactions } from 'gear-ez-transactions';
 import { useAtom, useSetAtom } from 'jotai';
-import { Key } from 'react';
 
 import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
@@ -80,16 +79,18 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
           <div className="flex flex-col justify-center gap-5 text-center">
             <h3 className="text-3xl font-semibold lg:text-center text-left">Game Over</h3>
             {winners.length > 1 ? (
-              winners.map((winner, index: Key | null | undefined) => (
-                <div key={index} className="flex flex-col lg:flex-row items-center justify-between gap-3 w-4/5 mx-auto">
+              winners.map(([address, participant]) => (
+                <div
+                  key={address}
+                  className="flex flex-col lg:flex-row items-center justify-between gap-3 w-4/5 mx-auto">
                   <div>
-                    <p className="text-[#555756]">{winner?.[1].name}</p>
+                    <p className="text-[#555756]">{participant.name}</p>
                   </div>
                   <div className="flex items-center gap-5 ml-5">
-                    <div className="bg-[#F7F9FA] w-fullfont-medium flex gap-5 justify-center items-center">
+                    <div className="bg-[#F7F9FA] w-full font-medium flex gap-5 justify-center items-center">
                       <span className="flex items-center gap-1 font-semibold">
                         <Icons.statsCoins width={20} height={20} />
-                        {Number(winner?.[1].points)}
+                        {Number(participant.points)}
                       </span>
                     </div>
                     <div className="bg-[#F7F9FA] w-full font-medium flex gap-5 justify-center items-center">
@@ -132,13 +133,13 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
                 variant="gray"
                 onClick={() => {
                   onResetGame();
-                  onCancelGame();
+                  void onCancelGame();
                 }}
                 disabled={isPending}
                 className="w-full">
                 Close
               </Button>
-              <Button onClick={onCancelGame} isLoading={isPending} disabled={isPending} className="w-full">
+              <Button onClick={() => void onCancelGame()} isLoading={isPending} disabled={isPending} className="w-full">
                 Play again
               </Button>
             </div>

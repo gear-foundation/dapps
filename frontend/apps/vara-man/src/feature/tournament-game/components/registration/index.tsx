@@ -2,16 +2,11 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from 'gear-ez-transactions';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
-import {
-  TournamentState,
-  cn,
-  copyToClipboard,
-  prettifyText,
-  useCancelTournamentMessage,
-  useStartTournamentMessage,
-} from '@/app/utils';
+import { TournamentState, cn, prettifyText, useCancelTournamentMessage, useStartTournamentMessage } from '@/app/utils';
 import { useCancelRegisterMessage } from '@/app/utils/sails/messages/use-cancel-register-message';
 import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
@@ -56,7 +51,9 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
         onError,
         onSuccess: () => {
           setIsPending(false);
-          setPlayGame && setPlayGame(true);
+          if (setPlayGame) {
+            setPlayGame(true);
+          }
           onSuccess();
         },
       });
@@ -87,18 +84,19 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
   return (
     <div className="flex flex-col gap-4 items-center w-full">
       <h3 className="text-2xl font-bold">Registration</h3>
-      <p className="text-[#555756]">
-        Players ({tournamentGame?.participants.length}/10). Waiting for other players...{' '}
-      </p>
+      <p className="text-[#555756]">Players ({tournamentGame?.participants.length}/10). Waiting for other players...</p>
       {isAdmin && (
         <div className="flex gap-2 font-medium">
-          Share the game's address:
+          Share the game&apos;s address:
           <span className="font-bold">({prettifyText(account.address)})</span>
-          <span
+          <button
+            type="button"
             className="font-semibold text-[#0ED3A3] cursor-pointer"
-            onClick={() => copyToClipboard({ key: account.address, alert })}>
+            onClick={() => {
+              void copyToClipboard({ value: account.address, alert });
+            }}>
             Copy
-          </span>
+          </button>
         </div>
       )}
       <div className="flex flex-col gap-3 w-full">

@@ -83,7 +83,7 @@ export const Game = () => {
 
     if (gameOver && (coins.gold > 0 || coins.silver > 0) && !gasless.isLoading) {
       setIsPending(true);
-      finishSingleGameMessage(coins.gold, coins.silver, level, {
+      void finishSingleGameMessage(coins.gold, coins.silver, level, {
         onSuccess: () => setIsPending(false),
         onError: () => setIsPending(false),
       });

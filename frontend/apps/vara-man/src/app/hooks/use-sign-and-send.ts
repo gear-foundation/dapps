@@ -18,23 +18,28 @@ export const useSignAndSend = () => {
   });
   const alert = useAlert();
 
-  const signAndSend = async (
+  const signAndSend = (
     transaction: TransactionReturn<() => GenericTransactionReturn<null>>,
     { onSuccess, onError }: Options,
   ) => {
     const calculatedGas = Number(transaction.extrinsic.args[2].toString());
+
+    const executeTransaction = async () => {
+      try {
+        const { response } = await transaction.signAndSend();
+        await response();
+        onSuccess?.();
+      } catch (error) {
+        onError?.();
+        console.error(error);
+        alert.error(getErrorMessage(error));
+      }
+    };
+
     checkBalance(
       calculatedGas,
-      async () => {
-        try {
-          const { response } = await transaction.signAndSend();
-          await response();
-          onSuccess?.();
-        } catch (error) {
-          onError?.();
-          console.error(error);
-          alert.error(getErrorMessage(error));
-        }
+      () => {
+        void executeTransaction();
       },
       onError,
     );

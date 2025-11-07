@@ -64,7 +64,7 @@ export const TournamentCreate = () => {
 
     if (!gasless.isLoading) {
       setIsPending(true);
-      createNewTournamentMessage(
+      void createNewTournamentMessage(
         BigInt((values.bid || 0) * 10 ** decimals),
         values.tournamentName,
         values.username,

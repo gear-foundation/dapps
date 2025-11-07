@@ -44,7 +44,7 @@ export class GameEngine {
     level: Level,
     incrementCoins: (coin: 'silver' | 'gold') => void,
     gameOver: boolean,
-    setGameOver: (gameOver: boolean) => void,
+    setGameOver: (_gameOver: boolean) => void,
     map: TileMap,
     pause?: boolean,
   ) {
@@ -62,53 +62,55 @@ export class GameEngine {
   }
 
   init() {
-    MapRenderer.initTilesets(this.map).then(() => {
-      const startPosition = findCharacterStartPosition(this.map);
-      const enemyStartPositions = findEnemyStartPositions(this.map);
+    void MapRenderer.initTilesets(this.map)
+      .then(() => {
+        const startPosition = findCharacterStartPosition(this.map);
+        const enemyStartPositions = findEnemyStartPositions(this.map);
 
-      if (startPosition) {
-        this.character = new Character(startPosition.x, startPosition.y, true, this.map, this.incrementCoins, () =>
-          this.setGameOver(true),
-        );
-
-        this.initEventListeners();
-
-        this.resize();
-      } else {
-        console.error('The character starting position was not found.');
-      }
-
-      const levelData = gameLevels.find((l) => {
-        return l.level === this.level;
-      });
-
-      enemyStartPositions.forEach(({ position, zone }) => {
-        if (this.character) {
-          const enemy = new EnemyWithVision(
-            {
-              x: position.x,
-              y: position.y,
-              zone: zone,
-              speed: levelData!.speed,
-              mapData: this.map,
-            },
-            this.character.position,
-            levelData!.visionEnemy,
+        if (startPosition) {
+          this.character = new Character(startPosition.x, startPosition.y, true, this.map, this.incrementCoins, () =>
+            this.setGameOver(true),
           );
-          this.enemies.push(enemy);
-        }
-      });
 
-      CharacterRenderer.loadCloakImage('./cloak.svg')
-        .then((img) => {
-          CharacterRenderer.cloakImage = img;
-          this.update();
-        })
-        .catch((error) => {
-          console.error(error);
-          this.update();
+          this.initEventListeners();
+
+          this.resize();
+        } else {
+          console.error('The character starting position was not found.');
+        }
+
+        const levelData = gameLevels.find((l) => l.level === this.level);
+
+        enemyStartPositions.forEach(({ position, zone }) => {
+          if (this.character && levelData) {
+            const enemy = new EnemyWithVision(
+              {
+                x: position.x,
+                y: position.y,
+                zone: zone,
+                speed: levelData.speed,
+                mapData: this.map,
+              },
+              this.character.position,
+              levelData.visionEnemy,
+            );
+            this.enemies.push(enemy);
+          }
         });
-    });
+
+        CharacterRenderer.loadCloakImage('./cloak.svg')
+          .then((img) => {
+            CharacterRenderer.cloakImage = img;
+            this.update();
+          })
+          .catch((error) => {
+            console.error(error);
+            this.update();
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   public getCharacter(): Character | undefined {

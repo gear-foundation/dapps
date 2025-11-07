@@ -30,7 +30,7 @@ export const GameLayout = () => {
     if (!currentLevel) {
       navigate('/');
     }
-  }, [level]);
+  }, [currentLevel, navigate]);
 
   return (
     <div>
@@ -46,10 +46,13 @@ export const GameLayout = () => {
               {score}
             </div>
           </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => navigate('/')}>
+          <button
+            type="button"
+            className="flex gap-3 items-center font-semibold cursor-pointer"
+            onClick={() => navigate('/')}>
             <Icons.exit />
             Exit
-          </div>
+          </button>
         </div>
         <Game />
         {!isMobile && (

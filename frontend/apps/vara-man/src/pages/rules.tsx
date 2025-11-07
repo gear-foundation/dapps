@@ -73,9 +73,13 @@ export default function Rules() {
             const swipe = swipePower(offset.x, velocity.x);
 
             if (swipe < -swipeConfidenceThreshold) {
-              page < images.length - 1 && paginate(1);
+              if (page < images.length - 1) {
+                paginate(1);
+              }
             } else if (swipe > swipeConfidenceThreshold) {
-              page > 0 && paginate(-1);
+              if (page > 0) {
+                paginate(-1);
+              }
             }
           }}
           onAnimationComplete={() => {

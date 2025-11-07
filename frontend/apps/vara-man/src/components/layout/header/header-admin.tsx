@@ -5,9 +5,7 @@ import { useGame } from '@/app/context/ctx-game';
 import { useChangeStatusMessage } from '@/app/utils';
 import { Icons } from '@/components/ui/icons';
 
-type HeaderAdminProps = BaseComponentProps & {};
-
-export function HeaderAdmin({}: HeaderAdminProps) {
+export function HeaderAdmin() {
   const { isPending, setIsPending } = useApp();
   const { status } = useGame();
 
@@ -15,18 +13,19 @@ export function HeaderAdmin({}: HeaderAdminProps) {
   const { changeStatusMessage } = useChangeStatusMessage();
 
   const onError = () => setIsPending(false);
+  const onSuccess = () => setIsPending(false);
 
   const onActivateGame = () => {
     if (!gasless.isLoading) {
-      changeStatusMessage({ startedWithNativeToken: null }, { onError });
-      setIsPending(false);
+      setIsPending(true);
+      void changeStatusMessage({ startedWithNativeToken: null }, { onError, onSuccess });
     }
   };
 
   const onDeactivateGame = () => {
     if (!gasless.isLoading) {
-      changeStatusMessage({ paused: null }, { onError });
-      setIsPending(false);
+      setIsPending(true);
+      void changeStatusMessage({ paused: null }, { onError, onSuccess });
     }
   };
 

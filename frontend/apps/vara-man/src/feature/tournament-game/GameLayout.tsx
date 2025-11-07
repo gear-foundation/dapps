@@ -95,7 +95,7 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
       setIsOpenPlayAgain(true);
       if (coins.gold > 0 || coins.silver > 0) {
         if (!gasless.isLoading) {
-          recordTournamentResultMessage(timeGameOver, coins.gold, coins.silver, {});
+          void recordTournamentResultMessage(timeGameOver, coins.gold, coins.silver, {});
           setMessageSent(true);
         }
       }
