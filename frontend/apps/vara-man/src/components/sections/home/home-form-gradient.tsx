@@ -1,6 +1,4 @@
-type HomeFormGradientProps = BaseComponentProps & {};
-
-export function HomeFormGradient({}: HomeFormGradientProps) {
+export function HomeFormGradient() {
   return (
     <svg
       className="w-full h-[84%]"

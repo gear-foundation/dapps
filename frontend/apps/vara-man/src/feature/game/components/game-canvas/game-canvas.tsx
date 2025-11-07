@@ -49,7 +49,7 @@ const useResizeCanvas = (
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [canvasRef, fogCanvasRef, gameInstanceRef.current]);
+  }, [canvasRef, fogCanvasRef, gameInstanceRef]);
 };
 
 export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }: GameCanvasProps) => {

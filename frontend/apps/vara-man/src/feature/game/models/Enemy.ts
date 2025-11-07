@@ -190,16 +190,16 @@ export class Enemy {
   rotateEnemy() {
     let targetRotation = this.rotation;
     switch (this.direction) {
-      case 'up':
+      case Direction.up:
         targetRotation = 0;
         break;
-      case 'down':
+      case Direction.down:
         targetRotation = Math.PI;
         break;
-      case 'left':
+      case Direction.left:
         targetRotation = -Math.PI / 2;
         break;
-      case 'right':
+      case Direction.right:
         targetRotation = Math.PI / 2;
         break;
     }

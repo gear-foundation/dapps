@@ -49,7 +49,15 @@ export function LevelsSelectMode() {
             <div
               key={item.title}
               className={cn('border rounded-2xl text-center cursor-pointer', item.color, 'border-[var(--stats-theme)]')}
-              onClick={() => startSingleGame(item.id)}>
+              onClick={() => startSingleGame(item.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  startSingleGame(item.id);
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-label={`Select ${item.title} difficulty level`}>
               <h3 className="text-xl font-semibold md:p-6 p-3 md:text-center text-left">{item.title}</h3>
               <hr className="bg-[var(--stats-theme)] h-[1px] border-none" />
               <div className="md:p-10 p-3 flex md:flex-col flex-row justify-between gap-4 md:text-center text-left">

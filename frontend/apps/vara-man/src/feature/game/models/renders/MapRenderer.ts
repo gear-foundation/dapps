@@ -1,6 +1,8 @@
 import { TileMap } from '../../types';
 import { Vec2 } from '../Vec2';
 
+type TileLayer = TileMap['layers'][number];
+
 class Tileset {
   image: HTMLImageElement;
   tileWidth: number;
@@ -81,7 +83,7 @@ export class MapRenderer {
   }
 
   public static render(context: CanvasRenderingContext2D, mapData: TileMap) {
-    const tileLayer = mapData.layers.find((layer) => layer.name === 'main');
+    const tileLayer = mapData.layers.find((layer): layer is TileLayer => layer.name === 'main');
     if (!tileLayer || !tileLayer.visible) return;
 
     this.renderLayer(context, tileLayer, mapData);
@@ -89,7 +91,7 @@ export class MapRenderer {
     this.renderCoins(context, mapData);
   }
 
-  private static renderLayer(context: CanvasRenderingContext2D, layer: any, mapData: TileMap) {
+  private static renderLayer(context: CanvasRenderingContext2D, layer: TileLayer, mapData: TileMap) {
     const { width, height, data } = layer;
 
     for (let y = 0; y < height; y++) {
@@ -123,15 +125,17 @@ export class MapRenderer {
   }
 
   public static renderCoins(context: CanvasRenderingContext2D, mapData: TileMap) {
-    const coinLayer = mapData.layers.find((layer) => layer.name === 'coins');
+    const coinLayer = mapData.layers.find((layer): layer is TileLayer => layer.name === 'coins');
     if (!coinLayer || !coinLayer.visible) return;
 
     this.renderLayer(context, coinLayer, mapData);
   }
 
   public static renderImageLayer(context: CanvasRenderingContext2D, mapData: TileMap) {
-    const imageLayer = mapData.layers.find((layer) => layer.type === 'imagelayer');
-    if (!imageLayer || !imageLayer.visible || !imageLayer.image) return;
+    const imageLayer = mapData.layers.find(
+      (layer): layer is TileLayer & { image: string } => layer.type === 'imagelayer' && typeof layer.image === 'string',
+    );
+    if (!imageLayer || !imageLayer.visible) return;
 
     const imageSrc = imageLayer.image;
     if (!this.loadedImages[imageSrc]) {

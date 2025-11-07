@@ -3,8 +3,9 @@ import Identicon from '@polkadot/react-identicon';
 import { Suspense, useEffect } from 'react';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 
+import { copyToClipboard } from '@dapps-frontend/ui';
+
 import { ROUTES } from '@/app/consts';
-import { copyToClipboard } from '@/app/utils';
 import { CopyDecoded } from '@/assets/images/';
 import { Button } from '@/components/ui/button';
 import { ModalBottom } from '@/components/ui/modal';

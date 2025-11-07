@@ -15,7 +15,7 @@ export const useChangeStatusMessage = () => {
   const { signAndSend } = useSignAndSend();
 
   const changeStatusMessage = async (status: Status, options: Options) => {
-    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { sessionForAccount: _sessionForAccount, ...params } = await prepareEzTransactionParams();
     const { transaction } = await prepareTransactionAsync({
       args: [status],
       ...params,

@@ -7,7 +7,7 @@ import { useGame } from '@/app/context/ctx-game';
 import { GameFindModal } from '@/feature/tournament-game/components/modals/game-find';
 import { GameNotFoundModal } from '@/feature/tournament-game/components/modals/game-not-found';
 
-type findGame = {
+type FindGame = {
   admin: string;
   bid: bigint;
   participants: number;
@@ -15,7 +15,7 @@ type findGame = {
 
 export const TournamentFind = () => {
   const [findAddress, setFindAddress] = useState('');
-  const [findGame, setFindGame] = useState<findGame>();
+  const [foundGame, setFoundGame] = useState<FindGame>();
   const [isOpenFindModal, setIsOpenFindModal] = useState(false);
   const [isOpenNotFound, setIsOpenNotFound] = useState(false);
 
@@ -24,15 +24,15 @@ export const TournamentFind = () => {
 
   const onSearchGame = () => {
     if (findAddress) {
-      const findGame = allGames?.find((game) => {
-        return game[0] === decodeAddress(findAddress);
+      const game = allGames?.find((storedGame) => {
+        return storedGame[0] === decodeAddress(findAddress);
       });
-      if (findGame) {
+      if (game) {
         setIsOpenFindModal(true);
-        setFindGame({
+        setFoundGame({
           admin: decodeAddress(findAddress),
-          bid: BigInt(findGame?.[1].bid || 0),
-          participants: findGame[1].participants.length,
+          bid: BigInt(game?.[1].bid || 0),
+          participants: game[1].participants.length,
         });
       } else {
         setIsOpenNotFound(true);
@@ -42,11 +42,11 @@ export const TournamentFind = () => {
 
   return (
     <div className="flex flex-col gap-5 md:justify-center items-center  grow h-full">
-      {isOpenFindModal && findGame && <GameFindModal findGame={findGame} setIsOpenFindModal={setIsOpenFindModal} />}
+      {isOpenFindModal && foundGame && <GameFindModal findGame={foundGame} setIsOpenFindModal={setIsOpenFindModal} />}
       {isOpenNotFound && <GameNotFoundModal setIsOpenFindModal={setIsOpenNotFound} />}
 
       <h2 className="text-[34px]/[37px] font-semibold text-center md:text-left">Find a private game</h2>
-      <p className="text-center md:text-left">To find the game, you need to enter the administrator's address.</p>
+      <p className="text-center md:text-left">To find the game, you need to enter the administrator&apos;s address.</p>
 
       <form className="grid gap-4 w-full max-w-[600px] mx-auto mt-5">
         <div className="flex flex-col gap-10">

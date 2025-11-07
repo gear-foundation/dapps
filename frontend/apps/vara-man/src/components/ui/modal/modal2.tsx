@@ -9,7 +9,7 @@ export function Modal({
   children,
 }: {
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (isOpen: boolean) => void;
   children: ReactNode;
 }) {
   // Enable events when modal is open for alerts clicks

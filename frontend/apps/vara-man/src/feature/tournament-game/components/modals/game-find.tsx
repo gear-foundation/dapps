@@ -52,7 +52,7 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
     setIsPending(true);
 
     if (!gasless.isLoading) {
-      registerForTournamentMessage(BigInt(bid * 10 ** decimals), findGame.admin, values.username, {
+      void registerForTournamentMessage(BigInt(bid * 10 ** decimals), findGame.admin, values.username, {
         onSuccess,
         onError,
       });

@@ -36,7 +36,7 @@ export const GameOverModal = ({ restartGame }: { restartGame: () => void }) => {
           <div className="flex flex-col justify-center gap-5 text-center">
             <div>
               <h3 className="text-3xl font-semibold">Game Over</h3>
-              <p className="text-[#555756] mt-2">You're doing great, keep it up!</p>
+              <p className="text-[#555756] mt-2">You&apos;re doing great, keep it up!</p>
             </div>
             <div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-center items-center">
               Your score:

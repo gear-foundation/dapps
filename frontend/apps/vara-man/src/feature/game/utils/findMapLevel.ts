@@ -5,10 +5,10 @@ import HardMap from '../assets/map/map-hard.json';
 import MediumMap from '../assets/map/map-medium.json';
 import { TileMap } from '../types';
 
-const maps = {
-  Easy: EasyMap,
-  Medium: MediumMap,
-  Hard: HardMap,
+const maps: Record<Level, TileMap> = {
+  Easy: EasyMap as TileMap,
+  Medium: MediumMap as TileMap,
+  Hard: HardMap as TileMap,
 };
 
 export const findMapLevel = (level: Level): TileMap => {
@@ -18,5 +18,7 @@ export const findMapLevel = (level: Level): TileMap => {
     throw new Error(`Map for level "${level}" not found.`);
   }
 
-  return JSON.parse(JSON.stringify(map));
+  const mapCopy: TileMap = JSON.parse(JSON.stringify(map)) as TileMap;
+
+  return mapCopy;
 };

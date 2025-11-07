@@ -12,7 +12,7 @@ export default function Home() {
     if (tournamentGame) {
       setPreviousGame(tournamentGame);
     }
-  }, [tournamentGame]);
+  }, [setPreviousGame, tournamentGame]);
 
   return <>{tournamentGame || previousGame ? <Game /> : <HomeRegister />}</>;
 }

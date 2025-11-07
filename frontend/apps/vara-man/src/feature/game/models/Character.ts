@@ -363,11 +363,11 @@ export class Character {
   }
 
   countTotalCoins(): number {
-    let count = 0;
+    let _count = 0;
     for (const layer of this.mapData.layers) {
       if (layer.name === 'coins') {
         for (const tile of layer.data) {
-          if (tile > 0) count++;
+          if (tile > 0) _count++;
         }
       }
     }

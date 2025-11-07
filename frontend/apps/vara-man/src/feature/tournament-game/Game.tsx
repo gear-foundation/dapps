@@ -50,17 +50,17 @@ export const Game = () => {
         setPreviousGame(null);
       }
     }
-  }, [account?.decodedAddress, previousGame, tournamentGame]);
+  }, [account?.decodedAddress, previousGame, setGameOver, setPreviousGame, tournamentGame]);
 
   useEffect(() => {
     if (playGame || isStarted) {
       setActiveTab('play');
     }
-  }, [playGame, isStarted]);
+  }, [isStarted, playGame, setActiveTab]);
 
   useEffect(() => {
     setCoins({ gold: 0, silver: 0 });
-  }, [activeTab]);
+  }, [activeTab, setCoins]);
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
