@@ -8,15 +8,15 @@ import LeaveSVG from '@/assets/icons/player-leave-icon.svg';
 import MicSVG from '@/assets/icons/player-mic-icon.svg';
 import MutedMicSVG from '@/assets/icons/player-mic-muted-icon.svg';
 import PlaySVG from '@/assets/icons/player-play-icon.svg';
-import { Button } from '@/ui';
-import { cx } from '@/utils';
-import { PlayerProps } from './Player.interfaces';
-import styles from './Player.module.scss';
-
-import ShareSVG from '@/assets/icons/player-share-icon.svg';
 import ShareActiveSVG from '@/assets/icons/player-share-active-icon.svg';
+import ShareSVG from '@/assets/icons/player-share-icon.svg';
 import VolumeSVG from '@/assets/icons/player-volume-icon.svg';
 import VolumeMutedSVG from '@/assets/icons/player-volume-muted-icon.svg';
+import { Button } from '@/ui';
+import { cx } from '@/utils';
+
+import { PlayerProps } from './Player.interfaces';
+import styles from './Player.module.scss';
 
 function Player({
   mode,
@@ -36,9 +36,12 @@ function Player({
   const [volume, setVolume] = useState(50);
 
   useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+
     try {
-      playerRef.current?.load();
-      onReady?.(playerRef.current as HTMLVideoElement);
+      player.load();
+      onReady?.(player);
     } catch {
       console.log('error');
     }
@@ -47,15 +50,20 @@ function Player({
 
   useEffect(() => {
     const player = playerRef.current;
-    player!.volume = volume / 100;
+    if (player) {
+      player.volume = volume / 100;
+    }
   }, [volume]);
 
   const handlePause = async () => {
-    if (isOnPause && playerRef.current?.paused) {
-      playerRef.current?.play();
+    const player = playerRef.current;
+    if (!player) return;
+
+    if (isOnPause && player.paused) {
+      await player.play();
       setIsOnPause(false);
     } else {
-      playerRef.current?.pause();
+      player.pause();
       setIsOnPause(true);
     }
   };
@@ -76,9 +84,12 @@ function Player({
 
   const handleFullScreen = () => {
     if (document.fullscreenElement) {
-      document.exitFullscreen();
+      void document.exitFullscreen();
     } else {
-      playerContainer.current?.requestFullscreen();
+      const container = playerContainer.current;
+      if (container) {
+        void container.requestFullscreen();
+      }
     }
   };
 

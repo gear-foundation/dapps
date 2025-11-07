@@ -21,7 +21,7 @@ export const useUnsubscribeMessage = () => {
 
   const unsubscribeMessage = async ({ accountId }: Params, options?: Options) =>
     executeWithPending(async () => {
-      if (!account?.decodedAddress) throw 'account is not connected';
+      if (!account?.decodedAddress) throw new Error('Account is not connected');
       const { transaction } = await prepareTransactionAsync({
         args: [accountId],
         gasLimit: { increaseGas: 10 },

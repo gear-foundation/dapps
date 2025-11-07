@@ -30,7 +30,7 @@ function DropzoneUploader({
     const formData = new FormData();
     formData.append('file', acceptedFiles[0]);
 
-    fetch(uploadUrl, {
+    void fetch(uploadUrl, {
       method: 'POST',
       body: formData,
     })

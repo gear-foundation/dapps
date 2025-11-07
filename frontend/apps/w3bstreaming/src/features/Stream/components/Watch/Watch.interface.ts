@@ -21,7 +21,7 @@ export type StreamState =
 
 export interface OfferMsg {
   userId: string;
-  description: RTCSessionDescription;
+  description: RTCSessionDescriptionInit;
   streamId: string;
 }
 

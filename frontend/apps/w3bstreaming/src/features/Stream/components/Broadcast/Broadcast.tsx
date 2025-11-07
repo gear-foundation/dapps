@@ -44,7 +44,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   const handleGetIsAlreadyHaveStream = async (address: string) => {
     const res = await fetch(`${ENV.BACKEND_SERVER}/is-already-having-stream?address=${address}`);
-    const isHave = await res.json();
+    const isHave = (await res.json()) as boolean;
 
     return isHave;
   };
@@ -63,7 +63,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   }, [account?.decodedAddress]);
 
   useEffect(() => {
-    handleCheckIsAlreadyHaveStream();
+    void handleCheckIsAlreadyHaveStream();
   }, [handleCheckIsAlreadyHaveStream]);
 
   const handleGoToAccountPage = () => {
@@ -151,7 +151,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   useEffect(() => {
     navigator.mediaDevices.addEventListener('devicechange', () => {
-      updatesDevices();
+      void updatesDevices();
     });
   }, []);
 
@@ -470,7 +470,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       });
 
       socket.on('candidate', (userId: string, { candidate }: CandidateMsg) => {
-        conns.current[userId]?.addIceCandidate(new RTCIceCandidate(candidate)).catch((e: any) => console.error(e));
+        conns.current[userId]?.addIceCandidate(new RTCIceCandidate(candidate)).catch((e: unknown) => console.error(e));
       });
 
       socket.on('answer', (_: string, { userId, description }: AnswerMsg) => {
@@ -514,7 +514,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   }, [localStream]);
 
   useEffect(() => {
-    socket.on('stopWatching', (id) => {
+    socket.on('stopWatching', (id: string) => {
       try {
         camTransceiver.current?.[id]?.stop();
         delete camTransceiver.current?.[id];

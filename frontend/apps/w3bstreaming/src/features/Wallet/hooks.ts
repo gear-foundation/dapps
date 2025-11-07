@@ -15,7 +15,7 @@ function useWasmMetadata(source: RequestInfo | URL) {
 
   useEffect(() => {
     if (source) {
-      fetch(source)
+      void fetch(source)
         .then((response) => response.arrayBuffer())
         .then((array) => Buffer.from(array))
         .then((buffer) => setData(buffer))
@@ -46,7 +46,8 @@ export function useAccountAvailableBalanceSync() {
     if (!api || !isApiReady || !isAccountReady) return;
 
     if (account && balance) {
-      api.query.system.account(account.decodedAddress).then((res) => {
+      const fetchAccountBalance = async () => {
+        const res = await api.query.system.account(account.decodedAddress);
         const systemAccount = res.toJSON() as SystemAccount;
 
         const total = balance.toString();
@@ -80,11 +81,13 @@ export function useAccountAvailableBalanceSync() {
         if (!isReady) {
           setIsReady(true);
         }
-      });
-    } else {
+      };
+
+      void fetchAccountBalance();
+    } else if (!isReady) {
       setIsReady(true);
     }
-  }, [account, api, isAccountReady, isApiReady, isReady, balance]);
+  }, [account, api, balance, isAccountReady, isApiReady, isReady, setAvailableBalance, setIsReady]);
 }
 
 export { useWasmMetadata };

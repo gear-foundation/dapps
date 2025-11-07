@@ -8,9 +8,9 @@ import { Profile, useEditProfileMessage, useGetStateQuery } from '@/app/utils';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
+import picImage from '@/assets/icons/picture.png';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
-import picImage from '@/assets/icons/picture.png';
 import { Button, TextField } from '@/ui';
 import { Select } from '@/ui/Select';
 import { cx } from '@/utils';
@@ -73,15 +73,14 @@ function ProfileInfo() {
   };
 
   const handleSubmit = ({ name, surname, img_link, time_zone }: FormValues) => {
-    console.log('submit');
-    editProfileMessage(
+    void editProfileMessage(
       { name, surname, img_link, time_zone },
       {
         onSuccess: () => {
           setIsEditingProfile(false);
           setUserInfo((prev) => (prev ? { ...prev, name, surname, img_link, time_zone } : prev));
           reset();
-          refetch();
+          void refetch();
         },
       },
     );

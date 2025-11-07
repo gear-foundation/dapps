@@ -19,7 +19,7 @@ export interface WatchMsg {
 export interface AnswerMsg {
   userId: string;
   streamId: string;
-  description: RTCSessionDescription;
+  description: RTCSessionDescriptionInit;
 }
 
 export interface CandidateMsg {

@@ -8,11 +8,12 @@ import { cx } from '@/utils';
 
 import { Button } from '../Button';
 import { Dropdown } from '../Dropdown';
+import { DropdownMenuItem } from '../Dropdown/Dropdown.interfaces';
 
-import { PagesMenu } from './Pagination.interface';
+import { PagesMenu, PaginationProps } from './Pagination.interface';
 import styles from './Pagination.module.scss';
 
-function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: any) {
+function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: PaginationProps) {
   const pages = Math.ceil(totalRows / rowsPerPage);
   const [pageCount, setPageCount] = useState(Math.ceil(totalRows / rowsPerPage));
   const [generatedMenu, setGeneratedMenu] = useState<PagesMenu>({});
@@ -30,8 +31,8 @@ function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: any
     setPageCount(pages);
   }, [pages, currentPage, setCurrentPage]);
 
-  const handleItemClick = ({ value }: any) => {
-    setCurrentPage(value);
+  const handleItemClick = ({ value }: DropdownMenuItem) => {
+    setCurrentPage(Number(value));
   };
 
   const calculatePageRange = useCallback(
@@ -43,7 +44,7 @@ function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: any
   );
 
   const handleGenerateDropdownMenu = useCallback(() => {
-    const menu = new Array(pages).fill(0).reduce((acc, _, i) => {
+    const menu = new Array(pages).fill(null).reduce<PagesMenu>((acc, _, i) => {
       const pageNumber = i + 1;
       const range = calculatePageRange(i, rowsPerPage, pages, totalRows);
 
@@ -54,7 +55,7 @@ function Pagination({ totalRows, rowsPerPage, currentPage, setCurrentPage }: any
           value: pageNumber,
         },
       };
-    }, {});
+    }, {} as PagesMenu);
 
     setGeneratedMenu(menu);
   }, [calculatePageRange, pages, totalRows, rowsPerPage]);

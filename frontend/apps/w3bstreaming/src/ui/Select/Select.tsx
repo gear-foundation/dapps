@@ -1,7 +1,7 @@
 import { SelectProps } from './Select.interfaces';
 import styles from './Select.module.scss';
 
-function Select({ label, size, options, ...props }: SelectProps) {
+function Select({ label, options, ...props }: SelectProps) {
   return (
     <div className={styles.select}>
       <select className={styles['select-text']} required {...props}>
