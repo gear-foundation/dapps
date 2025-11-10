@@ -76,7 +76,7 @@ function LayoutCreateForm() {
 
     setIsCreatingStream(true);
 
-    newStreamMessage(
+    void newStreamMessage(
       {
         startTime: startTimestamp,
         endTime: endTimestamp,
@@ -87,7 +87,7 @@ function LayoutCreateForm() {
       {
         onSuccess: () => {
           reset();
-          refetch();
+          void refetch();
           alert.success('Stream has been successfully created');
           navigate(`/${STREAMS}`);
         },
@@ -136,12 +136,7 @@ function LayoutCreateForm() {
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>
                 <div className={cx(styles.input)}>
-                  <TextField
-                    size="large"
-                    label="Stream title"
-                    {...getInputProps('title')}
-                    disabled={isCreatingStream}
-                  />
+                  <TextField label="Stream title" {...getInputProps('title')} disabled={isCreatingStream} />
                   <span className={cx(styles['field-error'])}>{errors.title}</span>
                 </div>
                 <div className={cx(styles.input)}>

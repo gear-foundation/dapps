@@ -13,7 +13,7 @@ function withData(
   Component: FC<UsersTableProps>,
   type: 'subscriptions' | 'subscribers',
 ): (props: WithDataProps) => JSX.Element {
-  return function Wrapped({ name, ...props }: WithDataProps) {
+  return function Wrapped({ name: _name, ...props }: WithDataProps) {
     const { account } = useAccount();
     const { users } = useGetStateQuery();
     const [data, setData] = useState<SubscribersData[] | SubscriptionsData[]>([]);

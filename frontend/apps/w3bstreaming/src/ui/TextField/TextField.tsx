@@ -3,7 +3,7 @@ import { cx } from '@/utils';
 import { TextFieldProps } from './TextField.interfaces';
 import styles from './TextField.module.scss';
 
-function TextField({ label, size, placeholder, ...props }: TextFieldProps) {
+function TextField({ label, ...props }: TextFieldProps) {
   return (
     <div className={cx(styles['input-container'])}>
       <input

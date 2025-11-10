@@ -72,26 +72,32 @@ function Watch({ socket, streamId }: WatchProps) {
     });
 
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
+    const activeConnection = peerConnection.current;
 
-    socket.on('offer', (broadcasterId: string, { description, userId }: OfferMsg) => {
+    socket.on('offer', async (broadcasterId: string, { description, userId }: OfferMsg) => {
       setLocalStream(null);
 
-      peerConnection.current
-        ?.setRemoteDescription(description)
-        .then(() => peerConnection.current?.createAnswer())
-        .then((answer: any) => peerConnection.current?.setLocalDescription(answer))
-        .then(() => {
-          socket.emit('answer', broadcasterId, {
-            userId,
-            streamId,
-            description: peerConnection.current?.localDescription,
-          });
-        })
-        .catch(() => {
-          console.log('error when setLocalDescription');
-        });
+      try {
+        await activeConnection?.setRemoteDescription(description);
+        const answer = await activeConnection?.createAnswer();
+        if (answer) {
+          await activeConnection.setLocalDescription(answer);
+        }
 
-      peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+        socket.emit('answer', broadcasterId, {
+          userId,
+          streamId,
+          description: activeConnection?.localDescription,
+        });
+      } catch {
+        console.log('error when setLocalDescription');
+      }
+
+      if (!activeConnection) {
+        return;
+      }
+
+      activeConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate) {
           socket.emit('candidate', broadcasterId, {
             candidate: event.candidate,
@@ -101,7 +107,7 @@ function Watch({ socket, streamId }: WatchProps) {
         }
       };
 
-      peerConnection.current!.ontrack = (event: RTCTrackEvent) => {
+      activeConnection.ontrack = (event: RTCTrackEvent) => {
         if (event.streams[0]) {
           const audioTracks = event.streams[0].getAudioTracks();
           const videoTracks = event.streams[0].getVideoTracks();
@@ -114,27 +120,23 @@ function Watch({ socket, streamId }: WatchProps) {
         }
       };
 
-      peerConnection.current!.onnegotiationneeded = async () => {
+      activeConnection.onnegotiationneeded = async () => {
         try {
-          await peerConnection.current!.setRemoteDescription(description);
+          await activeConnection.setRemoteDescription(description);
         } catch {
           console.log('error when setRemoteDescription');
         }
 
-        peerConnection
-          .current!.createAnswer()
-          .then((answer) => {
-            peerConnection.current!.setLocalDescription(answer);
-          })
-          .then(() => {
-            socket.emit('answer', broadcasterId, {
-              watcherId: account?.decodedAddress,
-              description: peerConnection.current?.localDescription,
-            });
-          })
-          .catch(() => {
-            console.log('error when setLocalDescription');
+        try {
+          const answer = await activeConnection.createAnswer();
+          await activeConnection.setLocalDescription(answer);
+          socket.emit('answer', broadcasterId, {
+            watcherId: account?.decodedAddress,
+            description: peerConnection.current?.localDescription,
           });
+        } catch {
+          console.log('error when setLocalDescription');
+        }
       };
     });
 
@@ -148,7 +150,11 @@ function Watch({ socket, streamId }: WatchProps) {
     });
 
     socket.on('candidate', (_: string, msg: CandidateMsg) => {
-      peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
+      if (!activeConnection) {
+        return;
+      }
+
+      void activeConnection.addIceCandidate(msg.candidate).catch((err) => console.error(err));
     });
 
     socket.on('stopBroadcasting', () => {
@@ -171,13 +177,12 @@ function Watch({ socket, streamId }: WatchProps) {
   );
 
   useEffect(() => {
-    if (remoteVideo.current && localStream) {
+    const video = remoteVideo.current;
+    if (video && localStream) {
       setStreamStatus('streaming');
-      remoteVideo.current.srcObject = localStream;
-      remoteVideo.current
-        .play()
-        .then((s) => s)
-        .catch((err) => console.log(err));
+      video.srcObject = localStream;
+
+      void video.play().catch((err) => console.log(err));
     }
   }, [localStream]);
 
@@ -191,12 +196,13 @@ function Watch({ socket, streamId }: WatchProps) {
         }
       }
 
-      if (account?.address && !retryIntervalId.current) {
+      if (account?.address && account?.decodedAddress && !retryIntervalId.current) {
+        const { address } = account;
         retryIntervalId.current = setInterval(() => {
-          socket.emit('watch', account?.decodedAddress, {
+          socket.emit('watch', account.decodedAddress, {
             streamId,
             signedMsg: publicKey.current?.signature,
-            encodedId: account.address,
+            encodedId: address,
           });
         }, 2000);
       }
@@ -211,7 +217,7 @@ function Watch({ socket, streamId }: WatchProps) {
   }, [streamStatus, account?.address, account?.decodedAddress, streamId, socket]);
 
   useEffect(() => {
-    autoWatch();
+    void autoWatch();
   }, [autoWatch]);
 
   const handlePlayerReady = (player: HTMLVideoElement) => {

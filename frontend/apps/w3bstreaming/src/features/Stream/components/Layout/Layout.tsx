@@ -51,11 +51,11 @@ function Layout({
   }, [streamId, account?.decodedAddress]);
 
   useEffect(() => {
-    socket.on('watchersCount', (connections) => {
+    socket.on('watchersCount', (connections: number) => {
       setConnectionsCount(connections);
     });
 
-    socket.on('isStreaming', (isStreaming) => {
+    socket.on('isStreaming', (isStreaming: boolean) => {
       setIsStreamGoing(isStreaming);
     });
 

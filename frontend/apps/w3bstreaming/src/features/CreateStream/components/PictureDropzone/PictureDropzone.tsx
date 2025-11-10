@@ -1,7 +1,10 @@
 import { ENV } from '@/consts';
 import { DropzoneUploader } from '@/ui';
+import { DropzoneUploaderProps } from '@/ui/DropzoneUploader/DropzoneUploader.interface';
 
-function PictureDropzone({ ...props }: any) {
+type PictureDropzoneProps = Omit<DropzoneUploaderProps, 'uploadConfig'>;
+
+function PictureDropzone(props: PictureDropzoneProps) {
   return (
     <DropzoneUploader
       uploadConfig={{

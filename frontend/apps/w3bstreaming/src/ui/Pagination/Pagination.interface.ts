@@ -2,9 +2,9 @@ export interface PaginationProps {
   totalRows: number;
   rowsPerPage: number;
   currentPage: number;
-  setCurrentPage: () => void;
+  setCurrentPage: (page: number) => void;
 }
 
 export interface PagesMenu {
-  [key: string]: { label: string; value: string };
+  [key: string]: { label: string; value: number };
 }

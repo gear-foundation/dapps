@@ -6,7 +6,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useGetStateQuery } from '@/app/utils';
-import { Button, Dropdown, Search } from '@/ui';
+import { Button, Dropdown, Search, DropdownMenuItem } from '@/ui';
 import { cx } from '@/utils';
 
 import { selectTeasersMenuAll, selectTeasersMenuAuthorized } from '../../config';
@@ -56,7 +56,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     setShowedTeasersCount(initialTeasersCount);
   }, [teasers, initialTeasersCount]);
 
-  const handleSelectTypeOfStreams = ({ value, label }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
+  const handleSelectTypeOfStreams = ({ value, label }: DropdownMenuItem) => {
     setSearchedValue('');
     setShowedTeasersCount(initialTeasersCount);
     setSelectedStreamsOption(label);

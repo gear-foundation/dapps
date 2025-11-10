@@ -6,7 +6,7 @@ interface DropdownMenu {
 
 export interface DropdownMenuItem {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 export interface DropdownProps {

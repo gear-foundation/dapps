@@ -35,12 +35,12 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
   const handleSubscribe = (action: 'sub' | 'unsub') => {
     if (speakerId && speakerId.startsWith('0x')) {
       const sendMessage = action === 'sub' ? subscribeMessage : unsubscribeMessage;
-      sendMessage(
+      void sendMessage(
         { accountId: speakerId as HexString },
         {
           onError: () => handleCancelModal(),
           onSuccess: () => {
-            refetch();
+            void refetch();
             handleCancelModal();
           },
         },
