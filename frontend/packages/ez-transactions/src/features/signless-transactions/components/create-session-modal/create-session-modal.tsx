@@ -50,7 +50,7 @@ function CreateSessionModal({
             },
           ]
         : DURATIONS,
-    [gaslessVoucherDurationMinutes],
+    [gaslessVoucherDurationMinutes, boundSessionDuration],
   );
 
   const {

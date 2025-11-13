@@ -68,9 +68,7 @@ type ActorId = string;
 
 type BaseProgramQueryProps = [originAddress?: ActorId, value?: number | string | bigint, atBlock?: `0x${string}`];
 
-// TODO: infer type from generic
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-type ActionsForSession = any;
+type ActionsForSession = unknown;
 
 type ProgramSession = {
   key: ActorId;

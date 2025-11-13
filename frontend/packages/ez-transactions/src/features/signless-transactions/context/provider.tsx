@@ -1,10 +1,8 @@
-import { useContext, ReactElement } from 'react';
+import { ReactElement } from 'react';
 
-import { DEFAULT_SIGNLESS_CONTEXT } from './consts';
-import { SignlessTransactionsContext } from './context';
 import { SignlessTransactionsMetadataProvider, SignlessTransactionsMetadataProviderProps } from './metadata-provider';
 import { SignlessTransactionsSailsProvider, SignlessTransactionsSailsProviderProps } from './sails-provider';
-import { BaseProgram, SignlessContext, SignlessSessionModalConfig } from './types';
+import { BaseProgram } from './types';
 
 function SignlessTransactionsProvider(props: SignlessTransactionsMetadataProviderProps): ReactElement;
 function SignlessTransactionsProvider<TProgram extends BaseProgram>(
@@ -23,12 +21,4 @@ function SignlessTransactionsProvider<TProgram extends BaseProgram>(
   }
 }
 
-const useSignlessTransactions = () => useContext(SignlessTransactionsContext);
-
-export { SignlessTransactionsProvider, useSignlessTransactions, DEFAULT_SIGNLESS_CONTEXT };
-export type {
-  SignlessContext,
-  SignlessSessionModalConfig,
-  SignlessTransactionsMetadataProviderProps,
-  SignlessTransactionsSailsProviderProps,
-};
+export { SignlessTransactionsProvider };

@@ -72,7 +72,7 @@ function EnableSignlessSession(props: Props) {
 
     setIsLoading(true);
 
-    deleteSession(session.key, pair, {
+    void deleteSession(session.key, pair, {
       onSuccess: onDeleteSessionSuccess,
       onFinally: onDeleteSessionFinally,
     });

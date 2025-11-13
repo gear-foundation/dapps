@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { ReactNode, createContext, useContext, useEffect } from 'react';
+import { ReactNode, createContext, useEffect } from 'react';
 
 import { useGaslessTransactions } from '@ez/features/gasless-transactions';
 import { useSignlessTransactions } from '@ez/features/signless-transactions';
@@ -49,6 +49,4 @@ function EzTransactionsProvider({ children }: Props) {
   return <Provider value={{ gasless, signless }}>{children}</Provider>;
 }
 
-const useEzTransactions = () => useContext(TransactionsContext);
-
-export { EzTransactionsProvider, useEzTransactions };
+export { EzTransactionsProvider, TransactionsContext };
