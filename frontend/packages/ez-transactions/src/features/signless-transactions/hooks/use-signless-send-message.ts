@@ -20,6 +20,7 @@ const getSinglessPayload = (payload: Payload, sessionForAccount: HexString | nul
   return { ...payload, [key]: { ...value, sessionForAccount } };
 };
 
+// @deprecated
 function useSignlessSendMessage(
   destination: HexString,
   metadata: ProgramMetadata | undefined,
@@ -34,12 +35,13 @@ function useSignlessSendMessage(
     const payload = getSinglessPayload(args.payload, sessionForAccount);
     const voucherId = voucher?.id || args.voucherId;
 
-    sendMessage({ ...args, payload, voucherId });
+    void sendMessage({ ...args, payload, voucherId });
   };
 
   return sendSignlessMessage;
 }
 
+// @deprecated
 function useSignlessSendMessageHandler(
   destination: HexString,
   metadata: ProgramMetadata | undefined,

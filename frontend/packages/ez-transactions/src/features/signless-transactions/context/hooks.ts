@@ -44,7 +44,7 @@ function useSailsSession(program?: BaseProgram) {
     serviceName: 'session',
     functionName: 'subscribeToSessionCreatedEvent',
     onData: () => {
-      refetch();
+      void refetch();
     },
   });
 
@@ -53,7 +53,7 @@ function useSailsSession(program?: BaseProgram) {
     serviceName: 'session',
     functionName: 'subscribeToSessionDeletedEvent',
     onData: () => {
-      refetch();
+      void refetch();
     },
   });
 
@@ -79,9 +79,10 @@ function useLatestVoucher(programId: HexString, address: string | undefined) {
   const latestVoucher = useMemo(() => {
     if (!vouchers || !typedEntries?.length) return undefined;
 
-    const [[id, voucher]] = typedEntries.sort(([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry);
+    const [[id, voucher]] = typedEntries.sort(([, _voucher], [, nextVoucher]) => nextVoucher.expiry - _voucher.expiry);
 
     return { ...voucher, id };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vouchers]);
 
   return latestVoucher;

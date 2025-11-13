@@ -24,9 +24,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
   account: KeyringPair,
   methods: E[],
   { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-): Promise<any[]> {
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
+): Promise<unknown[]> {
   const result = new Array(methods.length) as Codec[];
   return new Promise((resolve, reject) => {
     submitted

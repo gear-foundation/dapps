@@ -1,6 +1,6 @@
 import { HexString } from '@gear-js/api';
 import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactNode, createContext, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_GASLESS_CONTEXT } from './consts';
 import { useLoading } from './hooks';
@@ -49,7 +49,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     );
 
   useEffect(() => {
-    withLoading(
+    void withLoading(
       getVoucherStatus(backendAddress, programId)
         .then((result) => {
           setVoucherStatus(result);
@@ -98,7 +98,4 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   return <Provider value={value}>{children}</Provider>;
 }
 
-const useGaslessTransactions = () => useContext(GaslessTransactionsContext);
-
-export { DEFAULT_GASLESS_CONTEXT, GaslessTransactionsProvider, useGaslessTransactions };
-export type { GaslessContext };
+export { GaslessTransactionsProvider, GaslessTransactionsContext };

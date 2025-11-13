@@ -77,7 +77,7 @@ function SignlessTransactions({
 
     setIsLoading(true);
 
-    deleteSession(decodedAddress, pair, {
+    void deleteSession(decodedAddress, pair, {
       onSuccess: onDeleteSessionSuccess,
       onFinally: onDeleteSessionFinally,
     });
