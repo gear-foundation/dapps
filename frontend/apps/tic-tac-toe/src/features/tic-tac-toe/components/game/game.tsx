@@ -2,7 +2,6 @@ import { EzTransactionsSwitch } from 'gear-ez-transactions';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { BaseComponentProps } from '@/app/types';
-import { GameInstance } from '@/app/utils';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';

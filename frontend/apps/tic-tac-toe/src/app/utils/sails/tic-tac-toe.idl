@@ -1,0 +1,93 @@
+type Config = struct {
+  s_per_block: u64,
+  gas_to_remove_game: u64,
+  gas_to_delete_session: u64,
+  time_interval: u32,
+  turn_deadline_ms: u64,
+  minimum_session_duration_ms: u64,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  StartGame,
+  Move,
+  Skip,
+};
+
+type SessionData = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
+type GameInstance = struct {
+  board: vec opt Mark,
+  player_mark: Mark,
+  bot_mark: Mark,
+  last_time: u64,
+  game_over: bool,
+  game_result: opt GameResult,
+};
+
+type Mark = enum {
+  X,
+  O,
+};
+
+type GameResult = enum {
+  Player,
+  Bot,
+  Draw,
+};
+
+constructor {
+  New : (config: Config);
+};
+
+service Session {
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt SessionData;
+  query Sessions : () -> vec struct { actor_id, SessionData };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
+};
+
+service TicTacToe {
+  AddAdmin : (admin: actor_id) -> null;
+  AllowMessages : (messages_allowed: bool) -> null;
+  RemoveAdmin : (admin: actor_id) -> null;
+  RemoveGameInstance : (account: actor_id) -> null;
+  RemoveGameInstances : (accounts: opt vec actor_id) -> null;
+  Skip : (session_for_account: opt actor_id) -> null;
+  StartGame : (session_for_account: opt actor_id) -> null;
+  Turn : (step: u8, session_for_account: opt actor_id) -> null;
+  UpdateConfig : (s_per_block: opt u64, gas_to_remove_game: opt u64, time_interval: opt u32, turn_deadline_ms: opt u64, gas_to_delete_session: opt u64) -> null;
+  query Admins : () -> vec actor_id;
+  query AllGames : () -> vec struct { actor_id, GameInstance };
+  query Config : () -> Config;
+  query Game : (player_id: actor_id) -> opt GameInstance;
+  query MessagesAllowed : () -> bool;
+
+  events {
+    GameFinished: struct { game: GameInstance, player_address: actor_id };
+    GameStarted: struct { game: GameInstance };
+    MoveMade: struct { game: GameInstance };
+    GameInstanceRemoved;
+    ConfigUpdated;
+    AdminRemoved;
+    AdminAdded;
+    StatusMessagesUpdated;
+  }
+};
+

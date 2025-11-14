@@ -7,7 +7,6 @@ import { useAtom } from 'jotai';
 import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { BaseComponentProps } from '@/app/types';
-import { GameInstance } from '@/app/utils';
 
 import { useGame } from '../../hooks';
 import { useEventGameFinishedSubscription, useEventMoveMadeSubscription, useTurnMessage } from '../../sails';

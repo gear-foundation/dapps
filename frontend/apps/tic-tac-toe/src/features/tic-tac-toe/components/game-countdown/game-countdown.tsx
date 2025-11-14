@@ -3,7 +3,6 @@ import { useAtomValue } from 'jotai';
 import Countdown, { CountdownRenderProps } from 'react-countdown';
 
 import { BaseComponentProps } from '@/app/types';
-import { GameInstance } from '@/app/utils';
 
 import { useGame } from '../../hooks';
 import { useConfigQuery } from '../../sails';

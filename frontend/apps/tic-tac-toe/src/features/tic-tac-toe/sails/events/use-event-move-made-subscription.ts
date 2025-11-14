@@ -1,7 +1,7 @@
 import { useProgramEvent } from '@gear-js/react-hooks';
 import { useSetAtom } from 'jotai';
 
-import { GameInstance, useProgram } from '@/app/utils';
+import { useProgram } from '@/app/utils';
 
 import { useGame } from '../../hooks';
 import { stateChangeLoadingAtom } from '../../store';

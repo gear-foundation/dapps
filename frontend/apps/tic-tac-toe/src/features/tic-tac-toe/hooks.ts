@@ -2,7 +2,6 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
-import { GameInstance } from '@/app/utils';
 import { useConfigQuery, useGameQuery } from '@/features/tic-tac-toe/sails';
 
 import { countdownAtom, gameAtom, pendingAtom } from './store';
