@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '@/app/consts';
 import { useGame } from '@/app/context/ctx-game';
-import { Level } from '@/app/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 

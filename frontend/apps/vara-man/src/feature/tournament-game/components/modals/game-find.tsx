@@ -1,3 +1,4 @@
+import { HexString } from '@gear-js/api';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Button } from '@gear-js/vara-ui';
 import { hasLength, useForm } from '@mantine/form';
@@ -10,7 +11,7 @@ import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type GameFindModalProps = {
   findGame: {
-    admin: string;
+    admin: HexString;
     bid: bigint;
     participants: number;
   };

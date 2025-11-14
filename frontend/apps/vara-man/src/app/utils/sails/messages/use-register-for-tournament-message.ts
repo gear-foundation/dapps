@@ -1,3 +1,4 @@
+import { HexString } from '@gear-js/api';
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 
@@ -14,7 +15,7 @@ export const useRegisterForTournamentMessage = () => {
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
   const { signAndSend } = useSignAndSend();
 
-  const registerForTournamentMessage = async (value: bigint, adminId: string, name: string, options: Options) => {
+  const registerForTournamentMessage = async (value: bigint, adminId: HexString, name: string, options: Options) => {
     const sendFromBaseAccount = value !== 0n;
     const { sessionForAccount, ...params } = await prepareEzTransactionParams({ sendFromBaseAccount });
     const { transaction } = await prepareTransactionAsync({

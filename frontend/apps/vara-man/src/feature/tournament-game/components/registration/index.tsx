@@ -1,3 +1,4 @@
+import { HexString } from '@gear-js/api';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from 'gear-ez-transactions';
@@ -6,7 +7,7 @@ import { copyToClipboard } from '@dapps-frontend/ui';
 
 import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
-import { TournamentState, cn, prettifyText, useCancelTournamentMessage, useStartTournamentMessage } from '@/app/utils';
+import { cn, prettifyText, useCancelTournamentMessage, useStartTournamentMessage } from '@/app/utils';
 import { useCancelRegisterMessage } from '@/app/utils/sails/messages/use-cancel-register-message';
 import { useDeletePlayerMessage } from '@/app/utils/sails/messages/use-delete-player-message';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
@@ -37,7 +38,7 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
 
   const isAdmin = tournamentGame?.admin === account?.decodedAddress;
 
-  const onRemovePlayer = async (player: string) => {
+  const onRemovePlayer = async (player: HexString) => {
     if (!gasless.isLoading) {
       setIsPending(true);
       await deletePlayerMessage(player, { onError, onSuccess });

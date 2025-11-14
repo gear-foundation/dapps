@@ -1,5 +1,3 @@
-import { Level } from '@/app/utils';
-
 import EasyMap from '../assets/map/map-easy.json';
 import HardMap from '../assets/map/map-hard.json';
 import MediumMap from '../assets/map/map-medium.json';

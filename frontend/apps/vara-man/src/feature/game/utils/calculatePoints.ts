@@ -1,5 +1,4 @@
 import { IGameCoins } from '@/app/types/game';
-import { Config, Level } from '@/app/utils';
 
 export const calculatePoints = (coins: IGameCoins, configState: Config, level: Level) => {
   const loverCaseLevel = level.toLowerCase() as 'easy' | 'medium' | 'hard';

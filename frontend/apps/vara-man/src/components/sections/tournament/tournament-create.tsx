@@ -5,7 +5,7 @@ import { useEzTransactions } from 'gear-ez-transactions';
 import { useNavigate } from 'react-router-dom';
 
 import { useApp } from '@/app/context/ctx-app';
-import { useCreateNewTournamentMessage, Level } from '@/app/utils';
+import { useCreateNewTournamentMessage } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 const initialValues = {

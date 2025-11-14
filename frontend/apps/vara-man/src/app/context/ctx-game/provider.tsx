@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useState } from 'react';
 
 import type { IGame, IGameStatus, IPlayer, IPlayerInfo } from '@/app/types/game';
-import type { Config, TournamentState } from '@/app/utils';
 
 import { GameContext, type GameContextValue } from './context';
 

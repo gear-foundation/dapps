@@ -1,7 +1,5 @@
 import { HexString } from '@polkadot/util/types';
 
-import { TournamentState } from '../utils';
-
 export type IGameStatus = 'Paused' | 'Started';
 
 export type IPlayer = [HexString, IPlayerInfo];
