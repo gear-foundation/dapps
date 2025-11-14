@@ -31,6 +31,6 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "6.28.2",
-    "sails-js": "0.4.2"
+    "sails-js": "0.5.1"
   }
 }
