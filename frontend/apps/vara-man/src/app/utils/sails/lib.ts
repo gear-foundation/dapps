@@ -1,94 +1,25 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+
+import { GearApi, BaseGearProgram, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import {
+  TransactionBuilder,
+  ActorId,
+  QueryBuilder,
+  getServiceNamePrefix,
+  getFnNamePrefix,
+  ZERO_ADDRESS,
+} from 'sails-js';
 
-type ActorId = string;
-
-export interface Config {
-  one_point_in_value: number | string | bigint;
-  max_number_gold_coins: number;
-  max_number_silver_coins: number;
-  points_per_gold_coin_easy: number | string | bigint;
-  points_per_silver_coin_easy: number | string | bigint;
-  points_per_gold_coin_medium: number | string | bigint;
-  points_per_silver_coin_medium: number | string | bigint;
-  points_per_gold_coin_hard: number | string | bigint;
-  points_per_silver_coin_hard: number | string | bigint;
-  gas_for_finish_tournament: number | string | bigint;
-  gas_for_mint_fungible_token: number | string | bigint;
-  gas_to_delete_session: number | string | bigint;
-  minimum_session_duration_ms: number | string | bigint;
-  s_per_block: number | string | bigint;
-}
-
-export interface SignatureData {
-  key: ActorId;
-  duration: number | string | bigint;
-  allowed_actions: Array<ActionsForSession>;
-}
-
-export type ActionsForSession =
-  | 'createNewTournament'
-  | 'registerForTournament'
-  | 'cancelRegister'
-  | 'cancelTournament'
-  | 'deletePlayer'
-  | 'finishSingleGame'
-  | 'startTournament'
-  | 'recordTournamentResult'
-  | 'leaveGame';
-
-export interface SessionData {
-  key: ActorId;
-  expires: number | string | bigint;
-  allowed_actions: Array<ActionsForSession>;
-  expires_at_block: number;
-}
-
-export type Status =
-  | { paused: null }
-  | { startedUnrewarded: null }
-  | { startedWithFungibleToken: { ft_address: ActorId } }
-  | { startedWithNativeToken: null };
-
-export type Level = 'Easy' | 'Medium' | 'Hard';
-
-export interface VaraManState {
-  tournaments: Array<[ActorId, TournamentState]>;
-  players_to_game_id: Array<[ActorId, ActorId]>;
-  status: Status;
-  config: Config;
-  admins: Array<ActorId>;
-  dns_info: [ActorId, string] | null;
-}
-
-export interface TournamentState {
-  tournament_name: string;
-  admin: ActorId;
-  level: Level;
-  participants: Array<[ActorId, Player]>;
-  bid: number | string | bigint;
-  stage: Stage;
-  duration_ms: number;
-}
-
-export interface Player {
-  name: string;
-  time: number | string | bigint;
-  points: number | string | bigint;
-}
-
-export type Stage = { registration: null } | { started: number | string | bigint } | { finished: Array<ActorId> };
-
-export class Program {
+export class SailsProgram {
   public readonly registry: TypeRegistry;
   public readonly session: Session;
   public readonly varaMan: VaraMan;
+  private _program?: BaseGearProgram;
 
   constructor(
     public api: GearApi,
-    public programId?: `0x${string}`,
+    programId?: `0x${string}`,
   ) {
     const types: Record<string, any> = {
       Config: {
@@ -160,13 +91,21 @@ export class Program {
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
     this.registry.register(types);
+    if (programId) {
+      this._program = new BaseGearProgram(programId, api);
+    }
 
     this.session = new Session(this);
     this.varaMan = new VaraMan(this);
   }
 
+  public get programId(): `0x${string}` {
+    if (!this._program) throw new Error(`Program ID is not set`);
+    return this._program.id;
+  }
+
   newCtorFromCode(
-    code: Uint8Array | Buffer,
+    code: Uint8Array | Buffer | HexString,
     config: Config,
     dns_id_and_name: [ActorId, string] | null,
   ): TransactionBuilder<null> {
@@ -175,13 +114,16 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       code,
+      async (programId) => {
+        this._program = await BaseGearProgram.new(programId, this.api);
+      },
     );
-
-    this.programId = builder.programId;
     return builder;
   }
 
@@ -190,19 +132,22 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       codeId,
+      async (programId) => {
+        this._program = await BaseGearProgram.new(programId, this.api);
+      },
     );
-
-    this.programId = builder.programId;
     return builder;
   }
 }
 
 export class Session {
-  constructor(private _program: Program) {}
+  constructor(private _program: SailsProgram) {}
 
   public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -210,8 +155,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', signature_data, signature],
-      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Session',
+      'CreateSession',
+      [signature_data, signature],
+      '(SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -223,8 +170,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromAccount'],
-      '(String, String)',
+      'Session',
+      'DeleteSessionFromAccount',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -236,52 +185,39 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromProgram', session_for_account],
-      '(String, String, [u8;32])',
+      'Session',
+      'DeleteSessionFromProgram',
+      session_for_account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async sessionForTheAccount(
-    account: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SessionData | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
-    return result[2].toJSON() as unknown as SessionData | null;
+  public sessionForTheAccount(account: ActorId): QueryBuilder<SessionData | null> {
+    return new QueryBuilder<SessionData | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'SessionForTheAccount',
+      account,
+      '[u8;32]',
+      'Option<SessionData>',
+    );
   }
 
-  public async sessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SessionData]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  public sessions(): QueryBuilder<Array<[ActorId, SessionData]>> {
+    return new QueryBuilder<Array<[ActorId, SessionData]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'Sessions',
+      null,
+      null,
+      'Vec<([u8;32], SessionData)>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
@@ -312,7 +248,7 @@ export class Session {
 }
 
 export class VaraMan {
-  constructor(private _program: Program) {}
+  constructor(private _program: SailsProgram) {}
 
   public addAdmin(new_admin_id: ActorId): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -320,8 +256,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'AddAdmin', new_admin_id],
-      '(String, String, [u8;32])',
+      'VaraMan',
+      'AddAdmin',
+      new_admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -333,8 +271,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'CancelRegister', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'VaraMan',
+      'CancelRegister',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -346,8 +286,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'CancelTournament', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'VaraMan',
+      'CancelTournament',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -359,8 +301,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'ChangeConfig', config],
-      '(String, String, Config)',
+      'VaraMan',
+      'ChangeConfig',
+      config,
+      'Config',
       'Null',
       this._program.programId,
     );
@@ -372,8 +316,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'ChangeStatus', status],
-      '(String, String, Status)',
+      'VaraMan',
+      'ChangeStatus',
+      status,
+      'Status',
       'Null',
       this._program.programId,
     );
@@ -391,8 +337,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'CreateNewTournament', tournament_name, name, level, duration_ms, session_for_account],
-      '(String, String, String, String, Level, u32, Option<[u8;32]>)',
+      'VaraMan',
+      'CreateNewTournament',
+      [tournament_name, name, level, duration_ms, session_for_account],
+      '(String, String, Level, u32, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -404,8 +352,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'DeletePlayer', player_id, session_for_account],
-      '(String, String, [u8;32], Option<[u8;32]>)',
+      'VaraMan',
+      'DeletePlayer',
+      [player_id, session_for_account],
+      '([u8;32], Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -422,8 +372,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'FinishSingleGame', gold_coins, silver_coins, level, session_for_account],
-      '(String, String, u16, u16, Level, Option<[u8;32]>)',
+      'VaraMan',
+      'FinishSingleGame',
+      [gold_coins, silver_coins, level, session_for_account],
+      '(u16, u16, Level, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -435,8 +387,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'FinishTournament', admin_id, time_start],
-      '(String, String, [u8;32], u64)',
+      'VaraMan',
+      'FinishTournament',
+      [admin_id, time_start],
+      '([u8;32], u64)',
       'Null',
       this._program.programId,
     );
@@ -448,8 +402,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'VaraMan',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -461,8 +417,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'LeaveGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'VaraMan',
+      'LeaveGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -479,8 +437,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'RecordTournamentResult', time, gold_coins, silver_coins, session_for_account],
-      '(String, String, u128, u16, u16, Option<[u8;32]>)',
+      'VaraMan',
+      'RecordTournamentResult',
+      [time, gold_coins, silver_coins, session_for_account],
+      '(u128, u16, u16, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -496,8 +456,10 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'RegisterForTournament', admin_id, name, session_for_account],
-      '(String, String, [u8;32], String, Option<[u8;32]>)',
+      'VaraMan',
+      'RegisterForTournament',
+      [admin_id, name, session_for_account],
+      '([u8;32], String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -509,112 +471,78 @@ export class VaraMan {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['VaraMan', 'StartTournament', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'VaraMan',
+      'StartTournament',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['VaraMan', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
-  }
-
-  public async all(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<VaraManState> {
-    const payload = this._program.registry.createType('(String, String)', ['VaraMan', 'All']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, VaraManState)', reply.payload);
-    return result[2].toJSON() as unknown as VaraManState;
-  }
-
-  public async config(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Config> {
-    const payload = this._program.registry.createType('(String, String)', ['VaraMan', 'Config']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
-  }
-
-  public async getTournament(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<[TournamentState, number | string | bigint | null] | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['VaraMan', 'GetTournament', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType(
-      '(String, String, Option<(TournamentState, Option<u64>)>)',
-      reply.payload,
+  public admins(): QueryBuilder<Array<ActorId>> {
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'VaraMan',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
     );
-    return result[2].toJSON() as unknown as [TournamentState, number | string | bigint | null] | null;
   }
 
-  public async status(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Status> {
-    const payload = this._program.registry.createType('(String, String)', ['VaraMan', 'Status']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Status)', reply.payload);
-    return result[2].toJSON() as unknown as Status;
+  public all(): QueryBuilder<VaraManState> {
+    return new QueryBuilder<VaraManState>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'VaraMan',
+      'All',
+      null,
+      null,
+      'VaraManState',
+    );
+  }
+
+  public config(): QueryBuilder<Config> {
+    return new QueryBuilder<Config>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'VaraMan',
+      'Config',
+      null,
+      null,
+      'Config',
+    );
+  }
+
+  public getTournament(player_id: ActorId): QueryBuilder<[TournamentState, number | string | bigint | null] | null> {
+    return new QueryBuilder<[TournamentState, number | string | bigint | null] | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'VaraMan',
+      'GetTournament',
+      player_id,
+      '[u8;32]',
+      'Option<(TournamentState, Option<u64>)>',
+    );
+  }
+
+  public status(): QueryBuilder<Status> {
+    return new QueryBuilder<Status>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'VaraMan',
+      'Status',
+      null,
+      null,
+      'Status',
+    );
   }
 
   public subscribeToGameFinishedEvent(

@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 import { BaseComponentProps } from '@/app/types';
-import { Mark } from '@/app/utils';
 
 import { variantsPlayerMark } from '../../variants';
 import { GameMark } from '../game-mark';

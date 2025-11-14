@@ -5,7 +5,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { MOBILE_BREAKPOINT } from '@/app/consts';
 import { useGame } from '@/app/context/ctx-game';
-import { Level } from '@/app/utils';
 import { Icons } from '@/components/ui/icons';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 

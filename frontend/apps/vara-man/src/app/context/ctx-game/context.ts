@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { IGame, IGameStatus, IPlayer, IPlayerInfo } from '@/app/types/game';
-import type { Config, TournamentState } from '@/app/utils';
 
 type GameContextValue = {
   game: TournamentState | undefined;

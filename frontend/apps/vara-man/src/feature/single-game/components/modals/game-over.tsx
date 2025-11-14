@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useApp } from '@/app/context/ctx-app';
 import { useGame } from '@/app/context/ctx-game';
-import { Level } from '@/app/utils';
 import { Button } from '@/components';
 import { Icons } from '@/components/ui/icons';
 import { Modal } from '@/components/ui/modal/modal2';

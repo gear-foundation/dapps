@@ -36,7 +36,8 @@ function useSailsSession(program?: BaseProgram) {
     program,
     serviceName: 'session',
     functionName: 'sessionForTheAccount',
-    args: [account?.decodedAddress || ''],
+    args: [account?.decodedAddress || '0x'],
+    query: { enabled: !!account },
   });
 
   useProgramEvent({
@@ -65,7 +66,7 @@ function useSailsSession(program?: BaseProgram) {
   }
 
   const { key, expires, allowed_actions } = responseSession;
-  const session = { key: key as HexString, expires: String(expires), allowedActions: allowed_actions };
+  const session = { key, expires: String(expires), allowedActions: allowed_actions };
 
   return { session, isSessionReady, isSessionActive };
 }

@@ -30,7 +30,7 @@ export const useOtherPlayersEncryptedCardsQuery = ({ enabled }: Params) => {
         return [];
       }
 
-      const encryptedCardsPromises = otherPlayers.map((playerId) => program.poker.encryptedCards(playerId));
+      const encryptedCardsPromises = otherPlayers.map((playerId) => program.poker.encryptedCards(playerId).call());
 
       const results = await Promise.all(encryptedCardsPromises);
 

@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { useApp } from '@/app/context/ctx-app';
 import { TileMap } from '@/app/types/game';
-import { Level, useFinishSingleGameMessage } from '@/app/utils';
+import { useFinishSingleGameMessage } from '@/app/utils';
 import useOnScreen from '@/hooks/use-on-screen';
 
 import { GameCanvas } from '../game/components/game-canvas/game-canvas';
