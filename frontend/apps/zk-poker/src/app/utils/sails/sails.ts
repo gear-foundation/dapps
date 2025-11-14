@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
-import { Program as PokerProgram } from './poker';
-import { Program as PokerFactoryProgram } from './poker-factory';
-import { Program as PtsProgram } from './pts';
+import { SailsProgram as PokerProgram } from './poker';
+import { SailsProgram as PokerFactoryProgram } from './poker-factory';
+import { SailsProgram as PtsProgram } from './pts';
 
 const usePokerFactoryProgram = () => {
   const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
