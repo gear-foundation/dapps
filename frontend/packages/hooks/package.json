@@ -10,8 +10,8 @@
     "preview": "npx vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.44.1",
-    "@gear-js/react-hooks": "0.18.3",
+    "@gear-js/api": "0.44.2",
+    "@gear-js/react-hooks": "0.19.1",
     "@polkadot/types": "16.4.6",
     "@polkadot/util": "13.5.2",
     "react": "19.0.0",

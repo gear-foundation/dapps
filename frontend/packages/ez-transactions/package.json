@@ -9,8 +9,8 @@
     "preview": "npx vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.44.1",
-    "@gear-js/react-hooks": "0.18.3",
+    "@gear-js/api": "0.44.2",
+    "@gear-js/react-hooks": "0.19.1",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
