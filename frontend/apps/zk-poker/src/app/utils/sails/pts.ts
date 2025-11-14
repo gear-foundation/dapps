@@ -2,16 +2,25 @@
 
 import { GearApi, BaseGearProgram, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, ActorId, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import {
+  TransactionBuilder,
+  ActorId,
+  QueryBuilder,
+  getServiceNamePrefix,
+  getFnNamePrefix,
+  ZERO_ADDRESS,
+} from 'sails-js';
 
 export class SailsProgram {
   public readonly registry: TypeRegistry;
   public readonly pts: Pts;
   private _program?: BaseGearProgram;
 
-  constructor(public api: GearApi, programId?: `0x${string}`) {
-    const types: Record<string, any> = {
-    }
+  constructor(
+    public api: GearApi,
+    programId?: `0x${string}`,
+  ) {
+    const types: Record<string, any> = {};
 
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
@@ -28,7 +37,11 @@ export class SailsProgram {
     return this._program.id;
   }
 
-  newCtorFromCode(code: Uint8Array | Buffer | HexString, accrual: number | string | bigint, time_ms_between_balance_receipt: number | string | bigint): TransactionBuilder<null> {
+  newCtorFromCode(
+    code: Uint8Array | Buffer | HexString,
+    accrual: number | string | bigint,
+    time_ms_between_balance_receipt: number | string | bigint,
+  ): TransactionBuilder<null> {
     // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
@@ -40,14 +53,18 @@ export class SailsProgram {
       '(u128, u64)',
       'String',
       code,
-      async (programId) =>  {
+      async (programId) => {
         this._program = await BaseGearProgram.new(programId, this.api);
-      }
+      },
     );
     return builder;
   }
 
-  newCtorFromCodeId(codeId: `0x${string}`, accrual: number | string | bigint, time_ms_between_balance_receipt: number | string | bigint) {
+  newCtorFromCodeId(
+    codeId: `0x${string}`,
+    accrual: number | string | bigint,
+    time_ms_between_balance_receipt: number | string | bigint,
+  ) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
@@ -58,9 +75,9 @@ export class SailsProgram {
       '(u128, u64)',
       'String',
       codeId,
-      async (programId) =>  {
+      async (programId) => {
         this._program = await BaseGearProgram.new(programId, this.api);
-      }
+      },
     );
     return builder;
   }
@@ -99,7 +116,9 @@ export class Pts {
     );
   }
 
-  public changeTimeBetweenBalanceReceipt(new_time_between_balance_receipt: number | string | bigint): TransactionBuilder<null> {
+  public changeTimeBetweenBalanceReceipt(
+    new_time_between_balance_receipt: number | string | bigint,
+  ): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
@@ -225,105 +244,147 @@ export class Pts {
   }
 
   public subscribeToNewAdminAddedEvent(callback: (data: ActorId) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'NewAdminAdded') {
-        callback(this._program.registry.createType('(String, String, [u8;32])', message.payload)[2].toJSON() as unknown as ActorId);
+        callback(
+          this._program.registry
+            .createType('(String, String, [u8;32])', message.payload)[2]
+            .toJSON() as unknown as ActorId,
+        );
       }
     });
   }
 
   public subscribeToAdminDeletedEvent(callback: (data: ActorId) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'AdminDeleted') {
-        callback(this._program.registry.createType('(String, String, [u8;32])', message.payload)[2].toJSON() as unknown as ActorId);
+        callback(
+          this._program.registry
+            .createType('(String, String, [u8;32])', message.payload)[2]
+            .toJSON() as unknown as ActorId,
+        );
       }
     });
   }
 
   public subscribeToAccrualChangedEvent(callback: (data: bigint) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'AccrualChanged') {
-        callback(this._program.registry.createType('(String, String, u128)', message.payload)[2].toBigInt() as unknown as bigint);
+        callback(
+          this._program.registry
+            .createType('(String, String, u128)', message.payload)[2]
+            .toBigInt() as unknown as bigint,
+        );
       }
     });
   }
 
-  public subscribeToTimeBetweenBalanceReceiptChangedEvent(callback: (data: bigint) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToTimeBetweenBalanceReceiptChangedEvent(
+    callback: (data: bigint) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'TimeBetweenBalanceReceiptChanged') {
-        callback(this._program.registry.createType('(String, String, u64)', message.payload)[2].toBigInt() as unknown as bigint);
+        callback(
+          this._program.registry
+            .createType('(String, String, u64)', message.payload)[2]
+            .toBigInt() as unknown as bigint,
+        );
       }
     });
   }
 
-  public subscribeToAccrualReceivedEvent(callback: (data: { id: ActorId; accrual: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToAccrualReceivedEvent(
+    callback: (data: { id: ActorId; accrual: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'AccrualReceived') {
-        callback(this._program.registry.createType('(String, String, {"id":"[u8;32]","accrual":"u128"})', message.payload)[2].toJSON() as unknown as { id: ActorId; accrual: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"id":"[u8;32]","accrual":"u128"})', message.payload)[2]
+            .toJSON() as unknown as { id: ActorId; accrual: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToSubtractionIsDoneEvent(callback: (data: { id: ActorId; amount: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToSubtractionIsDoneEvent(
+    callback: (data: { id: ActorId; amount: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'SubtractionIsDone') {
-        callback(this._program.registry.createType('(String, String, {"id":"[u8;32]","amount":"u128"})', message.payload)[2].toJSON() as unknown as { id: ActorId; amount: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"id":"[u8;32]","amount":"u128"})', message.payload)[2]
+            .toJSON() as unknown as { id: ActorId; amount: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToAdditionIsDoneEvent(callback: (data: { id: ActorId; amount: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToAdditionIsDoneEvent(
+    callback: (data: { id: ActorId; amount: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'AdditionIsDone') {
-        callback(this._program.registry.createType('(String, String, {"id":"[u8;32]","amount":"u128"})', message.payload)[2].toJSON() as unknown as { id: ActorId; amount: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"id":"[u8;32]","amount":"u128"})', message.payload)[2]
+            .toJSON() as unknown as { id: ActorId; amount: number | string | bigint },
+        );
       }
     });
   }
 
-  public subscribeToTransferedEvent(callback: (data: { from: ActorId; to: ActorId; amount: number | string | bigint }) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
+  public subscribeToTransferedEvent(
+    callback: (data: { from: ActorId; to: ActorId; amount: number | string | bigint }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Pts' && getFnNamePrefix(payload) === 'Transfered') {
-        callback(this._program.registry.createType('(String, String, {"from":"[u8;32]","to":"[u8;32]","amount":"u128"})', message.payload)[2].toJSON() as unknown as { from: ActorId; to: ActorId; amount: number | string | bigint });
+        callback(
+          this._program.registry
+            .createType('(String, String, {"from":"[u8;32]","to":"[u8;32]","amount":"u128"})', message.payload)[2]
+            .toJSON() as unknown as { from: ActorId; to: ActorId; amount: number | string | bigint },
+        );
       }
     });
   }

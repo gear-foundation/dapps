@@ -75,7 +75,12 @@ export class SailsProgram {
     return builder;
   }
 
-  newCtorFromCodeId(codeId: `0x${string}`, config: PokerFactoryConfig, pts_actor_id: ActorId, zk_verification_id: ActorId) {
+  newCtorFromCodeId(
+    codeId: `0x${string}`,
+    config: PokerFactoryConfig,
+    pts_actor_id: ActorId,
+    zk_verification_id: ActorId,
+  ) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
