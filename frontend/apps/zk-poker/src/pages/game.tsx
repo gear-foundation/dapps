@@ -87,6 +87,8 @@ function GamePage() {
   const { cancelGameMessage, isPending: isCancelGamePending } = useCancelGameMessage();
   const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
 
+  const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
+
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
   const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
@@ -138,7 +140,13 @@ function GamePage() {
   });
 
   useEventDeckShuffleCompleteSubscription({ onData: () => void refetchStatus() });
-  useEventGameStartedSubscription({ onData: () => void refetchStatus() });
+  useEventGameStartedSubscription({
+    onData: () => {
+      void refetchStatus();
+      setGameEndData(null);
+      setIsGameEndModalOpen(false);
+    },
+  });
   useEventNextStageSubscription({
     onData: (data) => {
       void refetchStatus();
@@ -276,6 +284,7 @@ function GamePage() {
         playerSlots,
         totalPot,
       });
+      setIsGameEndModalOpen(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinished, revealedPlayers]);
@@ -339,11 +348,17 @@ function GamePage() {
         {isMyTurn && timeToTurnEndSec && <YourTurn timePerMoveSec={timeToTurnEndSec} onTimeEnd={onTimeEnd} />}
       </div>
 
-      {!isGameStarted && !gameEndData && participants && config && (
-        <StartGameModal isAdmin={isAdmin} participants={startGameParticipants} />
+      {!isGameStarted && !isGameEndModalOpen && participants && config && (
+        <StartGameModal
+          isAdmin={isAdmin}
+          participants={startGameParticipants}
+          isDefaultExpanded={!gameEndData || isAdmin}
+        />
       )}
 
-      {gameEndData && <GameEndModal {...gameEndData} onClose={() => setGameEndData(null)} />}
+      {gameEndData && isGameEndModalOpen && (
+        <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} />
+      )}
 
       {isWaitingZk &&
         (() => {
