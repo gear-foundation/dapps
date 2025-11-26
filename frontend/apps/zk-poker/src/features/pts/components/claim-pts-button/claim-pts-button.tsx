@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
@@ -14,7 +15,7 @@ type Props = {
 
 const ClaimPtsButton = ({ onSuccess, ptsBalance, className }: Props) => {
   const { remainingTime, refetch: refetchRemainingTime, isPending: isPendingRemainingTime } = useRemainingTimeQuery();
-  const { getAccuralMessage, isPending } = useGetAccuralMessage();
+  const { getAccuralMessage } = useGetAccuralMessage();
   const [currentTime, setCurrentTime] = useState<number | null>(null);
 
   useEffect(() => {
@@ -33,18 +34,31 @@ const ClaimPtsButton = ({ onSuccess, ptsBalance, className }: Props) => {
 
   const claimFreePTS = async () => {
     await getAccuralMessage();
-    void refetchRemainingTime();
-    onSuccess();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await refetchRemainingTime();
   };
 
+  const { mutate: claimFreePTSMutation, isPending: isPendingClaimFreePTS } = useMutation({
+    mutationFn: claimFreePTS,
+    onSuccess,
+  });
+
+  useEffect(() => {
+    if (currentTime === null) {
+      setTimeout(() => {
+        void refetchRemainingTime();
+      }, 1000);
+    }
+  }, [currentTime, refetchRemainingTime]);
+
   const formattedTime = currentTime && currentTime > 0 ? `(${new Date(currentTime).toISOString().slice(11, 19)})` : '';
-  const isClaimDisabled = !!currentTime || isPendingRemainingTime || isPending;
+  const isClaimDisabled = !!currentTime || isPendingRemainingTime || remainingTime !== null || isPendingClaimFreePTS;
   const showPulse = !ptsBalance && !isClaimDisabled;
 
   return (
     <Button
       className={clsx(className, showPulse && styles.pulseButton)}
-      onClick={claimFreePTS}
+      onClick={() => claimFreePTSMutation()}
       disabled={isClaimDisabled}>
       Claim your free PTS {formattedTime}
       {showPulse && (

@@ -128,7 +128,11 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded }: Props) => 
   };
 
   return (
-    <Modal heading={heading} isDark showModalMode={false} className={{ wrapper: styles.wrapper }}>
+    <Modal
+      heading={heading}
+      isDark
+      showModalMode={false}
+      className={{ wrapper: clsx(styles.wrapper, isExpanded && styles.expanded) }}>
       <div
         className={clsx(styles.grab)}
         role="button"
