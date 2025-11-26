@@ -27,7 +27,7 @@ type Props = {
 };
 
 const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bigBlind, balance }: Props) => {
-  const { turnMessage, isPending } = useTurnMessage();
+  const { turnMessage, isPending: isTurnMessagePending } = useTurnMessage();
   const [isSliderActive, setIsSliderActive] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
 
@@ -78,12 +78,17 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
     return balance >= multiplier * (currentBet || bigBlind);
   };
 
-  const isDisabled = disabled || isPending;
+  const isDisabled = disabled;
   const isCallDisabled = balance <= currentBet - myCurrentBet;
   const isCheck = myCurrentBet === currentBet || currentBet === 0;
   const isManualDisabled = balance <= minBet;
 
-  return (
+  const raise2Amount = 2 * (currentBet || bigBlind) - myCurrentBet;
+  const raise3Amount = 3 * (currentBet || bigBlind) - myCurrentBet;
+  const raise5Amount = 5 * (currentBet || bigBlind) - myCurrentBet;
+  const callAmount = currentBet - myCurrentBet;
+
+  return isTurnMessagePending ? null : (
     <>
       <div className={clsx(styles.gameButtons, className)}>
         <div className={styles.topButtons}>
@@ -110,20 +115,26 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
               <Button
                 onClick={() => handleRaise(2)}
                 disabled={isDisabled || !getHasEnoughBalance(2)}
-                color="transparent">
+                color="transparent"
+                className={styles.button}>
                 <Chips2xIcon />
+                {getHasEnoughBalance(2) && <span className={styles.raiseText}>{raise2Amount}</span>}
               </Button>
               <Button
                 onClick={() => handleRaise(3)}
                 disabled={isDisabled || !getHasEnoughBalance(3)}
-                color="transparent">
+                color="transparent"
+                className={styles.button}>
                 <Chips3xIcon />
+                {getHasEnoughBalance(3) && <span className={styles.raiseText}>{raise3Amount}</span>}
               </Button>
               <Button
                 onClick={() => handleRaise(5)}
                 disabled={isDisabled || !getHasEnoughBalance(5)}
-                color="transparent">
+                color="transparent"
+                className={styles.button}>
                 <Chips5xIcon />
+                {getHasEnoughBalance(5) && <span className={styles.raiseText}>{raise5Amount}</span>}
               </Button>
 
               <Button
@@ -132,7 +143,8 @@ const GameButtons = ({ className, disabled = false, currentBet, myCurrentBet, bi
                 color="transparent"
                 className={styles.button}>
                 <CallIcon />
-                <span className={styles.text}>{isCheck ? 'Check' : 'Call'}</span>
+                <span className={styles.text}>{isCheck ? 'Check' : `Call`}</span>
+                {!isCallDisabled && !isCheck && <span className={styles.raiseText}>{callAmount}</span>}
               </Button>
             </>
           ) : (

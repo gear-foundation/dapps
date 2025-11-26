@@ -17,13 +17,14 @@ import styles from './start-game-modal.module.scss';
 type Props = {
   participants: [`0x${string}`, Participant][];
   isAdmin: boolean;
+  isDefaultExpanded: boolean;
 };
 
 const DRAG_THRESHOLD = 30;
 const MAX_HEIGHT = 350;
 const seats = Array.from({ length: MAX_PLAYERS }, (_, index) => index);
 
-const StartGameModal = ({ participants, isAdmin }: Props) => {
+const StartGameModal = ({ participants, isAdmin, isDefaultExpanded }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
   const { account } = useAccount();
@@ -42,7 +43,7 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
   const isSpectator = !players.some(({ address }) => address === account?.decodedAddress);
   const isSeatAvailable = players.length < MAX_PLAYERS;
 
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(isDefaultExpanded);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
@@ -127,7 +128,11 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
   };
 
   return (
-    <Modal heading={heading} isDark showModalMode={false} className={{ wrapper: styles.wrapper }}>
+    <Modal
+      heading={heading}
+      isDark
+      showModalMode={false}
+      className={{ wrapper: clsx(styles.wrapper, isExpanded && styles.expanded) }}>
       <div
         className={clsx(styles.grab)}
         role="button"
@@ -143,14 +148,13 @@ const StartGameModal = ({ participants, isAdmin }: Props) => {
       </div>
 
       <div className={clsx(isExpanded && styles.expanded)}>
-        <div className={styles.gameId}>
-          <span className={styles.gameIdLink}>{gameLink}</span>
-          <Button color="plain" rounded size="small" className={styles.copyButton} onClick={onCopy}>
-            <Copy />
-          </Button>
-        </div>
-
         <div className={clsx(styles.playersContainer, isExpanded && styles.visible)} ref={playersRef}>
+          <div className={styles.gameId}>
+            <span className={styles.gameIdLink}>{gameLink}</span>
+            <Button color="plain" rounded size="small" className={styles.copyButton} onClick={onCopy}>
+              <Copy />
+            </Button>
+          </div>
           <PlayersList seats={seats} players={players} isAdmin={isAdmin} />
         </div>
 
