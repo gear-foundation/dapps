@@ -1,5 +1,3 @@
-import { Level } from '@/app/utils';
-
 import { HEIGHT_CANVAS, WIDTH_CANVAS, gameLevels } from '../consts';
 import { TileMap } from '../types';
 import { findCharacterStartPosition } from '../utils/findCharacterStartPosition';

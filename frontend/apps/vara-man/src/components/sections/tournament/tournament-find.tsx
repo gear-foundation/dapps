@@ -1,4 +1,4 @@
-import { decodeAddress } from '@gear-js/api';
+import { decodeAddress, HexString } from '@gear-js/api';
 import { Input, Button } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { GameFindModal } from '@/feature/tournament-game/components/modals/game-
 import { GameNotFoundModal } from '@/feature/tournament-game/components/modals/game-not-found';
 
 type FindGame = {
-  admin: string;
+  admin: HexString;
   bid: bigint;
   participants: number;
 };

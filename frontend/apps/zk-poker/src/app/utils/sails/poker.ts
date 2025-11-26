@@ -1,23 +1,25 @@
 /* eslint-disable */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+
+import { GearApi, BaseGearProgram, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import {
   TransactionBuilder,
   ActorId,
-  throwOnErrorReply,
+  QueryBuilder,
   getServiceNamePrefix,
   getFnNamePrefix,
   ZERO_ADDRESS,
 } from 'sails-js';
 
-export class Program {
+export class SailsProgram {
   public readonly registry: TypeRegistry;
   public readonly poker: Poker;
   public readonly session: Session;
+  private _program?: BaseGearProgram;
 
   constructor(
     public api: GearApi,
-    private _programId?: `0x${string}`,
+    programId?: `0x${string}`,
   ) {
     const types: Record<string, any> = {
       GameConfig: {
@@ -84,14 +86,17 @@ export class Program {
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
     this.registry.register(types);
+    if (programId) {
+      this._program = new BaseGearProgram(programId, api);
+    }
 
     this.poker = new Poker(this);
     this.session = new Session(this);
   }
 
   public get programId(): `0x${string}` {
-    if (!this._programId) throw new Error(`Program ID is not set`);
-    return this._programId;
+    if (!this._program) throw new Error(`Program ID is not set`);
+    return this._program.id;
   }
 
   newCtorFromCode(
@@ -108,13 +113,16 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
-      '(String, GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
+      null,
+      'New',
+      [config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
+      '(GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
       'String',
       code,
+      async (programId) => {
+        this._program = await BaseGearProgram.new(programId, this.api);
+      },
     );
-
-    this._programId = builder.programId;
     return builder;
   }
 
@@ -131,19 +139,22 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
-      '(String, GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
+      null,
+      'New',
+      [config, session_config, pts_actor_id, pk, session_for_admin, zk_verification_id],
+      '(GameConfig, SessionConfig, [u8;32], ZkPublicKey, Option<SignatureInfo>, [u8;32])',
       'String',
       codeId,
+      async (programId) => {
+        this._program = await BaseGearProgram.new(programId, this.api);
+      },
     );
-
-    this._programId = builder.programId;
     return builder;
   }
 }
 
 export class Poker {
-  constructor(private _program: Program) { }
+  constructor(private _program: SailsProgram) {}
 
   public cancelGame(session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -151,8 +162,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CancelGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Poker',
+      'CancelGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -174,8 +187,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CancelRegistration', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Poker',
+      'CancelRegistration',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -190,8 +205,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'CardDisclosure', player_decryptions, session_for_account],
-      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
+      'Poker',
+      'CardDisclosure',
+      [player_decryptions, session_for_account],
+      '(Vec<PartialDec>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -217,8 +234,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'DeletePlayer', player_id, session_for_account],
-      '(String, String, [u8;32], Option<[u8;32]>)',
+      'Poker',
+      'DeletePlayer',
+      [player_id, session_for_account],
+      '([u8;32], Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -244,8 +263,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Kill', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Poker',
+      'Kill',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -267,8 +288,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Register', player_name, pk, session_for_account],
-      '(String, String, String, ZkPublicKey, Option<[u8;32]>)',
+      'Poker',
+      'Register',
+      [player_name, pk, session_for_account],
+      '(String, ZkPublicKey, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -286,8 +309,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'RestartGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Poker',
+      'RestartGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -302,8 +327,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'ShuffleDeck', encrypted_deck, instances],
-      '(String, String, Vec<EncryptedCard>, Vec<VerificationVariables>)',
+      'Poker',
+      'ShuffleDeck',
+      [encrypted_deck, instances],
+      '(Vec<EncryptedCard>, Vec<VerificationVariables>)',
       'Null',
       this._program.programId,
     );
@@ -329,8 +356,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'StartGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Poker',
+      'StartGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -345,8 +374,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitPartialDecryptions', player_decryptions, session_for_account],
-      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
+      'Poker',
+      'SubmitPartialDecryptions',
+      [player_decryptions, session_for_account],
+      '(Vec<PartialDec>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -361,8 +392,10 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'SubmitTablePartialDecryptions', player_decryptions, session_for_account],
-      '(String, String, Vec<PartialDec>, Option<[u8;32]>)',
+      'Poker',
+      'SubmitTablePartialDecryptions',
+      [player_decryptions, session_for_account],
+      '(Vec<PartialDec>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -390,381 +423,260 @@ export class Poker {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Poker', 'Turn', action, session_for_account],
-      '(String, String, Action, Option<[u8;32]>)',
+      'Poker',
+      'Turn',
+      [action, session_for_account],
+      '(Action, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async activeParticipants(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<TurnManagerForActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'ActiveParticipants']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, TurnManagerForActorId)', reply.payload);
-    return result[2].toJSON() as unknown as TurnManagerForActorId;
+  public activeParticipants(): QueryBuilder<TurnManagerForActorId> {
+    return new QueryBuilder<TurnManagerForActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'ActiveParticipants',
+      null,
+      null,
+      'TurnManagerForActorId',
+    );
   }
 
-  public async aggPubKey(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ZkPublicKey> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'AggPubKey']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, ZkPublicKey)', reply.payload);
-    return result[2].toJSON() as unknown as ZkPublicKey;
+  public aggPubKey(): QueryBuilder<ZkPublicKey> {
+    return new QueryBuilder<ZkPublicKey>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'AggPubKey',
+      null,
+      null,
+      'ZkPublicKey',
+    );
   }
 
-  public async allInPlayers(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'AllInPlayers']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public allInPlayers(): QueryBuilder<Array<ActorId>> {
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'AllInPlayers',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async alreadyInvestedInTheCircle(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, number | string | bigint]>> {
-    const payload = this._program.registry
-      .createType('(String, String)', ['Poker', 'AlreadyInvestedInTheCircle'])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], u128)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, number | string | bigint]>;
+  public alreadyInvestedInTheCircle(): QueryBuilder<Array<[ActorId, number | string | bigint]>> {
+    return new QueryBuilder<Array<[ActorId, number | string | bigint]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'AlreadyInvestedInTheCircle',
+      null,
+      null,
+      'Vec<([u8;32], u128)>',
+    );
   }
 
-  public async betting(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<BettingStage | null> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'Betting']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Option<BettingStage>)', reply.payload);
-    return result[2].toJSON() as unknown as BettingStage | null;
+  public betting(): QueryBuilder<BettingStage | null> {
+    return new QueryBuilder<BettingStage | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'Betting',
+      null,
+      null,
+      'Option<BettingStage>',
+    );
   }
 
-  public async bettingBank(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, number | string | bigint]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'BettingBank']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], u128)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, number | string | bigint]>;
+  public bettingBank(): QueryBuilder<Array<[ActorId, number | string | bigint]>> {
+    return new QueryBuilder<Array<[ActorId, number | string | bigint]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'BettingBank',
+      null,
+      null,
+      'Vec<([u8;32], u128)>',
+    );
   }
 
-  public async config(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<GameConfig> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'Config']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, GameConfig)', reply.payload);
-    return result[2].toJSON() as unknown as GameConfig;
+  public config(): QueryBuilder<GameConfig> {
+    return new QueryBuilder<GameConfig>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'Config',
+      null,
+      null,
+      'GameConfig',
+    );
   }
 
-
-  public async encryptedCards(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<EncryptedCard> | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Poker', 'EncryptedCards', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Option<[EncryptedCard; 2]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<EncryptedCard> | null;
+  public encryptedCards(player_id: ActorId): QueryBuilder<Array<EncryptedCard> | null> {
+    return new QueryBuilder<Array<EncryptedCard> | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'EncryptedCards',
+      player_id,
+      '[u8;32]',
+      'Option<[EncryptedCard; 2]>',
+    );
   }
 
-  public async encryptedTableCards(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<EncryptedCard>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'EncryptedTableCards']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<EncryptedCard>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<EncryptedCard>;
+  public encryptedTableCards(): QueryBuilder<Array<EncryptedCard>> {
+    return new QueryBuilder<Array<EncryptedCard>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'EncryptedTableCards',
+      null,
+      null,
+      'Vec<EncryptedCard>',
+    );
   }
 
-  public async factoryActorId(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'FactoryActorId']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public factoryActorId(): QueryBuilder<ActorId> {
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'FactoryActorId',
+      null,
+      null,
+      '[u8;32]',
+    );
   }
 
-  public async participants(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, Participant]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'Participants']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], Participant)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, Participant]>;
+  public participants(): QueryBuilder<Array<[ActorId, Participant]>> {
+    return new QueryBuilder<Array<[ActorId, Participant]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'Participants',
+      null,
+      null,
+      'Vec<([u8;32], Participant)>',
+    );
   }
 
-  public async playerCards(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<EncryptedCard> | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Poker', 'PlayerCards', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Option<[EncryptedCard; 2]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<EncryptedCard> | null;
+  public playerCards(player_id: ActorId): QueryBuilder<Array<EncryptedCard> | null> {
+    return new QueryBuilder<Array<EncryptedCard> | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'PlayerCards',
+      player_id,
+      '[u8;32]',
+      'Option<[EncryptedCard; 2]>',
+    );
   }
 
-  public async ptsActorId(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'PtsActorId']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public ptsActorId(): QueryBuilder<ActorId> {
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'PtsActorId',
+      null,
+      null,
+      '[u8;32]',
+    );
   }
 
-  public async revealedPlayers(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, [Card, Card]]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'RevealedPlayers']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], (Card, Card))>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, [Card, Card]]>;
+  public revealedPlayers(): QueryBuilder<Array<[ActorId, [Card, Card]]>> {
+    return new QueryBuilder<Array<[ActorId, [Card, Card]]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'RevealedPlayers',
+      null,
+      null,
+      'Vec<([u8;32], (Card, Card))>',
+    );
   }
 
-  public async revealedTableCards(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<Card>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'RevealedTableCards']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<Card>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<Card>;
+  public revealedTableCards(): QueryBuilder<Array<Card>> {
+    return new QueryBuilder<Array<Card>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'RevealedTableCards',
+      null,
+      null,
+      'Vec<Card>',
+    );
   }
 
-  public async round(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'Round']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u64)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public round(): QueryBuilder<bigint> {
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'Round',
+      null,
+      null,
+      'u64',
+    );
   }
 
-  public async status(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Status> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'Status']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Status)', reply.payload);
-    return result[2].toJSON() as unknown as Status;
+  public status(): QueryBuilder<Status> {
+    return new QueryBuilder<Status>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'Status',
+      null,
+      null,
+      'Status',
+    );
   }
 
-  public async tableCardsToDecrypt(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<EncryptedCard>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'TableCardsToDecrypt']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<EncryptedCard>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<EncryptedCard>;
+  public tableCardsToDecrypt(): QueryBuilder<Array<EncryptedCard>> {
+    return new QueryBuilder<Array<EncryptedCard>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'TableCardsToDecrypt',
+      null,
+      null,
+      'Vec<EncryptedCard>',
+    );
   }
 
-  public async waitingParticipants(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, Participant]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Poker', 'WaitingParticipants']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], Participant)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, Participant]>;
+  public waitingParticipants(): QueryBuilder<Array<[ActorId, Participant]>> {
+    return new QueryBuilder<Array<[ActorId, Participant]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Poker',
+      'WaitingParticipants',
+      null,
+      null,
+      'Vec<([u8;32], Participant)>',
+    );
   }
 
   public subscribeToRegisteredEvent(
@@ -1105,7 +1017,9 @@ export class Poker {
     });
   }
 
-  public subscribeToAdminChangedEvent(callback: (data: { old_admin: ActorId; new_admin: ActorId }) => void | Promise<void>): Promise<() => void> {
+  public subscribeToAdminChangedEvent(
+    callback: (data: { old_admin: ActorId; new_admin: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
@@ -1113,9 +1027,10 @@ export class Poker {
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Poker' && getFnNamePrefix(payload) === 'AdminChanged') {
-        callback(this._program.registry
-          .createType('(String, String, {"old_admin":"[u8;32]","new_admin":"[u8;32]"})', message.payload)[2]
-          .toJSON() as unknown as { old_admin: ActorId; new_admin: ActorId },
+        callback(
+          this._program.registry
+            .createType('(String, String, {"old_admin":"[u8;32]","new_admin":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { old_admin: ActorId; new_admin: ActorId },
         );
       }
     });
@@ -1123,7 +1038,7 @@ export class Poker {
 }
 
 export class Session {
-  constructor(private _program: Program) { }
+  constructor(private _program: SailsProgram) {}
 
   public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
@@ -1131,8 +1046,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', signature_data, signature],
-      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Session',
+      'CreateSession',
+      [signature_data, signature],
+      '(SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -1144,8 +1061,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromAccount'],
-      '(String, String)',
+      'Session',
+      'DeleteSessionFromAccount',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -1157,52 +1076,39 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromProgram', session_for_account],
-      '(String, String, [u8;32])',
+      'Session',
+      'DeleteSessionFromProgram',
+      session_for_account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async sessionForTheAccount(
-    account: string,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SessionData | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
-    return result[2].toJSON() as unknown as SessionData | null;
+  public sessionForTheAccount(account: ActorId): QueryBuilder<SessionData | null> {
+    return new QueryBuilder<SessionData | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'SessionForTheAccount',
+      account,
+      '[u8;32]',
+      'Option<SessionData>',
+    );
   }
 
-  public async sessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SessionData]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  public sessions(): QueryBuilder<Array<[ActorId, SessionData]>> {
+    return new QueryBuilder<Array<[ActorId, SessionData]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'Sessions',
+      null,
+      null,
+      'Vec<([u8;32], SessionData)>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {

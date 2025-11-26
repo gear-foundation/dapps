@@ -1,5 +1,4 @@
 import { BaseComponentProps } from '@/app/types';
-import { Mark } from '@/app/utils';
 
 import { PlayerIconCircle, PlayerIconCross } from '../../assets';
 

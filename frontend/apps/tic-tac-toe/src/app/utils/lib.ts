@@ -2,14 +2,7 @@
 
 import { GearApi, BaseGearProgram, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import {
-  TransactionBuilder,
-  ActorId,
-  QueryBuilder,
-  getServiceNamePrefix,
-  getFnNamePrefix,
-  ZERO_ADDRESS,
-} from 'sails-js';
+import { TransactionBuilder, ActorId, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 export class SailsProgram {
   public readonly registry: TypeRegistry;
@@ -17,38 +10,16 @@ export class SailsProgram {
   public readonly ticTacToe: TicTacToe;
   private _program?: BaseGearProgram;
 
-  constructor(
-    public api: GearApi,
-    programId?: `0x${string}`,
-  ) {
+  constructor(public api: GearApi, programId?: `0x${string}`) {
     const types: Record<string, any> = {
-      Config: {
-        s_per_block: 'u64',
-        gas_to_remove_game: 'u64',
-        gas_to_delete_session: 'u64',
-        time_interval: 'u32',
-        turn_deadline_ms: 'u64',
-        minimum_session_duration_ms: 'u64',
-      },
-      SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
-      ActionsForSession: { _enum: ['StartGame', 'Move', 'Skip'] },
-      SessionData: {
-        key: '[u8;32]',
-        expires: 'u64',
-        allowed_actions: 'Vec<ActionsForSession>',
-        expires_at_block: 'u32',
-      },
-      GameInstance: {
-        board: 'Vec<Option<Mark>>',
-        player_mark: 'Mark',
-        bot_mark: 'Mark',
-        last_time: 'u64',
-        game_over: 'bool',
-        game_result: 'Option<GameResult>',
-      },
-      Mark: { _enum: ['X', 'O'] },
-      GameResult: { _enum: ['Player', 'Bot', 'Draw'] },
-    };
+      Config: {"s_per_block":"u64","gas_to_remove_game":"u64","gas_to_delete_session":"u64","time_interval":"u32","turn_deadline_ms":"u64","minimum_session_duration_ms":"u64"},
+      SignatureData: {"key":"[u8;32]","duration":"u64","allowed_actions":"Vec<ActionsForSession>"},
+      ActionsForSession: {"_enum":["StartGame","Move","Skip"]},
+      SessionData: {"key":"[u8;32]","expires":"u64","allowed_actions":"Vec<ActionsForSession>","expires_at_block":"u32"},
+      GameInstance: {"board":"Vec<Option<Mark>>","player_mark":"Mark","bot_mark":"Mark","last_time":"u64","game_over":"bool","game_result":"Option<GameResult>"},
+      Mark: {"_enum":["X","O"]},
+      GameResult: {"_enum":["Player","Bot","Draw"]},
+    }
 
     this.registry = new TypeRegistry();
     this.registry.setKnownTypes({ types });
@@ -67,7 +38,6 @@ export class SailsProgram {
   }
 
   newCtorFromCode(code: Uint8Array | Buffer | HexString, config: Config): TransactionBuilder<null> {
-    // @ts-ignore
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
@@ -78,9 +48,9 @@ export class SailsProgram {
       'Config',
       'String',
       code,
-      async (programId) => {
+      async (programId) =>  {
         this._program = await BaseGearProgram.new(programId, this.api);
-      },
+      }
     );
     return builder;
   }
@@ -96,9 +66,9 @@ export class SailsProgram {
       'Config',
       'String',
       codeId,
-      async (programId) => {
+      async (programId) =>  {
         this._program = await BaseGearProgram.new(programId, this.api);
-      },
+      }
     );
     return builder;
   }
@@ -179,7 +149,7 @@ export class Session {
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -192,7 +162,7 @@ export class Session {
   }
 
   public subscribeToSessionDeletedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -328,13 +298,7 @@ export class TicTacToe {
     );
   }
 
-  public updateConfig(
-    s_per_block: number | string | bigint | null,
-    gas_to_remove_game: number | string | bigint | null,
-    time_interval: number | null,
-    turn_deadline_ms: number | string | bigint | null,
-    gas_to_delete_session: number | string | bigint | null,
-  ): TransactionBuilder<null> {
+  public updateConfig(s_per_block: number | string | bigint | null, gas_to_remove_game: number | string | bigint | null, time_interval: number | null, turn_deadline_ms: number | string | bigint | null, gas_to_delete_session: number | string | bigint | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
@@ -414,65 +378,47 @@ export class TicTacToe {
     );
   }
 
-  public subscribeToGameFinishedEvent(
-    callback: (data: { game: GameInstance; player_address: ActorId }) => void | Promise<void>,
-  ): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+  public subscribeToGameFinishedEvent(callback: (data: { game: GameInstance; player_address: ActorId }) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'TicTacToe' && getFnNamePrefix(payload) === 'GameFinished') {
-        callback(
-          this._program.registry
-            .createType('(String, String, {"game":"GameInstance","player_address":"[u8;32]"})', message.payload)[2]
-            .toJSON() as unknown as { game: GameInstance; player_address: ActorId },
-        );
+        callback(this._program.registry.createType('(String, String, {"game":"GameInstance","player_address":"[u8;32]"})', message.payload)[2].toJSON() as unknown as { game: GameInstance; player_address: ActorId });
       }
     });
   }
 
-  public subscribeToGameStartedEvent(
-    callback: (data: { game: GameInstance }) => void | Promise<void>,
-  ): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+  public subscribeToGameStartedEvent(callback: (data: { game: GameInstance }) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'TicTacToe' && getFnNamePrefix(payload) === 'GameStarted') {
-        callback(
-          this._program.registry
-            .createType('(String, String, {"game":"GameInstance"})', message.payload)[2]
-            .toJSON() as unknown as { game: GameInstance },
-        );
+        callback(this._program.registry.createType('(String, String, {"game":"GameInstance"})', message.payload)[2].toJSON() as unknown as { game: GameInstance });
       }
     });
   }
 
-  public subscribeToMoveMadeEvent(
-    callback: (data: { game: GameInstance }) => void | Promise<void>,
-  ): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+  public subscribeToMoveMadeEvent(callback: (data: { game: GameInstance }) => void | Promise<void>): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'TicTacToe' && getFnNamePrefix(payload) === 'MoveMade') {
-        callback(
-          this._program.registry
-            .createType('(String, String, {"game":"GameInstance"})', message.payload)[2]
-            .toJSON() as unknown as { game: GameInstance },
-        );
+        callback(this._program.registry.createType('(String, String, {"game":"GameInstance"})', message.payload)[2].toJSON() as unknown as { game: GameInstance });
       }
     });
   }
 
   public subscribeToGameInstanceRemovedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -485,7 +431,7 @@ export class TicTacToe {
   }
 
   public subscribeToConfigUpdatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -498,7 +444,7 @@ export class TicTacToe {
   }
 
   public subscribeToAdminRemovedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -511,7 +457,7 @@ export class TicTacToe {
   }
 
   public subscribeToAdminAddedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
@@ -524,7 +470,7 @@ export class TicTacToe {
   }
 
   public subscribeToStatusMessagesUpdatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {;
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
       }
