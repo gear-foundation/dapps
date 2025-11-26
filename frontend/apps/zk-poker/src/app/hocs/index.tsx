@@ -71,6 +71,7 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
       allowedActions={SIGNLESS_ALLOWED_ACTIONS}
       voucherIssueAmount={ENV.SIGNLESS_VOUCHER_ISSUE_AMOUNT}
       voucherReissueThreshold={ENV.VOUCHER_LIMIT}
+      defaultDurationMinutes={ENV.SIGNLESS_DEFAULT_DURATION_MINUTES}
       allowIncreaseVoucherValue>
       {children}
     </SharedSignlessTransactionsProvider>

@@ -82,6 +82,7 @@ jobs:
             VITE_EXPLORER_URL=${{ secrets.VITE_ZK_POKER_EXPLORER_URL }}
             VITE_VOUCHER_LIMIT=${{ secrets.VITE_ZK_POKER_VOUCHER_LIMIT }}
             VITE_SIGNLESS_VOUCHER_ISSUE_AMOUNT=${{ secrets.VITE_ZK_POKER_SIGNLESS_VOUCHER_ISSUE_AMOUNT }}
+            VITE_SIGNLESS_DEFAULT_DURATION_MINUTES=${{ secrets.VITE_ZK_POKER_SIGNLESS_DEFAULT_DURATION_MINUTES }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
