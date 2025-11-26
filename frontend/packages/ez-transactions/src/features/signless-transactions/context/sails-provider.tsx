@@ -17,6 +17,7 @@ type SignlessTransactionsSailsProviderProps<TProgram extends BaseProgram> = {
   isAutoSignlessEnabled?: boolean;
   allowedActions?: string[];
   allowIncreaseVoucherValue?: boolean;
+  defaultDurationMinutes?: string;
 };
 
 function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
@@ -28,6 +29,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
   isAutoSignlessEnabled = false,
   allowedActions,
   allowIncreaseVoucherValue = false,
+  defaultDurationMinutes,
 }: SignlessTransactionsSailsProviderProps<TProgram>) {
   const { session, isSessionReady, isSessionActive } = useSailsSession(program);
   const { createSession, deleteSession, updateVoucherBalance } = useCreateSailsSession(programId, program);
@@ -45,6 +47,7 @@ function SignlessTransactionsSailsProvider<TProgram extends BaseProgram>({
     isAutoSignlessEnabled,
     allowedActions,
     allowIncreaseVoucherValue,
+    defaultDurationMinutes,
   };
 
   return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;

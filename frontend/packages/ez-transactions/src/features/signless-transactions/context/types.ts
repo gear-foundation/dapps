@@ -62,6 +62,7 @@ type SignlessContext = {
   isAutoSignlessEnabled: boolean;
   allowedActions?: string[];
   allowIncreaseVoucherValue?: boolean;
+  defaultDurationMinutes?: string;
 };
 
 type ActorId = string;

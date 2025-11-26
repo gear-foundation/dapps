@@ -15,6 +15,7 @@ type SignlessTransactionsMetadataProviderProps = {
   children: ReactNode;
   isAutoSignlessEnabled?: boolean;
   allowedActions?: string[];
+  defaultDurationMinutes?: string;
   /**
    * createSignatureType param is used when metadata.types.others.output has multiple types (e.g. tuple) to get the actual type for SignatureData
    */
@@ -34,6 +35,7 @@ function SignlessTransactionsMetadataProvider({
   voucherIssueAmount = DEFAULT_VOUCHER_ISSUE_AMOUNT,
   voucherReissueThreshold = DEFAULT_VOUCHER_REISSUE_THRESHOLD,
   allowIncreaseVoucherValue = false,
+  defaultDurationMinutes,
 }: SignlessTransactionsMetadataProviderProps) {
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady, isSessionActive } = useMetadataSession(programId, metadata);
@@ -57,6 +59,7 @@ function SignlessTransactionsMetadataProvider({
     isAutoSignlessEnabled,
     allowedActions,
     allowIncreaseVoucherValue,
+    defaultDurationMinutes,
   };
 
   return <SignlessTransactionsModalProvider value={value}>{children}</SignlessTransactionsModalProvider>;
