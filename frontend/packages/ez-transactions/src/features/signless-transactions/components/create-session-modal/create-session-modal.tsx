@@ -86,20 +86,21 @@ function CreateSessionModal({
   const issueVoucherValue = useMemo(() => {
     if (!account) throw new Error('Account is not initialized');
     if (!api) throw new Error('API is not initialized');
-    if (!shouldIssueVoucher) return 0;
+    if (!shouldIssueVoucher) return 0n;
 
-    const minValue = api.existentialDeposit.toNumber();
+    const minValue = api.existentialDeposit.toBigInt();
 
     const amountToUse = allowIncreaseVoucherValue ? customVoucherAmount || 0 : voucherIssueAmount;
-    const _valueToStart = getChainBalanceValue(amountToUse).toNumber();
-    const valueToStart = Math.max(minValue, _valueToStart);
-    const _valueToIssueVoucher = getChainBalanceValue(voucherReissueThreshold).toNumber();
-    const valueToIssueVoucher = Math.max(minValue, _valueToIssueVoucher);
+    const _valueToStart = BigInt(getChainBalanceValue(amountToUse).toFixed());
+    const valueToStart = minValue > _valueToStart ? minValue : _valueToStart;
+    const _valueToIssueVoucher = BigInt(getChainBalanceValue(voucherReissueThreshold).toFixed());
+    const valueToIssueVoucher = minValue > _valueToIssueVoucher ? minValue : _valueToIssueVoucher;
 
     const isOwner = storageVoucher?.owner === account.decodedAddress;
     if (!isOwner) return valueToStart;
+    const storageVoucherBalanceBigInt = BigInt(storageVoucherBalance);
 
-    return storageVoucherBalance < valueToIssueVoucher ? valueToStart - storageVoucherBalance : 0;
+    return storageVoucherBalanceBigInt < valueToIssueVoucher ? valueToStart - storageVoucherBalanceBigInt : 0n;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, storageVoucherBalance, shouldIssueVoucher, customVoucherAmount, allowIncreaseVoucherValue]);
 
@@ -144,7 +145,7 @@ function CreateSessionModal({
       try {
         await updateVoucherBalance(
           { duration: 0, key: session.key, allowedActions: session.allowedActions },
-          issueVoucherValue,
+          Number(issueVoucherValue),
           { onSuccess: () => close(true), onFinally },
         );
       } catch (error) {
@@ -163,7 +164,7 @@ function CreateSessionModal({
         console.log('voucherId', voucherId);
         console.log('pairToSave: ', pairToSave);
 
-        await createSession({ duration, key, allowedActions }, issueVoucherValue, {
+        await createSession({ duration, key, allowedActions }, Number(issueVoucherValue), {
           shouldIssueVoucher,
           voucherId,
           onSuccess,
@@ -178,7 +179,7 @@ function CreateSessionModal({
       return;
     }
 
-    await createSession({ duration, key, allowedActions }, issueVoucherValue, {
+    await createSession({ duration, key, allowedActions }, Number(issueVoucherValue), {
       shouldIssueVoucher,
       onSuccess,
       onFinally,
