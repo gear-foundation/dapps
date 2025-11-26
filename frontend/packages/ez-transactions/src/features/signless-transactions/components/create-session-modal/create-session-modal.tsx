@@ -19,6 +19,7 @@ type Props = {
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
   boundSessionDuration?: number;
+  defaultDurationMinutes?: string;
   maxWidth?: 'small' | 'medium' | 'large' | (string & NonNullable<unknown>);
   modalType?: 'create' | 'topup-balance';
   close: (success?: boolean) => void;
@@ -30,6 +31,7 @@ function CreateSessionModal({
   onSessionCreate = () => Promise.resolve('0x'),
   shouldIssueVoucher = true,
   boundSessionDuration,
+  defaultDurationMinutes,
   maxWidth,
   modalType = 'create',
 }: Props) {
@@ -66,14 +68,25 @@ function CreateSessionModal({
     allowIncreaseVoucherValue,
   } = useSignlessTransactions();
 
-  const DEFAULT_VALUES = useMemo(
-    () => ({
+  const DEFAULT_VALUES = useMemo(() => {
+    let durationValue = DURATIONS[0].value;
+
+    if (gaslessVoucherDurationMinutes) {
+      durationValue = `${gaslessVoucherDurationMinutes}`;
+    } else if (defaultDurationMinutes) {
+      // Check if the provided default duration exists in DURATIONS
+      const durationExists = DURATIONS.some((duration) => duration.value === defaultDurationMinutes);
+      if (durationExists) {
+        durationValue = defaultDurationMinutes;
+      }
+    }
+
+    return {
       password: '',
-      durationMinutes: gaslessVoucherDurationMinutes ? `${gaslessVoucherDurationMinutes}` : DURATIONS[0].value,
+      durationMinutes: durationValue,
       voucherAmount: voucherIssueAmount,
-    }),
-    [gaslessVoucherDurationMinutes, voucherIssueAmount],
-  );
+    };
+  }, [gaslessVoucherDurationMinutes, defaultDurationMinutes, voucherIssueAmount]);
 
   const { register, handleSubmit, formState, setError, watch } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;

@@ -110,6 +110,7 @@ const SignlessTransactionsModalProvider = ({ value, children }: SignlessTransact
           onSessionCreate={modalState.onSessionCreate}
           boundSessionDuration={modalState.boundSessionDuration}
           modalType={modalState?.type}
+          defaultDurationMinutes={value.defaultDurationMinutes}
         />
       )}
       {modalState?.type === 'enable' && <EnableSessionModal close={handleModalClose} />}
