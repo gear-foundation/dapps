@@ -52,7 +52,7 @@ const ClaimPtsButton = ({ onSuccess, ptsBalance, className }: Props) => {
   }, [currentTime, refetchRemainingTime]);
 
   const formattedTime = currentTime && currentTime > 0 ? `(${new Date(currentTime).toISOString().slice(11, 19)})` : '';
-  const isClaimDisabled = !!currentTime || isPendingRemainingTime || remainingTime !== null || isPendingClaimFreePTS;
+  const isClaimDisabled = !!currentTime || isPendingRemainingTime || !!remainingTime || isPendingClaimFreePTS;
   const showPulse = !ptsBalance && !isClaimDisabled;
 
   return (
