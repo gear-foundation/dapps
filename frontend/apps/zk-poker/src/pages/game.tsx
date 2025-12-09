@@ -293,7 +293,9 @@ function GamePage() {
     if (!isFinished) return;
 
     if (isAdmin && !isRestartGamePending) {
-      void restartGameMessage();
+      setTimeout(() => {
+        void restartGameMessage();
+      }, 1000);
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
 
@@ -305,7 +307,7 @@ function GamePage() {
             color="danger"
             rounded
             size="medium"
-            onClick={() => (isGameStarted ? cancelGameMessage() : killMessage())}
+            onClick={() => (isRegistration ? killMessage() : cancelGameMessage())}
             disabled={isKillPending || isCancelGamePending}
             className={styles.killButton}>
             <Exit />
