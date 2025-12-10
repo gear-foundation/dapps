@@ -150,6 +150,7 @@ function GamePage() {
   useEventNextStageSubscription({
     onData: (data) => {
       void refetchStatus();
+      void refetchActiveParticipants();
       if (data === 'WaitingTableCardsAfterPreFlop') {
         void refetchRevealedTableCards();
       }

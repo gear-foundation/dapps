@@ -64,8 +64,9 @@ export const useTurn = () => {
 
       const isActed = acted_players?.find((actorId) => actorId === nextPlayer);
       const isMaxBet = status === 'bet' && bet === current_bet;
+      const isChecked = status === 'check' && current_bet === 0;
 
-      if (isActed && isMaxBet) {
+      if (isActed && (isMaxBet || isChecked)) {
         return null;
       }
 
@@ -86,13 +87,11 @@ export const useTurn = () => {
   }, []);
 
   useEffect(() => {
-    console.log('🚀 ~ useTurn ~ contractTurn:', contractTurn);
     if (contractTurn && last_active_time && config && activeIds) {
       const timePerMoveMs = Number(config.time_per_move_ms);
       const lastActiveTime = Number(last_active_time);
       const timeLeft = Date.now() - lastActiveTime;
       const autoFoldCount = Math.min(activeIds.length, Math.floor(timeLeft / timePerMoveMs));
-      console.log('🚀 ~ useTurn ~ autoFoldCount:', autoFoldCount, '/', activeIds.length);
 
       let actualTurn: HexString | null = contractTurn;
       const autoFolded: HexString[] = [];
@@ -101,13 +100,11 @@ export const useTurn = () => {
           autoFolded.push(actualTurn);
         }
         const nextTurn = getNextActivePlayer(actualTurn, autoFolded);
-        console.log('🚀 ~ useTurn ~ nextTurn:', nextTurn);
         actualTurn = nextTurn;
       }
 
       setAutoFoldPlayers(autoFolded);
       setCurrentTurn(actualTurn);
-      console.log('🚀 ~ useTurn ~ actualTurn:', actualTurn);
       if (actualTurn === null && account?.decodedAddress === config?.admin_id) {
         sendAutoFoldWithRetry();
       }
@@ -134,7 +131,6 @@ export const useTurn = () => {
       setAutoFoldPlayers(nextAutoFoldPlayers);
       setCurrentTurn(nextTurn);
       if (!nextTurn && account?.decodedAddress === config?.admin_id) {
-        console.log('🚀 ~ onTimeEnd ~ sendAutoFoldWithRetry, nextTurn:', nextTurn);
         sendAutoFoldWithRetry();
       }
     }
