@@ -199,6 +199,7 @@ function GamePage() {
     onData: () => {
       void refetchStatus();
       void refetchParticipants();
+      void refetchActiveParticipants();
       void refetchBetting();
       void refetchBettingBank();
       void refetchAlreadyInvestedInTheCircle();
@@ -296,7 +297,7 @@ function GamePage() {
     if (isAdmin && !isRestartGamePending) {
       setTimeout(() => {
         void restartGameMessage();
-      }, 1000);
+      }, 2000);
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
 

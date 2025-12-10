@@ -81,7 +81,7 @@ export const useTurn = () => {
       if (retryCount > 3) return;
       setTimeout(() => {
         sendAutoFoldWithRetry(retryCount + 1);
-      }, 1000);
+      }, 2000);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
