@@ -66,7 +66,6 @@ export const useTurn = (isActiveGame: boolean) => {
       const { status, bet } = getPlayerStatusAndBet(nextPlayer, nextPlayerParticipant[1], false);
 
       if (status === 'fold' || status === 'all-in') {
-        console.log('next status', status);
         return getNextActivePlayer(nextPlayer, autoFolded);
       }
 
@@ -75,11 +74,9 @@ export const useTurn = (isActiveGame: boolean) => {
       const isChecked = status === 'check' && current_bet === 0;
 
       if (isActed && (isMaxBet || isChecked)) {
-        console.log('null 2');
         return null;
       }
 
-      console.log('next player', nextPlayer);
       return nextPlayer || null;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
