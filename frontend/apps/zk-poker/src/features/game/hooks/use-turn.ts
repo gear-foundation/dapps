@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import {
   useActiveParticipantsQuery,
+  useAllInPlayersQuery,
+  useAlreadyInvestedInTheCircleQuery,
   useBettingQuery,
   useConfigQuery,
   useParticipantsQuery,
@@ -12,12 +14,14 @@ import {
 
 import { useGetPlayerStatusAndBet } from './use-get-player-status-and-bet';
 
-export const useTurn = () => {
+export const useTurn = (isActiveGame: boolean) => {
   const { activeParticipants } = useActiveParticipantsQuery();
   const { participants } = useParticipantsQuery();
   const { betting } = useBettingQuery();
   const { config } = useConfigQuery();
   const { account } = useAccount();
+  const { alreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
+  const { allInPlayers } = useAllInPlayersQuery();
 
   const { turn: contractTurn, current_bet, last_active_time, acted_players } = betting || {};
 
@@ -31,6 +35,8 @@ export const useTurn = () => {
   const dillerIndex = (bigBlindIndex + participantsLength - 2) % participantsLength;
   const dillerAddress = participants?.[dillerIndex]?.[0];
   const activeIds = activeParticipants?.active_ids;
+  const allInPlayersThisCircle = alreadyInvestedInTheCircle?.filter(([actorId]) => allInPlayers?.includes(actorId));
+  const allInPlayersThisCircleLenght = allInPlayersThisCircle?.length || 0;
 
   const { turnMessage } = useTurnMessage(false);
 
@@ -51,14 +57,16 @@ export const useTurn = () => {
 
       const nextPlayer = activeIds[nextIndex];
       const nextPlayerParticipant = participants?.find(([address]) => address === nextPlayer);
+      const isLastPlayerAfterAutoFold = activeIds.length + allInPlayersThisCircleLenght - autoFolded.length === 1;
 
-      if (!nextPlayerParticipant || autoFolded.includes(nextPlayer) || activeIds.length - autoFolded.length === 1) {
+      if (!nextPlayerParticipant || autoFolded.includes(nextPlayer) || isLastPlayerAfterAutoFold) {
         return null;
       }
 
       const { status, bet } = getPlayerStatusAndBet(nextPlayer, nextPlayerParticipant[1], false);
 
       if (status === 'fold' || status === 'all-in') {
+        console.log('next status', status);
         return getNextActivePlayer(nextPlayer, autoFolded);
       }
 
@@ -67,13 +75,15 @@ export const useTurn = () => {
       const isChecked = status === 'check' && current_bet === 0;
 
       if (isActed && (isMaxBet || isChecked)) {
+        console.log('null 2');
         return null;
       }
 
+      console.log('next player', nextPlayer);
       return nextPlayer || null;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeIds, participants, current_bet, acted_players],
+    [activeIds, participants, current_bet, acted_players, allInPlayersThisCircleLenght],
   );
 
   const sendAutoFoldWithRetry = useCallback((retryCount = 0) => {
@@ -87,7 +97,7 @@ export const useTurn = () => {
   }, []);
 
   useEffect(() => {
-    if (contractTurn && last_active_time && config && activeIds) {
+    if (isActiveGame && contractTurn && last_active_time && config && activeIds) {
       const timePerMoveMs = Number(config.time_per_move_ms);
       const lastActiveTime = Number(last_active_time);
       const timeLeft = Date.now() - lastActiveTime;
@@ -122,6 +132,7 @@ export const useTurn = () => {
     getNextActivePlayer,
     account?.decodedAddress,
     sendAutoFoldWithRetry,
+    isActiveGame,
   ]);
 
   const onTimeEnd = useCallback(() => {
