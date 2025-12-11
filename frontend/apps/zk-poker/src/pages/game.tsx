@@ -264,7 +264,8 @@ function GamePage() {
   useZkPartialDecryptionsForPlayersCards(isWaitingPartialDecryptionsForPlayersCards, isSpectator);
   useZkCardDisclosure(isWaitingForCardsToBeDisclosed, myCardsC0, isSpectator);
 
-  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress } = useTurn(isActiveGame);
+  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress, isTurnTimeExpired } =
+    useTurn(isActiveGame);
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
@@ -350,7 +351,7 @@ function GamePage() {
             onTimeEnd={onTimeEnd}
           />
         )}
-        {isMyTurn && (
+        {isMyTurn && !isTurnTimeExpired && (
           <GameButtons
             currentBet={Number(current_bet || 0)}
             bigBlind={Number(config?.big_blind || 0)}
@@ -370,7 +371,7 @@ function GamePage() {
       )}
 
       {gameEndData && isGameEndModalOpen && (
-        <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} />
+        <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} isSpectator={isSpectator} />
       )}
 
       {isWaitingZk &&

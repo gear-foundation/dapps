@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { ROUTES } from '@/app/consts';
+import { ROUTES, UI_TIME_COVER_MS } from '@/app/consts';
 import { BackIcon, PlusIcon, SearchIcon } from '@/assets/images';
 import { Button, Input, Room } from '@/components';
 import { useGetLobbiesQuery, Lobby } from '@/features/game/queries';
@@ -80,7 +80,7 @@ export default function Rooms() {
                 adminId={admin_id}
                 currentPlayersCount={currentPlayersCount}
                 buyIn={Number(starting_bank)}
-                time={Number(time_per_move_ms) / 1000}
+                time={Number(time_per_move_ms) / 1000 - UI_TIME_COVER_MS / 1000}
                 id={address}
               />
             );

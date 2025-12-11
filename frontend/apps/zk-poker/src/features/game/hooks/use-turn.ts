@@ -1,6 +1,6 @@
 import { HexString } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   useActiveParticipantsQuery,
@@ -28,6 +28,9 @@ export const useTurn = (isActiveGame: boolean) => {
   const [currentTurn, setCurrentTurn] = useState<HexString | null>();
   const [timeToTurnEndSec, setTimeToTurnEndSec] = useState<number | null>(null);
   const [autoFoldPlayers, setAutoFoldPlayers] = useState<HexString[]>([]);
+  const [isTurnTimeExpired, setIsTurnTimeExpired] = useState(false);
+  const autoFoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialLoadRef = useRef(true);
   const getPlayerStatusAndBet = useGetPlayerStatusAndBet(null, autoFoldPlayers);
   const { first_index } = activeParticipants || {};
   const participantsLength = participants?.length || 0;
@@ -112,10 +115,18 @@ export const useTurn = (isActiveGame: boolean) => {
 
       setAutoFoldPlayers(autoFolded);
       setCurrentTurn(actualTurn);
-      if (actualTurn === null && account?.decodedAddress === config?.admin_id) {
-        sendAutoFoldWithRetry();
+      // Trigger auto-fold only on initial page load (e.g. after reload),
+      // when by this moment all turns should already be processed.
+      if (isInitialLoadRef.current) {
+        isInitialLoadRef.current = false;
+
+        if (actualTurn === null && account?.decodedAddress === config?.admin_id) {
+          sendAutoFoldWithRetry();
+        }
       }
-      setTimeToTurnEndSec(Math.floor((timePerMoveMs - (timeLeft % timePerMoveMs)) / 1000));
+      const blockTimeCoverMs = 3000;
+      const timeToTurnEnd = timePerMoveMs - (timeLeft % timePerMoveMs) - blockTimeCoverMs;
+      setTimeToTurnEndSec(Math.floor(timeToTurnEnd / 1000));
     } else {
       setCurrentTurn(undefined);
       setTimeToTurnEndSec(null);
@@ -133,23 +144,55 @@ export const useTurn = (isActiveGame: boolean) => {
   ]);
 
   const onTimeEnd = useCallback(() => {
-    if (currentTurn) {
+    // Disable UI controls immediately when time is up
+    setIsTurnTimeExpired(true);
+
+    if (autoFoldTimeoutRef.current) {
+      clearTimeout(autoFoldTimeoutRef.current);
+      autoFoldTimeoutRef.current = null;
+    }
+
+    if (!currentTurn) {
+      return;
+    }
+
+    // Wait a bit and re-check the latest state before auto-folding
+    const delayMs = 5000;
+
+    autoFoldTimeoutRef.current = setTimeout(() => {
       const nextAutoFoldPlayers = [...autoFoldPlayers, currentTurn];
       const nextTurn = getNextActivePlayer(currentTurn, nextAutoFoldPlayers);
+
       setAutoFoldPlayers(nextAutoFoldPlayers);
       setCurrentTurn(nextTurn);
+
       if (!nextTurn && account?.decodedAddress === config?.admin_id) {
         sendAutoFoldWithRetry();
       }
-    }
+    }, delayMs);
   }, [
-    currentTurn,
-    autoFoldPlayers,
     account?.decodedAddress,
     config?.admin_id,
     getNextActivePlayer,
     sendAutoFoldWithRetry,
+    autoFoldPlayers,
+    currentTurn,
   ]);
+
+  // Reset "time expired" flag when turn changes
+  useEffect(() => {
+    setIsTurnTimeExpired(false);
+  }, [currentTurn]);
+
+  // Cancel pending timeout if conditions for auto-fold evaluation change
+  useEffect(() => {
+    return () => {
+      if (autoFoldTimeoutRef.current) {
+        clearTimeout(autoFoldTimeoutRef.current);
+        autoFoldTimeoutRef.current = null;
+      }
+    };
+  }, [contractTurn]);
 
   return {
     currentTurn,
@@ -158,5 +201,6 @@ export const useTurn = (isActiveGame: boolean) => {
     autoFoldPlayers,
     getNextActivePlayer,
     onTimeEnd,
+    isTurnTimeExpired,
   };
 };

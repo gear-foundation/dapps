@@ -22,9 +22,10 @@ type GameEndData = {
 
 type Props = GameEndData & {
   onClose?: () => void;
+  isSpectator: boolean;
 };
 
-const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, onClose }: Props) => {
+const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, onClose, isSpectator }: Props) => {
   const { account } = useAccount();
   const myAddress = account?.decodedAddress;
 
@@ -52,7 +53,7 @@ const GameEndModal = ({ pots, revealedPlayers, commonCardsFields, participants, 
 
       return (
         <div>
-          <h1 className={styles.lose}>You lose</h1>
+          {!isSpectator && <h1 className={styles.lose}>You lose</h1>}
           {winnersHand && (
             <div className={styles.winnersHand}>
               {winnersHand.map((card, index) => (
