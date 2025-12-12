@@ -49,6 +49,7 @@ import {
   useEventFinishedSubscription,
   useEventAdminChangedSubscription,
   useAllInPlayersQuery,
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription,
 } from '@/features/game/sails';
 import {
   useZkBackend,
@@ -251,6 +252,13 @@ function GamePage() {
       void refetchStatus();
     },
   });
+
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription({
+    onData: () => {
+      void refetchStatus();
+    },
+  });
+
   const { gameProgress: zkProgress } = useZkBackend({ isWaitingShuffleVerification, isDisabled: isSpectator });
 
   useZkTableCardsDecryption({
