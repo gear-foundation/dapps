@@ -2,7 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { BIG_BLIND, ROUTES, SMALL_BLIND } from '@/app/consts';
+import { BIG_BLIND, ROUTES, SMALL_BLIND, UI_TIME_COVER_MS } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, Input, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
@@ -76,7 +76,7 @@ function CreateGame() {
 
     void createLobbyMessage({
       config: {
-        time_per_move_ms: formData.time * 1000,
+        time_per_move_ms: formData.time * 1000 + UI_TIME_COVER_MS,
         admin_id: account.decodedAddress,
         admin_name: userName,
         big_blind: BIG_BLIND,

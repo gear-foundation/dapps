@@ -12,7 +12,7 @@ type Props = {
 
 export function OperationLogs({ isHidden }: Props) {
   const { logs } = useLogs();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className={clsx(styles.container, isHidden && styles.hidden)}>

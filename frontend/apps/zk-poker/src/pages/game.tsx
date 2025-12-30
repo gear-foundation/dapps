@@ -48,6 +48,8 @@ import {
   useEventWaitingForCardsToBeDisclosedSubscription,
   useEventFinishedSubscription,
   useEventAdminChangedSubscription,
+  useAllInPlayersQuery,
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription,
 } from '@/features/game/sails';
 import {
   useZkBackend,
@@ -92,6 +94,7 @@ function GamePage() {
   const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
   const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
+  const { refetch: refetchAllInPlayers } = useAllInPlayersQuery();
   const { refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
@@ -150,6 +153,9 @@ function GamePage() {
   useEventNextStageSubscription({
     onData: (data) => {
       void refetchStatus();
+      void refetchAllInPlayers();
+      void refetchAlreadyInvestedInTheCircle();
+      void refetchActiveParticipants();
       if (data === 'WaitingTableCardsAfterPreFlop') {
         void refetchRevealedTableCards();
       }
@@ -175,6 +181,7 @@ function GamePage() {
       void refetchBetting();
       void refetchBettingBank();
       void refetchAlreadyInvestedInTheCircle();
+      void refetchAllInPlayers();
     },
   });
 
@@ -197,10 +204,13 @@ function GamePage() {
   useEventFinishedSubscription({
     onData: () => {
       void refetchStatus();
+      void refetchAllInPlayers();
       void refetchParticipants();
+      void refetchActiveParticipants();
       void refetchBetting();
       void refetchBettingBank();
       void refetchAlreadyInvestedInTheCircle();
+      void refetchAllInPlayers();
     },
   });
 
@@ -208,8 +218,10 @@ function GamePage() {
     void refetchStatus();
     void refetchBetting();
     void refetchBettingBank();
+    void refetchParticipants();
     void refetchActiveParticipants();
     void refetchAlreadyInvestedInTheCircle();
+    void refetchAllInPlayers();
     void refetchRevealedPlayers();
     void refetchPlayerCards();
     void refetchRevealedTableCards();
@@ -238,8 +250,17 @@ function GamePage() {
   useEventWaitingForCardsToBeDisclosedSubscription({
     onData: () => {
       void refetchStatus();
+      void refetchActiveParticipants();
     },
   });
+
+  useEventWaitingForAllTableCardsToBeDisclosedSubscription({
+    onData: () => {
+      void refetchStatus();
+      void refetchActiveParticipants();
+    },
+  });
+
   const { gameProgress: zkProgress } = useZkBackend({ isWaitingShuffleVerification, isDisabled: isSpectator });
 
   useZkTableCardsDecryption({
@@ -253,7 +274,8 @@ function GamePage() {
   useZkPartialDecryptionsForPlayersCards(isWaitingPartialDecryptionsForPlayersCards, isSpectator);
   useZkCardDisclosure(isWaitingForCardsToBeDisclosed, myCardsC0, isSpectator);
 
-  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress } = useTurn();
+  const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress, isTurnTimeExpired } =
+    useTurn(isActiveGame);
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
@@ -293,7 +315,9 @@ function GamePage() {
     if (!isFinished) return;
 
     if (isAdmin && !isRestartGamePending) {
-      void restartGameMessage();
+      setTimeout(() => {
+        void restartGameMessage();
+      }, 2000);
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
 
@@ -305,7 +329,7 @@ function GamePage() {
             color="danger"
             rounded
             size="medium"
-            onClick={() => (isGameStarted ? cancelGameMessage() : killMessage())}
+            onClick={() => (isRegistration ? killMessage() : cancelGameMessage())}
             disabled={isKillPending || isCancelGamePending}
             className={styles.killButton}>
             <Exit />
@@ -337,7 +361,7 @@ function GamePage() {
             onTimeEnd={onTimeEnd}
           />
         )}
-        {isMyTurn && (
+        {isMyTurn && !isTurnTimeExpired && (
           <GameButtons
             currentBet={Number(current_bet || 0)}
             bigBlind={Number(config?.big_blind || 0)}
@@ -357,7 +381,7 @@ function GamePage() {
       )}
 
       {gameEndData && isGameEndModalOpen && (
-        <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} />
+        <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} isSpectator={isSpectator} />
       )}
 
       {isWaitingZk &&
