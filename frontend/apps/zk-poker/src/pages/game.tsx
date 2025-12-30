@@ -250,12 +250,14 @@ function GamePage() {
   useEventWaitingForCardsToBeDisclosedSubscription({
     onData: () => {
       void refetchStatus();
+      void refetchActiveParticipants();
     },
   });
 
   useEventWaitingForAllTableCardsToBeDisclosedSubscription({
     onData: () => {
       void refetchStatus();
+      void refetchActiveParticipants();
     },
   });
 

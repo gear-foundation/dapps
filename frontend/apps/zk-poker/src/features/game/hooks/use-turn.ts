@@ -32,6 +32,13 @@ export const useTurn = (isActiveGame: boolean) => {
   const autoFoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialLoadRef = useRef(true);
   const getPlayerStatusAndBet = useGetPlayerStatusAndBet(null, autoFoldPlayers);
+  const getPlayerStatusAndBetRef = useRef(getPlayerStatusAndBet);
+
+  // Keep ref updated with latest function
+  useEffect(() => {
+    getPlayerStatusAndBetRef.current = getPlayerStatusAndBet;
+  }, [getPlayerStatusAndBet]);
+
   const { first_index } = activeParticipants || {};
   const participantsLength = participants?.length || 0;
   const bigBlindIndex = Number(first_index);
@@ -66,7 +73,7 @@ export const useTurn = (isActiveGame: boolean) => {
         return null;
       }
 
-      const { status, bet } = getPlayerStatusAndBet(nextPlayer, nextPlayerParticipant[1], false);
+      const { status, bet } = getPlayerStatusAndBetRef.current(nextPlayer, nextPlayerParticipant[1], false);
 
       if (status === 'fold' || status === 'all-in') {
         return getNextActivePlayer(nextPlayer, autoFolded);
@@ -82,7 +89,6 @@ export const useTurn = (isActiveGame: boolean) => {
 
       return nextPlayer || null;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeIds, participants, current_bet, acted_players, allInPlayersThisCircleLenght],
   );
 
@@ -199,7 +205,6 @@ export const useTurn = (isActiveGame: boolean) => {
     timeToTurnEndSec,
     dillerAddress,
     autoFoldPlayers,
-    getNextActivePlayer,
     onTimeEnd,
     isTurnTimeExpired,
   };
