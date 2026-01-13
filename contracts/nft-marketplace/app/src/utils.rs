@@ -36,22 +36,6 @@ impl Market {
         }
     }
 }
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub struct ItemInfoArgs {
-    nft_contract_id: ActorId,
-    token_id: TokenId,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub struct InitMarket {
-    pub admin_id: ActorId,
-    pub treasury_id: ActorId,
-    pub treasury_fee: u16,
-}
 
 #[derive(Debug, PartialEq, Eq, Default, Encode, Decode, TypeInfo, Clone)]
 #[codec(crate = sails_rs::scale_codec)]
@@ -61,32 +45,6 @@ pub struct Auction {
     pub ended_at: u64,
     pub current_price: Price,
     pub current_winner: ActorId,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum MarketTx {
-    CreateAuction,
-    Bid {
-        account: ActorId,
-        price: Price,
-    },
-    SettleAuction,
-    Sale {
-        buyer: ActorId,
-    },
-    Offer {
-        ft_id: ContractId,
-        price: Price,
-        account: ActorId,
-    },
-    AcceptOffer,
-    Withdraw {
-        ft_id: ContractId,
-        price: Price,
-        account: ActorId,
-    },
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
@@ -167,32 +125,6 @@ pub enum MarketEvent {
     TransactionFailed,
     RerunTransaction,
     TransferValue,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub enum MarketErr {
-    NFTTransferFailed,
-    TokenTransferFailed,
-    WrongTransaction,
-    RerunTransaction,
-    WrongPrice,
-    InvalidCaller,
-    ItemOnAuction,
-    ItemDoesNotExists,
-    ItemIsNotOnSale,
-    AuctionBidPeriodOrDurationIsInvalid,
-    AuctionMinPriceIsZero,
-    AuctionIsAlreadyExists,
-    AuctionIsAlreadyEnded,
-    AuctionIsNotOver,
-    AuctionDoesNotExists,
-    AuctionIsOpened,
-    ContractNotApproved,
-    OfferAlreadyExists,
-    OfferShouldAcceptedByOwner,
-    OfferIsNotExists,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

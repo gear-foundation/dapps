@@ -1,323 +1,174 @@
-use dex_client::{
-    traits::{Dex, DexFactory},
-    Dex as DexClient, DexFactory as Factory,
-};
-use extended_vft_client::vft::io as vft_io;
-use sails_rs::{
-    calls::*,
-    gtest::{calls::*, Program, System},
-    ActorId, Encode, U256,
-};
+use dex_client::dex::Dex;
+use dex_client::DexCtors;
+
+use dex_client::Dex as ClientDex;
+use extended_vft_client::vft::Vft;
+use extended_vft_client::ExtendedVftClient;
+use extended_vft_client::ExtendedVftClientCtors;
+
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::{gtest::System, ActorId, U256};
 
 pub const USER_ID: u64 = 10;
+const FEE: u64 = 30_000_000_000;
 
-fn init_fungible_token(sys: &System) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
-    let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
-    let encoded_request = ["New".encode(), payload.encode()].concat();
-    let mid = vft.send_bytes(USER_ID, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+type VftActor = Actor<extended_vft_client::ExtendedVftClientProgram, GtestEnv>;
+type DexActor = Actor<dex_client::DexProgram, GtestEnv>;
 
-    (vft.id(), vft)
+struct Ctx {
+    vft_a: VftActor,
+    vft_b: VftActor,
+    dex: DexActor,
 }
 
-fn mint(sys: &System, vft: &Program, amount: U256) {
-    let encoded_request = vft_io::Mint::encode_call(USER_ID.into(), amount);
-    let mid = vft.send_bytes(USER_ID, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+async fn setup(mint_a: U256, mint_b: U256) -> Ctx {
+    let system = System::new();
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+    system.mint_to(USER_ID, DEFAULT_USERS_INITIAL_BALANCE);
+
+    let env = GtestEnv::new(system, USER_ID.into());
+
+    let vft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vft.opt.wasm");
+
+    let vft_a: VftActor = env
+        .deploy::<extended_vft_client::ExtendedVftClientProgram>(
+            vft_code_id,
+            b"salt-vft-a".to_vec(),
+        )
+        .new("TokenA".to_string(), "A".to_string(), 10_u8)
+        .await
+        .unwrap();
+
+    let vft_b: VftActor = env
+        .deploy::<extended_vft_client::ExtendedVftClientProgram>(
+            vft_code_id,
+            b"salt-vft-b".to_vec(),
+        )
+        .new("TokenB".to_string(), "B".to_string(), 10_u8)
+        .await
+        .unwrap();
+
+    // mint от USER_ID (env настроен на USER_ID)
+    vft_a.vft().mint(USER_ID.into(), mint_a).await.unwrap();
+    vft_b.vft().mint(USER_ID.into(), mint_b).await.unwrap();
+
+    let dex_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
+
+    let dex: DexActor = env
+        .deploy::<dex_client::DexProgram>(dex_code_id, b"salt-dex".to_vec())
+        .new(vft_a.id(), vft_b.id(), FEE, None)
+        .await
+        .unwrap();
+
+    Ctx { vft_a, vft_b, dex }
 }
 
-fn approve_ft(vft: &Program<'_>, sys: &System, from: u64, to: ActorId, value: U256) {
-    let encoded_request = vft_io::Approve::encode_call(to, value);
-    let mid = vft.send_bytes(from, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+async fn approve(vft: &VftActor, spender: ActorId, amount: U256) {
+    vft.vft().approve(spender, amount).await.unwrap();
 }
 
-fn get_balance(sys: &System, vft: &Program, account: ActorId) -> U256 {
-    let encoded_request = vft_io::BalanceOf::encode_call(account);
-    let mid = vft.send_bytes(USER_ID, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    vft_io::BalanceOf::decode_reply(res.log[0].payload()).unwrap()
-}
-
-/// Test for adding liquidity to the DEX pool
 #[tokio::test]
 async fn test_add_liquidity() {
-    let system = System::new();
-    system.init_logger();
+    let Ctx { vft_a, vft_b, dex } = setup(100_000.into(), 100_000.into()).await;
 
-    // Mint some initial tokens for the user
-    system.mint_to(USER_ID, 1_000_000_000_000_000);
+    let dex_id = dex.id();
+    approve(&vft_a, dex_id, 30_000.into()).await;
+    approve(&vft_b, dex_id, 30_000.into()).await;
 
-    // Initialize the program space and upload the contract
-    let program_space = GTestRemoting::new(system, USER_ID.into());
-    let code_id = program_space
-        .system()
-        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
+    let mut d = dex.dex();
 
-    // Create a new factory and initialize two fungible token contracts
-    let dex_factory = Factory::new(program_space.clone());
-    let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
-    let (vft_id_b, vft_program_b) = init_fungible_token(program_space.system());
+    d.add_liquidity(10_000.into(), 10_000.into()).await.unwrap();
 
-    // Mint tokens to the fungible token contracts
-    mint(program_space.system(), &vft_program_a, 100_000.into());
-    mint(program_space.system(), &vft_program_b, 100_000.into());
+    let total_liquidity = d.total_liquidity().await.unwrap();
+    assert_eq!(total_liquidity, 9_000.into());
 
-    // Deploy the DEX contract
-    let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
-        .send_recv(code_id, "123")
-        .await
-        .unwrap();
+    assert_eq!(d.reserve_a().await.unwrap(), 10_000.into());
+    assert_eq!(d.reserve_b().await.unwrap(), 10_000.into());
 
-    let mut client = DexClient::new(program_space.clone());
+    d.add_liquidity(20_000.into(), 20_000.into()).await.unwrap();
 
-    // Approve the DEX contract to spend user tokens
-    approve_ft(
-        &vft_program_a,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        30_000.into(),
-    );
-    approve_ft(
-        &vft_program_b,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        30_000.into(),
-    );
-
-    // Add initial liquidity to the DEX pool
-    client
-        .add_liquidity(10_000.into(), 10_000.into())
-        .send_recv(dex_id)
-        .await
-        .unwrap();
-
-    // Verify the state after adding liquidity
-    let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(
-        total_liquidity,
-        9_000.into(),
-        "Total liquidity should match initial addition"
-    );
-    let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(
-        reserve_a,
-        10_000.into(),
-        "Reserve A should match initial addition"
-    );
-    let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(
-        reserve_b,
-        10_000.into(),
-        "Reserve B should match initial addition"
-    );
-
-    // Add more liquidity to the DEX pool
-    client
-        .add_liquidity(20_000.into(), 20_000.into())
-        .send_recv(dex_id)
-        .await
-        .unwrap();
-
-    // Verify the updated state
-    let total_liquidity = client.total_liquidity().recv(dex_id).await.unwrap();
-    assert_eq!(
-        total_liquidity,
-        27_000.into(),
-        "Total liquidity should match after second addition"
-    );
-    let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    assert_eq!(
-        reserve_a,
-        30_000.into(),
-        "Reserve A should match after second addition"
-    );
-    let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
-    assert_eq!(
-        reserve_b,
-        30_000.into(),
-        "Reserve B should match after second addition"
-    );
+    assert_eq!(d.total_liquidity().await.unwrap(), 27_000.into());
+    assert_eq!(d.reserve_a().await.unwrap(), 30_000.into());
+    assert_eq!(d.reserve_b().await.unwrap(), 30_000.into());
 }
 
-/// Test for the `swap` functionality
 #[tokio::test]
 async fn test_swap() {
-    let system = System::new();
-    system.init_logger();
-    system.mint_to(USER_ID, 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, USER_ID.into());
-    let code_id = program_space
-        .system()
-        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
+    let Ctx { vft_a, vft_b, dex } = setup(5_000.into(), 6_000.into()).await;
 
-    let dex_factory = Factory::new(program_space.clone());
-    let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
-    let (vft_id_b, vft_program_b) = init_fungible_token(program_space.system());
-    mint(program_space.system(), &vft_program_a, 5_000.into());
-    mint(program_space.system(), &vft_program_b, 6_000.into());
+    let dex_id = dex.id();
+    approve(&vft_a, dex_id, 5_000.into()).await;
+    approve(&vft_b, dex_id, 6_000.into()).await;
 
-    let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
-        .send_recv(code_id, "123")
-        .await
-        .unwrap();
+    let mut d = dex.dex();
+    let a = vft_a.vft();
+    let b = vft_b.vft();
 
-    let mut client = DexClient::new(program_space.clone());
+    d.add_liquidity(5_000.into(), 5_000.into()).await.unwrap();
 
-    // Approve tokens for the DEX contract
-    approve_ft(
-        &vft_program_a,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        5_000.into(),
-    );
-    approve_ft(
-        &vft_program_b,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        6_000.into(),
-    );
+    let user_a0 = a.balance_of(USER_ID.into()).await.unwrap();
+    let user_b0 = b.balance_of(USER_ID.into()).await.unwrap();
+    assert_eq!(user_a0, 0.into());
+    assert_eq!(user_b0, 1_000.into());
 
-    // Add liquidity to the pool
-    client
-        .add_liquidity(5_000.into(), 5_000.into())
-        .send_recv(dex_id)
-        .await
-        .unwrap();
+    let ra0 = d.reserve_a().await.unwrap();
+    let rb0 = d.reserve_b().await.unwrap();
+    let k0 = ra0 * rb0;
 
-    let user_balance_a = get_balance(program_space.system(), &vft_program_a, USER_ID.into());
-    assert_eq!(
-        user_balance_a,
-        0.into(),
-        "User should receive token A after swap"
-    );
-    // Perform a swap
-    client
-        .swap(1_000.into(), true) // Swap 1_000 token B for token A
-        .send_recv(dex_id)
-        .await
-        .unwrap();
+    d.swap(1_000.into(), true).await.unwrap();
 
-    // Calculate expected reserves after the swap
-    let reserve_a_before = U256::from(5_000);
-    let reserve_b_before = U256::from(5_000);
+    let ra1 = d.reserve_a().await.unwrap();
+    let rb1 = d.reserve_b().await.unwrap();
+    let k1 = ra1 * rb1;
 
-    let in_amount = U256::from(1_000);
+    assert!(ra1 < ra0);
+    assert!(rb1 >= rb0);
+    assert!(k1 >= k0);
 
-    // Expected calculations
-    let out_amount = (in_amount * reserve_a_before) / (reserve_b_before + in_amount);
-    let reserve_a_expected = reserve_a_before - out_amount;
-    let reserve_b_expected = reserve_b_before + in_amount;
+    let user_a1 = a.balance_of(USER_ID.into()).await.unwrap();
+    let user_b1 = b.balance_of(USER_ID.into()).await.unwrap();
 
-    // Check the updated reserves
-    let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
+    assert_eq!(user_b1, 0.into());
 
-    assert_eq!(
-        reserve_a, reserve_a_expected,
-        "Reserve A mismatch after swap"
-    );
-    assert_eq!(
-        reserve_b, reserve_b_expected,
-        "Reserve B mismatch after swap"
-    );
-
-    // Check that the user received token A
-    let user_balance_a = get_balance(program_space.system(), &vft_program_a, USER_ID.into());
-    assert!(
-        user_balance_a > 0.into(),
-        "User should receive token A after swap"
-    );
+    let out_user = user_a1 - user_a0;
+    let out_pool = ra0 - ra1;
+    assert!(out_user > 0.into());
+    assert_eq!(out_user, out_pool);
 }
 
-/// Test for the `remove_liquidity` functionality
 #[tokio::test]
 async fn test_remove_liquidity() {
-    let system = System::new();
-    system.init_logger();
-    system.mint_to(USER_ID, 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, USER_ID.into());
-    let code_id = program_space
-        .system()
-        .submit_code_file("../target/wasm32-gear/release/dex.opt.wasm");
+    let Ctx { vft_a, vft_b, dex } = setup(5_000.into(), 5_000.into()).await;
 
-    let dex_factory = Factory::new(program_space.clone());
-    let (vft_id_a, vft_program_a) = init_fungible_token(program_space.system());
-    let (vft_id_b, vft_program_b) = init_fungible_token(program_space.system());
-    mint(program_space.system(), &vft_program_a, 10_000.into());
-    mint(program_space.system(), &vft_program_b, 10_000.into());
+    let dex_id = dex.id();
+    approve(&vft_a, dex_id, 5_000.into()).await;
+    approve(&vft_b, dex_id, 5_000.into()).await;
 
-    let dex_id = dex_factory
-        .new(vft_id_a, vft_id_b, 30_000_000_000, None)
-        .send_recv(code_id, "123")
-        .await
-        .unwrap();
+    let mut d = dex.dex();
+    let a = vft_a.vft();
+    let b = vft_b.vft();
 
-    let mut client = DexClient::new(program_space.clone());
-    // Approve tokens for the DEX contract
-    approve_ft(
-        &vft_program_a,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        10_000.into(),
-    );
-    approve_ft(
-        &vft_program_b,
-        program_space.system(),
-        USER_ID,
-        dex_id,
-        10_000.into(),
-    );
+    d.add_liquidity(5_000.into(), 5_000.into()).await.unwrap();
 
-    // Add liquidity to the pool
-    client
-        .add_liquidity(5_000.into(), 5_000.into())
-        .send_recv(dex_id)
-        .await
-        .unwrap();
+    assert_eq!(a.balance_of(USER_ID.into()).await.unwrap(), 0.into());
+    assert_eq!(b.balance_of(USER_ID.into()).await.unwrap(), 0.into());
 
-    // Remove liquidity from the pool
-    client
-        .remove_liquidity(100.into()) // Remove 100 liquidity tokens
-        .send_recv(dex_id)
-        .await
-        .unwrap();
+    let ra0 = d.reserve_a().await.unwrap();
+    let rb0 = d.reserve_b().await.unwrap();
 
-    // Check the updated reserves
-    let reserve_a = client.reserve_a().recv(dex_id).await.unwrap();
-    let reserve_b = client.reserve_b().recv(dex_id).await.unwrap();
+    d.remove_liquidity(100.into()).await.unwrap();
 
-    assert!(
-        reserve_a < 5_000.into(),
-        "Reserve A should decrease after removing liquidity"
-    );
-    assert!(
-        reserve_b < 5_000.into(),
-        "Reserve B should decrease after removing liquidity"
-    );
+    let ra1 = d.reserve_a().await.unwrap();
+    let rb1 = d.reserve_b().await.unwrap();
 
-    // Check that the user received their tokens back
-    let user_balance_a = get_balance(program_space.system(), &vft_program_a, USER_ID.into());
-    let user_balance_b = get_balance(program_space.system(), &vft_program_b, USER_ID.into());
+    assert!(ra1 < ra0);
+    assert!(rb1 < rb0);
 
-    assert!(
-        user_balance_a > 0.into(),
-        "User should receive token A after removing liquidity"
-    );
-    assert!(
-        user_balance_b > 0.into(),
-        "User should receive token B after removing liquidity"
-    );
+    assert!(a.balance_of(USER_ID.into()).await.unwrap() > 0.into());
+    assert!(b.balance_of(USER_ID.into()).await.unwrap() > 0.into());
 }

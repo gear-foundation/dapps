@@ -1,310 +1,228 @@
-use extended_vft_client::vft::io as vft_io;
-use sails_rs::{
-    calls::*,
-    gtest::{calls::*, Program, System},
-    ActorId, Encode, U256,
-};
+use extended_vft_client::vft::Vft;
+use extended_vft_client::{ExtendedVftClient, ExtendedVftClientCtors};
+use staking_client::staking::Staking;
+use staking_client::Staking as ClientStaking;
+use staking_client::StakingCtors;
 
-use staking_client::traits::*;
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::{gtest::System, ActorId, U256};
 
-const ACTOR_IDS: &[u64] = &[40, 41, 42];
+const ACTOR_IDS: [u64; 3] = [40, 41, 42];
 
-fn init_fungible_token(sys: &System) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
-    let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
-    let encoded_request = ["New".encode(), payload.encode()].concat();
-    let mid = vft.send_bytes(ACTOR_IDS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-
-    (vft.id(), vft)
+fn mint_users(system: &System) {
+    for id in ACTOR_IDS {
+        system.mint_to(id, DEFAULT_USERS_INITIAL_BALANCE);
+    }
 }
 
-fn mint_ft(vft: &Program<'_>, sys: &System, to: ActorId, value: U256) {
-    let encoded_request = vft_io::Mint::encode_call(to, value);
-    let mid = vft.send_bytes(ACTOR_IDS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-}
-
-fn approve_ft(vft: &Program<'_>, sys: &System, from: u64, to: ActorId, value: U256) {
-    let encoded_request = vft_io::Approve::encode_call(to, value);
-    let mid = vft.send_bytes(from, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-}
-
-fn ft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 {
-    let encoded_request = vft_io::BalanceOf::encode_call(account);
-    let mid = program.send_bytes(ACTOR_IDS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    vft_io::BalanceOf::decode_reply(res.log[0].payload()).unwrap()
+fn run_blocks(system: &System, n: usize) {
+    for _ in 0..n {
+        system.run_next_block();
+    }
 }
 
 #[tokio::test]
 async fn test_stake() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
+    mint_users(&system);
 
-    let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
+    let env = GtestEnv::new(system, ACTOR_IDS[0].into());
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(staking::WASM_BINARY);
+    let vft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vft.opt.wasm");
 
-    let program_factory = staking_client::StakingFactory::new(remoting.clone());
-
-    let (vft_id, vft_program) = init_fungible_token(remoting.system());
-
-    let program_id = program_factory
-        .new(vft_id, 30000, 1000) // Call program's constructor (see app/src/lib.rs:29)
-        .send_recv(program_code_id, b"salt")
+    let vft_program = env
+        .deploy::<extended_vft_client::ExtendedVftClientProgram>(vft_code_id, b"salt-vft".to_vec())
+        .new("Name".to_string(), "Symbol".to_string(), 10_u8)
         .await
         .unwrap();
 
-    mint_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0].into(),
-        1000.into(),
-    );
-    approve_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0],
-        program_id,
-        1000.into(),
-    );
+    let vft_id: ActorId = vft_program.id();
 
-    let mut service_client = staking_client::Staking::new(remoting.clone());
-    service_client
-        .stake(1000)
-        .send_recv(program_id)
+    let staking_code_id = env.system().submit_code(staking::WASM_BINARY);
+    let staking_program = env
+        .deploy::<staking_client::StakingProgram>(staking_code_id, b"salt-staking".to_vec())
+        .new(vft_id, 30_000, 1_000)
         .await
         .unwrap();
 
-    let total_staked = service_client
-        .total_staked()
-        .recv(program_id)
+    let staking_id: ActorId = staking_program.id();
+
+    let mut vft = vft_program.vft();
+    let mut staking = staking_program.staking();
+
+    vft.mint(ACTOR_IDS[0].into(), U256::from(1_000))
         .await
         .unwrap();
-    assert_eq!(total_staked, 1000);
+    vft.approve(staking_id, U256::from(1_000)).await.unwrap();
 
-    let balance = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert_eq!(balance, 0.into());
+    staking.stake(1_000).await.unwrap();
 
-    mint_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[1].into(),
-        3000.into(),
-    );
-    approve_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[1],
-        program_id,
-        3000.into(),
-    );
+    let total_staked = staking.total_staked().await.unwrap();
+    assert_eq!(total_staked, 1_000);
 
-    service_client
-        .stake(3000)
-        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
-        .send_recv(program_id)
+    let bal0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
+    assert_eq!(bal0, 0.into());
+
+    vft.mint(ACTOR_IDS[1].into(), U256::from(3_000))
+        .await
+        .unwrap();
+    vft.approve(staking_id, U256::from(3_000))
+        .with_actor_id(ACTOR_IDS[1].into())
         .await
         .unwrap();
 
-    let total_staked = service_client
-        .total_staked()
-        .recv(program_id)
+    staking
+        .stake(3_000)
+        .with_actor_id(ACTOR_IDS[1].into())
         .await
         .unwrap();
-    assert_eq!(total_staked, 4000);
 
-    let balance = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert_eq!(balance, 0.into());
+    let total_staked = staking.total_staked().await.unwrap();
+    assert_eq!(total_staked, 4_000);
+
+    let bal0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
+    assert_eq!(bal0, 0.into());
 }
 
 #[tokio::test]
 async fn test_get_reward() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
+    mint_users(&system);
 
-    let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
+    let env = GtestEnv::new(system, ACTOR_IDS[0].into());
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(staking::WASM_BINARY);
+    let vft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vft.opt.wasm");
 
-    let program_factory = staking_client::StakingFactory::new(remoting.clone());
-
-    let (vft_id, vft_program) = init_fungible_token(remoting.system());
-
-    let program_id = program_factory
-        .new(vft_id, 50000, 1000) // Call program's constructor (see app/src/lib.rs:29)
-        .send_recv(program_code_id, b"salt")
+    let vft_program = env
+        .deploy::<extended_vft_client::ExtendedVftClientProgram>(vft_code_id, b"salt-vft".to_vec())
+        .new("Name".to_string(), "Symbol".to_string(), 10_u8)
         .await
         .unwrap();
 
-    mint_ft(&vft_program, remoting.system(), program_id, 100_000.into());
-    mint_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0].into(),
-        1000.into(),
-    );
-    approve_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0],
-        program_id,
-        1000.into(),
-    );
+    let vft_id: ActorId = vft_program.id();
 
-    let mut service_client = staking_client::Staking::new(remoting.clone());
-    service_client
-        .stake(1000)
-        .send_recv(program_id)
+    let staking_code_id = env.system().submit_code(staking::WASM_BINARY);
+    let staking_program = env
+        .deploy::<staking_client::StakingProgram>(staking_code_id, b"salt-staking".to_vec())
+        .new(vft_id, 50_000, 1_000)
         .await
         .unwrap();
 
-    let total_staked = service_client
-        .total_staked()
-        .recv(program_id)
+    let staking_id: ActorId = staking_program.id();
+
+    let mut vft = vft_program.vft();
+    let mut staking = staking_program.staking();
+
+    vft.mint(staking_id, U256::from(100_000)).await.unwrap();
+
+    vft.mint(ACTOR_IDS[0].into(), U256::from(1_000))
         .await
         .unwrap();
-    assert_eq!(total_staked, 1000);
+    vft.approve(staking_id, U256::from(1_000)).await.unwrap();
+    staking.stake(1_000).await.unwrap();
 
-    let balance = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert_eq!(balance, 0.into());
+    let total_staked = staking.total_staked().await.unwrap();
+    assert_eq!(total_staked, 1_000);
 
-    remoting.system().run_next_block();
-    remoting.system().run_next_block();
+    let bal0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
+    assert_eq!(bal0, 0.into());
 
-    mint_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[1].into(),
-        1000.into(),
-    );
-    approve_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[1],
-        program_id,
-        1000.into(),
-    );
+    run_blocks(env.system(), 2);
 
-    let mut service_client = staking_client::Staking::new(remoting.clone());
-    service_client
-        .stake(1000)
-        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
-        .send_recv(program_id)
+    vft.mint(ACTOR_IDS[1].into(), U256::from(1_000))
+        .await
+        .unwrap();
+    vft.approve(staking_id, U256::from(1_000))
+        .with_actor_id(ACTOR_IDS[1].into())
         .await
         .unwrap();
 
-    let total_staked = service_client
-        .total_staked()
-        .recv(program_id)
+    staking
+        .stake(1_000)
+        .with_actor_id(ACTOR_IDS[1].into())
         .await
         .unwrap();
-    assert_eq!(total_staked, 2000);
 
-    remoting.system().run_next_block();
-    remoting.system().run_next_block();
+    let total_staked = staking.total_staked().await.unwrap();
+    assert_eq!(total_staked, 2_000);
 
-    service_client
+    run_blocks(env.system(), 2);
+
+    staking
         .get_reward()
-        .with_args(|args| args.with_actor_id(ACTOR_IDS[1].into()))
-        .send_recv(program_id)
+        .with_actor_id(ACTOR_IDS[1].into())
         .await
         .unwrap();
+    let reward_1 = vft.balance_of(ACTOR_IDS[1].into()).await.unwrap();
 
-    let reward_balance_1 = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[1].into());
+    staking.get_reward().await.unwrap();
+    let reward_0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
 
-    service_client
-        .get_reward()
-        .send_recv(program_id)
-        .await
-        .unwrap();
-
-    let reward_balance_2 = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert!(reward_balance_2 > reward_balance_1);
+    assert!(reward_0 > reward_1);
 }
 
 #[tokio::test]
 async fn test_withdraw() {
     let system = System::new();
     system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
-    system.mint_to(ACTOR_IDS[0], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[1], 1_000_000_000_000_000);
-    system.mint_to(ACTOR_IDS[2], 1_000_000_000_000_000);
+    mint_users(&system);
 
-    let remoting = GTestRemoting::new(system, ACTOR_IDS[0].into());
+    let env = GtestEnv::new(system, ACTOR_IDS[0].into());
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(staking::WASM_BINARY);
+    let vft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vft.opt.wasm");
 
-    let program_factory = staking_client::StakingFactory::new(remoting.clone());
-
-    let (vft_id, vft_program) = init_fungible_token(remoting.system());
-
-    let program_id = program_factory
-        .new(vft_id, 30000, 1000) // Call program's constructor (see app/src/lib.rs:29)
-        .send_recv(program_code_id, b"salt")
+    let vft_program = env
+        .deploy::<extended_vft_client::ExtendedVftClientProgram>(vft_code_id, b"salt-vft".to_vec())
+        .new("Name".to_string(), "Symbol".to_string(), 10_u8)
         .await
         .unwrap();
 
-    mint_ft(&vft_program, remoting.system(), program_id, 100_000.into());
-    mint_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0].into(),
-        1000.into(),
-    );
-    approve_ft(
-        &vft_program,
-        remoting.system(),
-        ACTOR_IDS[0],
-        program_id,
-        1000.into(),
-    );
+    let vft_id: ActorId = vft_program.id();
 
-    let mut service_client = staking_client::Staking::new(remoting.clone());
-    service_client
-        .stake(1000)
-        .send_recv(program_id)
+    let staking_code_id = env.system().submit_code(staking::WASM_BINARY);
+    let staking_program = env
+        .deploy::<staking_client::StakingProgram>(staking_code_id, b"salt-staking".to_vec())
+        .new(vft_id, 30_000, 1_000)
         .await
         .unwrap();
 
-    let total_staked = service_client
-        .total_staked()
-        .recv(program_id)
+    let staking_id: ActorId = staking_program.id();
+
+    let mut vft = vft_program.vft();
+    let mut staking = staking_program.staking();
+
+    vft.mint(staking_id, U256::from(100_000)).await.unwrap();
+
+    vft.mint(ACTOR_IDS[0].into(), U256::from(1_000))
         .await
         .unwrap();
-    assert_eq!(total_staked, 1000);
+    vft.approve(staking_id, U256::from(1_000)).await.unwrap();
 
-    let balance = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert_eq!(balance, 0.into());
+    staking.stake(1_000).await.unwrap();
 
-    remoting.system().run_next_block();
-    remoting.system().run_next_block();
+    let total_staked = staking.total_staked().await.unwrap();
+    assert_eq!(total_staked, 1_000);
 
-    service_client
-        .withdraw(500)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    let bal0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
+    assert_eq!(bal0, 0.into());
 
-    let balance = ft_balance_of(&vft_program, remoting.system(), ACTOR_IDS[0].into());
-    assert_ne!(balance, 0.into());
+    run_blocks(env.system(), 2);
 
-    let stakers = service_client.stakers().recv(program_id).await.unwrap();
+    staking.withdraw(500).await.unwrap();
+
+    let bal0 = vft.balance_of(ACTOR_IDS[0].into()).await.unwrap();
+    assert!(bal0 > 0.into());
+
+    let stakers = staking.stakers().await.unwrap();
     assert_eq!(stakers[0].1.balance, 500);
     assert_ne!(stakers[0].1.reward_allowed, 0);
 }

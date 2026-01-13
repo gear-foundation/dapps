@@ -204,10 +204,10 @@ impl PlayerService {
     }
 }
 
-pub struct PlayerProgram(());
+pub struct SyndotePlayerProgram(());
 
 #[sails_rs::program]
-impl PlayerProgram {
+impl SyndotePlayerProgram {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         PlayerService::init();

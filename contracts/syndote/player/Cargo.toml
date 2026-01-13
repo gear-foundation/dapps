@@ -1,0 +1,16 @@
+[package]
+name = "syndote-player"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+syndote-player-app = { path = "app" }
+
+[build-dependencies]
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+syndote-player-app = { path = "app" }
+
+[features]
+wasm-binary = []
+

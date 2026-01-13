@@ -2,8 +2,8 @@
 #![allow(static_mut_refs)]
 
 use extended_vft_client::vft::io as vft_io;
-use sails_rs::calls::ActionIo;
 use sails_rs::{
+    client::CallCodec,
     collections::HashMap,
     gstd::{exec, msg},
     prelude::*,
@@ -171,7 +171,8 @@ impl DexService {
         storage.swap_status = SwapStatus::Paused;
 
         // Transfer tokens to contract
-        let request_a = vft_io::TransferFrom::encode_call(sender, program_id, amount_a);
+        let request_a =
+            vft_io::TransferFrom::encode_params_with_prefix("Vft", sender, program_id, amount_a);
         msg::send_bytes_with_gas_for_reply(
             storage.token_a,
             request_a,
@@ -194,13 +195,14 @@ impl DexService {
         .await
         .expect("Error getting answer from the vft contract");
 
-        let request_b = vft_io::TransferFrom::encode_call(sender, program_id, amount_b);
+        let request_b =
+            vft_io::TransferFrom::encode_params_with_prefix("Vft", sender, program_id, amount_b);
         if let Err(_e) =
             msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
                 .expect("Error in async message to vft contract")
                 .await
         {
-            let request = vft_io::Transfer::encode_call(sender, amount_a);
+            let request = vft_io::Transfer::encode_params_with_prefix("Vft", sender, amount_a);
             msg::send_bytes_with_gas_for_reply(storage.token_a, request, 5_000_000_000, 0, 0)
                 .expect("Error in async message to vft contract")
                 .await
@@ -276,13 +278,13 @@ impl DexService {
         storage.swap_status = SwapStatus::Paused;
 
         // Transfer tokens back to the user
-        let request_a = vft_io::Transfer::encode_call(sender, amount_a);
+        let request_a = vft_io::Transfer::encode_params_with_prefix("Vft", sender, amount_a);
         msg::send_bytes_with_gas_for_reply(storage.token_a, request_a, 5_000_000_000, 0, 0)
             .expect("Error in async message to vft contract")
             .await
             .expect("Error getting answer from the vft contract");
 
-        let request_b = vft_io::Transfer::encode_call(sender, amount_b);
+        let request_b = vft_io::Transfer::encode_params_with_prefix("Vft", sender, amount_b);
         msg::send_bytes_with_gas_for_reply(storage.token_b, request_b, 5_000_000_000, 0, 0)
             .expect("Error in async message to vft contract")
             .await
@@ -354,7 +356,8 @@ impl DexService {
         storage.swap_status = SwapStatus::Paused;
 
         // Transfer the input tokens to the contract
-        let request_in = vft_io::TransferFrom::encode_call(sender, program_id, in_amount);
+        let request_in =
+            vft_io::TransferFrom::encode_params_with_prefix("Vft", sender, program_id, in_amount);
         msg::send_bytes_with_gas_for_reply(in_token, request_in, 5_000_000_000, 0, 5_000_000_000)
             .expect("Error in async message to vft contract")
             .up_to(Some(5))
@@ -372,7 +375,8 @@ impl DexService {
             .expect("Error getting answer from the vft contract");
 
         // Transfer the output tokens to the user
-        let request_out = vft_io::TransferFrom::encode_call(program_id, sender, out_amount);
+        let request_out =
+            vft_io::TransferFrom::encode_params_with_prefix("Vft", program_id, sender, out_amount);
         msg::send_bytes_with_gas_for_reply(out_token, request_out, 5_000_000_000, 0, 5_000_000_000)
             .expect("Error in async message to vft contract")
             .up_to(Some(5))
@@ -416,8 +420,12 @@ impl DexService {
                 out_is_a,
             } => {
                 // Transfer the output tokens to the user
-                let request_out =
-                    vft_io::TransferFrom::encode_call(exec::program_id(), to, out_amount);
+                let request_out = vft_io::TransferFrom::encode_params_with_prefix(
+                    "Vft",
+                    exec::program_id(),
+                    to,
+                    out_amount,
+                );
                 msg::send_bytes_with_gas_for_reply(out_token, request_out, 5_000_000_000, 0, 0)
                     .expect("Error in async message to vft contract")
                     .await
@@ -464,7 +472,7 @@ impl DexService {
         let storage = self.get_mut();
 
         // Fetch the current balance of token A in the contract
-        let request = vft_io::BalanceOf::encode_call(exec::program_id());
+        let request = vft_io::BalanceOf::encode_params_with_prefix("Vft", exec::program_id());
         let bytes_reply_balances =
             msg::send_bytes_for_reply(storage.token_a, request.clone(), 0, 0)
                 .expect("Error in async message to vft contract")

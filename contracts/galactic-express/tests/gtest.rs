@@ -1,57 +1,54 @@
-use galactic_express_client::{
-    traits::{GalacticExpress, GalacticExpressFactory},
-    GalacticExpress as GalacticExpressClient, GalacticExpressFactory as Factory, Participant,
-    StageState,
-};
+use galactic_express_client::galactic_express::GalacticExpress;
+use galactic_express_client::GalacticExpress as OtherGalacticExpress;
+use galactic_express_client::GalacticExpressCtors;
+use galactic_express_client::{Participant, StageState};
+
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
-use sails_rs::{
-    calls::*,
-    errors::{Error, RtlError},
-    gtest::{calls::*, System},
-};
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::gtest::System;
 
 pub const ADMIN: u64 = 10;
 pub const PLAYERS: [u64; 3] = [12, 13, 14];
 
+const BID: u128 = 11_000_000_000_000;
+
 #[tokio::test]
 async fn test_play_game() {
     let system = System::new();
-    system.init_logger();
-    system.mint_to(ADMIN, 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN.into());
-    program_space.system().init_logger();
-    let code_id = program_space
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+
+    system.mint_to(ADMIN, DEFAULT_USERS_INITIAL_BALANCE);
+    for p in PLAYERS {
+        system.mint_to(p, DEFAULT_USERS_INITIAL_BALANCE);
+    }
+
+    let env = GtestEnv::new(system, ADMIN.into());
+
+    let code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
-    let galactic_express_factory = Factory::new(program_space.clone());
-    let galactic_express_id = galactic_express_factory
+    let program = env
+        .deploy::<galactic_express_client::GalacticExpressProgram>(code_id, b"salt".to_vec())
         .new(None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
 
-    let mut client = GalacticExpressClient::new(program_space.clone());
+    let mut client = program.galactic_express();
 
-    let bid = 11_000_000_000_000;
-    program_space.system().mint_to(ADMIN, bid);
+    env.system().mint_to(ADMIN, BID);
 
-    // create_new_session
     client
         .create_new_session("Game".to_string())
-        .with_value(bid)
-        .send_recv(galactic_express_id)
+        .with_value(BID)
         .await
         .unwrap();
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+
+    let state = client.all().await.unwrap();
     assert!(!state.games.is_empty());
     assert!(!state.player_to_game_id.is_empty());
 
-    // register
     for player_id in PLAYERS {
         let player = Participant {
             id: player_id.into(),
@@ -59,75 +56,71 @@ async fn test_play_game() {
             fuel_amount: 42,
             payload_amount: 20,
         };
-        program_space.system().mint_to(player_id, bid);
+
+        env.system().mint_to(player_id, BID);
 
         client
             .register(ADMIN.into(), player)
-            .with_value(bid)
-            .with_args(|args| args.with_actor_id(player_id.into()))
-            .send_recv(galactic_express_id)
+            .with_value(BID)
+            .with_actor_id(player_id.into())
             .await
             .unwrap();
     }
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+
+    let state = client.all().await.unwrap();
     assert_eq!(state.player_to_game_id.len(), 4);
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 3);
+    } else {
+        panic!("unexpected stage");
     }
 
-    // start game
-    client
-        .start_game(42, 20)
-        .send_recv(galactic_express_id)
-        .await
-        .unwrap();
+    client.start_game(42, 20).await.unwrap();
 
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+    let state = client.all().await.unwrap();
     if let StageState::Results(results) = &state.games[0].1.stage {
         assert_eq!(results.rankings.len(), 4);
+    } else {
+        panic!("unexpected stage");
     }
 }
 
 #[tokio::test]
 async fn cancel_register_and_delete_player() {
     let system = System::new();
-    system.init_logger();
-    system.mint_to(ADMIN, 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN.into());
-    program_space.system().init_logger();
-    let code_id = program_space
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+
+    system.mint_to(ADMIN, DEFAULT_USERS_INITIAL_BALANCE);
+    for p in PLAYERS {
+        system.mint_to(p, DEFAULT_USERS_INITIAL_BALANCE);
+    }
+
+    let env = GtestEnv::new(system, ADMIN.into());
+
+    let code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
-    let galactic_express_factory = Factory::new(program_space.clone());
-    let galactic_express_id = galactic_express_factory
+    let program = env
+        .deploy::<galactic_express_client::GalacticExpressProgram>(code_id, b"salt".to_vec())
         .new(None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
 
-    let mut client = GalacticExpressClient::new(program_space.clone());
+    let mut client = program.galactic_express();
 
-    let bid = 11_000_000_000_000;
-    program_space.system().mint_to(ADMIN, bid);
+    env.system().mint_to(ADMIN, BID);
 
-    // create_new_session
     client
         .create_new_session("Game".to_string())
-        .with_value(bid)
-        .send_recv(galactic_express_id)
+        .with_value(BID)
         .await
         .unwrap();
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+
+    let state = client.all().await.unwrap();
     assert!(!state.games.is_empty());
     assert!(!state.player_to_game_id.is_empty());
 
-    // register
     for player_id in PLAYERS {
         let player = Participant {
             id: player_id.into(),
@@ -135,49 +128,46 @@ async fn cancel_register_and_delete_player() {
             fuel_amount: 42,
             payload_amount: 20,
         };
-        program_space.system().mint_to(player_id, bid);
+
+        env.system().mint_to(player_id, BID);
 
         client
             .register(ADMIN.into(), player)
-            .with_value(bid)
-            .with_args(|args| args.with_actor_id(player_id.into()))
-            .send_recv(galactic_express_id)
+            .with_value(BID)
+            .with_actor_id(player_id.into())
             .await
             .unwrap();
     }
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+
+    let state = client.all().await.unwrap();
     assert_eq!(state.player_to_game_id.len(), 4);
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 3);
+    } else {
+        panic!("unexpected stage");
     }
 
-    // cancel_register
     client
         .cancel_register()
-        .with_args(|args| args.with_actor_id(PLAYERS[0].into()))
-        .send_recv(galactic_express_id)
+        .with_actor_id(PLAYERS[0].into())
         .await
         .unwrap();
 
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+    let state = client.all().await.unwrap();
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 2);
+    } else {
+        panic!("unexpected stage");
     }
     assert_eq!(state.player_to_game_id.len(), 3);
 
-    // delete_player
-    client
-        .delete_player(PLAYERS[1].into())
-        .send_recv(galactic_express_id)
-        .await
-        .unwrap();
+    client.delete_player(PLAYERS[1].into()).await.unwrap();
 
-    // check game state
-    let state = client.all().recv(galactic_express_id).await.unwrap();
+    let state = client.all().await.unwrap();
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 1);
+    } else {
+        panic!("unexpected stage");
     }
     assert_eq!(state.player_to_game_id.len(), 2);
 }
@@ -185,28 +175,28 @@ async fn cancel_register_and_delete_player() {
 #[tokio::test]
 async fn errors() {
     let system = System::new();
-    system.init_logger();
-    system.mint_to(ADMIN, 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[0], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[1], 1_000_000_000_000_000);
-    system.mint_to(PLAYERS[2], 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN.into());
-    program_space.system().init_logger();
-    let code_id = program_space
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+
+    system.mint_to(ADMIN, DEFAULT_USERS_INITIAL_BALANCE);
+    for p in PLAYERS {
+        system.mint_to(p, DEFAULT_USERS_INITIAL_BALANCE);
+    }
+
+    let env = GtestEnv::new(system, ADMIN.into());
+
+    let code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/galactic_express.opt.wasm");
 
-    let galactic_express_factory = Factory::new(program_space.clone());
-    let galactic_express_id = galactic_express_factory
+    let program = env
+        .deploy::<galactic_express_client::GalacticExpressProgram>(code_id, b"salt".to_vec())
         .new(None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
 
-    let mut client = GalacticExpressClient::new(program_space.clone());
+    let mut client = program.galactic_express();
 
-    let bid = 11_000_000_000_000;
-    program_space.system().mint_to(ADMIN, bid);
+    env.system().mint_to(ADMIN, BID);
 
     let player = Participant {
         id: ADMIN.into(),
@@ -215,17 +205,12 @@ async fn errors() {
         payload_amount: 20,
     };
 
-    let res = client
-        .register(ADMIN.into(), player)
-        .send_recv(galactic_express_id)
-        .await;
-
-    assert_error(&res, "NoSuchGame".as_bytes());
+    let res = client.register(ADMIN.into(), player).await;
+    assert_error(&res, b"NoSuchGame");
 
     client
         .create_new_session("Game".to_string())
-        .with_value(bid)
-        .send_recv(galactic_express_id)
+        .with_value(BID)
         .await
         .unwrap();
 
@@ -236,29 +221,18 @@ async fn errors() {
         payload_amount: 20,
     };
 
-    let res = client
-        .register(ADMIN.into(), player)
-        .send_recv(galactic_express_id)
-        .await;
-
-    assert_error(&res, "SeveralRegistrations".as_bytes());
+    let res = client.register(ADMIN.into(), player).await;
+    assert_error(&res, b"SeveralRegistrations");
 
     let res = client
         .start_game(42, 20)
-        .with_args(|args| args.with_actor_id(PLAYERS[0].into()))
-        .send_recv(galactic_express_id)
+        .with_actor_id(PLAYERS[0].into())
         .await;
+    assert_error(&res, b"NoSuchGame");
 
-    assert_error(&res, "NoSuchGame".as_bytes());
+    let res = client.start_game(42, 20).await;
+    assert_error(&res, b"NotEnoughParticipants");
 
-    let res = client
-        .start_game(42, 20)
-        .send_recv(galactic_express_id)
-        .await;
-
-    assert_error(&res, "NotEnoughParticipants".as_bytes());
-
-    // register
     for player_id in PLAYERS {
         let player = Participant {
             id: player_id.into(),
@@ -266,37 +240,25 @@ async fn errors() {
             fuel_amount: 42,
             payload_amount: 20,
         };
-        program_space.system().mint_to(player_id, bid);
+
+        env.system().mint_to(player_id, BID);
 
         client
             .register(ADMIN.into(), player)
-            .with_value(bid)
-            .with_args(|args| args.with_actor_id(player_id.into()))
-            .send_recv(galactic_express_id)
+            .with_value(BID)
+            .with_actor_id(player_id.into())
             .await
             .unwrap();
     }
 
-    let res = client
-        .start_game(101, 100)
-        .send_recv(galactic_express_id)
-        .await;
+    let res = client.start_game(101, 100).await;
+    assert_error(&res, b"FuelOrPayloadOverload");
 
-    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
+    let res = client.start_game(100, 101).await;
+    assert_error(&res, b"FuelOrPayloadOverload");
 
-    let res = client
-        .start_game(100, 101)
-        .send_recv(galactic_express_id)
-        .await;
-
-    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
-
-    let res = client
-        .start_game(101, 101)
-        .send_recv(galactic_express_id)
-        .await;
-
-    assert_error(&res, "FuelOrPayloadOverload".as_bytes());
+    let res = client.start_game(101, 101).await;
+    assert_error(&res, b"FuelOrPayloadOverload");
 
     let player = Participant {
         id: 100.into(),
@@ -304,24 +266,23 @@ async fn errors() {
         fuel_amount: 42,
         payload_amount: 20,
     };
-    program_space.system().mint_to(100, 1_000_000_000_000_000);
+    env.system().mint_to(100, DEFAULT_USERS_INITIAL_BALANCE);
 
     let res = client
         .register(ADMIN.into(), player)
-        .with_value(bid)
-        .with_args(|args| args.with_actor_id(100.into()))
-        .send_recv(galactic_express_id)
+        .with_value(BID)
+        .with_actor_id(100.into())
         .await;
 
-    assert_error(&res, "SessionFull".as_bytes());
+    assert_error(&res, b"SessionFull");
 }
 
-fn assert_error(res: &Result<(), Error>, error: &[u8]) {
+fn assert_error(res: &Result<(), GtestError>, error: &[u8]) {
     assert!(matches!(
         res,
-        Err(sails_rs::errors::Error::Rtl(RtlError::ReplyHasError(
+        Err(GtestError::ReplyHasError(
             ErrorReplyReason::Execution(SimpleExecutionError::UserspacePanic),
             message
-        ))) if message == error
+        )) if message == error
     ));
 }

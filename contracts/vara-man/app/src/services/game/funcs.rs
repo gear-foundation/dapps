@@ -273,7 +273,7 @@ pub async fn finish_single_game(
         msg::send_with_gas(msg_src, "", 0, prize).expect("Error in sending value");
     } else if let Status::StartedWithFungibleToken { ft_address } = storage.status {
         let value: U256 = prize.into();
-        let request = vft_io::Mint::encode_call(msg_src, value);
+        let request = vft_io::Mint::encode_params_with_prefix("Vft", msg_src, value);
 
         msg::send_bytes_with_gas_for_reply(
             ft_address,

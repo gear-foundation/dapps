@@ -154,13 +154,12 @@ impl GameService {
     }
 
     #[export]
-    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::throw_roll(storage, pay_fine, properties_for_sale)
         });
         self.emit_event(event.clone()).expect("Notification Error");
-        event
     }
 
     #[export]

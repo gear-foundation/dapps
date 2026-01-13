@@ -246,7 +246,7 @@ async fn transfer_tokens(
     value: U256,
     gas_limit: u64,
 ) {
-    let request = vft_io::TransferFrom::encode_call(*from, *to, value);
+    let request = vft_io::TransferFrom::encode_params_with_prefix("Vft", *from, *to, value);
     msg::send_bytes_with_gas_for_reply(*ft_address, request, gas_limit, 0, 0)
         .expect("Error in sending a message")
         .await

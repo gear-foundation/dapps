@@ -516,8 +516,8 @@ fn check_bang(position: u8, direction: i8) -> bool {
         return false;
     }
     match direction {
-        -1 if position % 5 == 0 => return false,
-        1 if (position + 1) % 5 == 0 => return false,
+        -1 if position.is_multiple_of(5) => return false,
+        1 if (position + 1).is_multiple_of(5) => return false,
         _ => (),
     }
     true

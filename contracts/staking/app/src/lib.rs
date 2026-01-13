@@ -89,7 +89,12 @@ impl StakingService {
         let storage = self.get_mut();
         let msg_src = msg::source();
 
-        let request = vft_io::TransferFrom::encode_call(msg_src, exec::program_id(), amount.into());
+        let request = vft_io::TransferFrom::encode_params_with_prefix(
+            "Vft",
+            msg_src,
+            exec::program_id(),
+            amount.into(),
+        );
 
         msg::send_bytes_with_gas_for_reply(
             storage.reward_token_address,
@@ -142,7 +147,7 @@ impl StakingService {
             panic!("Insufficent balance");
         }
 
-        let request = vft_io::Transfer::encode_call(msg_src, amount.into());
+        let request = vft_io::Transfer::encode_params_with_prefix("Vft", msg_src, amount.into());
 
         msg::send_bytes_with_gas_for_reply(
             storage.reward_token_address,
@@ -210,7 +215,7 @@ impl StakingService {
             panic!("Zero reward")
         }
 
-        let request = vft_io::Transfer::encode_call(msg_src, reward.into());
+        let request = vft_io::Transfer::encode_params_with_prefix("Vft", msg_src, reward.into());
 
         msg::send_bytes_with_gas_for_reply(
             storage.reward_token_address,

@@ -51,19 +51,14 @@ impl Gear {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode, Default)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum GameStatus {
+    #[default]
     Registration,
     Play,
     Finished,
-}
-
-impl Default for GameStatus {
-    fn default() -> Self {
-        Self::Registration
-    }
 }
 
 impl Storage {

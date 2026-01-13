@@ -1,759 +1,488 @@
-use extended_vft_client::vft::io as vft_io;
-use extended_vnft_client::vnft::io as vnft_io;
+use extended_vft_client::vft::Vft;
+use extended_vft_client::ExtendedVftClient;
+use extended_vft_client::ExtendedVftClientCtors;
+use extended_vnft_client::vnft::Vnft;
+use extended_vnft_client::ExtendedVnftClient;
+use extended_vnft_client::ExtendedVnftClientCtors;
 use extended_vnft_client::TokenMetadata;
-use nft_marketplace_client::traits::*;
-use sails_rs::gtest::Program;
-use sails_rs::prelude::*;
-use sails_rs::{
-    calls::*,
-    gtest::{calls::*, System},
-    ActorId, Encode,
-};
+
+use nft_marketplace_client::nft_marketplace::NftMarketplace;
+use nft_marketplace_client::NftMarketplace as ClientNftMarketplace;
+use nft_marketplace_client::NftMarketplaceCtors;
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::gtest::System;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 
-fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
-    let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
-    let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
-    let encoded_request = ["New".encode(), payload.encode()].concat();
-    let mid = vft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    let encoded_request = vft_io::GrantMinterRole::encode_call(minter);
-    let mid = vft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+const PRICE: u128 = 10_000_000_000_000;
+const BID_15: u128 = 15_000_000_000_000;
+const BID_20: u128 = 20_000_000_000_000;
+const AUCTION_DURATION_MS: u32 = 300_000;
+const BLOCK_TIME_MS: u32 = 3_000;
 
-    (vft.id(), vft)
-}
-
-fn init_non_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
-    let vnft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vnft.opt.wasm");
-    let payload = ("Name".to_string(), "Symbol".to_string());
-    let encoded_request = ["New".encode(), payload.encode()].concat();
-    let mid = vnft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    let encoded_request = vnft_io::GrantMinterRole::encode_call(minter);
-    let mid = vnft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-
-    (vnft.id(), vnft)
-}
-
-fn mint_ft(vft: &Program<'_>, sys: &System, to: ActorId, value: U256) {
-    let encoded_request = vft_io::Mint::encode_call(to, value);
-    let mid = vft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-}
-
-fn mint_nft(vnft: &Program<'_>, sys: &System, to: ActorId) {
-    let metadata = TokenMetadata {
+fn default_meta() -> TokenMetadata {
+    TokenMetadata {
         name: "NftName".to_string(),
         description: "NftDescription".to_string(),
         media: "NftMedia".to_string(),
         reference: "NftReference".to_string(),
-    };
-    let encoded_request = vnft_io::Mint::encode_call(to, metadata);
-    let mid = vnft.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    }
 }
 
-fn approve_ft(vft: &Program<'_>, sys: &System, from: u64, to: ActorId, value: U256) {
-    let encoded_request = vft_io::Approve::encode_call(to, value);
-    let mid = vft.send_bytes(from, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+async fn deploy_market_env() -> (
+    GtestEnv,
+    Actor<nft_marketplace_client::NftMarketplaceProgram, GtestEnv>,
+) {
+    let system = System::new();
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+    for id in USERS {
+        system.mint_to(*id, DEFAULT_USERS_INITIAL_BALANCE);
+    }
+
+    let env = GtestEnv::new(system, USERS[0].into());
+    let market_code_id = env.system().submit_code(nft_marketplace::WASM_BINARY);
+
+    let market = env
+        .deploy::<nft_marketplace_client::NftMarketplaceProgram>(
+            market_code_id,
+            b"salt-market".to_vec(),
+        )
+        .new(USERS[0].into())
+        .await
+        .unwrap();
+
+    (env, market)
 }
 
-fn approve_nft(vnft: &Program<'_>, sys: &System, from: u64, to: ActorId, token_id: U256) {
-    let encoded_request = vnft_io::Approve::encode_call(to, token_id);
-    let mid = vnft.send_bytes(from, encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
+async fn deploy_vnft(
+    env: &GtestEnv,
+) -> Actor<extended_vnft_client::ExtendedVnftClientProgram, GtestEnv> {
+    let vnft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vnft.opt.wasm");
+
+    env.deploy::<extended_vnft_client::ExtendedVnftClientProgram>(
+        vnft_code_id,
+        b"salt-vnft".to_vec(),
+    )
+    .new("Name".to_string(), "Symbol".to_string())
+    .await
+    .unwrap()
 }
 
-fn ft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 {
-    let encoded_request = vft_io::BalanceOf::encode_call(account);
-    let mid = program.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    vft_io::BalanceOf::decode_reply(res.log[0].payload()).unwrap()
-}
-fn nft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 {
-    let encoded_request = vnft_io::BalanceOf::encode_call(account);
-    let mid = program.send_bytes(USERS[0], encoded_request);
-    let res = sys.run_next_block();
-    assert!(res.succeed.contains(&mid));
-    vnft_io::BalanceOf::decode_reply(res.log[0].payload()).unwrap()
+async fn deploy_vft(
+    env: &GtestEnv,
+    salt: &[u8],
+) -> Actor<extended_vft_client::ExtendedVftClientProgram, GtestEnv> {
+    let vft_code_id = env
+        .system()
+        .submit_code_file("../target/wasm32-gear/release/extended_vft.opt.wasm");
+
+    env.deploy::<extended_vft_client::ExtendedVftClientProgram>(vft_code_id, salt.to_vec())
+        .new("Name".to_string(), "Symbol".to_string(), 10_u8)
+        .await
+        .unwrap()
 }
 
 #[tokio::test]
 async fn success_buy_with_native_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    market.add_nft_contract(vnft_id).await.unwrap();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    market
+        .add_market_data(vnft_id, None, 0.into(), Some(PRICE))
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
 
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(USERS[1].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
+
+    let old0 = env.system().balance_of(USERS[0]);
+    let old1 = env.system().balance_of(USERS[1]);
+
+    market
+        .buy_item(vnft_id, 0.into())
+        .with_value(PRICE)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
+    let new0 = env.system().balance_of(USERS[0]);
+    let new1 = env.system().balance_of(USERS[1]);
 
-    service_client
-        .add_market_data(nft_contract_id, None, 0.into(), Some(10_000_000_000_000))
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    assert_eq!(new0 - old0, PRICE);
+    assert!(old1 - new1 > PRICE);
 
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
-
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
-    let old_balance_user_0 = remoting.system().balance_of(USERS[0]);
-    let old_balance_user_1 = remoting.system().balance_of(USERS[1]);
-
-    service_client
-        .buy_item(nft_contract_id, 0.into())
-        .with_value(10_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
-        .await
-        .unwrap();
-
-    let new_balance_user_0 = remoting.system().balance_of(USERS[0]);
-    let new_balance_user_1 = remoting.system().balance_of(USERS[1]);
-    assert_eq!(new_balance_user_0 - old_balance_user_0, 10_000_000_000_000);
-    assert!(old_balance_user_1 - new_balance_user_1 > 10_000_000_000_000); // gas costs are included
-
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert_eq!(market.items[0].1.owner, USERS[1].into());
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
 async fn success_buy_with_fungible_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let vft_program = deploy_vft(&env, b"salt-vft").await;
+    let vft_id = vft_program.id();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
+    let mut vft = vft_program.vft();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    market.add_nft_contract(vnft_id).await.unwrap();
+    market.add_ft_contract(vft_id).await.unwrap();
+
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    vft.mint(USERS[1].into(), PRICE.into()).await.unwrap();
+    vft.approve(market_id, PRICE.into())
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
+    assert_eq!(vft.balance_of(USERS[1].into()).await.unwrap(), PRICE.into());
 
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    let (ft_contract_id, ft_program) = init_fungible_token(remoting.system(), USERS[0].into());
-
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    service_client
-        .add_ft_contract(ft_contract_id)
-        .send_recv(program_id)
+    market
+        .add_market_data(vnft_id, Some(vft_id), 0.into(), Some(PRICE))
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
 
-    mint_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1].into(),
-        10_000_000_000_000_u128.into(),
-    );
-    approve_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1],
-        program_id,
-        10_000_000_000_000_u128.into(),
-    );
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[1].into()),
-        10_000_000_000_000_u128.into()
-    );
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(USERS[1].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
 
-    service_client
-        .add_market_data(
-            nft_contract_id,
-            Some(ft_contract_id),
-            0.into(),
-            Some(10_000_000_000_000),
-        )
-        .send_recv(program_id)
+    market
+        .buy_item(vnft_id, 0.into())
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
+    assert_eq!(vft.balance_of(USERS[1].into()).await.unwrap(), 0.into());
+    assert_eq!(vft.balance_of(USERS[0].into()).await.unwrap(), PRICE.into());
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
-
-    service_client
-        .buy_item(nft_contract_id, 0.into())
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
-        .await
-        .unwrap();
-
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[1].into()),
-        0_u128.into()
-    );
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[0].into()),
-        10_000_000_000_000_u128.into()
-    );
-
-    // let market = service_client.get_market().recv(program_id).await.unwrap();
-    // assert_eq!(market.items[0].1.owner, USERS[1].into());
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
 async fn success_offer_native_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    market.add_nft_contract(vnft_id).await.unwrap();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    market
+        .add_market_data(vnft_id, None, 0.into(), None)
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
 
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
+
+    let old1 = env.system().balance_of(USERS[1]);
+
+    market
+        .add_offer(vnft_id, None, 0.into(), PRICE)
+        .with_value(PRICE)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items[0].1.offers.is_empty());
 
-    service_client
-        .add_market_data(nft_contract_id, None, 0.into(), None)
-        .send_recv(program_id)
+    let old0 = env.system().balance_of(USERS[0]);
+
+    market
+        .accept_offer(vnft_id, None, 0.into(), PRICE)
         .await
         .unwrap();
 
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.offers.is_empty());
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
+    let new0 = env.system().balance_of(USERS[0]);
+    let new1 = env.system().balance_of(USERS[1]);
 
-    let old_balance_user_1 = remoting.system().balance_of(USERS[1]);
+    assert!(new0 - old0 > 9_000_000_000_000);
+    assert!(old1 - new1 > PRICE);
 
-    service_client
-        .add_offer(nft_contract_id, None, 0.into(), 10_000_000_000_000)
-        .with_value(10_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items[0].1.offers.is_empty());
-    let old_balance_user_0 = remoting.system().balance_of(USERS[0]);
-
-    service_client
-        .accept_offer(nft_contract_id, None, 0.into(), 10_000_000_000_000)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.offers.is_empty());
-
-    let new_balance_user_0 = remoting.system().balance_of(USERS[0]);
-    let new_balance_user_1 = remoting.system().balance_of(USERS[1]);
-
-    assert!(new_balance_user_0 - old_balance_user_0 > 9_000_000_000_000);
-    assert!(old_balance_user_1 - new_balance_user_1 > 10_000_000_000_000);
-
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert_eq!(market.items[0].1.owner, USERS[1].into());
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
 async fn success_offer_with_fungible_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let vft_program = deploy_vft(&env, b"salt-vft-offer").await;
+    let vft_id = vft_program.id();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
+    let mut vft = vft_program.vft();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    market.add_nft_contract(vnft_id).await.unwrap();
+    market.add_ft_contract(vft_id).await.unwrap();
+
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    vft.mint(USERS[1].into(), PRICE.into()).await.unwrap();
+    vft.approve(market_id, PRICE.into())
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
+    assert_eq!(vft.balance_of(USERS[1].into()).await.unwrap(), PRICE.into());
 
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    let (ft_contract_id, ft_program) = init_fungible_token(remoting.system(), USERS[0].into());
-
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    service_client
-        .add_ft_contract(ft_contract_id)
-        .send_recv(program_id)
+    market
+        .add_market_data(vnft_id, Some(vft_id), 0.into(), None)
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
 
-    mint_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1].into(),
-        10_000_000_000_000_u128.into(),
-    );
-    approve_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1],
-        program_id,
-        10_000_000_000_000_u128.into(),
-    );
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[1].into()),
-        10_000_000_000_000_u128.into()
-    );
-
-    service_client
-        .add_market_data(nft_contract_id, Some(ft_contract_id), 0.into(), None)
-        .send_recv(program_id)
+    market
+        .add_offer(vnft_id, Some(vft_id), 0.into(), PRICE)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
 
-    service_client
-        .add_offer(
-            nft_contract_id,
-            Some(ft_contract_id),
-            0.into(),
-            10_000_000_000_000,
-        )
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items[0].1.offers.is_empty());
+
+    assert_eq!(vft.balance_of(USERS[1].into()).await.unwrap(), 0.into());
+    assert_eq!(vft.balance_of(market_id).await.unwrap(), PRICE.into());
+
+    market
+        .accept_offer(vnft_id, Some(vft_id), 0.into(), PRICE)
         .await
         .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items[0].1.offers.is_empty());
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[1].into()),
-        0_u128.into()
-    );
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), program_id),
-        10_000_000_000_000_u128.into()
-    );
 
-    service_client
-        .accept_offer(
-            nft_contract_id,
-            Some(ft_contract_id),
-            0.into(),
-            10_000_000_000_000,
-        )
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.offers.is_empty());
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.offers.is_empty());
 
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[0].into()),
-        10_000_000_000_000_u128.into()
-    );
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert_eq!(market.items[0].1.owner, USERS[1].into());
+    assert_eq!(vft.balance_of(USERS[0].into()).await.unwrap(), PRICE.into());
+
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
 async fn success_auction_with_native_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    market.add_nft_contract(vnft_id).await.unwrap();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    market
+        .add_market_data(vnft_id, None, 0.into(), None)
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
 
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
+
+    market
+        .create_auction(vnft_id, None, 0.into(), PRICE, AUCTION_DURATION_MS.into())
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.auction.is_some());
 
-    service_client
-        .add_market_data(nft_contract_id, None, 0.into(), None)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
-
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
-
-    service_client
-        .create_auction(nft_contract_id, None, 0.into(), 10_000_000_000_000, 300_000)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.auction.is_some());
-    service_client
-        .add_bid(nft_contract_id, 0.into(), 15_000_000_000_000)
-        .with_value(15_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[2].into()))
-        .send_recv(program_id)
+    market
+        .add_bid(vnft_id, 0.into(), BID_15)
+        .with_value(BID_15)
+        .with_actor_id(USERS[2].into())
         .await
         .unwrap();
 
-    let old_balance_user = remoting.system().balance_of(USERS[2]);
-    service_client
-        .add_bid(nft_contract_id, 0.into(), 20_000_000_000_000)
-        .with_value(20_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
+    let old_2 = env.system().balance_of(USERS[2]);
+
+    market
+        .add_bid(vnft_id, 0.into(), BID_20)
+        .with_value(BID_20)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
-    let new_balance_user = remoting.system().balance_of(USERS[2]);
-    assert_eq!(new_balance_user - old_balance_user, 15_000_000_000_000);
 
-    remoting
-        .system()
-        .run_to_block(remoting.system().block_height() + 300_000 / 3_000);
-    let old_balance_user = remoting.system().balance_of(USERS[0]);
+    let new_2 = env.system().balance_of(USERS[2]);
+    assert_eq!(new_2 - old_2, BID_15);
 
-    service_client
-        .settle_auction(nft_contract_id, 0.into())
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.auction.is_none());
-    let new_balance_user = remoting.system().balance_of(USERS[0]);
-    assert!(new_balance_user - old_balance_user > 19_000_000_000_000);
+    let blocks = AUCTION_DURATION_MS / BLOCK_TIME_MS;
+    env.system()
+        .run_to_block(env.system().block_height() + blocks);
 
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert_eq!(market.items[0].1.owner, USERS[1].into());
+    let old_0 = env.system().balance_of(USERS[0]);
+
+    market.settle_auction(vnft_id, 0.into()).await.unwrap();
+
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.auction.is_none());
+
+    let new_0 = env.system().balance_of(USERS[0]);
+    assert!(new_0 - old_0 > 19_000_000_000_000);
+
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
 async fn success_auction_with_fungible_tokens() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+    let (env, market_program) = deploy_market_env().await;
+    let market_id = market_program.id();
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let vnft_program = deploy_vnft(&env).await;
+    let vnft_id = vnft_program.id();
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
+    let vft_program = deploy_vft(&env, b"salt-vft-auction").await;
+    let vft_id = vft_program.id();
 
-    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
+    let mut market = market_program.nft_marketplace();
+    let mut vnft = vnft_program.vnft();
+    let mut vft = vft_program.vft();
 
-    let program_id = program_factory
-        .new(USERS[0].into())
-        .send_recv(program_code_id, b"salt")
+    market.add_nft_contract(vnft_id).await.unwrap();
+    market.add_ft_contract(vft_id).await.unwrap();
+
+    vnft.mint(USERS[0].into(), default_meta()).await.unwrap();
+    vnft.approve(market_id, 0.into()).await.unwrap();
+
+    vft.mint(USERS[1].into(), BID_20.into()).await.unwrap();
+    vft.approve(market_id, BID_20.into())
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
-
-    let (nft_contract_id, nft_program) =
-        init_non_fungible_token(remoting.system(), USERS[0].into());
-    let (ft_contract_id, ft_program) = init_fungible_token(remoting.system(), USERS[0].into());
-
-    service_client
-        .add_nft_contract(nft_contract_id)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    service_client
-        .add_ft_contract(ft_contract_id)
-        .send_recv(program_id)
+    vft.mint(USERS[2].into(), BID_15.into()).await.unwrap();
+    vft.approve(market_id, BID_15.into())
+        .with_actor_id(USERS[2].into())
         .await
         .unwrap();
 
-    mint_nft(&nft_program, remoting.system(), USERS[0].into());
-    approve_nft(
-        &nft_program,
-        remoting.system(),
-        USERS[0],
-        program_id,
-        0.into(),
-    );
-
-    mint_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1].into(),
-        20_000_000_000_000_u128.into(),
-    );
-    approve_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[1],
-        program_id,
-        20_000_000_000_000_u128.into(),
-    );
-    mint_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[2].into(),
-        15_000_000_000_000_u128.into(),
-    );
-    approve_ft(
-        &ft_program,
-        remoting.system(),
-        USERS[2],
-        program_id,
-        15_000_000_000_000_u128.into(),
+    assert_eq!(
+        vft.balance_of(USERS[1].into()).await.unwrap(),
+        BID_20.into()
     );
     assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[1].into()),
-        20_000_000_000_000_u128.into()
-    );
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[2].into()),
-        15_000_000_000_000_u128.into()
+        vft.balance_of(USERS[2].into()).await.unwrap(),
+        BID_15.into()
     );
 
-    service_client
-        .add_market_data(nft_contract_id, Some(ft_contract_id), 0.into(), None)
-        .send_recv(program_id)
+    market
+        .add_market_data(vnft_id, Some(vft_id), 0.into(), None)
         .await
         .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(!market.items.is_empty());
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        1.into()
-    );
+    let m = market.get_market().await.unwrap();
+    assert!(!m.items.is_empty());
 
-    service_client
+    assert_eq!(vnft.balance_of(USERS[0].into()).await.unwrap(), 0.into());
+    assert_eq!(vnft.balance_of(market_id).await.unwrap(), 1.into());
+
+    market
         .create_auction(
-            nft_contract_id,
-            Some(ft_contract_id),
+            vnft_id,
+            Some(vft_id),
             0.into(),
-            10_000_000_000_000,
-            300_000,
+            PRICE,
+            AUCTION_DURATION_MS.into(),
         )
-        .send_recv(program_id)
         .await
         .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.auction.is_some());
 
-    service_client
-        .add_bid(nft_contract_id, 0.into(), 15_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[2].into()))
-        .send_recv(program_id)
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.auction.is_some());
+
+    market
+        .add_bid(vnft_id, 0.into(), BID_15)
+        .with_actor_id(USERS[2].into())
         .await
         .unwrap();
-    assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[2].into()),
-        0_u128.into()
-    );
-    service_client
-        .add_bid(nft_contract_id, 0.into(), 20_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(program_id)
+
+    assert_eq!(vft.balance_of(USERS[2].into()).await.unwrap(), 0.into());
+
+    market
+        .add_bid(vnft_id, 0.into(), BID_20)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
+
     assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[2].into()),
-        15_000_000_000_000_u128.into()
+        vft.balance_of(USERS[2].into()).await.unwrap(),
+        BID_15.into()
     );
 
-    remoting
-        .system()
-        .run_to_block(remoting.system().block_height() + 300_000 / 3_000);
-    service_client
-        .settle_auction(nft_contract_id, 0.into())
-        .send_recv(program_id)
-        .await
-        .unwrap();
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert!(market.items[0].1.auction.is_none());
+    let blocks = AUCTION_DURATION_MS / BLOCK_TIME_MS;
+    env.system()
+        .run_to_block(env.system().block_height() + blocks);
 
-    let market = service_client.get_market().recv(program_id).await.unwrap();
-    assert_eq!(market.items[0].1.owner, USERS[1].into());
+    market.settle_auction(vnft_id, 0.into()).await.unwrap();
+
+    let m = market.get_market().await.unwrap();
+    assert!(m.items[0].1.auction.is_none());
+
+    let m = market.get_market().await.unwrap();
+    assert_eq!(m.items[0].1.owner, USERS[1].into());
+
     assert_eq!(
-        ft_balance_of(&ft_program, remoting.system(), USERS[0].into()),
-        20_000_000_000_000_u128.into()
+        vft.balance_of(USERS[0].into()).await.unwrap(),
+        BID_20.into()
     );
 }

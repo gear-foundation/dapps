@@ -1,9 +1,11 @@
-use oracle_client::traits::*;
-use sails_rs::{
-    calls::*,
-    gtest::{calls::*, Program, System},
-    ActorId, Encode,
-};
+use oracle_client::oracle::Oracle;
+use oracle_client::Oracle as ClientOracle;
+use oracle_client::OracleCtors;
+
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::gtest::Program;
+use sails_rs::{client::*, gtest::*};
+use sails_rs::{ActorId, Encode};
 
 const ACTOR_ID: u64 = 42;
 
@@ -15,14 +17,17 @@ pub struct Random {
     pub prev_signature: String,
 }
 
-fn init_randomness(sys: &System) -> (ActorId, Program<'_>) {
+fn init_randomness(sys: &System) -> ActorId {
     let randomness = Program::from_file(sys, "../target/wasm32-gear/release/randomness.opt.wasm");
+
+    // ctor: New(ACTOR_ID)
     let payload: ActorId = ACTOR_ID.into();
     let encoded_request = ["New".encode(), payload.encode()].concat();
     let mid = randomness.send_bytes(ACTOR_ID, encoded_request);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
 
+    // call: Randomness::SetRandomValue((1, Random{...}))
     let payload: (u128, Random) = (
         1,
         Random {
@@ -31,47 +36,41 @@ fn init_randomness(sys: &System) -> (ActorId, Program<'_>) {
             prev_signature: "PrevSignature".to_string(),
         },
     );
+
     let encoded_request = [
         "Randomness".encode(),
         "SetRandomValue".encode(),
         payload.encode(),
     ]
     .concat();
+
     let mid = randomness.send_bytes(ACTOR_ID, encoded_request);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
 
-    (randomness.id(), randomness)
+    randomness.id()
 }
 
 #[tokio::test]
 async fn test_request_value() {
     let system = System::new();
-    system.init_logger();
-    system.mint_to(ACTOR_ID, 1_000_000_000_000_000);
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+    system.mint_to(ACTOR_ID, DEFAULT_USERS_INITIAL_BALANCE);
 
-    let remoting = GTestRemoting::new(system, ACTOR_ID.into());
-    remoting.system().init_logger();
+    let oracle_code_id = system.submit_code(oracle::WASM_BINARY);
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(oracle::WASM_BINARY);
+    let env = GtestEnv::new(system, ACTOR_ID.into());
 
-    let program_factory = oracle_client::OracleFactory::new(remoting.clone());
-    let (rand_id, _) = init_randomness(remoting.system());
+    let rand_id = init_randomness(env.system());
 
-    let program_id = program_factory
-        .new(ACTOR_ID.into(), rand_id, None) // Call program's constructor (see app/src/lib.rs:29)
-        .send_recv(program_code_id, b"salt")
+    let oracle_program = env
+        .deploy::<oracle_client::OracleProgram>(oracle_code_id, b"salt-oracle".to_vec())
+        .new(ACTOR_ID.into(), rand_id, None)
         .await
         .unwrap();
 
-    let mut service_client = oracle_client::Oracle::new(remoting.clone());
+    let mut oracle = oracle_program.oracle();
 
-    let result = service_client
-        .request_value()
-        .send_recv(program_id)
-        .await
-        .unwrap();
-
+    let result = oracle.request_value().await.unwrap();
     assert_eq!(result, 100);
 }

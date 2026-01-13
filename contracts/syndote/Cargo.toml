@@ -1,0 +1,23 @@
+[package]
+name = "syndote"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+syndote-app = { path = "app" }
+
+[build-dependencies]
+syndote-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+syndote = { path = ".", features = ["wasm-binary"] }
+syndote-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+syndote-player = { path = "player", features = ["wasm-binary"] }
+syndote-player-client = { path = "player/client" }
+tokio = { version = "1.41", features = ["rt", "macros"] }
+
+[features]
+wasm-binary = []

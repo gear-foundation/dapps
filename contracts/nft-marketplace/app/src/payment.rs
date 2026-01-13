@@ -8,7 +8,8 @@ pub async fn transfer_tokens(
     recipient: &ActorId,
     value: U256,
 ) {
-    let request = vft_io::TransferFrom::encode_call(*sender, *recipient, value);
+    let request =
+        vft_io::TransferFrom::encode_params_with_prefix("Vft", *sender, *recipient, value);
     msg::send_bytes_with_gas_for_reply(*ft_contract_id, request, 5_000_000_000, 0, 5_000_000_000)
         .expect("Error in sending message to ft contract: `TransferFrom`")
         .await

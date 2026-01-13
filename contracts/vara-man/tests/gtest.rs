@@ -1,41 +1,42 @@
 use extended_vft_client::vft::io as vft_io;
 use gtest::{Log, Program};
-use sails_rs::{
-    calls::*,
-    gtest::{calls::*, System},
-    ActorId, Encode, U256,
-};
-use vara_man_client::{
-    traits::{VaraMan, VaraManFactory},
-    Config, Level, Status, VaraMan as VaraManClient, VaraManFactory as Factory,
-};
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::{gtest::System, ActorId, Encode, U256};
+
+use vara_man_client::vara_man::VaraMan;
+use vara_man_client::VaraMan as ClientVaraMan;
+use vara_man_client::VaraManCtors;
+use vara_man_client::{Config, Level, Status};
 
 pub const ADMIN_ID: u64 = 10;
 pub const USER_ID: u64 = 11;
 
 fn init_fungible_token(sys: &System, vara_man_id: ActorId) -> (ActorId, Program<'_>) {
     let vft = Program::from_file(sys, "../target/wasm32-gear/release/extended_vft.opt.wasm");
+
+    // ctor
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
-    let encoded_request = ["New".encode(), payload.encode()].concat();
-    let mid = vft.send_bytes(ADMIN_ID, encoded_request);
+    let encoded = ["New".encode(), payload.encode()].concat();
+    let mid = vft.send_bytes(ADMIN_ID, encoded);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
 
-    let encoded_request = vft_io::GrantMinterRole::encode_call(vara_man_id);
-    let mid = vft.send_bytes(ADMIN_ID, encoded_request);
+    // grant minter to VaraMan
+    let encoded = vft_io::GrantMinterRole::encode_params_with_prefix("Vft", vara_man_id);
+    let mid = vft.send_bytes(ADMIN_ID, encoded);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
 
     (vft.id(), vft)
 }
 
-fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) {
-    let encoded_request = vft_io::BalanceOf::encode_call(account);
-    let mid = program.send_bytes(ADMIN_ID, encoded_request);
+fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) -> U256 {
+    let encoded = vft_io::BalanceOf::encode_params_with_prefix("Vft", account);
+    let mid = program.send_bytes(ADMIN_ID, encoded);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
-    let state = &res.decoded_log::<(String, String, U256)>();
-    println!("STATE {state:?}")
+    vft_io::BalanceOf::decode_reply_with_prefix("Vft", res.log[0].payload()).unwrap()
 }
 
 // TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
@@ -44,14 +45,15 @@ fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) {
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = program_space
+    system.mint_to(ADMIN_ID, DEFAULT_USERS_INITIAL_BALANCE);
+
+    let env = GtestEnv::new(system, ADMIN_ID.into());
+
+    let vara_man_code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
-    let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
         one_point_in_value: 10_000_000_000_000,
         max_number_gold_coins: 2,
@@ -68,43 +70,41 @@ async fn test_play_game() {
         gas_to_delete_session: 5_000_000_000,
         s_per_block: 3,
     };
-    let vara_man_id = vara_man_factory
+
+    let vara_man_prog = env
+        .deploy::<vara_man_client::VaraManProgram>(vara_man_code_id, b"salt".to_vec())
         .new(config, None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
 
-    program_space
-        .system()
+    let vara_man_id = vara_man_prog.id();
+
+    // fund contract so it can pay out
+    env.system()
         .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
 
-    let mut client = VaraManClient::new(program_space.clone());
-    // change status
-    client
-        .change_status(Status::StartedWithNativeToken)
-        .send_recv(vara_man_id)
+    let mut vm = vara_man_prog.vara_man();
+
+    vm.change_status(Status::StartedWithNativeToken)
         .await
         .unwrap();
 
-    // check game status
-    let status = client.status().recv(vara_man_id).await.unwrap();
+    let status = vm.status().await.unwrap();
     assert_eq!(status, Status::StartedWithNativeToken);
 
-    let old_balance = program_space.system().balance_of(program_space.actor_id());
-    client
-        .finish_single_game(1, 5, Level::Easy, None)
-        .send_recv(vara_man_id)
+    let old_balance = env.system().balance_of(ADMIN_ID);
+
+    vm.finish_single_game(1, 5, Level::Easy, None)
         .await
         .unwrap();
 
-    let mailbox = program_space.system().get_mailbox(program_space.actor_id());
-
-    let log = Log::builder().dest(program_space.actor_id());
+    // payout should appear in ADMIN mailbox
+    let mailbox = env.system().get_mailbox(ADMIN_ID);
+    let log = Log::builder().dest(ADMIN_ID);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    let new_balance = program_space.system().balance_of(program_space.actor_id());
-
+    let new_balance = env.system().balance_of(ADMIN_ID);
     assert_eq!(new_balance - old_balance, 100_000_000_000_000);
 }
 
@@ -112,14 +112,15 @@ async fn test_play_game() {
 async fn test_play_game_with_fungible_token() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = program_space
+    system.mint_to(ADMIN_ID, DEFAULT_USERS_INITIAL_BALANCE);
+
+    let env = GtestEnv::new(system, ADMIN_ID.into());
+
+    let vara_man_code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
-    let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
         one_point_in_value: 10_000_000_000_000,
         max_number_gold_coins: 2,
@@ -136,35 +137,38 @@ async fn test_play_game_with_fungible_token() {
         gas_to_delete_session: 5_000_000_000,
         s_per_block: 3,
     };
-    let vara_man_id = vara_man_factory
+
+    let vara_man_prog = env
+        .deploy::<vara_man_client::VaraManProgram>(vara_man_code_id, b"salt".to_vec())
         .new(config, None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
 
-    program_space
-        .system()
+    let vara_man_id = vara_man_prog.id();
+
+    // fund contract if it needs it for internal ops
+    env.system()
         .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
-    let mut client = VaraManClient::new(program_space.clone());
 
-    let (ft_address, ft_program) = init_fungible_token(program_space.system(), vara_man_id);
-    // change status
-    client
-        .change_status(Status::StartedWithFungibleToken { ft_address })
-        .send_recv(vara_man_id)
+    // init FT and grant minter role to VaraMan
+    let (ft_address, ft_program) = init_fungible_token(env.system(), vara_man_id);
+
+    let mut vm = vara_man_prog.vara_man();
+
+    vm.change_status(Status::StartedWithFungibleToken { ft_address })
         .await
         .unwrap();
 
-    // check game status
-    let status = client.status().recv(vara_man_id).await.unwrap();
+    let status = vm.status().await.unwrap();
     assert_eq!(status, Status::StartedWithFungibleToken { ft_address });
-    client
-        .finish_single_game(1, 5, Level::Easy, None)
-        .send_recv(vara_man_id)
+
+    vm.finish_single_game(1, 5, Level::Easy, None)
         .await
         .unwrap();
 
-    ft_balance_of(ft_program, program_space.system(), program_space.actor_id());
+    // player should receive minted FT (assuming payouts go to msg::source == ADMIN in this test)
+    let bal = ft_balance_of(ft_program, env.system(), ADMIN_ID.into());
+    assert!(bal > 0.into());
 }
 
 // TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
@@ -173,15 +177,16 @@ async fn test_play_game_with_fungible_token() {
 async fn test_play_tournament() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
-    system.mint_to(USER_ID, 100_000_000_000_000);
-    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = program_space
+    system.mint_to(ADMIN_ID, DEFAULT_USERS_INITIAL_BALANCE);
+    system.mint_to(USER_ID, 100_000_000_000_000);
+
+    let env = GtestEnv::new(system, ADMIN_ID.into());
+
+    let vara_man_code_id = env
         .system()
         .submit_code_file("../target/wasm32-gear/release/vara_man.opt.wasm");
 
-    let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
         one_point_in_value: 10_000_000_000_000,
         max_number_gold_coins: 2,
@@ -198,108 +203,82 @@ async fn test_play_tournament() {
         gas_to_delete_session: 5_000_000_000,
         s_per_block: 3,
     };
-    let vara_man_id = vara_man_factory
+
+    let vara_man_prog = env
+        .deploy::<vara_man_client::VaraManProgram>(vara_man_code_id, b"salt".to_vec())
         .new(config, None)
-        .send_recv(code_id, "123")
         .await
         .unwrap();
+    let vara_man_id = vara_man_prog.id();
 
-    program_space
-        .system()
+    env.system()
         .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
 
-    let mut client = VaraManClient::new(program_space.clone());
-    // change status
-    client
-        .change_status(Status::StartedWithNativeToken)
-        .send_recv(vara_man_id)
+    let mut vm = vara_man_prog.vara_man();
+
+    vm.change_status(Status::StartedWithNativeToken)
         .await
         .unwrap();
 
-    // check game status
-    let status = client.status().recv(vara_man_id).await.unwrap();
+    let status = vm.status().await.unwrap();
     assert_eq!(status, Status::StartedWithNativeToken);
 
-    client
-        .create_new_tournament(
-            "TOURNAMENT".to_string(),
-            "Admin tournament".to_string(),
-            Level::Easy,
-            180_000,
-            None,
-        )
-        .with_value(10_000_000_000_000)
-        .send_recv(vara_man_id)
-        .await
-        .unwrap();
+    vm.create_new_tournament(
+        "TOURNAMENT".to_string(),
+        "Admin tournament".to_string(),
+        Level::Easy,
+        180_000,
+        None,
+    )
+    .with_value(10_000_000_000_000)
+    .await
+    .unwrap();
 
-    let state = client.all().recv(vara_man_id).await.unwrap();
+    let state = vm.all().await.unwrap();
     assert_eq!(state.tournaments.len(), 1);
     assert_eq!(state.players_to_game_id.len(), 1);
 
-    client
-        .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
+    vm.register_for_tournament(ADMIN_ID.into(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USER_ID.into()))
-        .send_recv(vara_man_id)
+        .with_actor_id(USER_ID.into())
         .await
         .unwrap();
 
-    let state = client.all().recv(vara_man_id).await.unwrap();
+    let state = vm.all().await.unwrap();
     assert_eq!(state.tournaments[0].1.participants.len(), 2);
 
-    let old_balance = program_space.system().balance_of(USER_ID);
-    client
-        .cancel_register(None)
-        .with_args(|args| args.with_actor_id(USER_ID.into()))
-        .send_recv(vara_man_id)
+    let old_balance = env.system().balance_of(USER_ID);
+
+    vm.cancel_register(None)
+        .with_actor_id(USER_ID.into())
         .await
         .unwrap();
 
-    let mailbox = program_space
-        .system()
-        .get_mailbox::<ActorId>(USER_ID.into());
-
+    let mailbox = env.system().get_mailbox::<ActorId>(USER_ID.into());
     let log = Log::builder().dest(USER_ID);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    let new_balance = program_space.system().balance_of(USER_ID);
+    let new_balance = env.system().balance_of(USER_ID);
     assert_eq!(new_balance - old_balance, 10_000_000_000_000);
 
-    client
-        .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
+    vm.register_for_tournament(ADMIN_ID.into(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(|args| args.with_actor_id(USER_ID.into()))
-        .send_recv(vara_man_id)
+        .with_actor_id(USER_ID.into())
         .await
         .unwrap();
 
-    client
-        .start_tournament(None)
-        .send_recv(vara_man_id)
-        .await
-        .unwrap();
-    client
-        .record_tournament_result(1_000, 1, 5, None)
-        .send_recv(vara_man_id)
-        .await
-        .unwrap();
-    client
-        .record_tournament_result(1_000, 1, 5, None)
-        .with_args(|args| args.with_actor_id(USER_ID.into()))
-        .send_recv(vara_man_id)
+    vm.start_tournament(None).await.unwrap();
+
+    vm.record_tournament_result(1_000, 1, 5, None)
         .await
         .unwrap();
 
-    let state = client.all().recv(vara_man_id).await.unwrap();
+    vm.record_tournament_result(1_000, 1, 5, None)
+        .with_actor_id(USER_ID.into())
+        .await
+        .unwrap();
+
+    let state = vm.all().await.unwrap();
     assert_eq!(state.tournaments[0].1.participants[1].1.points, 10);
-
-    // TODO: uncomment after fix gtest
-    // system.spend_blocks(61);
-    // let state = client.all().recv(vara_man_id).await.unwrap();
-    // assert_eq!(
-    //     state.tournaments[0].1.stage,
-    //     Stage::Finished(vec![ADMIN_ID.into(), USER_ID.into()])
-    // );
 }

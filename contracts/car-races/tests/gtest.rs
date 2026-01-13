@@ -1,10 +1,19 @@
-use car_races_app::services::{
-    game::{Game, GameState, StrategyAction},
-    session::Config as SessionConfig,
-    Config, InitConfig,
-};
-use gtest::{Program, System};
-use sails_rs::{prelude::*, ActorId};
+// use car_races_app::services::{
+//     game::{GameState, StrategyAction},
+//     session::SessionConfig,
+//     Config, InitConfig,
+// };
+
+use sails_rs::client::*;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
+use sails_rs::Encode;
+use sails_rs::{gtest::Program, gtest::System, ActorId};
+
+use car_races_client::car_races_service::CarRacesService;
+use car_races_client::CarRaces;
+use car_races_client::CarRacesCtors;
+use car_races_client::{Config, GameState, InitConfig, SessionConfig, StrategyAction};
+
 const PATH_TO_STRATEGIES: [&str; 2] = [
     "../target/wasm32-gear/release/car_strategy_1.opt.wasm",
     "../target/wasm32-gear/release/car_strategy_2.opt.wasm",
@@ -12,28 +21,19 @@ const PATH_TO_STRATEGIES: [&str; 2] = [
 
 const PATH_TO_CAR_RACES: &str = "../target/wasm32-gear/release/car_races.opt.wasm";
 
-#[test]
-fn test_car_races_without_session() {
+const ADMIN: u64 = 10;
+
+#[tokio::test]
+async fn test_car_races_without_session() {
     let system = System::new();
-    system.init_logger();
-    system.mint_to(10, 1_000_000_000_000_000);
+    system.init_logger_with_default_filter("gwasm=debug,gtest=info,sails_rs=debug");
+    system.mint_to(ADMIN, DEFAULT_USERS_INITIAL_BALANCE);
 
-    // upload strategy 1
-    let car_strategy_1 = Program::from_file(&system, PATH_TO_STRATEGIES[0]);
-    let payload = ["New".encode()].concat();
-    let mid = car_strategy_1.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    let env = GtestEnv::new(system, ADMIN.into());
 
-    // upload strategy 2
-    let car_strategy_2 = Program::from_file(&system, PATH_TO_STRATEGIES[1]);
-    let payload = ["New".encode()].concat();
-    let mid = car_strategy_2.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    let strategy_1 = deploy_strategy(env.system(), ADMIN, PATH_TO_STRATEGIES[0]);
+    let strategy_2 = deploy_strategy(env.system(), ADMIN, PATH_TO_STRATEGIES[1]);
 
-    // upload car races
-    let car_races = Program::from_file(&system, PATH_TO_CAR_RACES);
     let init_config = InitConfig {
         config: Config {
             gas_to_remove_game: 20_000_000_000,
@@ -54,108 +54,53 @@ fn test_car_races_without_session() {
         minimum_session_duration_ms: 180_000,
         ms_per_block: 3_000,
     };
-
     let dns_id_and_name: Option<(ActorId, String)> = None;
-    let payload = [
-        "New".encode(),
-        (init_config, session_config, dns_id_and_name).encode(),
-    ]
-    .concat();
 
-    let mid = car_races.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    let races_code_id = env.system().submit_code_file(PATH_TO_CAR_RACES);
 
-    // allow messages
-    let payload = [
-        "CarRacesService".encode(),
-        "AllowMessages".encode(),
-        true.encode(),
-    ]
-    .concat();
-    let mid = car_races.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    let races_program = env
+        .deploy::<car_races_client::CarRacesProgram>(races_code_id, b"salt-car-races".to_vec())
+        .new(init_config, session_config, dns_id_and_name)
+        .await
+        .unwrap();
 
-    // add strategy ids
-    let payload = [
-        "CarRacesService".encode(),
-        "AddStrategyIds".encode(),
-        vec![car_strategy_1.id(), car_strategy_2.id()].encode(),
-    ]
-    .concat();
-    let mid = car_races.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    // If this method name does not compile in your generated client,
+    // the accessor is the snake_case of the service name.
+    // Most commonly: `car_races_service()`.
+    let mut races = races_program.car_races_service();
 
-    // start game
+    races.allow_messages(true).await.unwrap();
+    races
+        .add_strategy_ids(vec![strategy_1, strategy_2])
+        .await
+        .unwrap();
+
     let session_for_account: Option<ActorId> = None;
-    let payload = [
-        "CarRacesService".encode(),
-        "StartGame".encode(),
-        session_for_account.encode(),
-    ]
-    .concat();
-    let mid = car_races.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    races.start_game(session_for_account).await.unwrap();
 
-    let mut game = if let Some(game) = get_game(&system, &car_races, 10.into()) {
-        game
-    } else {
-        std::panic!("Game does not exist")
-    };
-
-    while game.state != GameState::Finished {
-        // make move (always accelerate)
-        let session_for_account: Option<ActorId> = None;
-        let payload = [
-            "CarRacesService".encode(),
-            "PlayerMove".encode(),
-            (StrategyAction::BuyAcceleration, session_for_account).encode(),
-        ]
-        .concat();
-
-        let mid = car_races.send_bytes(10, payload);
-        let res = system.run_next_block();
-        assert!(res.succeed.contains(&mid));
-
-        game = if let Some(game) = get_game(&system, &car_races, 10.into()) {
-            game
-        } else {
-            std::panic!("Game does not exist")
+    loop {
+        let game = races.game(ActorId::from(ADMIN)).await.unwrap();
+        let Some(game) = game else {
+            panic!("Game does not exist");
         };
+
+        if game.state == GameState::Finished {
+            break;
+        }
+
+        races
+            .player_move(StrategyAction::BuyAcceleration, session_for_account)
+            .await
+            .unwrap();
     }
 
-    // try to start game again
-    let payload = [
-        "CarRacesService".encode(),
-        "StartGame".encode(),
-        session_for_account.encode(),
-    ]
-    .concat();
-    let mid = car_races.send_bytes(10, payload);
-    let res = system.run_next_block();
-    assert!(res.succeed.contains(&mid));
+    races.start_game(session_for_account).await.unwrap();
 }
 
-fn get_game(sys: &System, car_races: &Program<'_>, account: ActorId) -> Option<Game> {
-    let payload = [
-        "CarRacesService".encode(),
-        "Game".encode(),
-        account.encode(),
-    ]
-    .concat();
-    car_races.send_bytes(10, payload);
-    let result = sys.run_next_block();
-    let log_entry = result
-        .log()
-        .iter()
-        .find(|log_entry| log_entry.destination() == 10.into())
-        .expect("Unable to get reply");
-
-    let reply = <(String, String, Option<Game>)>::decode(&mut log_entry.payload())
-        .expect("Unable to decode reply"); // Panic if decoding fails
-
-    reply.2
+fn deploy_strategy(sys: &System, from: u64, path: &str) -> ActorId {
+    let program = Program::from_file(sys, path);
+    let mid = program.send_bytes(from, ["New".encode()].concat());
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+    program.id()
 }

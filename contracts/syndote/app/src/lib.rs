@@ -4,10 +4,10 @@
 use sails_rs::prelude::*;
 pub mod services;
 use services::game::GameService;
-pub struct Program(());
+pub struct SyndoteProgram(());
 
 #[program]
-impl Program {
+impl SyndoteProgram {
     pub async fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         GameService::init(dns_id_and_name).await;
         Self(())
