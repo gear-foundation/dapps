@@ -1,7 +1,7 @@
 #![no_std]
 #![allow(static_mut_refs)]
 use randomness_client::randomness::io as randomness_io;
-use sails_rs::calls::ActionIo;
+use sails_rs::client::CallCodec;
 use sails_rs::gstd::{exec, msg};
 use sails_rs::prelude::*;
 
@@ -71,13 +71,17 @@ impl OracleService {
 impl OracleService {
     #[export]
     pub async fn request_value(&mut self) -> u128 {
-        let request = randomness_io::GetLastRoundWithRandomValue::encode_call();
+        let request =
+            randomness_io::GetLastRoundWithRandomValue::encode_params_with_prefix("Randomness");
         let bytes_reply = msg::send_bytes_for_reply(self.get().manager, request, 0, 0)
             .expect("Unable to send message to `manager`.")
             .await
             .expect("Unable to decode reply payload from `manager`.");
-        let (_, value) =
-            randomness_io::GetLastRoundWithRandomValue::decode_reply(bytes_reply).unwrap();
+        let (_, value) = randomness_io::GetLastRoundWithRandomValue::decode_reply_with_prefix(
+            "Randomness",
+            bytes_reply,
+        )
+        .unwrap();
         self.emit_event(Event::NewValue { value })
             .expect("Notification Error");
         value

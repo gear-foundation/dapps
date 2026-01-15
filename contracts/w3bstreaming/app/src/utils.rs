@@ -47,14 +47,6 @@ impl From<Program> for ProgramState {
     }
 }
 
-#[derive(Encode, Decode, Default, TypeInfo, Clone)]
-#[codec(crate = sails_rs::scale_codec)]
-#[scale_info(crate = sails_rs::scale_info)]
-pub struct State {
-    pub streams: Vec<(String, Stream)>,
-    pub users: Vec<(ActorId, Profile)>,
-}
-
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]

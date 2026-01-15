@@ -8,9 +8,3 @@ license.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 sails-rs.workspace = true
 
-[dev-dependencies]
-gclient.workspace = true
-syndote = { path = "../wasm" }
-tokio.workspace = true
-sails-rs = { workspace = true, features = ["gtest"] }
-syndote-player = { path = "../player/wasm" }

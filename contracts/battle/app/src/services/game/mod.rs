@@ -1,8 +1,10 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::new_without_default)]
+#![allow(clippy::await_holding_refcell_ref)]
 #![allow(static_mut_refs)]
 use crate::services;
 use sails_rs::{
+    cell::RefCell,
     collections::{HashMap, HashSet},
     gstd::{msg, service},
     prelude::*,
@@ -10,6 +12,7 @@ use sails_rs::{
 mod funcs;
 pub mod session;
 pub mod utils;
+use session::SessionStorage;
 pub use utils::{Config, *};
 
 #[derive(Debug, Default, Clone)]
@@ -76,14 +79,15 @@ pub enum Event {
     AutomaticMoveMade,
 }
 
-#[derive(Clone)]
-pub struct BattleService;
+pub struct BattleService<'a> {
+    session_storage: &'a RefCell<SessionStorage>,
+}
 
-impl BattleService {
-    pub fn new() -> Self {
-        Self
+impl<'a> BattleService<'a> {
+    pub fn new(session_storage: &'a RefCell<SessionStorage>) -> Self {
+        Self { session_storage }
     }
-    pub fn init(config: Config) -> Self {
+    pub fn init(config: Config) {
         unsafe {
             STORAGE = Some(Storage {
                 admins: HashSet::from([msg::source()]),
@@ -91,7 +95,6 @@ impl BattleService {
                 ..Default::default()
             });
         }
-        Self
     }
     fn get_mut(&mut self) -> &'static mut Storage {
         unsafe { STORAGE.as_mut().expect("Storage is not initialized") }
@@ -99,10 +102,14 @@ impl BattleService {
     fn get(&self) -> &'static Storage {
         unsafe { STORAGE.as_ref().expect("Storage is not initialized") }
     }
+    /// Immutable borrow of session storage
+    fn get_session_storage(&self) -> core::cell::Ref<'_, SessionStorage> {
+        self.session_storage.borrow()
+    }
 }
 
 #[service(events = Event)]
-impl BattleService {
+impl<'a> BattleService<'a> {
     #[export]
     pub async fn create_new_battle(
         &mut self,
@@ -116,8 +123,10 @@ impl BattleService {
         session_for_account: Option<ActorId>,
     ) {
         let storage = self.get_mut();
+        let session_storage = self.get_session_storage();
         let res = funcs::create_new_battle(
             storage,
+            &session_storage,
             warrior_id,
             appearance,
             battle_name,
@@ -148,8 +157,10 @@ impl BattleService {
         session_for_account: Option<ActorId>,
     ) {
         let storage = self.get_mut();
+        let session_storage = self.get_session_storage();
         let res = funcs::battle_registration(
             storage,
+            &session_storage,
             game_id,
             warrior_id,
             appearance,
@@ -170,16 +181,19 @@ impl BattleService {
     #[export]
     pub fn cancel_register(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::cancel_register(storage, session_for_account));
+        let session_storage = self.get_session_storage();
+        let event = services::utils::panicking(|| {
+            funcs::cancel_register(storage, &session_storage, session_for_account)
+        });
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
     #[export]
     pub fn delete_player(&mut self, player_id: ActorId, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
+        let session_storage = self.get_session_storage();
         let event = services::utils::panicking(|| {
-            funcs::delete_player(storage, player_id, session_for_account)
+            funcs::delete_player(storage, &session_storage, player_id, session_for_account)
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
@@ -187,8 +201,10 @@ impl BattleService {
     #[export]
     pub fn cancel_tournament(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::cancel_tournament(storage, session_for_account));
+        let session_storage = self.get_session_storage();
+        let event = services::utils::panicking(|| {
+            funcs::cancel_tournament(storage, &session_storage, session_for_account)
+        });
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
@@ -204,16 +220,19 @@ impl BattleService {
     #[export]
     pub fn start_battle(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::start_battle(storage, session_for_account));
+        let session_storage = self.get_session_storage();
+        let event = services::utils::panicking(|| {
+            funcs::start_battle(storage, &session_storage, session_for_account)
+        });
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
     #[export]
     pub fn make_move(&mut self, warrior_move: Move, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
+        let session_storage = self.get_session_storage();
         let event = services::utils::panicking(|| {
-            funcs::make_move(storage, warrior_move, session_for_account)
+            funcs::make_move(storage, &session_storage, warrior_move, session_for_account)
         });
         self.emit_event(event.clone()).expect("Notification Error");
     }
@@ -230,15 +249,20 @@ impl BattleService {
     #[export]
     pub fn start_next_fight(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::start_next_fight(storage, session_for_account));
+        let session_storage = self.get_session_storage();
+        let event = services::utils::panicking(|| {
+            funcs::start_next_fight(storage, &session_storage, session_for_account)
+        });
         self.emit_event(event.clone()).expect("Notification Error");
     }
 
     #[export]
     pub fn exit_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::exit_game(storage, session_for_account));
+        let session_storage = self.get_session_storage();
+        let event = services::utils::panicking(|| {
+            funcs::exit_game(storage, &session_storage, session_for_account)
+        });
         self.emit_event(event.clone()).expect("Notification Error");
     }
 

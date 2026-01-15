@@ -1,8 +1,8 @@
 #![allow(clippy::new_without_default)]
 #![allow(static_mut_refs)]
 use collections::HashMap;
-use sails_rs::prelude::*;
-use session::{ActionsForSession, SessionData, Storage as SessionStorage};
+use sails_rs::{cell::RefCell, prelude::*};
+use session::{ActionsForSession, SessionStorage};
 pub mod error;
 pub mod game;
 pub mod session;
@@ -10,7 +10,9 @@ pub mod utils;
 use crate::services::utils::{panic, panicking};
 use error::Error;
 use game::*;
-pub struct CarRacesService;
+pub struct CarRacesService<'a> {
+    session_storage: &'a RefCell<SessionStorage>,
+}
 
 use gstd::{exec, msg};
 static mut DATA: Option<ContractData> = None;
@@ -53,7 +55,7 @@ pub enum Event {
     Killed { inheritor: ActorId },
 }
 #[service(events = Event)]
-impl CarRacesService {
+impl<'a> CarRacesService<'a> {
     #[export]
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let msg_src = msg::source();
@@ -93,13 +95,12 @@ impl CarRacesService {
     pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
         assert!(self.data().messages_allowed, "Message processing suspended");
         let msg_src = msg::source();
-        let sessions = SessionStorage::get_session_map();
-        let player = get_player(
-            sessions,
-            &msg_src,
-            &session_for_account,
-            ActionsForSession::StartGame,
-        );
+        let player = {
+            let session_storage = self.session_storage.borrow();
+            session_storage
+                .get_original_address(&msg_src, &session_for_account, ActionsForSession::StartGame)
+                .expect("Invalid session")
+        };
         let last_time_step = exec::block_timestamp();
         let strategy_ids = self.data().strategy_ids.clone();
 
@@ -139,14 +140,12 @@ impl CarRacesService {
     ) {
         assert!(self.data().messages_allowed, "Message processing suspended");
         let msg_src = msg::source();
-        let sessions = SessionStorage::get_session_map();
-
-        let player = get_player(
-            sessions,
-            &msg_src,
-            &session_for_account,
-            ActionsForSession::Move,
-        );
+        let player = {
+            let session_storage = self.session_storage.borrow();
+            session_storage
+                .get_original_address(&msg_src, &session_for_account, ActionsForSession::Move)
+                .expect("Invalid session")
+        };
         let game_instance = self.get_game(&player);
 
         panicking(game_instance.verify_game_state());
@@ -294,7 +293,7 @@ impl CarRacesService {
     }
 }
 
-impl CarRacesService {
+impl<'a> CarRacesService<'a> {
     pub async fn init(config: InitConfig, dns_id_and_name: Option<(ActorId, String)>) {
         unsafe {
             DATA = Some(ContractData {
@@ -319,8 +318,9 @@ impl CarRacesService {
                 .expect("Error in `AddNewProgram`");
         }
     }
-    pub fn new() -> Self {
-        Self
+
+    pub fn new(session_storage: &'a RefCell<SessionStorage>) -> Self {
+        Self { session_storage }
     }
 
     fn data(&self) -> &ContractData {
@@ -365,36 +365,6 @@ fn send_msg_to_remove_game_instance(player: ActorId) {
         config().time_interval,
     )
     .expect("Error in sending message");
-}
-
-fn get_player(
-    session_map: &HashMap<ActorId, SessionData>,
-    msg_source: &ActorId,
-    session_for_account: &Option<ActorId>,
-    actions_for_session: ActionsForSession,
-) -> ActorId {
-    let player = match session_for_account {
-        Some(account) => {
-            let session = session_map
-                .get(account)
-                .expect("This account has no valid session");
-            assert!(
-                session.expires > exec::block_timestamp(),
-                "The session has already expired"
-            );
-            assert!(
-                session.allowed_actions.contains(&actions_for_session),
-                "This message is not allowed"
-            );
-            assert_eq!(
-                session.key, *msg_source,
-                "The account is not approved for this session"
-            );
-            *account
-        }
-        None => *msg_source,
-    };
-    player
 }
 
 pub fn config() -> &'static Config {

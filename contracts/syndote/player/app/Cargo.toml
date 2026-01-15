@@ -1,9 +1,9 @@
 [package]
-name = "player-app"
+name = "syndote-player-app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 sails-rs.workspace = true

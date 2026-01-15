@@ -17,5 +17,5 @@ cargo b -r -p "syndote"
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "syndote-app"
+cargo t -r -p "syndote"
 ```

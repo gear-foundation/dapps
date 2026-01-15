@@ -1,10 +1,10 @@
-use super::session::{ActionsForSession, SessionData, Storage as SessionStorage};
+use super::session::{ActionsForSession, SessionStorage};
 use crate::services::game::{
     Appearance, Battle, BattleError, BattleResult, Config, Event, Move, Pair, Player,
     PlayerSettings, State, Storage,
 };
 use gstd::{exec, prelude::*, ReservationId};
-use sails_rs::{collections::HashMap, gstd::msg, prelude::*};
+use sails_rs::{gstd::msg, prelude::*};
 
 async fn check_owner(warrior_id: ActorId, msg_src: ActorId) -> Result<(), BattleError> {
     let request = [
@@ -49,6 +49,7 @@ async fn get_appearance(warrior_id: ActorId) -> Result<Appearance, BattleError> 
 
 pub async fn create_new_battle(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     warrior_id: Option<ActorId>,
     appearance: Option<Appearance>,
     battle_name: String,
@@ -60,13 +61,13 @@ pub async fn create_new_battle(
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::CreateNewBattle,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::CreateNewBattle,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
 
     let msg_value = msg::value();
 
@@ -154,6 +155,7 @@ async fn create(
 
 pub async fn battle_registration(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     admin_id: ActorId,
     warrior_id: Option<ActorId>,
     appearance: Option<Appearance>,
@@ -165,13 +167,13 @@ pub async fn battle_registration(
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::Registration,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::Registration,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
     let msg_value = msg::value();
 
     let reply = register(
@@ -261,17 +263,18 @@ async fn register(
 
 pub fn cancel_register(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::Registration,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::Registration,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
     let admin_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -308,18 +311,19 @@ pub fn cancel_register(
 
 pub fn delete_player(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     player_id_to_delete: ActorId,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::Registration,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::Registration,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
     let admin_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -365,17 +369,18 @@ pub fn delete_player(
 
 pub fn cancel_tournament(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::Registration,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::Registration,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
     let battle = storage
         .battles
         .get(&player_id)
@@ -444,17 +449,18 @@ pub fn delayed_cancel_tournament(
 
 pub fn start_battle(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::StartBattle,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::StartBattle,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
 
     let battle = storage
         .battles
@@ -647,18 +653,15 @@ pub fn automatic_move(
 
 pub fn make_move(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     warrior_move: Move,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::MakeMove,
-    );
+    let player_id = session_storage
+        .get_original_address(&msg_src, &session_for_account, ActionsForSession::MakeMove)
+        .map_err(|_| BattleError::AccessDenied)?;
     let game_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -799,17 +802,14 @@ pub fn make_move(
 
 pub fn start_next_fight(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::MakeMove,
-    );
+    let player_id = session_storage
+        .get_original_address(&msg_src, &session_for_account, ActionsForSession::MakeMove)
+        .map_err(|_| BattleError::AccessDenied)?;
     let game_id = storage
         .players_to_battle_id
         .get(&player_id)
@@ -885,17 +885,18 @@ pub fn start_next_fight(
 
 pub fn exit_game(
     storage: &mut Storage,
+    session_storage: &SessionStorage,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, BattleError> {
     let msg_src = msg::source();
 
-    let sessions = SessionStorage::get_session_map();
-    let player_id = get_player(
-        sessions,
-        &msg_src,
-        &session_for_account,
-        ActionsForSession::Registration,
-    );
+    let player_id = session_storage
+        .get_original_address(
+            &msg_src,
+            &session_for_account,
+            ActionsForSession::Registration,
+        )
+        .map_err(|_| BattleError::AccessDenied)?;
 
     let game_id = storage
         .players_to_battle_id
@@ -1047,34 +1048,4 @@ fn send_delayed_message_for_cancel_tournament(
         time_to_cancel_the_battle,
     )
     .expect("Error in sending message");
-}
-
-fn get_player(
-    session_map: &HashMap<ActorId, SessionData>,
-    msg_source: &ActorId,
-    session_for_account: &Option<ActorId>,
-    actions_for_session: ActionsForSession,
-) -> ActorId {
-    let player = match session_for_account {
-        Some(account) => {
-            let session = session_map
-                .get(account)
-                .expect("This account has no valid session");
-            assert!(
-                session.expires > exec::block_timestamp(),
-                "The session has already expired"
-            );
-            assert!(
-                session.allowed_actions.contains(&actions_for_session),
-                "This message is not allowed"
-            );
-            assert_eq!(
-                session.key, *msg_source,
-                "The account is not approved for this session"
-            );
-            *account
-        }
-        None => *msg_source,
-    };
-    player
 }
