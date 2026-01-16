@@ -1,0 +1,59 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "poker",
+    "poker/client",
+    "poker-factory",
+    "poker-factory/client",
+    "pts",
+    "pts/client",
+    "zk-verification",
+    "zk-verification/client"
+]
+
+[workspace.package]
+authors = ["Gear Foundation <hello@gear.foundation>"]
+version = "1.1.0"
+license = "MIT"
+edition = "2021"
+publish = false
+
+[workspace.dependencies]
+gstd = "=1.10.0"
+gtest = "=1.10.0"
+gclient = "=1.10.0"
+gear-core = "=1.10.0"
+sails-rs = "=0.10.2"
+sails-idl-gen = "=0.10.2"
+sails-client-gen = "=0.10.2"
+session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
+log = "*"
+env_logger = "*"
+tokio = { version = "1.41", features = ["rt", "macros"] }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+
+ark-bls12-381 = "0.5.0"
+ark-ec = { version = "0.5", default-features = false }
+ark-ff = { version = "0.5", default-features = false }
+ark-scale = "=0.0.12"
+serde = { version = "1.0.219", features = ["derive"] }
+ark-serialize = "0.5.0"
+hex = "0.4.3"
+hex-literal = "0.4.1"
+serde_json = "1.0.140"
+num-bigint = "0.4.6"
+num-traits = "0.2.19"
+ark-ed-on-bls12-381-bandersnatch = { version = "0.5", default-features = false }
+bincode = "2.0.1"
+rand = "0.9.1"
+ark-std = "0.5"
+gbuiltin-bls381 = { version = "=1.10.0", default-features = false }
+
+[profile.release]
+panic = "abort"       
+opt-level = 3         
+lto = true           
+codegen-units = 1   
+strip = true
