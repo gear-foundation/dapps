@@ -9,14 +9,14 @@ use gtest::WasmProgram;
 use hex_literal::hex;
 use poker_client::ZkPublicKey;
 use poker_client::{
-    traits::*, ChaumPedersenProofBytes, GameConfig, PartialDec, SessionConfig, Stage, Status,
-    VerificationVariables,
+    ChaumPedersenProofBytes, GameConfig, PartialDec, SessionConfig, Stage, Status,
+    VerificationVariables, traits::*,
 };
 use pts_client::traits::{Pts, PtsFactory};
 use sails_rs::ActorId;
 use sails_rs::{
     calls::*,
-    gtest::{calls::*, System},
+    gtest::{System, calls::*},
 };
 use std::ops::Range;
 use std::path::Path;
@@ -31,14 +31,14 @@ const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
 ));
 
 use gbuiltin_bls381::{
+    Request, Response,
     ark_bls12_381::{Bls12_381, G1Affine, G1Projective as G1, G2Affine},
     ark_ec::{
-        pairing::{MillerLoopOutput, Pairing},
         Group, VariableBaseMSM,
+        pairing::{MillerLoopOutput, Pairing},
     },
     ark_scale,
     ark_scale::hazmat::ArkScaleProjective,
-    Request, Response,
 };
 
 use gstd::prelude::*;
@@ -963,7 +963,7 @@ impl TestEnvironment {
             .expect("No table_cards_proofs for this data profile");
         let g = G::generator();
         for (i, user) in USERS.iter().enumerate() {
-            let partial_decs = get_decs_from_proofs(&table_cards_proofs[i].1 .1[range.clone()]);
+            let partial_decs = get_decs_from_proofs(&table_cards_proofs[i].1.1[range.clone()]);
             let pk = deserialize_public_key(&(test_data.pks[i].1.clone()));
             let sk = test_data.sks[i].1.scalar;
             let mut items = Vec::new();

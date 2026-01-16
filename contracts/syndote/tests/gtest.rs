@@ -1,9 +1,9 @@
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId};
+use sails_rs::{ActorId, gtest::System};
 
-use syndote_client::syndote::Syndote;
 use syndote_client::Syndote as ClientSyndote;
+use syndote_client::syndote::Syndote;
 use syndote_client::{GameStatus, SyndoteCtors};
 use syndote_player_client::SyndotePlayerCtors;
 

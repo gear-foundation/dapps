@@ -1,5 +1,5 @@
 use crate::single::Entity;
-use gstd::{collections::HashMap, prelude::*, ActorId, Decode, Encode, TypeInfo};
+use gstd::{ActorId, Decode, Encode, TypeInfo, collections::HashMap, prelude::*};
 
 pub type MultipleGamesMap = HashMap<ActorId, MultipleGame>;
 pub type GamePairsMap = HashMap<ActorId, ActorId>;

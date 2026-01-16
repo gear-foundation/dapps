@@ -1,7 +1,7 @@
 #![no_std]
 #![allow(static_mut_refs)]
 use core::fmt::Debug;
-use extended_vmt_client::{vmt::io as vmt_io, TokenMetadata as TokenMetadataVmt};
+use extended_vmt_client::{TokenMetadata as TokenMetadataVmt, vmt::io as vmt_io};
 use gstd::{ext, format};
 use sails_rs::{
     client::CallCodec,

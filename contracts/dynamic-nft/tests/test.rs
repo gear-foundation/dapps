@@ -1,10 +1,10 @@
-use dynamic_nft_client::dynamic_nft::DynamicNft;
 use dynamic_nft_client::DynamicNft as ClientDynamicNft;
 use dynamic_nft_client::TokenMetadata;
+use dynamic_nft_client::dynamic_nft::DynamicNft;
 
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 
 use dynamic_nft_client::DynamicNftCtors;
 

@@ -1,17 +1,17 @@
-use extended_vft_client::vft::Vft;
 use extended_vft_client::ExtendedVftClient;
 use extended_vft_client::ExtendedVftClientCtors;
-use extended_vnft_client::vnft::Vnft;
+use extended_vft_client::vft::Vft;
 use extended_vnft_client::ExtendedVnftClient;
 use extended_vnft_client::ExtendedVnftClientCtors;
 use extended_vnft_client::TokenMetadata;
+use extended_vnft_client::vnft::Vnft;
 
-use nft_marketplace_client::nft_marketplace::NftMarketplace;
 use nft_marketplace_client::NftMarketplace as ClientNftMarketplace;
 use nft_marketplace_client::NftMarketplaceCtors;
+use nft_marketplace_client::nft_marketplace::NftMarketplace;
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 

@@ -1,11 +1,11 @@
-use oracle_client::oracle::Oracle;
 use oracle_client::Oracle as ClientOracle;
 use oracle_client::OracleCtors;
+use oracle_client::oracle::Oracle;
 
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::Program;
-use sails_rs::{client::*, gtest::*};
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::{ActorId, Encode};
+use sails_rs::{client::*, gtest::*};
 
 const ACTOR_ID: u64 = 42;
 

@@ -1,10 +1,10 @@
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::Program, gtest::System, ActorId, Encode};
+use sails_rs::{ActorId, Encode, gtest::Program, gtest::System};
 
-use battle_client::battle::Battle;
 use battle_client::Battle as ClientBatle;
 use battle_client::BattleCtors;
+use battle_client::battle::Battle;
 use battle_client::{Appearance, Config, Move, SessionConfig, State};
 
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};

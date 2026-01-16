@@ -1,12 +1,12 @@
 use gtest::Log;
 
-use multisig_wallet_client::multisig_wallet::MultisigWallet;
 use multisig_wallet_client::MultisigWallet as ClientMultisigWallet;
 use multisig_wallet_client::MultisigWalletCtors;
+use multisig_wallet_client::multisig_wallet::MultisigWallet;
 
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::{ActorId, Encode};
 
 const USERS: &[u64] = &[3, 4, 5, 6];

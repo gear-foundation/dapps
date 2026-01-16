@@ -1,4 +1,4 @@
-use gstd::{exec, msg, ReservationId};
+use gstd::{ReservationId, exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 
 pub type PairId = u16;

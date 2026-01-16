@@ -3,7 +3,7 @@ use super::{
     utils::{Result, *},
 };
 use crate::admin::storage::configuration::Configuration;
-use gstd::{exec, msg, prelude::*, ActorId, Encode};
+use gstd::{ActorId, Encode, exec, msg, prelude::*};
 
 pub fn create_session(
     session_map: &mut SessionMap,

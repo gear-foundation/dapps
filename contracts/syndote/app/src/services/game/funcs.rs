@@ -1,5 +1,5 @@
 use crate::services::game::*;
-use gstd::{errors::Error, ReservationId, ReservationIdExt};
+use gstd::{ReservationId, ReservationIdExt, errors::Error};
 use sails_rs::ActorId;
 
 pub fn register(storage: &mut Storage, player: &ActorId) -> Result<Event, GameError> {

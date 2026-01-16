@@ -2,9 +2,9 @@ use self::storage::{
     admin::AdminStorage, builtin_bls381::BuiltinStorage, configuration::Configuration,
     verification_key::VerificationKeyStorage,
 };
-use crate::{services, VerifyingKeyBytes};
+use crate::{VerifyingKeyBytes, services};
 use core::fmt::Debug;
-use gstd::{exec, msg, ActorId, Decode, Encode, TypeInfo, Vec};
+use gstd::{ActorId, Decode, Encode, TypeInfo, Vec, exec, msg};
 use sails_rs::gstd::service;
 use sails_rs::{event, export};
 use storage::configuration::ConfigurationStorage;

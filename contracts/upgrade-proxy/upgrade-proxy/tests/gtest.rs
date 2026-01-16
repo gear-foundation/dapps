@@ -1,14 +1,14 @@
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId};
+use sails_rs::{ActorId, gtest::System};
 
-use counter_client::counter::{self, Counter};
 use counter_client::Counter as ClientCounter;
 use counter_client::CounterCtors;
+use counter_client::counter::{self, Counter};
 
-use proxy_client::proxy::Proxy;
 use proxy_client::Proxy as ClientProxy;
 use proxy_client::ProxyCtors;
+use proxy_client::proxy::Proxy;
 
 use ::counter::WASM_BINARY as COUNTER_WASM_BINARY;
 use proxy::WASM_BINARY as PROXY_WASM_BINARY;

@@ -1,4 +1,4 @@
-use ping_pong_client::{ping_pong::PingPong, PingPong as ClientPingPong, PingPongCtors};
+use ping_pong_client::{PingPong as ClientPingPong, PingPongCtors, ping_pong::PingPong};
 
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::{client::*, gtest::*};

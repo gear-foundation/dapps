@@ -1,12 +1,12 @@
 use extended_vft_client::vft::Vft;
 use extended_vft_client::{ExtendedVftClient, ExtendedVftClientCtors};
-use staking_client::staking::Staking;
 use staking_client::Staking as ClientStaking;
 use staking_client::StakingCtors;
+use staking_client::staking::Staking;
 
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId, U256};
+use sails_rs::{ActorId, U256, gtest::System};
 
 const ACTOR_IDS: [u64; 3] = [40, 41, 42];
 

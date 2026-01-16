@@ -364,7 +364,7 @@ impl DexService {
             .expect("Reply timeout")
             .handle_reply(|| {
                 let reply_bytes = msg::load_bytes().expect("Unable to load bytes");
-                let result = vft_io::TransferFrom::decode_reply_with_prefix("Vft",reply_bytes);
+                let result = vft_io::TransferFrom::decode_reply_with_prefix("Vft", reply_bytes);
                 if result.is_err() {
                     let storage = unsafe { STORAGE.as_mut().expect("Dex is not initialized") };
                     storage.swap_status = SwapStatus::Ready;
@@ -478,14 +478,16 @@ impl DexService {
                 .expect("Error in async message to vft contract")
                 .await
                 .expect("Error getting answer from the vft contract");
-        let balances_a: U256 = vft_io::BalanceOf::decode_reply_with_prefix("Vft", bytes_reply_balances).unwrap();
+        let balances_a: U256 =
+            vft_io::BalanceOf::decode_reply_with_prefix("Vft", bytes_reply_balances).unwrap();
 
         // Fetch the current balance of token B in the contract
         let bytes_reply_balances = msg::send_bytes_for_reply(storage.token_b, request, 0, 0)
             .expect("Error in async message to vft contract")
             .await
             .expect("Error getting answer from the vft contract");
-        let balances_b: U256 = vft_io::BalanceOf::decode_reply_with_prefix("Vft", bytes_reply_balances).unwrap();
+        let balances_b: U256 =
+            vft_io::BalanceOf::decode_reply_with_prefix("Vft", bytes_reply_balances).unwrap();
 
         storage.reserve_a = balances_a;
         storage.reserve_b = balances_b;

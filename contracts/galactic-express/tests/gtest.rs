@@ -1,12 +1,12 @@
-use galactic_express_client::galactic_express::GalacticExpress;
 use galactic_express_client::GalacticExpress as OtherGalacticExpress;
 use galactic_express_client::GalacticExpressCtors;
+use galactic_express_client::galactic_express::GalacticExpress;
 use galactic_express_client::{Participant, StageState};
 
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 
 pub const ADMIN: u64 = 10;
 pub const PLAYERS: [u64; 3] = [12, 13, 14];

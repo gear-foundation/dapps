@@ -1,9 +1,9 @@
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 
-use tic_tac_toe_client::tic_tac_toe::TicTacToe;
 use tic_tac_toe_client::TicTacToe as ClientTicTacToe;
+use tic_tac_toe_client::tic_tac_toe::TicTacToe;
 use tic_tac_toe_client::{Config, GameResult, TicTacToeCtors};
 
 pub const ADMIN_ID: u64 = 10;

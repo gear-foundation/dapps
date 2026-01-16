@@ -1,7 +1,7 @@
 [package]
 name = "staking-client"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 mockall = { version = "0.12", optional = true }

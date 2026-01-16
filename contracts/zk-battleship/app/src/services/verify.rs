@@ -1,13 +1,13 @@
 use core::ops::AddAssign;
 use gbuiltin_bls381::{
+    Request, Response,
     ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine},
-    ark_ec::{pairing::Pairing, AffineRepr},
+    ark_ec::{AffineRepr, pairing::Pairing},
     ark_ff::PrimeField,
     ark_scale,
     ark_serialize::{CanonicalDeserialize, CanonicalSerialize},
-    Request, Response,
 };
-use gstd::{ext, msg, prelude::*, ActorId, Encode};
+use gstd::{ActorId, Encode, ext, msg, prelude::*};
 
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 
@@ -156,7 +156,7 @@ pub fn get_start_prepared_inputs_bytes(
     ic: Vec<Vec<u8>>,
 ) -> Vec<u8> {
     let public_inputs: Vec<Fr> = vec![
-        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error")
+        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error"),
     ];
 
     let gamma_abc_g1: Vec<G1Affine> = ic

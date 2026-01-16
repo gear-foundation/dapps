@@ -1,16 +1,16 @@
 use crate::services::{
     game::{
-        Config, Event, GameError, GameStorage, Level, Player, Stage, Status, Tournament,
-        MAX_PARTICIPANTS,
+        Config, Event, GameError, GameStorage, Level, MAX_PARTICIPANTS, Player, Stage, Status,
+        Tournament,
     },
     session::utils::{ActionsForSession, SessionData},
 };
 use extended_vft_client::vft::io as vft_io;
 use sails_rs::{
+    ActorId, U256,
     collections::HashMap,
     gstd::{exec, msg},
     prelude::*,
-    ActorId, U256,
 };
 
 pub fn create_new_tournament(

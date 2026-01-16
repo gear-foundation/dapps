@@ -3,7 +3,7 @@ use crate::services::game::{
     Appearance, Battle, BattleError, BattleResult, Config, Event, Move, Pair, Player,
     PlayerSettings, State, Storage,
 };
-use gstd::{exec, prelude::*, ReservationId};
+use gstd::{ReservationId, exec, prelude::*};
 use sails_rs::{gstd::msg, prelude::*};
 
 async fn check_owner(warrior_id: ActorId, msg_src: ActorId) -> Result<(), BattleError> {

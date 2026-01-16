@@ -1,14 +1,14 @@
-use dex_client::dex::Dex;
 use dex_client::DexCtors;
+use dex_client::dex::Dex;
 
 use dex_client::Dex as ClientDex;
-use extended_vft_client::vft::Vft;
 use extended_vft_client::ExtendedVftClient;
 use extended_vft_client::ExtendedVftClientCtors;
+use extended_vft_client::vft::Vft;
 
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId, U256};
+use sails_rs::{ActorId, U256, gtest::System};
 
 pub const USER_ID: u64 = 10;
 const FEE: u64 = 30_000_000_000;

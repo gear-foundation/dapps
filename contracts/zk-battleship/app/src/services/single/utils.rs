@@ -1,4 +1,4 @@
-use gstd::{collections::HashMap, prelude::*, ActorId, Decode, Encode, TypeInfo};
+use gstd::{ActorId, Decode, Encode, TypeInfo, collections::HashMap, prelude::*};
 
 pub type SingleGamesMap = HashMap<ActorId, SingleGame>;
 pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
