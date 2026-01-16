@@ -4964,6 +4964,7 @@ dependencies = [
  "ark-scale",
  "ark-serialize 0.5.0",
  "bincode 2.0.1",
+ "blake2",
  "gbuiltin-bls381",
  "gclient",
  "gear-core",

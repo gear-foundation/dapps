@@ -32,6 +32,7 @@ ark-bls12-381.workspace = true
 ark-ec.workspace = true
 ark-ff.workspace = true
 ark-scale.workspace = true
+blake2.workspace = true
 serde.workspace = true
 ark-serialize.workspace = true
 hex.workspace = true

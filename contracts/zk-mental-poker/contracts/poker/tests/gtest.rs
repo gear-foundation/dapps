@@ -1,29 +1,37 @@
 #![allow(clippy::type_complexity)]
-use ark_ec::CurveGroup;
-use ark_ec::PrimeGroup;
+
+use ark_ec::{CurveGroup, PrimeGroup};
 use ark_ed_on_bls12_381_bandersnatch::{EdwardsProjective as G, Fq, Fr};
-use ark_ff::{BigInteger, PrimeField, UniformRand};
+use ark_ff::{BigInteger, PrimeField};
 use blake2::{Blake2b512, Digest};
-use gtest::Program;
 use gtest::WasmProgram;
 use hex_literal::hex;
+
 use poker_client::ZkPublicKey;
 use poker_client::{
-    ChaumPedersenProofBytes, GameConfig, PartialDec, SessionConfig, Stage, Status,
-    VerificationVariables, traits::*,
+    ChaumPedersenProofBytes, Config, PartialDec, PokerCtors, SessionConfig, Stage, Status,
+    VerificationVariables,
 };
-use pts_client::traits::{Pts, PtsFactory};
-use sails_rs::ActorId;
-use sails_rs::{
-    calls::*,
-    gtest::{System, calls::*},
-};
+use poker_client::poker::Poker;
+use poker_client::Poker as ClientPoker;
+
+use pts_client::PtsCtors;
+use pts_client::pts::Pts;
+use pts_client::Pts as ClientPts;
+
+use zk_verification_client::ZkVerificationCtors;
+
+use sails_rs::client::*;
+use sails_rs::gtest::{Program, System};
+use sails_rs::{ActorId, Encode};
+
 use std::ops::Range;
 use std::path::Path;
+
 mod utils_gclient;
 use utils_gclient::zk_loader::{ZkLoaderData, ZkSecretKey};
 use utils_gclient::{build_player_card_disclosure, init_deck_and_card_map};
-use zk_verification_client::traits::*;
+
 const USERS: [u64; 6] = [42, 43, 44, 45, 46, 47];
 
 const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
@@ -31,19 +39,23 @@ const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
 ));
 
 use gbuiltin_bls381::{
-    Request, Response,
     ark_bls12_381::{Bls12_381, G1Affine, G1Projective as G1, G2Affine},
     ark_ec::{
-        Group, VariableBaseMSM,
         pairing::{MillerLoopOutput, Pairing},
+        Group, VariableBaseMSM,
     },
     ark_scale,
     ark_scale::hazmat::ArkScaleProjective,
+    Request, Response,
 };
 
 use gstd::prelude::*;
+
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 type Gt = <Bls12_381 as Pairing>::TargetField;
+
+type PokerSvc = Service<poker_client::poker::PokerImpl, GtestEnv>;
+type PtsSvc = Service<pts_client::pts::PtsImpl, GtestEnv>;
 
 #[test]
 fn hash_prefix_agrees() {
@@ -64,40 +76,24 @@ async fn test_check_auto_fold() {
     env.register_players(&test_data).await;
     env.start_and_setup_game(&test_data).await;
 
-    env.run_actions(vec![(USERS[2], poker_client::Action::Call)])
-        .await;
+    env.run_actions(vec![(USERS[2], poker_client::Action::Call)]).await;
 
-    let betting = env
-        .service_client
-        .betting()
-        .recv(env.program_id)
-        .await
-        .unwrap();
-
+    let betting = env.poker.betting().await.unwrap();
     println!("betting: {betting:?}");
 
-    for _i in 0..8 {
-        env.remoting.system().run_next_block();
+    for _ in 0..8 {
+        env.system().run_next_block();
+    }
+    for _ in 0..10 {
+        env.system().run_next_block();
+    }
+    for _ in 0..10 {
+        env.system().run_next_block();
     }
 
-    for _i in 0..10 {
-        env.remoting.system().run_next_block();
-    }
+    env.run_actions(vec![(USERS[0], poker_client::Action::Call)]).await;
 
-    for _i in 0..10 {
-        env.remoting.system().run_next_block();
-    }
-
-    env.run_actions(vec![(USERS[0], poker_client::Action::Call)])
-        .await;
-
-    let betting = env
-        .service_client
-        .betting()
-        .recv(env.program_id)
-        .await
-        .unwrap();
-
+    let betting = env.poker.betting().await.unwrap();
     println!("betting: {betting:?}");
 }
 
@@ -135,7 +131,7 @@ async fn test_basic_poker_workflow() {
     ])
     .await;
 
-    // reveal 1 cards after flop
+    // reveal 1 card after flop
     println!("Decrypt 1 card after flop");
     env.reveal_table_cards(&test_data, 3..4).await;
 
@@ -150,29 +146,18 @@ async fn test_basic_poker_workflow() {
     ])
     .await;
 
-    // reveal 1 cards after turn
+    // reveal 1 card after turn
     println!("Decrypt 1 card after turn");
     env.reveal_table_cards(&test_data, 4..5).await;
 
     env.print_table_cards().await;
-
     env.reveal_player_cards(&test_data).await;
 
     env.verify_game_finished().await;
 
     // check final result
-    let result = env
-        .service_client
-        .status()
-        .recv(env.program_id)
-        .await
-        .unwrap();
-    let participants = env
-        .service_client
-        .participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+    let result = env.poker.status().await.unwrap();
+    let participants = env.poker.participants().await.unwrap();
 
     println!("participants {participants:?}");
 
@@ -214,7 +199,6 @@ async fn gtest_check_null_balance() {
     ])
     .await;
 
-    // reveal 3 cards after preflop
     println!("Decrypt 3 cards after preflop");
     env.reveal_table_cards(&test_data, 0..3).await;
 
@@ -230,11 +214,10 @@ async fn gtest_check_null_balance() {
     ])
     .await;
 
-    // reveal 1 cards after flop
     println!("Decrypt 1 card after flop");
     env.reveal_table_cards(&test_data, 3..4).await;
 
-    // turn
+    // turn all-in
     env.run_actions(vec![
         (USERS[0], poker_client::Action::AllIn),
         (USERS[1], poker_client::Action::AllIn),
@@ -245,31 +228,19 @@ async fn gtest_check_null_balance() {
     ])
     .await;
 
-    // reveal 1 cards after turn
     println!("Decrypt 1 card after turn");
     env.reveal_table_cards(&test_data, 4..5).await;
 
     env.print_table_cards().await;
-
     env.reveal_player_cards(&test_data).await;
 
     env.verify_game_finished().await;
 
-    // check final result
-    let result = env
-        .service_client
-        .status()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+    let result = env.poker.status().await.unwrap();
     println!("result {result:?}");
     assert!(matches!(result, Status::Finished { .. }), "Wrong Status!");
-    let participants = env
-        .service_client
-        .participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+
+    let participants = env.poker.participants().await.unwrap();
 
     if let Status::Finished { pots } = result {
         let prize = pots[0].0;
@@ -277,23 +248,15 @@ async fn gtest_check_null_balance() {
         for winner in winners.iter() {
             participants.iter().for_each(|(id, info)| {
                 if winner == id {
-                    assert_eq!(
-                        info.balance,
-                        prize / winners.len() as u128,
-                        "Wrong balance!"
-                    );
+                    assert_eq!(info.balance, prize / winners.len() as u128, "Wrong balance!");
                 }
             });
         }
     }
 
     env.restart_game().await;
-    let participants = env
-        .service_client
-        .participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+
+    let participants = env.poker.participants().await.unwrap();
     assert_eq!(participants.len(), 1);
 }
 
@@ -315,14 +278,10 @@ async fn gtest_one_player_left() {
     ])
     .await;
 
-    // reveal 3 cards after preflop
     println!("Decrypt 3 cards after preflop");
     env.reveal_table_cards(&test_data, 0..3).await;
 
-    env.check_status(Status::Play {
-        stage: poker_client::Stage::Flop,
-    })
-    .await;
+    env.check_status(Status::Play { stage: Stage::Flop }).await;
 
     // flop
     env.run_actions(vec![
@@ -337,20 +296,16 @@ async fn gtest_one_player_left() {
     .await;
 
     env.check_status(Status::Play {
-        stage: poker_client::Stage::WaitingTableCardsAfterFlop,
+        stage: Stage::WaitingTableCardsAfterFlop,
     })
     .await;
 
-    // reveal 1 cards after flop
     println!("Decrypt 1 card after flop");
     env.reveal_table_cards(&test_data, 3..4).await;
 
-    env.check_status(Status::Play {
-        stage: poker_client::Stage::Turn,
-    })
-    .await;
+    env.check_status(Status::Play { stage: Stage::Turn }).await;
 
-    // turn
+    // turn — everyone folds except one
     env.run_actions(vec![
         (USERS[0], poker_client::Action::Fold),
         (USERS[1], poker_client::Action::Fold),
@@ -362,20 +317,9 @@ async fn gtest_one_player_left() {
 
     env.verify_game_finished().await;
 
-    // final result
-    let result = env
-        .service_client
-        .status()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+    let result = env.poker.status().await.unwrap();
+    let participants = env.poker.participants().await.unwrap();
 
-    let participants = env
-        .service_client
-        .participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
     if let Status::Finished { pots } = result {
         let prize = pots[0].0;
         let winners = pots[0].1.clone();
@@ -389,39 +333,9 @@ async fn gtest_one_player_left() {
             });
         }
     }
+
     println!("participants {participants:?}");
 }
-
-// #[tokio::test]
-// async fn gtest_check_restart_and_turn() {
-//     let (mut env, test_data) = TestEnvironment::setup(TestDataProfile::Basic).await;
-
-//     env.register_players(&test_data).await;
-//     env.start_and_setup_game(&test_data).await;
-
-//     // preflop
-//     env.run_actions(vec![
-//         (USERS[2], poker_client::Action::Fold),
-//         (USERS[3], poker_client::Action::Fold),
-//         (USERS[4], poker_client::Action::Fold),
-//         (USERS[5], poker_client::Action::Fold),
-//         (USERS[0], poker_client::Action::Fold),
-//     ])
-//     .await;
-
-//     env.verify_game_finished().await;
-//     env.restart_game().await;
-//     env.check_status(Status::Registration).await;
-
-//     env.start_and_setup_game(&test_data).await;
-//     env.check_status(Status::Play {
-//         stage: poker_client::Stage::PreFlop,
-//     })
-//     .await;
-
-//     env.run_actions(vec![(USERS[3], poker_client::Action::Call)])
-//         .await;
-// }
 
 #[tokio::test]
 async fn gtest_delete_player() {
@@ -440,7 +354,6 @@ async fn gtest_check_cancel_registration_and_turn() {
     env.register_players(&test_data).await;
     env.start_and_setup_game(&test_data).await;
 
-    // preflop
     env.run_actions(vec![
         (USERS[2], poker_client::Action::Fold),
         (USERS[3], poker_client::Action::Fold),
@@ -455,10 +368,7 @@ async fn gtest_check_cancel_registration_and_turn() {
     env.check_status(Status::Registration).await;
 
     env.start_and_setup_game(&test_data).await;
-    env.check_status(Status::Play {
-        stage: poker_client::Stage::PreFlop,
-    })
-    .await;
+    env.check_status(Status::Play { stage: Stage::PreFlop }).await;
 
     env.run_actions(vec![
         (USERS[2], poker_client::Action::Fold),
@@ -468,89 +378,24 @@ async fn gtest_check_cancel_registration_and_turn() {
         (USERS[0], poker_client::Action::Fold),
     ])
     .await;
+
     env.verify_game_finished().await;
     env.restart_game().await;
 
-    let active_participants = env
-        .service_client
-        .active_participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+    let active_participants = env.poker.active_participants().await.unwrap();
     println!("active_participants: {active_participants:?}");
     assert_eq!(active_participants.first_index, 0);
 
-    // Cancel registration
-    env.service_client
+    // cancel registration (player 2)
+    env.poker
         .cancel_registration(None)
-        .with_args(|args| args.with_actor_id(USERS[1].into()))
-        .send_recv(env.program_id)
+        .with_actor_id(USERS[1].into())
         .await
         .unwrap();
 
-    let active_participants = env
-        .service_client
-        .active_participants()
-        .recv(env.program_id)
-        .await
-        .unwrap();
+    let active_participants = env.poker.active_participants().await.unwrap();
     println!("active_participants: {active_participants:?}");
     assert_eq!(active_participants.first_index, 0);
-}
-
-#[tokio::test]
-#[ignore]
-async fn gtest_check_waiting_participants() {
-    let (mut env, test_data) = TestEnvironment::setup(TestDataProfile::SixPlayers).await;
-
-    env.register_players(&test_data).await;
-    env.start_and_setup_game(&test_data).await;
-
-    // check length of the participants (old length)
-    let participants = env.participants().await;
-    assert_eq!(participants.len(), 6);
-
-    // new player registers
-    let new_player_id = 48;
-    env.remoting
-        .system()
-        .mint_to(new_player_id, 1_000_000_000_000_000);
-    let new_test_data = TestData::load_from_profile(TestDataProfile::SixPlayersNew);
-    let new_player_pk = new_test_data.pks[5].1.clone();
-    env.register(new_player_id, new_player_pk).await;
-    // check length of the waiting participants state (1)
-    let waiting_participants = env.waiting_participants().await;
-    assert_eq!(waiting_participants.len(), 1);
-
-    // preflop
-    env.run_actions(vec![
-        (USERS[2], poker_client::Action::Fold),
-        (USERS[3], poker_client::Action::Fold),
-        (USERS[4], poker_client::Action::Fold),
-        (USERS[5], poker_client::Action::Fold),
-        (USERS[0], poker_client::Action::Fold),
-    ])
-    .await;
-
-    env.verify_game_finished().await;
-    env.restart_game().await;
-
-    // check length of the participants (old length + 1)
-    let participants = env.participants().await;
-    assert_eq!(participants.len(), 7);
-    // check length of the waiting participants state (0)
-    let waiting_participants = env.waiting_participants().await;
-    assert_eq!(waiting_participants.len(), 0);
-    env.check_status(Status::Registration).await;
-
-    // delete player
-    env.delete_player(USERS[5]).await;
-
-    env.start_and_setup_game(&new_test_data).await;
-    env.check_status(Status::Play {
-        stage: poker_client::Stage::PreFlop,
-    })
-    .await;
 }
 
 #[tokio::test]
@@ -560,24 +405,20 @@ async fn gtest_check_cancel_registration_waiting_participants() {
     env.register_players(&test_data).await;
     env.start_and_setup_game(&test_data).await;
 
-    // check length of the participants (old length)
     let participants = env.participants().await;
     assert_eq!(participants.len(), 6);
 
-    // check length of the waiting participants state (1)
-    let new_player_id = 48;
-    env.remoting
-        .system()
-        .mint_to(new_player_id, 1_000_000_000_000_000);
+    // new player registers while game is running
+    let new_player_id: u64 = 48;
+    env.system().mint_to(new_player_id, 1_000_000_000_000_000);
+
     let new_test_data = TestData::load_from_profile(TestDataProfile::SixPlayersNew);
     let new_player_pk = new_test_data.pks[5].1.clone();
     env.register(new_player_id, new_player_pk).await;
 
-    // check length of the waiting participants state (1)
     let waiting_participants = env.waiting_participants().await;
     assert_eq!(waiting_participants.len(), 1);
 
-    // preflop
     env.run_actions(vec![
         (USERS[2], poker_client::Action::Fold),
         (USERS[3], poker_client::Action::Fold),
@@ -586,14 +427,12 @@ async fn gtest_check_cancel_registration_waiting_participants() {
     ])
     .await;
 
-    env.service_client
+    env.poker
         .cancel_registration(None)
-        .with_args(|args| args.with_actor_id(new_player_id.into()))
-        .send_recv(env.program_id)
+        .with_actor_id(new_player_id.into())
         .await
         .unwrap();
 
-    // check length of the waiting participants state (0)
     let waiting_participants = env.waiting_participants().await;
     assert_eq!(waiting_participants.len(), 0);
 }
@@ -605,24 +444,19 @@ async fn gtest_agg_key_calc() {
     env.register_players(&test_data).await;
     env.start_and_setup_game(&test_data).await;
 
-    // check length of the participants (old length)
     let participants = env.participants().await;
     assert_eq!(participants.len(), 6);
 
-    // check length of the waiting participants state (1)
-    let new_player_id = 48;
-    env.remoting
-        .system()
-        .mint_to(new_player_id, 1_000_000_000_000_000);
+    let new_player_id: u64 = 48;
+    env.system().mint_to(new_player_id, 1_000_000_000_000_000);
+
     let new_test_data = TestData::load_from_profile(TestDataProfile::SixPlayersNew);
     let new_player_pk = new_test_data.pks[5].1.clone();
     env.register(new_player_id, new_player_pk).await;
 
-    // check length of the waiting participants state (1)
     let waiting_participants = env.waiting_participants().await;
     assert_eq!(waiting_participants.len(), 1);
 
-    // preflop
     env.run_actions(vec![
         (USERS[2], poker_client::Action::Fold),
         (USERS[3], poker_client::Action::Fold),
@@ -631,24 +465,26 @@ async fn gtest_agg_key_calc() {
     ])
     .await;
 
-    env.service_client
+    env.poker
         .cancel_registration(None)
-        .with_args(|args| args.with_actor_id(new_player_id.into()))
-        .send_recv(env.program_id)
+        .with_actor_id(new_player_id.into())
         .await
         .unwrap();
 
-    // check length of the waiting participants state (0)
     let waiting_participants = env.waiting_participants().await;
     assert_eq!(waiting_participants.len(), 0);
 }
+
 struct TestEnvironment {
-    remoting: GTestRemoting,
+    env: GtestEnv,
     pts_id: ActorId,
-    program_id: ActorId,
-    service_client: poker_client::Poker<GTestRemoting>,
-    pts_service_client: pts_client::Pts<GTestRemoting>,
+    poker_id: ActorId,
+    pts_program: Actor<pts_client::PtsProgram, GtestEnv>,
+    poker_program: Actor<poker_client::PokerProgram, GtestEnv>,
+    pts: PtsSvc,
+    poker: PokerSvc,
 }
+
 struct TestData {
     pks: Vec<(usize, poker_client::ZkPublicKey)>,
     sks: Vec<(usize, ZkSecretKey)>,
@@ -721,7 +557,11 @@ impl TestData {
 }
 
 impl TestEnvironment {
-    async fn setup(data: TestDataProfile) -> (Self, TestData) {
+    fn system(&self) -> &System {
+        self.env.system()
+    }
+
+    async fn setup(profile: TestDataProfile) -> (Self, TestData) {
         let system = System::new();
         system.init_logger();
 
@@ -731,80 +571,82 @@ impl TestEnvironment {
         }
 
         // Setup BLS builtin mock
-        let builtin_mock = BlsBuiltinMock;
-        let builtin_program = Program::mock_with_id(&system, BUILTIN_BLS381, builtin_mock);
+        let builtin_program = Program::mock_with_id(&system, BUILTIN_BLS381, BlsBuiltinMock);
         let init_message_id = builtin_program.send_bytes(USERS[0], b"Doesn't matter");
         let block_run_result = system.run_next_block();
         assert!(block_run_result.succeed.contains(&init_message_id));
 
-        let remoting = GTestRemoting::new(system, USERS[0].into());
+        // New env
+        let env = GtestEnv::new(system, USERS[0].into());
 
         // Load test data
-        let test_data = TestData::load_from_profile(data);
+        let test_data = TestData::load_from_profile(profile);
 
-        // Setup PTS system
-        let pts_id = Self::setup_pts_system(&remoting).await;
+        // Deploy PTS
+        let pts_program = Self::deploy_pts(&env).await;
+        let pts_id = pts_program.id();
 
-        // Setup poker program
-        let program_id = Self::setup_poker_program(&remoting, pts_id, &test_data.pks[0].1).await;
+        // Deploy Poker (+ zk_verification)
+        let poker_program = Self::deploy_poker(&env, pts_id, &test_data.pks[0].1).await;
+        let poker_id = poker_program.id();
 
-        // Create service clients
-        let service_client = poker_client::Poker::new(remoting.clone());
-        let mut pts_service_client = pts_client::Pts::new(remoting.clone());
+        // Service handles
+        let mut pts = pts_program.pts();
+        let poker = poker_program.poker();
 
         // Add poker program as PTS admin
-        pts_service_client
-            .add_admin(program_id)
-            .send_recv(pts_id)
-            .await
-            .unwrap();
+        pts.add_admin(poker_id).await.unwrap();
 
         let env = TestEnvironment {
-            remoting,
+            env,
             pts_id,
-            program_id,
-            service_client,
-            pts_service_client,
+            poker_id,
+            pts_program,
+            poker_program,
+            pts,
+            poker,
         };
 
         (env, test_data)
     }
 
-    async fn setup_pts_system(remoting: &GTestRemoting) -> ActorId {
-        let pts_code_id = remoting.system().submit_code(pts::WASM_BINARY);
-        let pts_factory = pts_client::PtsFactory::new(remoting.clone());
+    async fn deploy_pts(env: &GtestEnv) -> Actor<pts_client::PtsProgram, GtestEnv> {
+        let pts_code_id = env.system().submit_code(::pts::WASM_BINARY);
+
         let accural: u128 = 10_000;
         let time_ms_between_balance_receipt: u64 = 10_000;
 
-        pts_factory
+        env.deploy::<pts_client::PtsProgram>(pts_code_id, b"salt-pts".to_vec())
             .new(accural, time_ms_between_balance_receipt)
-            .send_recv(pts_code_id, b"salt")
             .await
             .unwrap()
     }
 
-    async fn setup_poker_program(
-        remoting: &GTestRemoting,
+    async fn deploy_poker(
+        env: &GtestEnv,
         pts_id: ActorId,
         admin_pk: &ZkPublicKey,
-    ) -> ActorId {
+    ) -> Actor<poker_client::PokerProgram, GtestEnv> {
         let shuffle_vkey_bytes =
             ZkLoaderData::load_verifying_key("tests/test_data/shuffle_vkey.json");
 
-        let zk_code_id = remoting.system().submit_code(zk_verification::WASM_BINARY);
-        let zk_factory = zk_verification_client::ZkVerificationFactory::new(remoting.clone());
-
-        let zk_program_id = zk_factory
+        // zk verification
+        let zk_code_id = env.system().submit_code(::zk_verification::WASM_BINARY);
+        let zk_program = env
+            .deploy::<zk_verification_client::ZkVerificationProgram>(
+                zk_code_id,
+                b"salt-zk".to_vec(),
+            )
             .new(shuffle_vkey_bytes)
-            .send_recv(zk_code_id, b"salt")
             .await
             .unwrap();
-        let program_code_id = remoting.system().submit_code(poker::WASM_BINARY);
-        let program_factory = poker_client::PokerFactory::new(remoting.clone());
 
-        program_factory
+        // poker
+        let poker_code_id = env.system().submit_code(::poker::WASM_BINARY);
+
+        env.deploy::<poker_client::PokerProgram>(poker_code_id, b"salt-poker".to_vec())
             .new(
-                GameConfig {
+                Config {
                     admin_id: USERS[0].into(),
                     admin_name: "Player_1".to_string(),
                     lobby_name: "Lobby name".to_string(),
@@ -821,125 +663,105 @@ impl TestEnvironment {
                 pts_id,
                 admin_pk.clone(),
                 None,
-                zk_program_id,
+                zk_program.id(),
             )
-            .send_recv(program_code_id, b"salt")
             .await
             .unwrap()
     }
 
     async fn register_players(&mut self, test_data: &TestData) {
-        println!("REGISTER");
-
-        // Get initial accurals for all users
-        for &user_id in &USERS {
-            self.pts_service_client
-                .get_accural()
-                .with_args(|args| args.with_actor_id(user_id.into()))
-                .send_recv(self.pts_id)
-                .await
-                .unwrap();
+        // 1) PTS: initialize accural for all users
+        {
+            let pts = &mut self.pts;
+            for &user_id in &USERS {
+                pts.get_accural()
+                    .with_actor_id(user_id.into())
+                    .await
+                    .unwrap();
+            }
         }
 
-        // Register players (skip index 0 as it's admin)
-        for (i, user) in USERS.iter().enumerate().skip(1) {
-            self.service_client
-                .register("Player".to_string(), test_data.pks[i].1.clone(), None)
-                .with_args(|args| args.with_actor_id((*user).into()))
-                .send_recv(self.program_id)
-                .await
-                .unwrap();
+        // 2) Poker: register players (skip index 0 as admin)
+        {
+            let poker = &mut self.poker;
+            for (i, user) in USERS.iter().enumerate().skip(1) {
+                poker.register("Player".to_string(), test_data.pks[i].1.clone(), None)
+                    .with_actor_id((*user).into())
+                    .await
+                    .unwrap();
+            }
         }
     }
 
     async fn start_and_setup_game(&mut self, test_data: &TestData) {
         println!("START GAME");
-        self.service_client
-            .start_game(None)
-            .send_recv(self.program_id)
-            .await
-            .unwrap();
+        self.poker.start_game(None).await.unwrap();
         self.check_status(Status::WaitingShuffleVerification).await;
 
         println!("SHUFFLE");
-        self.service_client
-            .shuffle_deck(
-                test_data.encrypted_deck.clone(),
-                test_data.shuffle_proofs.clone(),
-            )
-            .send_recv(self.program_id)
+        self.poker
+            .shuffle_deck(test_data.encrypted_deck.clone(), test_data.shuffle_proofs.clone())
             .await
             .unwrap();
+
         self.check_status(Status::WaitingPartialDecryptionsForPlayersCards)
             .await;
 
         println!("DECRYPT");
 
-        let partial_decs = get_decs_from_proofs(&test_data.decrypt_proofs.clone());
+        let partial_decs = get_decs_from_proofs(&test_data.decrypt_proofs);
 
         let g = G::generator();
+
         for (i, user) in USERS.iter().enumerate() {
-            let pk = deserialize_public_key(&(test_data.pks[i].1.clone()));
+            let pk = deserialize_public_key(&test_data.pks[i].1);
             let sk = test_data.sks[i].1.scalar;
-            let mut items = Vec::new();
+
+            let mut items = Vec::with_capacity(10);
+
             for k in 0..10 {
-                let c0 = deserialize_bandersnatch_coords(&partial_decs[10 * i + k].0.clone());
-                println!("c0 {:?}", partial_decs[10 * i + k].0.clone());
-                let delta_c0 = deserialize_bandersnatch_coords(&partial_decs[10 * i + k].1.clone());
-                println!("delta_c0 {:?}", partial_decs[10 * i + k].1.clone());
+                let c0 = deserialize_bandersnatch_coords(&partial_decs[10 * i + k].0);
+                let delta_c0 = deserialize_bandersnatch_coords(&partial_decs[10 * i + k].1);
                 let delta_c0_neg = -delta_c0;
 
                 let proof = prove(g, pk, c0, delta_c0_neg, sk);
 
-                let item = PartialDec {
+                items.push(PartialDec {
                     c0: partial_decs[10 * i + k].0.clone(),
                     delta_c0: partial_decs[10 * i + k].1.clone(),
                     proof: proof.to_bytes(),
-                };
-                items.push(item.clone());
+                });
             }
 
-            self.service_client
+            self.poker
                 .submit_partial_decryptions(items, None)
-                .with_args(|args| args.with_actor_id((*user).into()))
-                .send_recv(self.program_id)
+                .with_actor_id((*user).into())
                 .await
                 .unwrap();
         }
 
-        self.check_status(Status::Play {
-            stage: Stage::PreFlop,
-        })
-        .await;
+        self.check_status(Status::Play { stage: Stage::PreFlop })
+            .await;
     }
 
     async fn restart_game(&mut self) {
-        self.service_client
-            .restart_game(None)
-            .send_recv(self.program_id)
-            .await
-            .unwrap();
+        self.poker.restart_game(None).await.unwrap();
     }
 
     async fn delete_player(&mut self, id: u64) {
-        self.service_client
-            .delete_player(id.into(), None)
-            .send_recv(self.program_id)
-            .await
-            .unwrap();
+        self.poker.delete_player(id.into(), None).await.unwrap();
     }
 
     async fn register(&mut self, id: u64, pk: ZkPublicKey) {
-        self.pts_service_client
+        self.pts
             .get_accural()
-            .with_args(|args| args.with_actor_id(id.into()))
-            .send_recv(self.pts_id)
+            .with_actor_id(id.into())
             .await
             .unwrap();
-        self.service_client
+
+        self.poker
             .register("".to_string(), pk, None)
-            .with_args(|args| args.with_actor_id(id.into()))
-            .send_recv(self.program_id)
+            .with_actor_id(id.into())
             .await
             .unwrap();
     }
@@ -947,10 +769,9 @@ impl TestEnvironment {
     pub async fn run_actions(&mut self, moves: Vec<(u64, poker_client::Action)>) {
         for (user_id, action) in moves {
             println!("action {action:?}");
-            self.service_client
+            self.poker
                 .turn(action, None)
-                .with_args(|args| args.with_actor_id(user_id.into()))
-                .send_recv(self.program_id)
+                .with_actor_id(user_id.into())
                 .await
                 .unwrap();
         }
@@ -961,30 +782,34 @@ impl TestEnvironment {
             .table_cards_proofs
             .as_ref()
             .expect("No table_cards_proofs for this data profile");
+
         let g = G::generator();
+
         for (i, user) in USERS.iter().enumerate() {
             let partial_decs = get_decs_from_proofs(&table_cards_proofs[i].1.1[range.clone()]);
-            let pk = deserialize_public_key(&(test_data.pks[i].1.clone()));
+
+            let pk = deserialize_public_key(&test_data.pks[i].1);
             let sk = test_data.sks[i].1.scalar;
-            let mut items = Vec::new();
+
+            let mut items = Vec::with_capacity(partial_decs.len());
+
             for dec in partial_decs {
-                let c0 = deserialize_bandersnatch_coords(&dec.0.clone());
-                let delta_c0 = deserialize_bandersnatch_coords(&dec.1.clone());
+                let c0 = deserialize_bandersnatch_coords(&dec.0);
+                let delta_c0 = deserialize_bandersnatch_coords(&dec.1);
                 let delta_c0_neg = -delta_c0;
 
                 let proof = prove(g, pk, c0, delta_c0_neg, sk);
 
-                let item = PartialDec {
+                items.push(PartialDec {
                     c0: dec.0.clone(),
                     delta_c0: dec.1.clone(),
                     proof: proof.to_bytes(),
-                };
-                items.push(item.clone());
+                });
             }
-            self.service_client
+
+            self.poker
                 .submit_table_partial_decryptions(items, None)
-                .with_args(|args| args.with_actor_id((*user).into()))
-                .send_recv(self.program_id)
+                .with_actor_id((*user).into())
                 .await
                 .unwrap();
         }
@@ -992,60 +817,57 @@ impl TestEnvironment {
 
     async fn reveal_player_cards(&mut self, test_data: &TestData) {
         println!("Players reveal their cards..");
+
         let player_cards = test_data
             .player_cards
             .as_ref()
             .expect("No player_cards for this data profile");
+
         let (_, card_map) = init_deck_and_card_map();
         let hands = build_player_card_disclosure(player_cards.clone(), &card_map);
+
         let g = G::generator();
+
         for i in 0..USERS.len() {
             let proofs = hands[i].1.clone();
             let partial_decs = get_decs_from_proofs(&proofs);
-            let pk = deserialize_public_key(&(test_data.pks[i].1.clone()));
+
+            let pk = deserialize_public_key(&test_data.pks[i].1);
             let sk = test_data.sks[i].1.scalar;
-            let mut items = Vec::new();
+
+            let mut items = Vec::with_capacity(partial_decs.len());
+
             for dec in partial_decs {
-                let c0 = deserialize_bandersnatch_coords(&dec.0.clone());
-                let delta_c0 = deserialize_bandersnatch_coords(&dec.1.clone());
+                let c0 = deserialize_bandersnatch_coords(&dec.0);
+                let delta_c0 = deserialize_bandersnatch_coords(&dec.1);
                 let delta_c0_neg = -delta_c0;
 
                 let proof = prove(g, pk, c0, delta_c0_neg, sk);
 
-                let item = PartialDec {
+                items.push(PartialDec {
                     c0: dec.0.clone(),
                     delta_c0: dec.1.clone(),
                     proof: proof.to_bytes(),
-                };
-                items.push(item.clone());
+                });
             }
-            self.service_client
+
+            self.poker
                 .card_disclosure(items, None)
-                .with_args(|args| args.with_actor_id(USERS[i].into()))
-                .send_recv(self.program_id)
+                .with_actor_id(USERS[i].into())
                 .await
                 .unwrap();
         }
     }
 
     async fn print_table_cards(&mut self) {
-        let table_cards = self
-            .service_client
-            .revealed_table_cards()
-            .recv(self.program_id)
-            .await
-            .unwrap();
+        let table_cards = self.poker.revealed_table_cards().await.unwrap();
         println!("Cards on table {table_cards:?}");
     }
 
     async fn verify_game_finished(&mut self) -> Status {
-        let result = self
-            .service_client
-            .status()
-            .recv(self.program_id)
-            .await
-            .unwrap();
+        let result = self.poker.status().await.unwrap();
         println!("Final result: {result:?}");
+
         assert!(
             matches!(result, Status::Finished { .. }),
             "Game should be finished"
@@ -1054,93 +876,78 @@ impl TestEnvironment {
     }
 
     async fn participants(&self) -> Vec<(ActorId, poker_client::Participant)> {
-        let participants = self
-            .service_client
-            .participants()
-            .recv(self.program_id)
-            .await
-            .unwrap();
-
-        participants
+        self.poker.participants().await.unwrap()
     }
 
     async fn waiting_participants(&self) -> Vec<(ActorId, poker_client::Participant)> {
-        let participants = self
-            .service_client
-            .waiting_participants()
-            .recv(self.program_id)
-            .await
-            .unwrap();
-
-        participants
+        self.poker.waiting_participants().await.unwrap()
     }
 
     async fn check_status(&mut self, expected_status: Status) {
-        let result = self
-            .service_client
-            .status()
-            .recv(self.program_id)
-            .await
-            .unwrap();
+        let result = self.poker.status().await.unwrap();
         assert_eq!(result, expected_status);
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct BlsBuiltinMock;
+
 impl WasmProgram for BlsBuiltinMock {
+    fn clone_boxed(&self) -> Box<dyn WasmProgram + 'static> {
+        Box::new(self.clone())
+    }
+
     fn init(&mut self, _payload: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
         Ok(Some(vec![]))
     }
 
     fn handle(&mut self, payload: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
         let request = Request::decode(&mut payload.as_slice()).expect("Unable to decode payload");
+
         let result = match request {
             Request::MultiMillerLoop { a, b } => {
                 let points_g1 = ArkScale::<Vec<G1Affine>>::decode(&mut a.as_slice())
-                    .expect("Unable to decode to Vec<G1>");
+                    .expect("Unable to decode to Vec<G1Affine>");
                 let points_g2 = ArkScale::<Vec<G2Affine>>::decode(&mut b.as_slice())
-                    .expect("Unable to decode to Vec<G2>");
+                    .expect("Unable to decode to Vec<G2Affine>");
 
                 let miller_result: ArkScale<Gt> =
                     Bls12_381::multi_miller_loop(&points_g1.0, &points_g2.0)
                         .0
                         .into();
+
                 Response::MultiMillerLoop(miller_result.encode()).encode()
             }
+
             Request::FinalExponentiation { f } => {
                 let f = ArkScale::<Gt>::decode(&mut f.as_slice()).expect("Unable to decode to Gt");
+
                 let exp_result: ArkScale<Gt> =
                     Bls12_381::final_exponentiation(MillerLoopOutput(f.0))
                         .unwrap()
                         .0
                         .into();
+
                 Response::FinalExponentiation(exp_result.encode()).encode()
             }
+
             Request::MultiScalarMultiplicationG1 { bases, scalars } => {
                 let bases = ArkScale::<Vec<G1Affine>>::decode(&mut bases.as_slice())
-                    .expect("Unable to decode to Vec<G1>");
+                    .expect("Unable to decode to Vec<G1Affine>");
                 let scalars =
                     ArkScale::<Vec<<G1 as Group>::ScalarField>>::decode(&mut scalars.as_slice())
-                        .expect("Unable to decode to Vec<G2>");
+                        .expect("Unable to decode to Vec<ScalarField>");
+
                 let result: ArkScaleProjective<G1> = G1::msm(&bases.0, &scalars.0).unwrap().into();
                 Response::MultiScalarMultiplicationG1(result.encode()).encode()
             }
+
             _ => unreachable!(),
         };
+
         Ok(Some(result))
     }
 
-    fn handle_reply(&mut self, _payload: Vec<u8>) -> Result<(), &'static str> {
-        Ok(())
-    }
-    /// Signal handler with given `payload`.
-    fn handle_signal(&mut self, _payload: Vec<u8>) -> Result<(), &'static str> {
-        Ok(())
-    }
-    /// State of wasm program.
-    ///
-    /// See [`Program::read_state`] for the usage.
     fn state(&mut self) -> Result<Vec<u8>, &'static str> {
         Ok(vec![])
     }
@@ -1148,8 +955,10 @@ impl WasmProgram for BlsBuiltinMock {
     fn debug(&mut self, _data: &str) {}
 }
 
-pub fn get_decs_from_proofs(proofs: &[VerificationVariables]) -> Vec<([Vec<u8>; 3], [Vec<u8>; 3])> {
-    let mut results = Vec::new();
+pub fn get_decs_from_proofs(
+    proofs: &[VerificationVariables],
+) -> Vec<([Vec<u8>; 3], [Vec<u8>; 3])> {
+    let mut results = Vec::with_capacity(proofs.len());
     for proof in proofs {
         let c0 = [
             proof.public_input[1].clone(),
@@ -1204,7 +1013,6 @@ fn hash_to_fr(points: &[G]) -> Fr {
         let affine = p.into_affine();
         let x_bytes = affine.x.into_bigint().to_bytes_le();
         let y_bytes = affine.y.into_bigint().to_bytes_le();
-
         hasher.update(x_bytes);
         hasher.update(y_bytes);
     }
@@ -1215,13 +1023,13 @@ fn hash_to_fr(points: &[G]) -> Fr {
 
 // prove: D = c1^sk and pk = g^sk
 pub fn prove(g: G, pk: G, c1: G, d: G, sk: Fr) -> ChaumPedersenProof {
-    let r = Fr::rand(&mut rand::thread_rng());
+    // Deterministic r: avoids rand dependency in tests
+    let r = hash_to_fr(&[g, pk, c1, d]);
 
     let a = g * r;
     let b = c1 * r;
 
     let c = hash_to_fr(&[g, pk, c1, d, a, b]);
-
     let z = r + c * sk;
 
     ChaumPedersenProof { a, b, z }
