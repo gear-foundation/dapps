@@ -7,17 +7,17 @@ use blake2::{Blake2b512, Digest};
 use gtest::WasmProgram;
 use hex_literal::hex;
 
+use poker_client::Poker as ClientPoker;
 use poker_client::ZkPublicKey;
+use poker_client::poker::Poker;
 use poker_client::{
     ChaumPedersenProofBytes, Config, PartialDec, PokerCtors, SessionConfig, Stage, Status,
     VerificationVariables,
 };
-use poker_client::poker::Poker;
-use poker_client::Poker as ClientPoker;
 
+use pts_client::Pts as ClientPts;
 use pts_client::PtsCtors;
 use pts_client::pts::Pts;
-use pts_client::Pts as ClientPts;
 
 use zk_verification_client::ZkVerificationCtors;
 
@@ -39,14 +39,14 @@ const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
 ));
 
 use gbuiltin_bls381::{
+    Request, Response,
     ark_bls12_381::{Bls12_381, G1Affine, G1Projective as G1, G2Affine},
     ark_ec::{
-        pairing::{MillerLoopOutput, Pairing},
         Group, VariableBaseMSM,
+        pairing::{MillerLoopOutput, Pairing},
     },
     ark_scale,
     ark_scale::hazmat::ArkScaleProjective,
-    Request, Response,
 };
 
 use gstd::prelude::*;
@@ -76,7 +76,8 @@ async fn test_check_auto_fold() {
     env.register_players(&test_data).await;
     env.start_and_setup_game(&test_data).await;
 
-    env.run_actions(vec![(USERS[2], poker_client::Action::Call)]).await;
+    env.run_actions(vec![(USERS[2], poker_client::Action::Call)])
+        .await;
 
     let betting = env.poker.betting().await.unwrap();
     println!("betting: {betting:?}");
@@ -91,7 +92,8 @@ async fn test_check_auto_fold() {
         env.system().run_next_block();
     }
 
-    env.run_actions(vec![(USERS[0], poker_client::Action::Call)]).await;
+    env.run_actions(vec![(USERS[0], poker_client::Action::Call)])
+        .await;
 
     let betting = env.poker.betting().await.unwrap();
     println!("betting: {betting:?}");
@@ -248,7 +250,11 @@ async fn gtest_check_null_balance() {
         for winner in winners.iter() {
             participants.iter().for_each(|(id, info)| {
                 if winner == id {
-                    assert_eq!(info.balance, prize / winners.len() as u128, "Wrong balance!");
+                    assert_eq!(
+                        info.balance,
+                        prize / winners.len() as u128,
+                        "Wrong balance!"
+                    );
                 }
             });
         }
@@ -368,7 +374,10 @@ async fn gtest_check_cancel_registration_and_turn() {
     env.check_status(Status::Registration).await;
 
     env.start_and_setup_game(&test_data).await;
-    env.check_status(Status::Play { stage: Stage::PreFlop }).await;
+    env.check_status(Status::Play {
+        stage: Stage::PreFlop,
+    })
+    .await;
 
     env.run_actions(vec![
         (USERS[2], poker_client::Action::Fold),
@@ -685,7 +694,8 @@ impl TestEnvironment {
         {
             let poker = &mut self.poker;
             for (i, user) in USERS.iter().enumerate().skip(1) {
-                poker.register("Player".to_string(), test_data.pks[i].1.clone(), None)
+                poker
+                    .register("Player".to_string(), test_data.pks[i].1.clone(), None)
                     .with_actor_id((*user).into())
                     .await
                     .unwrap();
@@ -700,7 +710,10 @@ impl TestEnvironment {
 
         println!("SHUFFLE");
         self.poker
-            .shuffle_deck(test_data.encrypted_deck.clone(), test_data.shuffle_proofs.clone())
+            .shuffle_deck(
+                test_data.encrypted_deck.clone(),
+                test_data.shuffle_proofs.clone(),
+            )
             .await
             .unwrap();
 
@@ -740,8 +753,10 @@ impl TestEnvironment {
                 .unwrap();
         }
 
-        self.check_status(Status::Play { stage: Stage::PreFlop })
-            .await;
+        self.check_status(Status::Play {
+            stage: Stage::PreFlop,
+        })
+        .await;
     }
 
     async fn restart_game(&mut self) {
@@ -955,9 +970,7 @@ impl WasmProgram for BlsBuiltinMock {
     fn debug(&mut self, _data: &str) {}
 }
 
-pub fn get_decs_from_proofs(
-    proofs: &[VerificationVariables],
-) -> Vec<([Vec<u8>; 3], [Vec<u8>; 3])> {
+pub fn get_decs_from_proofs(proofs: &[VerificationVariables]) -> Vec<([Vec<u8>; 3], [Vec<u8>; 3])> {
     let mut results = Vec::with_capacity(proofs.len());
     for proof in proofs {
         let c0 = [
