@@ -96,9 +96,9 @@ pub fn delete_session_from_program(
     }
 
     if let Some(session) = sessions.remove(&session_for_account)
-        && session.expires_at_block > exec::block_height() {
-            return Err(SessionError::TooEarlyToDeleteSession);
-        
+        && session.expires_at_block > exec::block_height()
+    {
+        return Err(SessionError::TooEarlyToDeleteSession);
     }
     Ok(Event::SessionDeleted)
 }

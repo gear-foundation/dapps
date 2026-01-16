@@ -48,12 +48,13 @@ impl ZkVerificationService {
 #[allow(clippy::new_without_default)]
 impl ZkVerificationService {
     #[export]
-    pub async fn verify_shuffle(&mut self, instances: Vec<VerificationVariables>) {
+    pub async fn verify_shuffle(&mut self, instances: Vec<VerificationVariables>) -> bool {
         let storage = self.get();
         storage
             .shuffle_verification_context
             .verify_batch(instances)
             .await;
+        true
     }
 }
 

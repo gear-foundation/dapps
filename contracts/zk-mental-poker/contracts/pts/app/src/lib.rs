@@ -95,12 +95,13 @@ impl PtsService {
     }
 
     #[export]
-    pub fn transfer(&mut self, from: ActorId, to: ActorId, amount: u128) {
+    pub fn transfer(&mut self, from: ActorId, to: ActorId, amount: u128) -> bool {
         let storage = self.get_mut();
         let msg_src = msg::source();
         if !storage.admins.contains(&msg_src) && from != msg_src {
             panic!("Access denied");
         }
+
         if from == to {
             panic!("Cannot transfer to self");
         }
@@ -110,12 +111,11 @@ impl PtsService {
             .expect("Actor id must be exist");
 
         *from_balance = from_balance.checked_sub(amount).expect("Low balance");
-
         let (to_balance, _last_time) = storage.balances.entry(to).or_insert((0, 0));
         *to_balance = to_balance.checked_add(amount).unwrap_or(u128::MAX);
-
         self.emit_event(Event::Transfered { from, to, amount })
             .expect("Notification Error");
+        true
     }
 
     #[export]

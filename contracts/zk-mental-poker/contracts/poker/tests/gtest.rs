@@ -690,6 +690,7 @@ impl TestEnvironment {
             }
         }
 
+        println!("PTS {:?}", self.pts_id);
         // 2) Poker: register players (skip index 0 as admin)
         {
             let poker = &mut self.poker;
