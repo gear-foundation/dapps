@@ -936,11 +936,12 @@ pub fn exit_game(
             storage.players_to_battle_id.remove(&player_id);
             battle.check_end_game();
         } else {
-            if let Some((id, _)) = battle.waiting_player {
-                if id == player_id {
-                    battle.waiting_player = None;
-                }
+            if let Some((id, _)) = battle.waiting_player
+                && id == player_id
+            {
+                battle.waiting_player = None;
             }
+
             battle
                 .defeated_participants
                 .insert(player_id, player.clone());

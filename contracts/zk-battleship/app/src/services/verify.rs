@@ -124,14 +124,13 @@ async fn calculate_exponentiation(
         .await
         .expect("Received error reply");
     let response = Response::decode(&mut reply.as_slice()).expect("Error: decode response");
-    let exp = match response {
+    match response {
         Response::FinalExponentiation(v) => {
             ArkScale::<<Bls12_381 as Pairing>::TargetField>::decode(&mut v.as_slice())
                 .expect("Error: decode ArkScale")
         }
         _ => unreachable!(),
-    };
-    exp
+    }
 }
 
 pub fn get_move_prepared_inputs_bytes(public_input: PublicMoveInput, ic: Vec<Vec<u8>>) -> Vec<u8> {

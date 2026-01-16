@@ -21,10 +21,10 @@ pub fn start_game(
         &session_for_account,
         ActionsForSession::StartGame,
     );
-    if let Some(current_game) = storage.current_games.get(&player) {
-        if !current_game.game_over {
-            return Err(GameError::GameIsAlreadyStarted);
-        }
+    if let Some(current_game) = storage.current_games.get(&player)
+        && !current_game.game_over
+    {
+        return Err(GameError::GameIsAlreadyStarted);
     }
 
     let turn = random_turn(player);
@@ -466,7 +466,7 @@ fn get_player(
     session_for_account: &Option<ActorId>,
     actions_for_session: ActionsForSession,
 ) -> ActorId {
-    let player = match session_for_account {
+    match session_for_account {
         Some(account) => {
             let session = session_map
                 .get(account)
@@ -486,6 +486,5 @@ fn get_player(
             *account
         }
         None => *msg_source,
-    };
-    player
+    }
 }

@@ -94,11 +94,11 @@ fn check_if_session_exists(
         allowed_actions: _,
         expires_at_block,
     }) = session_map.get(account)
+        && *expires_at_block > block_height
     {
-        if *expires_at_block > block_height {
-            return Err(Error::AlreadyHaveActiveSession);
-        };
-    }
+        return Err(Error::AlreadyHaveActiveSession);
+    };
+
     Ok(())
 }
 
@@ -109,11 +109,12 @@ pub fn delete_session_from_program(
     if exec::program_id() != msg::source() {
         return Err(Error::AccessDenied);
     }
-    if let Some(session) = session_map.remove(&session_for_account) {
-        if session.expires_at_block > exec::block_height() {
-            return Err(Error::AccessDenied);
-        }
+    if let Some(session) = session_map.remove(&session_for_account)
+        && session.expires_at_block > exec::block_height()
+    {
+        return Err(Error::AccessDenied);
     }
+
     Ok(())
 }
 
@@ -128,7 +129,7 @@ pub fn get_player(
     session_for_account: &Option<ActorId>,
     actions_for_session: ActionsForSession,
 ) -> ActorId {
-    let player = match session_for_account {
+    match session_for_account {
         Some(account) => {
             let session = session_map
                 .get(account)
@@ -148,6 +149,5 @@ pub fn get_player(
             *account
         }
         None => source,
-    };
-    player
+    }
 }

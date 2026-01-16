@@ -166,8 +166,7 @@ impl Ships {
     }
     pub fn check_end_game(&self) -> bool {
         let vectors = [&self.ship_1, &self.ship_2, &self.ship_3, &self.ship_4];
-        let has_non_empty = !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty());
-        has_non_empty
+        !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty())
     }
 }
 

@@ -503,7 +503,7 @@ fn get_player(
     session_for_account: &Option<ActorId>,
     actions_for_session: ActionsForSession,
 ) -> ActorId {
-    let player = match session_for_account {
+    match session_for_account {
         Some(account) => {
             let session = session_map
                 .get(account)
@@ -523,6 +523,5 @@ fn get_player(
             *account
         }
         None => *msg_source,
-    };
-    player
+    }
 }

@@ -80,7 +80,7 @@ impl MultipleGame {
         let (id, _) = self
             .participants_data
             .iter()
-            .find(|(&id, _)| id != *player)
+            .find(|&(&id, _)| id != *player)
             .expect("The opponent must exist");
         *id
     }
