@@ -1,4 +1,5 @@
 #![allow(clippy::type_complexity)]
+#![allow(unused)]
 
 use ark_ec::{CurveGroup, PrimeGroup};
 use ark_ed_on_bls12_381_bandersnatch::{EdwardsProjective as G, Fq, Fr};
