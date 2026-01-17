@@ -5,8 +5,8 @@ use sails_rs::prelude::*;
 
 pub mod services;
 use services::{
-    session::{SessionConfig, SessionService, SessionStorage},
     CarRacesService, InitConfig,
+    session::{SessionConfig, SessionService, SessionStorage},
 };
 
 pub struct CarRacesProgram {

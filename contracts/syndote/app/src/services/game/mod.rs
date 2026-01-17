@@ -1,5 +1,5 @@
 #![allow(static_mut_refs)]
-use gstd::{exec, msg, ReservationId};
+use gstd::{ReservationId, exec, msg};
 use sails_rs::{
     collections::{HashMap, HashSet},
     gstd::service,

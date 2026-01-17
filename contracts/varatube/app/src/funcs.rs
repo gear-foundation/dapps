@@ -1,6 +1,6 @@
 use crate::{Event, Period, Price, Storage, SubscriberData, VaraTubeError};
 use extended_vft_client::vft::io as vft_io;
-use gstd::{exec, msg, ActorId};
+use gstd::{ActorId, exec, msg};
 use sails_rs::prelude::*;
 
 pub fn add_token_data(

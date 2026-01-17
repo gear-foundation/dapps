@@ -1,12 +1,12 @@
 use crate::sale::buy_item_with_value;
 use crate::{
-    get_owner, nft_transfer, sale::buy_item_with_fungible_tokens, transfer_tokens, Auction,
-    ContractId, Item, Market, MarketEvent, Price, TokenId, MINIMUM_VALUE,
+    Auction, ContractId, Item, MINIMUM_VALUE, Market, MarketEvent, Price, TokenId, get_owner,
+    nft_transfer, sale::buy_item_with_fungible_tokens, transfer_tokens,
 };
 use sails_rs::{
+    ActorId,
     collections::HashMap,
     gstd::{exec, msg},
-    ActorId,
 };
 
 pub async fn add_market_data(

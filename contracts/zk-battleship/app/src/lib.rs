@@ -4,7 +4,7 @@
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::should_implement_trait)]
 #![allow(clippy::too_many_arguments)]
-use gstd::{msg, ActorId};
+use gstd::{ActorId, msg};
 use sails_rs::gstd::program;
 use services::{admin, multiple, session, single, verify::VerifyingKeyBytes};
 pub mod services;

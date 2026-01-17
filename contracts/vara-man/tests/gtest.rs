@@ -2,11 +2,11 @@ use extended_vft_client::vft::io as vft_io;
 use gtest::{Log, Program};
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId, Encode, U256};
+use sails_rs::{ActorId, Encode, U256, gtest::System};
 
-use vara_man_client::vara_man::VaraMan;
 use vara_man_client::VaraMan as ClientVaraMan;
 use vara_man_client::VaraManCtors;
+use vara_man_client::vara_man::VaraMan;
 use vara_man_client::{Config, Level, Status};
 
 pub const ADMIN_ID: u64 = 10;

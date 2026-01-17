@@ -1,13 +1,13 @@
 use core::ops::AddAssign;
 use gbuiltin_bls381::{
+    Request, Response,
     ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine},
-    ark_ec::{pairing::Pairing, AffineRepr},
+    ark_ec::{AffineRepr, pairing::Pairing},
     ark_ff::PrimeField,
     ark_scale,
     ark_serialize::{CanonicalDeserialize, CanonicalSerialize},
-    Request, Response,
 };
-use gstd::{ext, msg, prelude::*, ActorId, Encode};
+use gstd::{ActorId, Encode, ext, msg, prelude::*};
 
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 
@@ -124,14 +124,13 @@ async fn calculate_exponentiation(
         .await
         .expect("Received error reply");
     let response = Response::decode(&mut reply.as_slice()).expect("Error: decode response");
-    let exp = match response {
+    match response {
         Response::FinalExponentiation(v) => {
             ArkScale::<<Bls12_381 as Pairing>::TargetField>::decode(&mut v.as_slice())
                 .expect("Error: decode ArkScale")
         }
         _ => unreachable!(),
-    };
-    exp
+    }
 }
 
 pub fn get_move_prepared_inputs_bytes(public_input: PublicMoveInput, ic: Vec<Vec<u8>>) -> Vec<u8> {
@@ -156,7 +155,7 @@ pub fn get_start_prepared_inputs_bytes(
     ic: Vec<Vec<u8>>,
 ) -> Vec<u8> {
     let public_inputs: Vec<Fr> = vec![
-        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error")
+        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error"),
     ];
 
     let gamma_abc_g1: Vec<G1Affine> = ic

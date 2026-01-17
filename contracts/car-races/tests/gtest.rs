@@ -4,14 +4,14 @@
 //     Config, InitConfig,
 // };
 
+use sails_rs::Encode;
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::Encode;
-use sails_rs::{gtest::Program, gtest::System, ActorId};
+use sails_rs::{ActorId, gtest::Program, gtest::System};
 
-use car_races_client::car_races_service::CarRacesService;
 use car_races_client::CarRaces;
 use car_races_client::CarRacesCtors;
+use car_races_client::car_races_service::CarRacesService;
 use car_races_client::{Config, GameState, InitConfig, SessionConfig, StrategyAction};
 
 const PATH_TO_STRATEGIES: [&str; 2] = [

@@ -1,10 +1,10 @@
 use sails_rs::client::*;
-use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 use sails_rs::gtest::System;
+use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
 
-use counter_client::counter::Counter;
 use counter_client::Counter as ClientCounter;
 use counter_client::CounterCtors;
+use counter_client::counter::Counter;
 
 const ACTOR_ID: u64 = 42;
 

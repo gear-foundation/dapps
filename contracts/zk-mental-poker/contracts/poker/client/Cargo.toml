@@ -1,0 +1,16 @@
+[package]
+name = "poker-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mockall = { version = "0.12", optional = true }
+sails-rs.workspace = true
+
+[build-dependencies]
+poker-app = { path = "../app" }
+sails-client-gen.workspace = true
+sails-idl-gen.workspace = true
+
+[features]
+mocks = ["sails-rs/mockall", "dep:mockall"]

@@ -1,7 +1,7 @@
 use self::storage::SessionsStorage;
 use crate::services;
 use core::fmt::Debug;
-use gstd::{msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
+use gstd::{ActorId, Decode, Encode, TypeInfo, msg, prelude::*};
 use sails_rs::gstd::service;
 use sails_rs::{event, export};
 pub use utils::*;

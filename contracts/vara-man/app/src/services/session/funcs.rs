@@ -95,10 +95,10 @@ pub fn delete_session_from_program(
         return Err(SessionError::MessageOnlyForProgram);
     }
 
-    if let Some(session) = sessions.remove(&session_for_account) {
-        if session.expires_at_block > exec::block_height() {
-            return Err(SessionError::TooEarlyToDeleteSession);
-        }
+    if let Some(session) = sessions.remove(&session_for_account)
+        && session.expires_at_block > exec::block_height()
+    {
+        return Err(SessionError::TooEarlyToDeleteSession);
     }
     Ok(Event::SessionDeleted)
 }
@@ -134,10 +134,9 @@ fn check_if_session_exists(
         allowed_actions: _,
         expires_at_block,
     }) = session_map.get(account)
+        && *expires_at_block > exec::block_height()
     {
-        if *expires_at_block > exec::block_height() {
-            return Err(SessionError::AlreadyHaveActiveSession);
-        }
+        return Err(SessionError::AlreadyHaveActiveSession);
     }
     Ok(())
 }

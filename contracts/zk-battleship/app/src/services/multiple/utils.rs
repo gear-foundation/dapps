@@ -1,5 +1,5 @@
 use crate::single::Entity;
-use gstd::{collections::HashMap, prelude::*, ActorId, Decode, Encode, TypeInfo};
+use gstd::{ActorId, Decode, Encode, TypeInfo, collections::HashMap, prelude::*};
 
 pub type MultipleGamesMap = HashMap<ActorId, MultipleGame>;
 pub type GamePairsMap = HashMap<ActorId, ActorId>;
@@ -80,7 +80,7 @@ impl MultipleGame {
         let (id, _) = self
             .participants_data
             .iter()
-            .find(|(&id, _)| id != *player)
+            .find(|&(&id, _)| id != *player)
             .expect("The opponent must exist");
         *id
     }

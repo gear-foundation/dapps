@@ -1,4 +1,4 @@
-use gstd::{exec, msg, ReservationId};
+use gstd::{ReservationId, exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 
 pub type PairId = u16;
@@ -73,23 +73,23 @@ pub struct Battle {
 
 impl Battle {
     pub fn check_end_game(&mut self) {
-        if self.participants.len() == 1 {
-            if let Some((&winner, _)) = self.participants.iter().next() {
-                if self.bid != 0 {
-                    msg::send_with_gas(
-                        winner,
-                        "",
-                        10_000,
-                        self.bid * (self.defeated_participants.len() + 1) as u128,
-                    )
-                    .expect("Error send value");
-                    // TODO: uncomment and switch https://github.com/gear-tech/gear/pull/4270
-                    // msg::send_with_gas(winner, "", 0, self.bid * (self.defeated_participants.len() + 1) as u128).expect("Error send value");
-                }
-                self.state = State::GameIsOver {
-                    winners: (winner, None),
-                };
+        if self.participants.len() == 1
+            && let Some((&winner, _)) = self.participants.iter().next()
+        {
+            if self.bid != 0 {
+                msg::send_with_gas(
+                    winner,
+                    "",
+                    10_000,
+                    self.bid * (self.defeated_participants.len() + 1) as u128,
+                )
+                .expect("Error send value");
+                // TODO: uncomment and switch https://github.com/gear-tech/gear/pull/4270
+                // msg::send_with_gas(winner, "", 0, self.bid * (self.defeated_participants.len() + 1) as u128).expect("Error send value");
             }
+            self.state = State::GameIsOver {
+                winners: (winner, None),
+            };
         }
     }
 
@@ -173,12 +173,13 @@ impl Battle {
         self.reservation
             .iter()
             .for_each(|(actor_id, reservation_id)| {
-                if let Some(waiting_player) = self.waiting_player {
-                    if waiting_player.0 == *actor_id {
-                        new_map_reservation.insert(waiting_player.0, *reservation_id);
-                        return;
-                    }
+                if let Some(waiting_player) = self.waiting_player
+                    && waiting_player.0 == *actor_id
+                {
+                    new_map_reservation.insert(waiting_player.0, *reservation_id);
+                    return;
                 }
+
                 let number_of_victories = self
                     .participants
                     .get(actor_id)

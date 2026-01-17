@@ -1,0 +1,15 @@
+[package]
+name = "zk-verification"
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+zk-verification-app = { path = "app" }
+
+[build-dependencies]
+zk-verification-app = { path = "app" }
+sails-rs = { workspace = true, features = ["build"] }
+
+[features]
+wasm-binary = []

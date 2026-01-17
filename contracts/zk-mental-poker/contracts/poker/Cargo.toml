@@ -1,0 +1,46 @@
+[package]
+name = "poker"
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+poker-app = { path = "app" }
+
+[build-dependencies]
+poker-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+pts = { path = "../pts", features = ["wasm-binary"] }
+poker = { path = ".", features = ["wasm-binary"] }
+poker-client = { path = "client" }
+pts-client = { path = "../pts/client" }
+zk-verification = { path = "../zk-verification", features = ["wasm-binary"] }
+zk-verification-client = { path = "../zk-verification/client"}
+poker-factory-client = { path = "../poker-factory/client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+gbuiltin-bls381.workspace = true
+gclient.workspace = true
+gtest.workspace = true
+gstd.workspace = true
+hex-literal.workspace = true
+gear-core.workspace = true
+ark-bls12-381.workspace = true
+ark-ec.workspace = true
+ark-ff.workspace = true
+ark-scale.workspace = true
+blake2.workspace = true
+serde.workspace = true
+ark-serialize.workspace = true
+hex.workspace = true
+serde_json = "1.0.140"
+num-bigint.workspace = true
+num-traits.workspace = true
+ark-ed-on-bls12-381-bandersnatch.workspace = true
+bincode.workspace = true
+
+[features]
+wasm-binary = []

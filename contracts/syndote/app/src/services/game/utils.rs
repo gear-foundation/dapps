@@ -1,9 +1,9 @@
-use crate::services::game::{Storage, PENALTY};
+use crate::services::game::{PENALTY, Storage};
 use sails_rs::{
+    ActorId,
     collections::{HashMap, HashSet},
     gstd::{exec, msg},
     prelude::*,
-    ActorId,
 };
 
 pub type Price = u32;

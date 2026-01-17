@@ -8,7 +8,7 @@ use crate::{
     services::session::storage::SessionsStorage,
 };
 use core::fmt::Debug;
-use gstd::{exec, ext, msg, ActorId, Decode, Encode, TypeInfo, Vec};
+use gstd::{ActorId, Decode, Encode, TypeInfo, Vec, exec, ext, msg};
 use sails_rs::gstd::service;
 use sails_rs::{event, export};
 pub use utils::*;

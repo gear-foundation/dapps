@@ -1,10 +1,10 @@
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId};
-use w3bstreaming_client::w_3_bstreaming::W3Bstreaming;
+use sails_rs::{ActorId, gtest::System};
 use w3bstreaming_client::Stream;
 use w3bstreaming_client::W3Bstreaming as ClientW3Bstreaming;
 use w3bstreaming_client::W3BstreamingCtors;
+use w3bstreaming_client::w_3_bstreaming::W3Bstreaming;
 
 const ACTOR_ID: u64 = 42;
 

@@ -3,7 +3,7 @@ use crate::services::game::{
     Appearance, Battle, BattleError, BattleResult, Config, Event, Move, Pair, Player,
     PlayerSettings, State, Storage,
 };
-use gstd::{exec, prelude::*, ReservationId};
+use gstd::{ReservationId, exec, prelude::*};
 use sails_rs::{gstd::msg, prelude::*};
 
 async fn check_owner(warrior_id: ActorId, msg_src: ActorId) -> Result<(), BattleError> {
@@ -936,11 +936,12 @@ pub fn exit_game(
             storage.players_to_battle_id.remove(&player_id);
             battle.check_end_game();
         } else {
-            if let Some((id, _)) = battle.waiting_player {
-                if id == player_id {
-                    battle.waiting_player = None;
-                }
+            if let Some((id, _)) = battle.waiting_player
+                && id == player_id
+            {
+                battle.waiting_player = None;
             }
+
             battle
                 .defeated_participants
                 .insert(player_id, player.clone());

@@ -1,12 +1,12 @@
-use concert_client::concert::Concert;
 use concert_client::ConcertCtors;
+use concert_client::concert::Concert;
 use concert_client::{Concert as ConcertClient, TokenMetadata};
-use extended_vmt_client::vmt::Vmt;
 use extended_vmt_client::ExtendedVmtClient;
 use extended_vmt_client::ExtendedVmtClientCtors;
+use extended_vmt_client::vmt::Vmt;
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId, U256};
+use sails_rs::{ActorId, U256, gtest::System};
 
 pub const USER_ID: u64 = 10;
 pub const TOKEN_ID: U256 = U256::one();

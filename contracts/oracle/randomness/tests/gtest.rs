@@ -1,11 +1,11 @@
 use sails_rs::client::*;
 use sails_rs::gtest::constants::DEFAULT_USERS_INITIAL_BALANCE;
-use sails_rs::{gtest::System, ActorId};
+use sails_rs::{ActorId, gtest::System};
 
-use randomness_client::randomness::Randomness;
 use randomness_client::Random;
 use randomness_client::Randomness as ClientRandomness;
 use randomness_client::RandomnessCtors;
+use randomness_client::randomness::Randomness;
 
 use ::randomness::WASM_BINARY;
 

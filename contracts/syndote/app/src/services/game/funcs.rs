@@ -1,5 +1,5 @@
 use crate::services::game::*;
-use gstd::{errors::Error, ReservationId, ReservationIdExt};
+use gstd::{ReservationId, ReservationIdExt, errors::Error};
 use sails_rs::ActorId;
 
 pub fn register(storage: &mut Storage, player: &ActorId) -> Result<Event, GameError> {
@@ -122,11 +122,13 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
             // if he misses the rent
             let account = storage.ownership[position as usize];
 
-            if account != player && account != ActorId::zero() {
-                if let Some((_, _, _, rent)) = storage.properties[position as usize] {
-                    player_info.debt = rent;
-                }
+            if account != player
+                && account != ActorId::zero()
+                && let Some((_, _, _, rent)) = storage.properties[position as usize]
+            {
+                player_info.debt = rent;
             }
+
             player_info.position = position;
             player_info.in_jail = position == JAIL_POSITION;
             state.players.insert(player, player_info.clone());
@@ -219,8 +221,8 @@ pub fn throw_roll(
         return Ok(Event::StrategicError);
     }
 
-    if let Some(properties) = properties_for_sale {
-        if sell_property(
+    if let Some(properties) = properties_for_sale
+        && sell_property(
             &storage.admin,
             &mut storage.ownership,
             &properties,
@@ -229,10 +231,9 @@ pub fn throw_roll(
             player_info,
         )
         .is_err()
-        {
-            return Ok(Event::StrategicError);
-        };
-    }
+    {
+        return Ok(Event::StrategicError);
+    };
 
     let (r1, r2) = get_rolls();
     if r1 == r2 {
@@ -266,8 +267,8 @@ pub fn add_gear(
             }
         };
 
-    if let Some(properties) = properties_for_sale {
-        if sell_property(
+    if let Some(properties) = properties_for_sale
+        && sell_property(
             &storage.admin,
             &mut storage.ownership,
             &properties,
@@ -276,10 +277,9 @@ pub fn add_gear(
             player_info,
         )
         .is_err()
-        {
-            return Ok(Event::StrategicError);
-        };
-    }
+    {
+        return Ok(Event::StrategicError);
+    };
 
     // if player did not check his balance itself
     if player_info.balance < COST_FOR_UPGRADE {
@@ -328,8 +328,8 @@ pub fn upgrade(
             }
         };
 
-    if let Some(properties) = properties_for_sale {
-        if sell_property(
+    if let Some(properties) = properties_for_sale
+        && sell_property(
             &storage.admin,
             &mut storage.ownership,
             &properties,
@@ -338,10 +338,9 @@ pub fn upgrade(
             player_info,
         )
         .is_err()
-        {
-            return Ok(Event::StrategicError);
-        };
-    }
+    {
+        return Ok(Event::StrategicError);
+    };
 
     // if player did not check his balance itself
     if player_info.balance < COST_FOR_UPGRADE {
@@ -397,8 +396,8 @@ pub fn buy_cell(
         };
     let position = player_info.position;
 
-    if let Some(properties) = properties_for_sale {
-        if sell_property(
+    if let Some(properties) = properties_for_sale
+        && sell_property(
             &storage.admin,
             &mut storage.ownership,
             &properties,
@@ -407,10 +406,9 @@ pub fn buy_cell(
             player_info,
         )
         .is_err()
-        {
-            return Ok(Event::StrategicError);
-        };
-    }
+    {
+        return Ok(Event::StrategicError);
+    };
 
     // if a player on the field that can't be sold (for example, jail)
     if let Some((account, _, price, _)) = storage.properties[position as usize].as_mut() {
@@ -450,8 +448,8 @@ pub fn pay_rent(
                 return Ok(Event::StrategicError);
             }
         };
-    if let Some(properties) = properties_for_sale {
-        if sell_property(
+    if let Some(properties) = properties_for_sale
+        && sell_property(
             &storage.admin,
             &mut storage.ownership,
             &properties,
@@ -460,10 +458,9 @@ pub fn pay_rent(
             player_info,
         )
         .is_err()
-        {
-            return Ok(Event::StrategicError);
-        };
-    }
+    {
+        return Ok(Event::StrategicError);
+    };
 
     let position = player_info.position;
     let account = storage.ownership[position as usize];
