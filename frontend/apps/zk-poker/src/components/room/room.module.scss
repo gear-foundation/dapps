@@ -96,3 +96,10 @@
   background-color: rgba(107, 101, 129, 0.15);
   border: 1px solid #6b6581;
 }
+
+.timer {
+  color: #eab308;
+  span {
+    min-width: auto;
+  }
+}

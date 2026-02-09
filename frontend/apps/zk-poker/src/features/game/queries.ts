@@ -12,6 +12,7 @@ export enum LobbyStatus {
 export type Lobby = {
   address: string;
   status: string;
+  createdAt: string;
   currentPlayers: { address: string }[];
 };
 
@@ -26,6 +27,7 @@ const GET_LOBBIES_QUERY = `
     lobbies(where: { status_not_eq: "killed" }) {
       address
       status
+      createdAt
       currentPlayers {
         address
       }
