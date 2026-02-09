@@ -1,0 +1,62 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #fff;
+}
+
+.heading {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.text {
+  font-size: 14px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.earned {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  text-align: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  div,
+  button {
+    width: 100%;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.place {
+  width: 24px;
+}
+
+.name {
+  flex: 1;
+  text-align: left;
+}
+
+.points {
+  min-width: 40px;
+  text-align: right;
+}

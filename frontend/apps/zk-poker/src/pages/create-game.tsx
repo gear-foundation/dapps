@@ -2,7 +2,9 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { BIG_BLIND, ROUTES, SMALL_BLIND, UI_TIME_COVER_MS } from '@/app/consts';
+import { Switcher } from '@dapps-frontend/ui';
+
+import { ROUTES, UI_TIME_COVER_MS } from '@/app/consts';
 import { BackIcon } from '@/assets/images';
 import { Button, Input, Slider } from '@/components';
 import { useUserName } from '@/features/game/hooks';
@@ -12,16 +14,24 @@ import { getPkBytes } from '@/features/zk/utils';
 
 import styles from './create-game.module.scss';
 
+const ONE_HOUR_MS = 60 * 60 * 1000;
+
 type FormData = {
   name: string;
   time: number;
   buyIn: number;
+  revival: boolean;
+  lobbyTimeLimitMs: number;
+  timeUntilStartMinutes: number;
 };
 
 const initialFormData: FormData = {
   name: '',
   time: 60,
   buyIn: 5000,
+  revival: false,
+  lobbyTimeLimitMs: ONE_HOUR_MS,
+  timeUntilStartMinutes: 0,
 };
 
 const buyInOptions = [
@@ -38,6 +48,13 @@ const timeOptions = [
   { value: 30, label: '30 sec' },
   { value: 60, label: '60 sec' },
   { value: 120, label: '120 sec' },
+];
+
+const LOBBY_TIME_LIMIT_OPTIONS = [
+  { value: ONE_HOUR_MS / 2, label: '30 min' },
+  { value: ONE_HOUR_MS, label: '1 hour' },
+  { value: 2 * ONE_HOUR_MS, label: '2 hours' },
+  { value: 0, label: 'No limit' },
 ];
 
 function CreateGame() {
@@ -79,10 +96,14 @@ function CreateGame() {
         time_per_move_ms: formData.time * 1000 + UI_TIME_COVER_MS,
         admin_id: account.decodedAddress,
         admin_name: userName,
-        big_blind: BIG_BLIND,
         lobby_name: formData.name,
-        small_blind: SMALL_BLIND,
         starting_bank: formData.buyIn,
+        revival: formData.revival,
+        lobby_time_limit_ms: formData.lobbyTimeLimitMs === 0 ? null : formData.lobbyTimeLimitMs,
+        time_until_start_ms:
+          formData.timeUntilStartMinutes != null && formData.timeUntilStartMinutes > 0
+            ? formData.timeUntilStartMinutes * 60 * 1000
+            : null,
       },
       pk: getPkBytes(pk),
     });
@@ -102,30 +123,8 @@ function CreateGame() {
           <h1 className={styles.title}>Create lobby</h1>
         </div>
 
-        <p className={styles.description}>
-          When creating a password, your lobby will automatically be marked as private. Leave it blank to create an open
-          lobby accessible to all
-        </p>
-
         <form className={styles.form} onSubmit={handleSubmit}>
           <Input name="name" value={formData.name} onChange={handleInputChange} placeholder="Lobby name" required />
-
-          {/* TODO: add password in next iterations */}
-          {/* <div className={styles.passwordContainer}>
-            <Input
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Password (Optional)"
-              type={showPassword ? 'text' : 'password'}
-            />
-            <Button
-              color="transparent"
-              onClick={() => setShowPassword(!showPassword)}
-              className={styles.showPasswordButton}>
-              {showPassword ? <HidePasswordIcon /> : <ShowPasswordIcon />}
-            </Button>
-          </div> */}
 
           <Slider
             label="Time per move"
@@ -135,11 +134,48 @@ function CreateGame() {
           />
 
           <Slider
+            label="Lobby time limit"
+            options={LOBBY_TIME_LIMIT_OPTIONS}
+            defaultValue={initialFormData.lobbyTimeLimitMs}
+            onChange={(value) => handleSelectChange('lobbyTimeLimitMs', value)}
+          />
+
+          <Slider
             label="Buy-in (entry fee in PTS)"
             options={buyInOptions}
             defaultValue={initialFormData.buyIn}
             onChange={(value) => handleSelectChange('buyIn', value)}
           />
+
+          <div className={styles.switcherRow}>
+            <div className={styles.switcherLabelRow}>
+              <span className={styles.switcherLabel}>Allow retired players</span>
+            </div>
+            <Switcher checked={formData.revival} onChange={(v) => setFormData({ ...formData, revival: v })} />
+          </div>
+
+          <div className={styles.startDelayBlock}>
+            <label className={styles.startDelayLabel} htmlFor="timeUntilStartMinutes">
+              Start in (minutes)
+            </label>
+            <Input
+              id="timeUntilStartMinutes"
+              name="timeUntilStartMinutes"
+              type="number"
+              className={styles.startDelayInput}
+              min={0}
+              value={formData.timeUntilStartMinutes === 0 ? '' : formData.timeUntilStartMinutes}
+              onChange={(e) => {
+                const raw = e.target.value;
+                const num = raw === '' ? 0 : parseInt(raw, 10);
+                setFormData({
+                  ...formData,
+                  timeUntilStartMinutes: Number.isNaN(num) || num < 0 ? 0 : num,
+                });
+              }}
+              placeholder="0 = immediately"
+            />
+          </div>
 
           <div className={styles.actions}>
             <Button color="contrast" onClick={handleCancel} disabled={isPending}>

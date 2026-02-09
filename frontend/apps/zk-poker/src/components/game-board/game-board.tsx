@@ -2,7 +2,6 @@ import { HexString } from '@gear-js/api';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
-import { BIG_BLIND } from '@/app/consts';
 import { PlayerSlot, PlayerCards, FlipCard } from '@/components';
 import { PlayerStatus } from '@/features/game/types';
 import { getCurrentHandRank } from '@/features/game/utils';
@@ -33,7 +32,7 @@ type Props = {
 
 const GameBoard = ({
   totalPot,
-  currentBet = BIG_BLIND,
+  currentBet,
   showCurrentBet,
   commonCardsFields,
   playerSlots,

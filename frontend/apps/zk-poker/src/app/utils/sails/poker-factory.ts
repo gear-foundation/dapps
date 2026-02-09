@@ -24,10 +24,11 @@ export class Program {
         admin_id: '[u8;32]',
         admin_name: 'String',
         lobby_name: 'String',
-        small_blind: 'u128',
-        big_blind: 'u128',
         starting_bank: 'u128',
         time_per_move_ms: 'u64',
+        revival: 'bool',
+        lobby_time_limit_ms: 'Option<u64>',
+        time_until_start_ms: 'Option<u64>',
       },
       ZkPublicKey: { x: '[u8; 32]', y: '[u8; 32]', z: '[u8; 32]' },
       SignatureInfo: { signature_data: 'SignatureData', signature: 'Option<Vec<u8>>' },
@@ -92,13 +93,52 @@ export class Program {
 export class PokerFactory {
   constructor(private _program: Program) {}
 
-  public addAdmin(new_admin_id: ActorId): TransactionBuilder<null> {
+public addAdmin(new_admin_id: ActorId): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
       ['PokerFactory', 'AddAdmin', new_admin_id],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public changeConfig(config: Config): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['PokerFactory', 'ChangeConfig', config],
+      '(String, String, Config)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public changePtsActorId(pts_actor_id: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['PokerFactory', 'ChangePtsActorId', pts_actor_id],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public changeZkVerificationId(zk_verification_id: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['PokerFactory', 'ChangeZkVerificationId', zk_verification_id],
       '(String, String, [u8;32])',
       'Null',
       this._program.programId,
@@ -292,6 +332,63 @@ export class PokerFactory {
           this._program.registry
             .createType('(String, String, {"lobby_address":"[u8;32]"})', message.payload)[2]
             .toJSON() as unknown as { lobby_address: ActorId },
+        );
+      }
+    });
+  }
+
+  public subscribeToConfigChangedEvent(
+    callback: (data: { config: Config }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'PokerFactory' && getFnNamePrefix(payload) === 'ConfigChanged') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"config":"Config"})', message.payload)[2]
+            .toJSON() as unknown as { config: Config },
+        );
+      }
+    });
+  }
+
+  public subscribeToZkVerificationIdChangedEvent(
+    callback: (data: { zk_verification_id: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'PokerFactory' && getFnNamePrefix(payload) === 'ZkVerificationIdChanged') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"zk_verification_id":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { zk_verification_id: ActorId },
+        );
+      }
+    });
+  }
+
+  public subscribeToPtsActorIdChangedEvent(
+    callback: (data: { pts_actor_id: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'PokerFactory' && getFnNamePrefix(payload) === 'PtsActorIdChanged') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"pts_actor_id":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { pts_actor_id: ActorId },
         );
       }
     });

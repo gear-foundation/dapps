@@ -2,8 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 
 import { graphqlClient } from '@/app/utils';
 
+export enum LobbyStatus {
+  CREATED = 'created',
+  STARTED = '{"registration":null}',
+  FINISHED = 'finished',
+  KILLED = 'killed',
+}
+
 export type Lobby = {
   address: string;
+  status: string;
   currentPlayers: { address: string }[];
 };
 
@@ -17,6 +25,7 @@ const GET_LOBBIES_QUERY = `
   query GetLobbies {
     lobbies(where: { status_not_eq: "killed" }) {
       address
+      status
       currentPlayers {
         address
       }

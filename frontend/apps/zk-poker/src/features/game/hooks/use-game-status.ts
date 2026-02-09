@@ -22,6 +22,7 @@ export const useGameStatus = () => {
     const isWaitingForAllTableCardsToBeDisclosed = Boolean(status && 'waitingForAllTableCardsToBeDisclosed' in status);
     const isGameStarted = !isRegistration && !isWaitingShuffleVerification && !isWaitingStart;
     const isFinished = status && 'finished' in status;
+    const isLobbyTimeFinished = Boolean(status && 'lobbyTimeFinished' in status);
     const isWaitingZk =
       isWaitingShuffleVerification ||
       isWaitingPartialDecryptionsForPlayersCards ||
@@ -48,6 +49,7 @@ export const useGameStatus = () => {
       isFinished,
       isWaitingZk,
       isActiveGame,
+      isLobbyTimeFinished,
       pots,
       refetchStatus,
     };

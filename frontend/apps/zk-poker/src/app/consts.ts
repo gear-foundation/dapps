@@ -26,8 +26,6 @@ export const ROUTES = {
   NOTFOUND: '*',
 };
 
-export const SMALL_BLIND = 5;
-export const BIG_BLIND = 10;
 export const MAX_PLAYERS = 8;
 export const UI_TIME_COVER_MS = 4000;
 export const SIGNLESS_ALLOWED_ACTIONS = ['AllActions' as const];
