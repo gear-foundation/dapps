@@ -2,7 +2,7 @@ import { IVoucherDetails } from '@gear-js/api';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 import { TypeRegistry } from '@polkadot/types';
 import { HexString } from '@polkadot/util/types';
-import { TransactionBuilder } from 'sails-js';
+import { TransactionBuilder, QueryBuilder } from 'sails-js';
 
 import { UseCreateSessionReturn } from '../hooks';
 
@@ -77,6 +77,7 @@ type ProgramSession = {
   key: ActorId;
   expires: number | string | bigint;
   allowed_actions: string[];
+  expires_at_block: number;
 };
 
 type SignatureData = {
@@ -88,7 +89,7 @@ type SignatureData = {
 type BaseProgram =
   | {
       session: {
-        sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => Promise<ProgramSession | null>;
+        sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => QueryBuilder<ProgramSession | null>;
         createSession: (signatureData: SignatureData, signature: `0x${string}` | null) => TransactionBuilder<null>;
         deleteSessionFromAccount: () => TransactionBuilder<null>;
         subscribeToSessionCreatedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
