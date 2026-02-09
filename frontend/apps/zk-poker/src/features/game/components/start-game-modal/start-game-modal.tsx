@@ -31,7 +31,7 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilSta
   const alert = useAlert();
   const { gameId } = useParams();
   const { account } = useAccount();
-  const { userName, setUserName } = useUserName();
+  const { userName, setUserName, isUserNameSet } = useUserName();
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const onEditProfile = () => {
@@ -202,9 +202,15 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilSta
               </div>
             )}
             <div className={styles.buttons}>
+              {isUserNameSet ? (
               <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending || isRetired}>
                 Join game
               </Button>
+              ) : (
+                <Button color="primary" onClick={onEditProfile} disabled={isRegisterPending}>
+                  Set your name
+                </Button>
+              )}
             </div>
           </>
         )}
