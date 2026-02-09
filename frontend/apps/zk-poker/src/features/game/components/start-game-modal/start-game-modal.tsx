@@ -185,7 +185,7 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilSta
 
         {isSpectator && isSeatAvailable && (
           <>
-            {!isRetired && (
+            {!isRetired && isUserNameSet && (
               <div className={styles.userName}>
                 <span className={styles.userNameText}>
                   <span className={styles.userNameLabel}>You are joining as</span> {userName}
@@ -203,9 +203,9 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilSta
             )}
             <div className={styles.buttons}>
               {isUserNameSet ? (
-              <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending || isRetired}>
-                Join game
-              </Button>
+                <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending || isRetired}>
+                  Join game
+                </Button>
               ) : (
                 <Button color="primary" onClick={onEditProfile} disabled={isRegisterPending}>
                   Set your name

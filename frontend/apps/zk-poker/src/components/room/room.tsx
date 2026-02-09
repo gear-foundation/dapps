@@ -9,6 +9,14 @@ import { Avatar } from '../avatar';
 
 import styles from './room.module.scss';
 
+type StatusVariant = 'live' | 'waiting' | 'completed';
+
+const getStatusDisplay = (status: string): { label: string; variant: StatusVariant } => {
+  if (status === 'created') return { label: 'Open', variant: 'waiting' };
+  if (status === 'finished') return { label: 'Closed', variant: 'completed' };
+  return { label: 'Live', variant: 'live' };
+};
+
 type Props = {
   name: string;
   currentPlayersCount: number;
@@ -17,16 +25,22 @@ type Props = {
   adminId: HexString;
   time: number;
   id: HexString;
+  status: string;
 };
 
-const Room = ({ name, currentPlayersCount, buyIn, time, adminName, adminId, id }: Props) => {
+const Room = ({ name, currentPlayersCount, buyIn, time, adminName, adminId, id, status }: Props) => {
   const formattedBuyIn = String(buyIn).slice(0, -3);
   const haveSeat = currentPlayersCount !== MAX_PLAYERS;
+  const { label, variant } = getStatusDisplay(status);
 
   return (
     <Link to={`/game/${id}`}>
       <div className={styles.container}>
         <Avatar className={styles.avatar} address={adminId} />
+        <div className={styles.statusContainer}>
+          <div className={clsx(styles.status, styles[`status_${variant}`])}>{label}</div>
+        </div>
+
         <div className={styles.roomInfo}>
           <div className={styles.roomHeader}>
             <h3 className={styles.roomTitle}>{name}</h3>

@@ -82,6 +82,7 @@ export default function Rooms() {
                 buyIn={Number(starting_bank)}
                 time={Number(time_per_move_ms) / 1000 - UI_TIME_COVER_MS / 1000}
                 id={address}
+                status={lobbiesMap?.[address]?.status || 'created'}
               />
             );
           })}
