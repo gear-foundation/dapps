@@ -15,8 +15,14 @@ import {
   YourTurn,
   ZkVerification,
 } from '@/components';
-import { GameEndModal, StartGameModal, type GameEndData } from '@/features/game/components';
-import { usePlayerCards, useGameStatus, usePlayerSlots, useTurn } from '@/features/game/hooks';
+import {
+  GameEndModal,
+  LobbyTimeFinishedModal,
+  LobbyTimer,
+  StartGameModal,
+  type GameEndData,
+} from '@/features/game/components';
+import { usePlayerCards, useGameStatus, usePlayerSlots, useTurn, useCountdown } from '@/features/game/hooks';
 import {
   useParticipantsQuery,
   useEventRegisteredSubscription,
@@ -50,6 +56,9 @@ import {
   useEventAdminChangedSubscription,
   useAllInPlayersQuery,
   useEventWaitingForAllTableCardsToBeDisclosedSubscription,
+  useBlindsQuery,
+  useEventLobbyTimeFinishedSubscription,
+  useRetiredPlayersQuery,
 } from '@/features/game/sails';
 import {
   useZkBackend,
@@ -64,6 +73,7 @@ import styles from './game.module.scss';
 function GamePage() {
   const navigate = useNavigate();
   const alert = useAlert();
+  const { account } = useAccount();
 
   const [gameEndData, setGameEndData] = useState<GameEndData | null>(null);
 
@@ -79,6 +89,7 @@ function GamePage() {
     isWaitingForAllTableCardsToBeDisclosed,
     isGameStarted,
     isFinished,
+    isLobbyTimeFinished,
     isWaitingZk,
     isActiveGame,
     pots,
@@ -88,16 +99,18 @@ function GamePage() {
   const { killMessage, isPending: isKillPending } = useKillMessage();
   const { cancelGameMessage, isPending: isCancelGamePending } = useCancelGameMessage();
   const { cancelRegistrationMessage, isPending: isCancelRegistrationPending } = useCancelRegistrationMessage();
+  const { retiredPlayers, refetch: refetchRetiredPlayers } = useRetiredPlayersQuery();
+  const isRetired = retiredPlayers?.some((address) => address === account?.decodedAddress);
 
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
 
-  const { account } = useAccount();
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
   const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
   const { refetch: refetchAllInPlayers } = useAllInPlayersQuery();
   const { refetch: refetchActiveParticipants } = useActiveParticipantsQuery();
   const { betting, refetch: refetchBetting } = useBettingQuery();
   const { bettingBank, refetch: refetchBettingBank } = useBettingBankQuery();
+  const { blinds } = useBlindsQuery();
   const { current_bet } = betting || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
@@ -115,6 +128,7 @@ function GamePage() {
     void refetchStatus();
     void refetchParticipants();
     void refetchActiveParticipants();
+    void refetchRetiredPlayers();
   };
 
   useEventRegisteredSubscription({ onData: onPlayersChanged });
@@ -244,6 +258,7 @@ function GamePage() {
 
   const { config, refetch: refetchConfig } = useConfigQuery();
   useEventAdminChangedSubscription({ onData: () => void refetchConfig() });
+  useEventLobbyTimeFinishedSubscription({ onData: () => void refetchStatus() });
 
   const isAdmin = account?.decodedAddress === config?.admin_id;
 
@@ -276,6 +291,9 @@ function GamePage() {
 
   const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress, isTurnTimeExpired } =
     useTurn(isActiveGame);
+
+  const { remainingMs: lobbyTimeRemainingMs } = useCountdown(config?.lobby_time_limit_ms);
+
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
 
   const commonCardsFields = [null, null, null, null, null].map((_, index) => {
@@ -351,20 +369,23 @@ function GamePage() {
       {isMyTurn && <div className={styles.bottomGlow} />}
       <div className={styles.content}>
         {config && (
-          <GameBoard
-            totalPot={gameEndData?.totalPot || totalPot}
-            currentBet={current_bet ? Number(current_bet) : undefined}
-            showCurrentBet={!isWaitingZk}
-            commonCardsFields={gameEndData?.commonCardsFields || commonCardsFields}
-            playerSlots={gameEndData?.playerSlots || playerSlots}
-            timePerMoveSec={timeToTurnEndSec}
-            onTimeEnd={onTimeEnd}
-          />
+          <>
+            <GameBoard
+              totalPot={gameEndData?.totalPot || totalPot}
+              currentBet={current_bet ? Number(current_bet) : undefined}
+              showCurrentBet={!isWaitingZk}
+              commonCardsFields={gameEndData?.commonCardsFields || commonCardsFields}
+              playerSlots={gameEndData?.playerSlots || playerSlots}
+              timePerMoveSec={timeToTurnEndSec}
+              onTimeEnd={onTimeEnd}
+            />
+            {lobbyTimeRemainingMs && <LobbyTimer remainingMs={lobbyTimeRemainingMs} />}
+          </>
         )}
         {isMyTurn && !isTurnTimeExpired && (
           <GameButtons
             currentBet={Number(current_bet || 0)}
-            bigBlind={Number(config?.big_blind || 0)}
+            bigBlind={Number(blinds?.[1] || 0)}
             myCurrentBet={myCurrentBet || 0}
             balance={myBalance}
           />
@@ -377,11 +398,17 @@ function GamePage() {
           isAdmin={isAdmin}
           participants={startGameParticipants}
           isDefaultExpanded={!gameEndData || isAdmin}
+          timeUntilStartMs={config.time_until_start_ms}
+          isRetired={isRetired}
         />
       )}
 
       {gameEndData && isGameEndModalOpen && (
         <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} isSpectator={isSpectator} />
+      )}
+
+      {isLobbyTimeFinished && (
+        <LobbyTimeFinishedModal isAdmin={isAdmin} isLoading={isKillPending} onCloseLobby={() => cancelGameMessage()} />
       )}
 
       {isWaitingZk &&

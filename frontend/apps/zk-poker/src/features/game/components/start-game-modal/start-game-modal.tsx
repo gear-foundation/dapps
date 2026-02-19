@@ -5,11 +5,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ENV, MAX_PLAYERS } from '@/app/consts';
-import { Copy, Exit } from '@/assets/images';
-import { Button, Modal } from '@/components';
+import { Copy, EditIcon, Exit } from '@/assets/images';
+import { Button, EditProfileModal, Modal } from '@/components';
 
-import { useThrottle } from '../../hooks';
+import { useThrottle, useCountdown, useUserName } from '../../hooks';
 import { useCancelRegistrationMessage, useKillMessage, useRegisterMessage, useStartGameMessage } from '../../sails';
+import { LobbyTimer } from '../lobby-timer';
 import { PlayersList } from '../players-list';
 
 import styles from './start-game-modal.module.scss';
@@ -18,20 +19,30 @@ type Props = {
   participants: [`0x${string}`, Participant][];
   isAdmin: boolean;
   isDefaultExpanded: boolean;
+  timeUntilStartMs?: number | string | bigint | null;
+  isRetired?: boolean;
 };
 
 const DRAG_THRESHOLD = 30;
 const MAX_HEIGHT = 350;
 const seats = Array.from({ length: MAX_PLAYERS }, (_, index) => index);
 
-const StartGameModal = ({ participants, isAdmin, isDefaultExpanded }: Props) => {
+const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilStartMs, isRetired }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
   const { account } = useAccount();
+  const { userName, setUserName, isUserNameSet } = useUserName();
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+
+  const onEditProfile = () => {
+    setIsEditProfileModalOpen(true);
+  };
+
   const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
   const { killMessage, isPending: isKillPending } = useKillMessage();
   const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
   const { registerMessage, isPending: isRegisterPending } = useRegisterMessage();
+  const { remainingMs, isRunning } = useCountdown(timeUntilStartMs);
 
   const players = participants.map(([address, { name, balance }]) => ({
     address,
@@ -166,18 +177,42 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded }: Props) => 
             <Button
               color="primary"
               onClick={() => startGameMessage()}
-              disabled={isStartGamePending || players.length < 2}>
+              disabled={isStartGamePending || players.length < 2 || isRunning}>
               Start game
             </Button>
           </div>
         )}
 
         {isSpectator && isSeatAvailable && (
-          <div className={styles.buttons}>
-            <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending}>
-              Join game
-            </Button>
-          </div>
+          <>
+            {!isRetired && isUserNameSet && (
+              <div className={styles.userName}>
+                <span className={styles.userNameText}>
+                  <span className={styles.userNameLabel}>You are joining as</span> {userName}
+                </span>
+                <Button
+                  color="plain"
+                  rounded
+                  size="small"
+                  className={styles.editButton}
+                  onClick={onEditProfile}
+                  disabled={isRegisterPending}>
+                  <EditIcon />
+                </Button>
+              </div>
+            )}
+            <div className={styles.buttons}>
+              {isUserNameSet ? (
+                <Button color="primary" onClick={() => registerMessage()} disabled={isRegisterPending || isRetired}>
+                  Join game
+                </Button>
+              ) : (
+                <Button color="primary" onClick={onEditProfile} disabled={isRegisterPending}>
+                  Set your name
+                </Button>
+              )}
+            </div>
+          </>
         )}
 
         {!isSpectator && !isAdmin && (
@@ -191,7 +226,22 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded }: Props) => 
             </Button>
           </div>
         )}
+
+        {isRetired && <p className={styles.retiredMessage}>You have been retired from the game</p>}
+
+        {isRunning && remainingMs && <LobbyTimer remainingMs={remainingMs} isBeforeStart />}
       </div>
+
+      {isEditProfileModalOpen && (
+        <EditProfileModal
+          userName={userName}
+          onClose={() => setIsEditProfileModalOpen(false)}
+          onSave={(name) => {
+            setUserName(name);
+            setIsEditProfileModalOpen(false);
+          }}
+        />
+      )}
     </Modal>
   );
 };

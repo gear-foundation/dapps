@@ -122,3 +122,26 @@
     margin-bottom: 10px;
   }
 }
+
+.retiredMessage {
+  color: #89849f;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.userName {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 10px;
+  background-color: #18171c;
+  color: #ffffff;
+}
+
+.userNameLabel {
+  font-weight: 400;
+}

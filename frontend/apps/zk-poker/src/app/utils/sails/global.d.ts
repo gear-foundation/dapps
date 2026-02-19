@@ -12,13 +12,15 @@ declare global {
     admin_id: ActorId;
     admin_name: string;
     lobby_name: string;
-    small_blind: number | string | bigint;
-    big_blind: number | string | bigint;
     starting_bank: number | string | bigint;
     time_per_move_ms: number | string | bigint;
+    revival: boolean;
+    lobby_time_limit_ms: number | string | bigint | null;
+    time_until_start_ms: number | string | bigint | null;
   }
 
   // poker
+  export type Config = GameConfig;
   export type LobbyConfig = GameConfig;
 
   export interface SessionConfig {
@@ -121,7 +123,8 @@ declare global {
     | { play: { stage: Stage } }
     | { waitingForCardsToBeDisclosed: null }
     | { waitingForAllTableCardsToBeDisclosed: null }
-    | { finished: { pots: Array<[number | string | bigint, Array<ActorId>]> } };
+    | { finished: { pots: Array<[number | string | bigint, Array<ActorId>]> } }
+    | { lobbyTimeFinished: null };
 
   export type Stage =
     | 'PreFlop'

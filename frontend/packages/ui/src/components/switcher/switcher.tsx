@@ -10,7 +10,7 @@ type Props = {
   onChange?: (isChecked: boolean) => void;
 };
 
-function Switcher({ checked, disabled, size = 'default', defaultChecked = false, onChange }: Props) {
+function Switcher({ checked, disabled, size = 'default', defaultChecked, onChange }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.checked);
   };

@@ -68,23 +68,30 @@ export default function Rooms() {
         </form>
 
         <div className={styles.rooms}>
-          {sortedLobbies?.map(([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms }]) => {
-            const currentPlayers = lobbiesMap?.[address]?.currentPlayers;
-            const currentPlayersCount = currentPlayers ? currentPlayers.length : 1;
+          {sortedLobbies?.map(
+            ([address, { admin_name, admin_id, lobby_name, starting_bank, time_per_move_ms, time_until_start_ms }]) => {
+              const currentPlayers = lobbiesMap?.[address]?.currentPlayers;
+              const currentPlayersCount = currentPlayers?.length || 1;
+              const createdAt = lobbiesMap?.[address]?.createdAt;
+              const createdAtMs = createdAt ? new Date(createdAt).getTime() : null;
+              const startAtTimestampMs = createdAtMs ? createdAtMs + Number(time_until_start_ms ?? 0) : undefined;
 
-            return (
-              <Room
-                key={address}
-                name={lobby_name}
-                adminName={admin_name}
-                adminId={admin_id}
-                currentPlayersCount={currentPlayersCount}
-                buyIn={Number(starting_bank)}
-                time={Number(time_per_move_ms) / 1000 - UI_TIME_COVER_MS / 1000}
-                id={address}
-              />
-            );
-          })}
+              return (
+                <Room
+                  key={address}
+                  name={lobby_name}
+                  adminName={admin_name}
+                  adminId={admin_id}
+                  currentPlayersCount={currentPlayersCount}
+                  buyIn={Number(starting_bank)}
+                  time={Number(time_per_move_ms) / 1000 - UI_TIME_COVER_MS / 1000}
+                  id={address}
+                  status={lobbiesMap?.[address]?.status || 'created'}
+                  timeUntilStartMs={startAtTimestampMs}
+                />
+              );
+            },
+          )}
         </div>
       </div>
     </>

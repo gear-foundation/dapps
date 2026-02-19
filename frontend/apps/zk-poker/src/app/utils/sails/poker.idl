@@ -1,11 +1,12 @@
-type GameConfig = struct {
+type Config = struct {
   admin_id: actor_id,
   admin_name: str,
   lobby_name: str,
-  small_blind: u128,
-  big_blind: u128,
   starting_bank: u128,
   time_per_move_ms: u64,
+  revival: bool,
+  lobby_time_limit_ms: opt u64,
+  time_until_start_ms: opt u64,
 };
 
 type SessionConfig = struct {
@@ -119,6 +120,7 @@ type Status = enum {
   Finished: struct {
     pots: vec struct { u128, vec actor_id }
   },
+  LobbyTimeFinished,
 };
 
 type Stage = enum {
@@ -139,19 +141,11 @@ type SessionData = struct {
 };
 
 constructor {
-  New : (config: GameConfig, session_config: SessionConfig, pts_actor_id: actor_id, pk: ZkPublicKey, session_for_admin: opt SignatureInfo, zk_verification_id: actor_id);
+  New : (config: Config, session_config: SessionConfig, pts_actor_id: actor_id, pk: ZkPublicKey, session_for_admin: opt SignatureInfo, zk_verification_id: actor_id);
 };
 
 service Poker {
   CancelGame : (session_for_account: opt actor_id) -> null;
-  /// Cancels player registration and refunds their balance via PTS contract.
-  /// 
-  /// Panics if:
-  /// - current status is invalid for cancellation;
-  /// - caller is not a registered player.
-  /// 
-  /// Sends a transfer request to PTS contract to return points to the player.
-  /// Removes player data and emits `RegistrationCanceled` event on success.
   CancelRegistration : (session_for_account: opt actor_id) -> null;
   CardDisclosure : (player_decryptions: vec PartialDec, session_for_account: opt actor_id) -> null;
   /// Admin-only function to forcibly remove a player and refund their balance.
@@ -231,13 +225,18 @@ service Poker {
   query AlreadyInvestedInTheCircle : () -> vec struct { actor_id, u128 };
   query Betting : () -> opt BettingStage;
   query BettingBank : () -> vec struct { actor_id, u128 };
-  query Config : () -> GameConfig;
+  query Blinds : () -> struct { u128, u128 };
+  query Config : () -> Config;
+  query CurrentTime : () -> u64;
+  query EarnedPoints : () -> vec struct { actor_id, u128 };
   query EncryptedCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
   query EncryptedTableCards : () -> vec EncryptedCard;
   query FactoryActorId : () -> actor_id;
+  query LobbyGameStartTime : () -> u64;
   query Participants : () -> vec struct { actor_id, Participant };
   query PlayerCards : (player_id: actor_id) -> opt [EncryptedCard, 2];
   query PtsActorId : () -> actor_id;
+  query RetiredPlayers : () -> opt vec actor_id;
   query RevealedPlayers : () -> vec struct { actor_id, struct { Card, Card } };
   query RevealedTableCards : () -> vec Card;
   query Round : () -> u64;
@@ -287,6 +286,7 @@ service Poker {
       old_admin: actor_id,
       new_admin: actor_id,
     };
+    LobbyTimeFinished;
   }
 };
 

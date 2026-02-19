@@ -23,3 +23,4 @@ export { useEventWaitingForAllTableCardsToBeDisclosedSubscription } from './use-
 export { useEventKilledSubscription } from './use-event-killed-subscription';
 export { useEventRegisteredToTheNextRoundSubscription } from './use-event-registered-to-the-next-round-subscription';
 export { useEventAdminChangedSubscription } from './use-event-admin-changed-subscription';
+export { useEventLobbyTimeFinishedSubscription } from './use-event-lobby-time-finished-subscription';

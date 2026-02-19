@@ -20,15 +20,16 @@ export const useGameStatus = () => {
       isWaitingTableCardsAfterPreFlop || isWaitingTableCardsAfterFlop || isWaitingTableCardsAfterTurn;
     const isWaitingForCardsToBeDisclosed = Boolean(status && 'waitingForCardsToBeDisclosed' in status);
     const isWaitingForAllTableCardsToBeDisclosed = Boolean(status && 'waitingForAllTableCardsToBeDisclosed' in status);
-    const isGameStarted = !isRegistration && !isWaitingShuffleVerification && !isWaitingStart;
     const isFinished = status && 'finished' in status;
+    const isLobbyTimeFinished = Boolean(status && 'lobbyTimeFinished' in status);
+    const isGameStarted = !isRegistration && !isWaitingShuffleVerification && !isWaitingStart && !isLobbyTimeFinished;
     const isWaitingZk =
       isWaitingShuffleVerification ||
       isWaitingPartialDecryptionsForPlayersCards ||
       isWaitingTableCards ||
       isWaitingForCardsToBeDisclosed ||
       isWaitingForAllTableCardsToBeDisclosed;
-    const isActiveGame = isGameStarted && !isFinished && !isWaitingZk;
+    const isActiveGame = isGameStarted && !isFinished && !isWaitingZk && !isLobbyTimeFinished;
 
     const { pots } = (isFinished && status.finished) || {};
 
@@ -48,6 +49,7 @@ export const useGameStatus = () => {
       isFinished,
       isWaitingZk,
       isActiveGame,
+      isLobbyTimeFinished,
       pots,
       refetchStatus,
     };
