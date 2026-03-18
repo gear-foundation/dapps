@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { GameTimer } from '../game-timer';
 
@@ -13,9 +13,9 @@ type Props = {
 
 const YourTurn = ({ className, timePerMoveSec, onTimeEnd }: Props) => {
   const [showHint, setShowHint] = useState(false);
-  const handleTenSecondsLeft = () => {
+  const handleTenSecondsLeft = useCallback(() => {
     setShowHint(true);
-  };
+  }, []);
 
   return (
     <>
