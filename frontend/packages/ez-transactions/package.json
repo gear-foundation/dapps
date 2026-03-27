@@ -1,6 +1,6 @@
 {
   "name": "gear-ez-transactions",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "scripts": {
     "start": "npx vite dev -p 6006",
@@ -9,10 +9,11 @@
     "preview": "npx vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.44.1",
-    "@gear-js/react-hooks": "0.18.3",
+    "@gear-js/api": "0.44.2",
+    "@gear-js/react-hooks": "0.19.1",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "sails-js": "0.5.1"
   },
   "dependencies": {
     "@gear-js/vara-ui": "0.3.1",
