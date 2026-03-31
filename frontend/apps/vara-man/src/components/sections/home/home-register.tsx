@@ -3,7 +3,7 @@ import { EzTransactionsSwitch, useEzTransactions } from 'gear-ez-transactions';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate, NavigateFunction } from 'react-router-dom';
 
-import { getErrorMessage, Wallet } from '@dapps-frontend/ui/';
+import { getErrorMessage, Wallet } from '@dapps-frontend/ui';
 
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import IntroImage from '@/assets/images/welcome.png';
