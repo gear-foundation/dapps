@@ -12,7 +12,6 @@ export default defineConfig({
     svgr(),
     checker({
       typescript: true,
-      eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', dev: { logLevel: ['error'] } },
     }),
   ],
 

@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, ActorId, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, ActorId } from 'sails-js';
 
 export interface Appearance {
   head_index: number;
@@ -43,8 +43,10 @@ export class WarriorProgram {
       this.api,
       this.registry,
       'upload_program',
+      null,
       'New',
-      'String',
+      null,
+      null,
       'String',
       code,
     );
@@ -58,8 +60,10 @@ export class WarriorProgram {
       this.api,
       this.registry,
       'create_program',
+      null,
       'New',
-      'String',
+      null,
+      null,
       'String',
       codeId,
     );
@@ -72,41 +76,31 @@ export class WarriorProgram {
 export class Warrior {
   constructor(private _program: WarriorProgram) {}
 
-  public async getAppearance(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Appearance> {
-    const payload = this._program.registry.createType('(String, String)', ['Warrior', 'GetAppearance']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Appearance)', reply.payload);
-    return result[2].toJSON() as unknown as Appearance;
+  public getAppearance(): QueryBuilder<Appearance> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Appearance>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Warrior',
+      'GetAppearance',
+      null,
+      null,
+      'Appearance',
+    );
   }
 
-  public async getOwner(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Warrior', 'GetOwner']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public getOwner(): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Warrior',
+      'GetOwner',
+      null,
+      null,
+      '[u8;32]',
+    );
   }
 }

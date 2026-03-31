@@ -25,6 +25,13 @@ import { ENV } from '../consts';
 import { SailsProgram } from './lib';
 import { TokenMetaQueries, TokenEventCallbacks } from './types.ts';
 
+const asOptionalString = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
+
+const asOptionalNumber = (value: unknown): number | undefined => (typeof value === 'number' ? value : undefined);
+
+const asOptionalSupply = (value: unknown): bigint | string | undefined =>
+  typeof value === 'bigint' || typeof value === 'string' ? value : undefined;
+
 /**
  * Returns a contract program instance.
  *
@@ -101,10 +108,10 @@ export function useTokenQueries(): TokenMetaQueries {
   });
 
   return {
-    name,
-    symbol,
-    decimals,
-    totalSupply,
+    name: asOptionalString(name),
+    symbol: asOptionalString(symbol),
+    decimals: asOptionalNumber(decimals),
+    totalSupply: asOptionalSupply(totalSupply),
     isLoading: isNamePending || isSymbolPending || isDecimalsPending || isSupplyPending,
     refetchTotalSupply,
   };

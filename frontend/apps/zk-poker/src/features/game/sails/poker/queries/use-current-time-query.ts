@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useCurrentTimeQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,5 @@ export const useCurrentTimeQuery = () => {
     args: [],
   });
 
-  return { currentTime: data, isFetching, refetch, error };
+  return { currentTime: castQueryData<bigint>(data), isFetching, refetch, error };
 };

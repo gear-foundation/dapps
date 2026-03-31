@@ -7,6 +7,9 @@ import { Program as PokerProgram } from './poker';
 import { Program as PokerFactoryProgram } from './poker-factory';
 import { Program as PtsProgram } from './pts';
 
+const asProgramId = (value: unknown): `0x${string}` | undefined =>
+  typeof value === 'string' && value.startsWith('0x') ? (value as `0x${string}`) : undefined;
+
 const usePokerFactoryProgram = () => {
   const { pokerFactoryProgramId } = useDnsProgramIds<'pokerFactoryProgramId'>();
   const { data: program } = useGearJsProgram({ library: PokerFactoryProgram, id: pokerFactoryProgramId });
@@ -34,7 +37,7 @@ const usePtsProgram = () => {
     args: [],
   });
 
-  const { data: program } = useGearJsProgram({ library: PtsProgram, id: ptsProgramId });
+  const { data: program } = useGearJsProgram({ library: PtsProgram, id: asProgramId(ptsProgramId) });
 
   return program;
 };

@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useBettingQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,5 @@ export const useBettingQuery = () => {
     args: [],
   });
 
-  return { betting: data, isFetching, refetch, error };
+  return { betting: castQueryData<BettingStage | null>(data), isFetching, refetch, error };
 };

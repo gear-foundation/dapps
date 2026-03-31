@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 export interface TokenMetadata {
   name: string;
@@ -37,8 +37,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', name, symbol],
-      '(String, String, String)',
+      null,
+      'New',
+      [name, symbol],
+      '(String, String)',
       'String',
       code,
     );
@@ -52,8 +54,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', name, symbol],
-      '(String, String, String)',
+      null,
+      'New',
+      [name, symbol],
+      '(String, String)',
       'String',
       codeId,
     );
@@ -72,8 +76,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'Burn', from, token_id],
-      '(String, String, [u8;32], U256)',
+      'Vnft',
+      'Burn',
+      [from, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -85,8 +91,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'GrantAdminRole', to],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'GrantAdminRole',
+      to,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -98,8 +106,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'GrantBurnerRole', to],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'GrantBurnerRole',
+      to,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -111,8 +121,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'GrantMinterRole', to],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'GrantMinterRole',
+      to,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -124,8 +136,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'Mint', to, token_metadata],
-      '(String, String, [u8;32], TokenMetadata)',
+      'Vnft',
+      'Mint',
+      [to, token_metadata],
+      '([u8;32], TokenMetadata)',
       'Null',
       this._program.programId,
     );
@@ -137,8 +151,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'RevokeAdminRole', from],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'RevokeAdminRole',
+      from,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -150,8 +166,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'RevokeBurnerRole', from],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'RevokeBurnerRole',
+      from,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -163,8 +181,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'RevokeMinterRole', from],
-      '(String, String, [u8;32])',
+      'Vnft',
+      'RevokeMinterRole',
+      from,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -176,8 +196,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'Approve', approved, token_id],
-      '(String, String, [u8;32], U256)',
+      'Vnft',
+      'Approve',
+      [approved, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -189,8 +211,10 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'Transfer', to, token_id],
-      '(String, String, [u8;32], U256)',
+      'Vnft',
+      'Transfer',
+      [to, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -202,233 +226,167 @@ export class Vnft {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Vnft', 'TransferFrom', from, to, token_id],
-      '(String, String, [u8;32], [u8;32], U256)',
+      'Vnft',
+      'TransferFrom',
+      [from, to, token_id],
+      '([u8;32], [u8;32], U256)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public admins(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async burners(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'Burners']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public burners(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'Burners',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async minters(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'Minters']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public minters(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'Minters',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async tokenId(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'TokenId']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, U256)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public tokenId(): QueryBuilder<bigint> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'TokenId',
+      null,
+      null,
+      'U256',
+    );
   }
 
-  public async tokenMetadataById(
-    token_id: number | string | bigint,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<TokenMetadata | null> {
-    const payload = this._program.registry
-      .createType('(String, String, U256)', ['Vnft', 'TokenMetadataById', token_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<TokenMetadata>)', reply.payload);
-    return result[2].toJSON() as unknown as TokenMetadata | null;
+  public tokenMetadataById(token_id: number | string | bigint): QueryBuilder<TokenMetadata | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<TokenMetadata | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'TokenMetadataById',
+      token_id,
+      'U256',
+      'Option<TokenMetadata>',
+    );
   }
 
-  public async tokensForOwner(
-    owner: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[number | string | bigint, TokenMetadata]>> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Vnft', 'TokensForOwner', owner])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<(U256, TokenMetadata)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[number | string | bigint, TokenMetadata]>;
+  public tokensForOwner(owner: ActorId): QueryBuilder<Array<[number | string | bigint, TokenMetadata]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[number | string | bigint, TokenMetadata]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'TokensForOwner',
+      owner,
+      '[u8;32]',
+      'Vec<(U256, TokenMetadata)>',
+    );
   }
 
-  public async balanceOf(
-    owner: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Vnft', 'BalanceOf', owner])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, U256)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public balanceOf(owner: ActorId): QueryBuilder<bigint> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'BalanceOf',
+      owner,
+      '[u8;32]',
+      'U256',
+    );
   }
 
-  public async getApproved(
-    token_id: number | string | bigint,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry
-      .createType('(String, String, U256)', ['Vnft', 'GetApproved', token_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public getApproved(token_id: number | string | bigint): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'GetApproved',
+      token_id,
+      'U256',
+      '[u8;32]',
+    );
   }
 
-  public async name(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<string> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'Name']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, String)', reply.payload);
-    return result[2].toString() as unknown as string;
+  public name(): QueryBuilder<string> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<string>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'Name',
+      null,
+      null,
+      'String',
+    );
   }
 
-  public async ownerOf(
-    token_id: number | string | bigint,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String, U256)', ['Vnft', 'OwnerOf', token_id]).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public ownerOf(token_id: number | string | bigint): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'OwnerOf',
+      token_id,
+      'U256',
+      '[u8;32]',
+    );
   }
 
-  public async symbol(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<string> {
-    const payload = this._program.registry.createType('(String, String)', ['Vnft', 'Symbol']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, String)', reply.payload);
-    return result[2].toString() as unknown as string;
+  public symbol(): QueryBuilder<string> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<string>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Vnft',
+      'Symbol',
+      null,
+      null,
+      'String',
+    );
   }
 
   public subscribeToMintedEvent(

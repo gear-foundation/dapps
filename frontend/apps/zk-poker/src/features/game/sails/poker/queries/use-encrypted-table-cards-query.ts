@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 type Params = {
   enabled?: boolean;
@@ -17,5 +18,5 @@ export const useEncryptedTableCardsQuery = ({ enabled }: Params) => {
     query: { enabled },
   });
 
-  return { encryptedTableCards: data, isFetching, refetch, error };
+  return { encryptedTableCards: castQueryData<EncryptedCard[]>(data), isFetching, refetch, error };
 };

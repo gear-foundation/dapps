@@ -64,6 +64,10 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const program = usePokerProgram();
 
+  if (!program) {
+    return <>{children}</>;
+  }
+
   return (
     <SharedSignlessTransactionsProvider
       programId={program?.programId || '0x'}

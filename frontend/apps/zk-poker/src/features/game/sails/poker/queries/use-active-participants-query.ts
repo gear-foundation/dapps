@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useActiveParticipantsQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,5 @@ export const useActiveParticipantsQuery = () => {
     args: [],
   });
 
-  return { activeParticipants: data, isFetching, refetch, error };
+  return { activeParticipants: castQueryData<TurnManagerForActorId>(data), isFetching, refetch, error };
 };

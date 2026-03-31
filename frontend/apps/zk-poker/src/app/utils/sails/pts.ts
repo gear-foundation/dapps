@@ -1,11 +1,11 @@
 /* eslint-disable */
 
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
 import {
+  QueryBuilder,
   TransactionBuilder,
   ActorId,
-  throwOnErrorReply,
   getServiceNamePrefix,
   getFnNamePrefix,
   ZERO_ADDRESS,
@@ -43,8 +43,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', accrual, time_ms_between_balance_receipt],
-      '(String, u128, u64)',
+      null,
+      'New',
+      [accrual, time_ms_between_balance_receipt],
+      '(u128, u64)',
       'String',
       code,
     );
@@ -62,8 +64,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', accrual, time_ms_between_balance_receipt],
-      '(String, u128, u64)',
+      null,
+      'New',
+      [accrual, time_ms_between_balance_receipt],
+      '(u128, u64)',
       'String',
       codeId,
     );
@@ -82,8 +86,10 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'AddAdmin', new_admin],
-      '(String, String, [u8;32])',
+      'Pts',
+      'AddAdmin',
+      new_admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -95,8 +101,10 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'ChangeAccrual', new_accrual],
-      '(String, String, u128)',
+      'Pts',
+      'ChangeAccrual',
+      new_accrual,
+      'u128',
       'Null',
       this._program.programId,
     );
@@ -110,8 +118,10 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'ChangeTimeBetweenBalanceReceipt', new_time_between_balance_receipt],
-      '(String, String, u64)',
+      'Pts',
+      'ChangeTimeBetweenBalanceReceipt',
+      new_time_between_balance_receipt,
+      'u64',
       'Null',
       this._program.programId,
     );
@@ -123,8 +133,10 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'DeleteAdmin', admin],
-      '(String, String, [u8;32])',
+      'Pts',
+      'DeleteAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -136,8 +148,10 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'GetAccural'],
-      '(String, String)',
+      'Pts',
+      'GetAccural',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -149,112 +163,83 @@ export class Pts {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Pts', 'Transfer', from, to, amount],
-      '(String, String, [u8;32], [u8;32], u128)',
+      'Pts',
+      'Transfer',
+      [from, to, amount],
+      '([u8;32], [u8;32], u128)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async accrual(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String)', ['Pts', 'Accrual']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u128)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public accrual(): QueryBuilder<bigint> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Pts',
+      'Accrual',
+      null,
+      null,
+      'u128',
+    );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Pts', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public admins(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Pts',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async getBalance(
-    id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry.createType('(String, String, [u8;32])', ['Pts', 'GetBalance', id]).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u128)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public getBalance(id: ActorId): QueryBuilder<bigint> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Pts',
+      'GetBalance',
+      id,
+      '[u8;32]',
+      'u128',
+    );
   }
 
-  public async getRemainingTimeMs(
-    id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<number | string | bigint | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Pts', 'GetRemainingTimeMs', id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
-    return result[2].toJSON() as unknown as number | string | bigint | null;
+  public getRemainingTimeMs(id: ActorId): QueryBuilder<number | string | bigint | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<number | string | bigint | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Pts',
+      'GetRemainingTimeMs',
+      id,
+      '[u8;32]',
+      'Option<u64>',
+    );
   }
 
-  public async timeMsBetweenBalanceReceipt(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<bigint> {
-    const payload = this._program.registry
-      .createType('(String, String)', ['Pts', 'TimeMsBetweenBalanceReceipt'])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    throwOnErrorReply(reply.code, reply.payload.toU8a(), this._program.api.specVersion, this._program.registry);
-    const result = this._program.registry.createType('(String, String, u64)', reply.payload);
-    return result[2].toBigInt() as unknown as bigint;
+  public timeMsBetweenBalanceReceipt(): QueryBuilder<bigint> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<bigint>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Pts',
+      'TimeMsBetweenBalanceReceipt',
+      null,
+      null,
+      'u64',
+    );
   }
 
   public subscribeToNewAdminAddedEvent(callback: (data: ActorId) => void | Promise<void>): Promise<() => void> {

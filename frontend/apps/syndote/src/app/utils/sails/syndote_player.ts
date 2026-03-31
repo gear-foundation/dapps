@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { ActorId, TransactionBuilder, ZERO_ADDRESS } from 'sails-js';
+import { ActorId, QueryBuilder, TransactionBuilder } from 'sails-js';
 
 export interface GameInfo {
   admin_id: ActorId;
@@ -77,8 +77,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
+      null,
       'New',
-      'String',
+      null,
+      null,
       'String',
       code,
     );
@@ -92,8 +94,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
+      null,
       'New',
-      'String',
+      null,
+      null,
       'String',
       codeId,
     );
@@ -106,25 +110,17 @@ export class Program {
 export class Player {
   constructor(private _program: Program) {}
 
-  public async yourTurn(
-    game_info: GameInfo,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<null> {
-    const payload = this._program.registry
-      .createType('(String, String, GameInfo)', ['Player', 'YourTurn', game_info])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Null)', reply.payload);
-    return result[2].toJSON() as unknown as null;
+  public yourTurn(game_info: GameInfo): QueryBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Player',
+      'YourTurn',
+      game_info,
+      'GameInfo',
+      'Null',
+    );
   }
 }

@@ -11,7 +11,7 @@ export const useSingleGameQuery = () => {
       return;
     }
 
-    return program.single.game(playerId, account.decodedAddress);
+    return program.single.game(playerId).withAddress(account.decodedAddress).call();
   };
 
   return gameQuery;

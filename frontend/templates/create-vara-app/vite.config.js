@@ -3,17 +3,15 @@ import { defineConfig } from 'vite';
 import { checker } from 'vite-plugin-checker';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import svgr from 'vite-plugin-svgr';
-
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    nodePolyfills(),
-    svgr(),
-    checker({
-      typescript: true,
-    }),
-  ],
-
-  resolve: { alias: { '@': '/src' } },
+    plugins: [
+        react(),
+        nodePolyfills(),
+        svgr(),
+        checker({
+            typescript: true,
+        }),
+    ],
+    resolve: { alias: { '@': '/src' } },
 });

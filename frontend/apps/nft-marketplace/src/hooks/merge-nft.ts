@@ -5,6 +5,7 @@ import { getErrorMessage } from '@dapps-frontend/ui';
 
 import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from '@/app/utils';
 import { MarketState } from '@/app/utils/sails/nft_marketplace';
+import { TokenMetadata } from '@/app/utils/sails/nft';
 import { MarketNFT, NFT } from '@/types';
 
 function useMergedNFTs(items?: MarketState['items']) {
@@ -22,7 +23,12 @@ function useMergedNFTs(items?: MarketState['items']) {
     const combinedNFTs = items.map(([_, marketNft]) =>
       nftProgram.vnft
         .tokenMetadataById(marketNft.token_id)
-        .then((baseNft) => ({ ...marketNft, ...baseNft!, token_id: parseInt(String(marketNft.token_id), 16) })),
+        .call()
+        .then((baseNft: TokenMetadata | null) => ({
+          ...marketNft,
+          ...baseNft!,
+          token_id: parseInt(String(marketNft.token_id), 16),
+        })),
     );
 
     Promise.all(combinedNFTs)

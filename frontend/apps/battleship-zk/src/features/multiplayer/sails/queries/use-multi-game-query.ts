@@ -11,7 +11,7 @@ export const useMultiGameQuery = () => {
       return;
     }
 
-    return program.multiple.game(playerId, account.decodedAddress);
+    return program.multiple.game(playerId).withAddress(account.decodedAddress).call();
   };
 
   return gameQuery;

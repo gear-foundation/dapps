@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useParticipantsQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,5 @@ export const useParticipantsQuery = () => {
     args: [],
   });
 
-  return { participants: data, isFetching, refetch, error };
+  return { participants: castQueryData<Array<[`0x${string}`, Participant]>>(data), isFetching, refetch, error };
 };

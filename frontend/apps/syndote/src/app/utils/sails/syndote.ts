@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -138,8 +138,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       code,
     );
@@ -153,8 +155,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       codeId,
     );
@@ -173,8 +177,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'AddGasToPlayerStrategy', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'AddGasToPlayerStrategy',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -186,8 +192,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'AddGear', admin_id, properties_for_sale],
-      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Syndote',
+      'AddGear',
+      [admin_id, properties_for_sale],
+      '([u8;32], Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -199,8 +207,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'BuyCell', admin_id, properties_for_sale],
-      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Syndote',
+      'BuyCell',
+      [admin_id, properties_for_sale],
+      '([u8;32], Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -212,8 +222,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'CancelGameSession', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'CancelGameSession',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -225,8 +237,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'ChangeAdmin', admin],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'ChangeAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -242,8 +256,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'CreateGameSession', entry_fee, name, strategy_id],
-      '(String, String, Option<u128>, String, [u8;32])',
+      'Syndote',
+      'CreateGameSession',
+      [entry_fee, name, strategy_id],
+      '(Option<u128>, String, [u8;32])',
       'Null',
       this._program.programId,
     );
@@ -255,8 +271,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'DeleteGame', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'DeleteGame',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -268,8 +286,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'DeletePlayer', player_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'DeletePlayer',
+      player_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -281,8 +301,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'ExitGame', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'ExitGame',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -294,8 +316,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -307,8 +331,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'MakeReservation', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'MakeReservation',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -320,8 +346,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'PayRent', admin_id, properties_for_sale],
-      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Syndote',
+      'PayRent',
+      [admin_id, properties_for_sale],
+      '([u8;32], Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -333,8 +361,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'Play', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'Play',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -346,8 +376,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'Register', admin_id, strategy_id, name],
-      '(String, String, [u8;32], [u8;32], String)',
+      'Syndote',
+      'Register',
+      [admin_id, strategy_id, name],
+      '([u8;32], [u8;32], String)',
       'Null',
       this._program.programId,
     );
@@ -359,8 +391,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'Skip', admin_id],
-      '(String, String, [u8;32])',
+      'Syndote',
+      'Skip',
+      admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -376,8 +410,10 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'ThrowRoll', admin_id, pay_fine, properties_for_sale],
-      '(String, String, [u8;32], bool, Option<Vec<u8>>)',
+      'Syndote',
+      'ThrowRoll',
+      [admin_id, pay_fine, properties_for_sale],
+      '([u8;32], bool, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -389,135 +425,97 @@ export class Syndote {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Syndote', 'Upgrade', admin_id, properties_for_sale],
-      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Syndote',
+      'Upgrade',
+      [admin_id, properties_for_sale],
+      '([u8;32], Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async dnsInfo(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<[ActorId, string] | null> {
-    const payload = this._program.registry.createType('(String, String)', ['Syndote', 'DnsInfo']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<([u8;32], String)>)', reply.payload);
-    return result[2].toJSON() as unknown as [ActorId, string] | null;
+  public dnsInfo(): QueryBuilder<[ActorId, string] | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<[ActorId, string] | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'DnsInfo',
+      null,
+      null,
+      'Option<([u8;32], String)>',
+    );
   }
 
-  public async getConfig(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Config> {
-    const payload = this._program.registry.createType('(String, String)', ['Syndote', 'GetConfig']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+  public getConfig(): QueryBuilder<Config> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Config>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'GetConfig',
+      null,
+      null,
+      'Config',
+    );
   }
 
-  public async getGameSession(
-    account_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<GameState | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Syndote', 'GetGameSession', account_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<GameState>)', reply.payload);
-    return result[2].toJSON() as unknown as GameState | null;
+  public getGameSession(account_id: ActorId): QueryBuilder<GameState | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<GameState | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'GetGameSession',
+      account_id,
+      '[u8;32]',
+      'Option<GameState>',
+    );
   }
 
-  public async getOwnerId(
-    admin_id: ActorId,
-    strategy_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32], [u8;32])', ['Syndote', 'GetOwnerId', admin_id, strategy_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as ActorId | null;
+  public getOwnerId(admin_id: ActorId, strategy_id: ActorId): QueryBuilder<ActorId | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'GetOwnerId',
+      [admin_id, strategy_id],
+      '([u8;32], [u8;32])',
+      'Option<[u8;32]>',
+    );
   }
 
-  public async getPlayerInfo(
-    account_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<PlayerInfoState | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Syndote', 'GetPlayerInfo', account_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<PlayerInfoState>)', reply.payload);
-    return result[2].toJSON() as unknown as PlayerInfoState | null;
+  public getPlayerInfo(account_id: ActorId): QueryBuilder<PlayerInfoState | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<PlayerInfoState | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'GetPlayerInfo',
+      account_id,
+      '[u8;32]',
+      'Option<PlayerInfoState>',
+    );
   }
 
-  public async getPlayersToSessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, ActorId]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Syndote', 'GetPlayersToSessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], [u8;32])>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, ActorId]>;
+  public getPlayersToSessions(): QueryBuilder<Array<[ActorId, ActorId]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, ActorId]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Syndote',
+      'GetPlayersToSessions',
+      null,
+      null,
+      'Vec<([u8;32], [u8;32])>',
+    );
   }
 
   public subscribeToGameSessionCreatedEvent(

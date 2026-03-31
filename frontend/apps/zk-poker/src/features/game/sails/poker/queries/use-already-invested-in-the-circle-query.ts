@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useAlreadyInvestedInTheCircleQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,10 @@ export const useAlreadyInvestedInTheCircleQuery = () => {
     args: [],
   });
 
-  return { alreadyInvestedInTheCircle: data, isFetching, refetch, error };
+  return {
+    alreadyInvestedInTheCircle: castQueryData<Array<[`0x${string}`, number | string | bigint]>>(data),
+    isFetching,
+    refetch,
+    error,
+  };
 };

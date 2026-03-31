@@ -55,6 +55,11 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
   const program = useProgram();
+
+  if (!program) {
+    return <>{children}</>;
+  }
+
   return (
     <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}

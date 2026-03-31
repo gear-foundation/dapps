@@ -2,7 +2,7 @@ import { IVoucherDetails } from '@gear-js/api';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 import { TypeRegistry } from '@polkadot/types';
 import { HexString } from '@polkadot/util/types';
-import { TransactionBuilder } from 'sails-js';
+import { QueryBuilder, TransactionBuilder } from 'sails-js';
 
 import { UseCreateSessionReturn } from '../hooks';
 
@@ -86,16 +86,15 @@ type SignatureData = {
 };
 
 type BaseProgram =
-  | {
-      session: {
-        sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => Promise<ProgramSession | null>;
-        createSession: (signatureData: SignatureData, signature: `0x${string}` | null) => TransactionBuilder<null>;
-        deleteSessionFromAccount: () => TransactionBuilder<null>;
-        subscribeToSessionCreatedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
-        subscribeToSessionDeletedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
-      };
-      registry: TypeRegistry;
-    }
-  | undefined;
+  {
+    session: {
+      sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => QueryBuilder<ProgramSession | null>;
+      createSession: (signatureData: SignatureData, signature: `0x${string}` | null) => TransactionBuilder<null>;
+      deleteSessionFromAccount: () => TransactionBuilder<null>;
+      subscribeToSessionCreatedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
+      subscribeToSessionDeletedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
+    };
+    registry: TypeRegistry;
+  };
 
 export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession, SignlessSessionModalConfig };

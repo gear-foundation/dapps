@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = string;
 
@@ -137,8 +137,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', init_config],
-      '(String, InitConfig)',
+      null,
+      'New',
+      init_config,
+      'InitConfig',
       'String',
       code,
     );
@@ -152,8 +154,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', init_config],
-      '(String, InitConfig)',
+      null,
+      'New',
+      init_config,
+      'InitConfig',
       'String',
       codeId,
     );
@@ -172,8 +176,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'AddAdmin', admin],
-      '(String, String, [u8;32])',
+      'CarRacesService',
+      'AddAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -185,8 +191,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'AddStrategyIds', car_ids],
-      '(String, String, Vec<[u8;32]>)',
+      'CarRacesService',
+      'AddStrategyIds',
+      car_ids,
+      'Vec<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -198,8 +206,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'AllowMessages', messages_allowed],
-      '(String, String, bool)',
+      'CarRacesService',
+      'AllowMessages',
+      messages_allowed,
+      'bool',
       'Null',
       this._program.programId,
     );
@@ -211,8 +221,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'PlayerMove', strategy_move, session_for_account],
-      '(String, String, StrategyAction, Option<[u8;32]>)',
+      'CarRacesService',
+      'PlayerMove',
+      [strategy_move, session_for_account],
+      '(StrategyAction, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -224,8 +236,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'RemoveAdmin', admin],
-      '(String, String, [u8;32])',
+      'CarRacesService',
+      'RemoveAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -237,8 +251,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'RemoveGameInstance', account],
-      '(String, String, [u8;32])',
+      'CarRacesService',
+      'RemoveGameInstance',
+      account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -250,8 +266,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'RemoveInstances', player_ids],
-      '(String, String, Option<Vec<[u8;32]>>)',
+      'CarRacesService',
+      'RemoveInstances',
+      player_ids,
+      'Option<Vec<[u8;32]>>',
       'Null',
       this._program.programId,
     );
@@ -263,8 +281,10 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'StartGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'CarRacesService',
+      'StartGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -276,130 +296,97 @@ export class CarRacesService {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['CarRacesService', 'UpdateConfig', config],
-      '(String, String, Config)',
+      'CarRacesService',
+      'UpdateConfig',
+      config,
+      'Config',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['CarRacesService', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public admins(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async allGames(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, Game]>> {
-    const payload = this._program.registry.createType('(String, String)', ['CarRacesService', 'AllGames']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], Game)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, Game]>;
+  public allGames(): QueryBuilder<Array<[ActorId, Game]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, Game]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'AllGames',
+      null,
+      null,
+      'Vec<([u8;32], Game)>',
+    );
   }
 
-  public async configState(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Config> {
-    const payload = this._program.registry.createType('(String, String)', ['CarRacesService', 'ConfigState']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+  public configState(): QueryBuilder<Config> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Config>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'ConfigState',
+      null,
+      null,
+      'Config',
+    );
   }
 
-  public async game(
-    account_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Game | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['CarRacesService', 'Game', account_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<Game>)', reply.payload);
-    return result[2].toJSON() as unknown as Game | null;
+  public game(account_id: ActorId): QueryBuilder<Game | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Game | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'Game',
+      account_id,
+      '[u8;32]',
+      'Option<Game>',
+    );
   }
 
-  public async messagesAllowed(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<boolean> {
-    const payload = this._program.registry
-      .createType('(String, String)', ['CarRacesService', 'MessagesAllowed'])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, bool)', reply.payload);
-    return result[2].toJSON() as unknown as boolean;
+  public messagesAllowed(): QueryBuilder<boolean> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<boolean>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'MessagesAllowed',
+      null,
+      null,
+      'bool',
+    );
   }
 
-  public async strategyIds(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['CarRacesService', 'StrategyIds']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public strategyIds(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'CarRacesService',
+      'StrategyIds',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
   public subscribeToRoundInfoEvent(callback: (data: RoundInfo) => void | Promise<void>): Promise<() => void> {
@@ -429,8 +416,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', signature_data, signature],
-      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Session',
+      'CreateSession',
+      [signature_data, signature],
+      '(SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -442,8 +431,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromAccount'],
-      '(String, String)',
+      'Session',
+      'DeleteSessionFromAccount',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -455,52 +446,41 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromProgram', session_for_account],
-      '(String, String, [u8;32])',
+      'Session',
+      'DeleteSessionFromProgram',
+      session_for_account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async sessionForTheAccount(
-    account: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SessionData | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
-    return result[2].toJSON() as unknown as SessionData | null;
+  public sessionForTheAccount(account: ActorId): QueryBuilder<SessionData | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<SessionData | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'SessionForTheAccount',
+      account,
+      '[u8;32]',
+      'Option<SessionData>',
+    );
   }
 
-  public async sessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SessionData]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  public sessions(): QueryBuilder<Array<[ActorId, SessionData]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, SessionData]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'Sessions',
+      null,
+      null,
+      'Vec<([u8;32], SessionData)>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {

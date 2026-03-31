@@ -1,6 +1,7 @@
 import { useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
+import { castQueryData } from '@/features/game/sails/query-utils';
 
 export const useBlindsQuery = () => {
   const program = usePokerProgram();
@@ -12,5 +13,5 @@ export const useBlindsQuery = () => {
     args: [],
   });
 
-  return { blinds: data, isFetching, refetch, error };
+  return { blinds: castQueryData<[number | string | bigint, number | string | bigint]>(data), isFetching, refetch, error };
 };
