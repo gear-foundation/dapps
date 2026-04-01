@@ -24,6 +24,8 @@ dist
 # misc
 .DS_Store
 *.tsbuildinfo
+templates/*/vite.config.js
+templates/*/vite.config.d.ts
 
 .env*
 !.env.example

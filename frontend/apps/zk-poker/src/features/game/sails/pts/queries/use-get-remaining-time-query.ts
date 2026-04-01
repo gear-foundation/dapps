@@ -1,14 +1,14 @@
 import { HexString } from '@gear-js/api';
-import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 
 import { usePtsProgram } from '@/app/utils';
-import { castQueryData } from '@/features/game/sails/query-utils';
+import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 export const useRemainingTimeQuery = () => {
   const program = usePtsProgram();
   const { account } = useAccount();
 
-  const { data, refetch, isPending, error } = useProgramQuery({
+  const { data, refetch, isPending, error } = useTypedProgramQuery({
     program,
     serviceName: 'pts',
     functionName: 'getRemainingTimeMs',
@@ -16,5 +16,5 @@ export const useRemainingTimeQuery = () => {
     query: { enabled: !!account },
   });
 
-  return { remainingTime: castQueryData<number | string | bigint | null>(data), isPending, refetch, error };
+  return { remainingTime: data, isPending, refetch, error };
 };

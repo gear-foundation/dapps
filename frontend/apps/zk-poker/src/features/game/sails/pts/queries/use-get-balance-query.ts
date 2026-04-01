@@ -1,14 +1,14 @@
 import { HexString } from '@gear-js/api';
-import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 
 import { usePtsProgram } from '@/app/utils';
-import { castQueryData } from '@/features/game/sails/query-utils';
+import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 export const useGetBalanceQuery = () => {
   const program = usePtsProgram();
   const { account } = useAccount();
 
-  const { data, refetch, isFetching, error } = useProgramQuery({
+  const { data, refetch, isFetching, error } = useTypedProgramQuery({
     program,
     serviceName: 'pts',
     functionName: 'getBalance',
@@ -16,5 +16,5 @@ export const useGetBalanceQuery = () => {
     query: { enabled: !!account },
   });
 
-  return { balance: castQueryData<bigint>(data), isFetching, refetch, error };
+  return { balance: data, isFetching, refetch, error };
 };

@@ -1,12 +1,10 @@
-import { useProgramQuery } from '@gear-js/react-hooks';
-
 import { usePokerProgram } from '@/app/utils';
-import { castQueryData } from '@/features/game/sails/query-utils';
+import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 export const useWaitingParticipantsQuery = () => {
   const program = usePokerProgram();
 
-  const { data, refetch, isFetching, error } = useProgramQuery({
+  const { data, refetch, isFetching, error } = useTypedProgramQuery({
     program,
     serviceName: 'poker',
     functionName: 'waitingParticipants',
@@ -14,7 +12,7 @@ export const useWaitingParticipantsQuery = () => {
   });
 
   return {
-    waitingParticipants: castQueryData<Array<[`0x${string}`, Participant]>>(data),
+    waitingParticipants: data,
     isFetching,
     refetch,
     error,

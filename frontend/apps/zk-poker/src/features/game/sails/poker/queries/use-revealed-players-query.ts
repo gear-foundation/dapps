@@ -1,7 +1,7 @@
-import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
-import { castQueryData } from '@/features/game/sails/query-utils';
+import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 type Params = {
   enabled?: boolean;
@@ -11,7 +11,7 @@ export const useRevealedPlayersQuery = ({ enabled }: Params) => {
   const program = usePokerProgram();
   const { account } = useAccount();
 
-  const { data, refetch, isFetching, error } = useProgramQuery({
+  const { data, refetch, isFetching, error } = useTypedProgramQuery({
     program,
     serviceName: 'poker',
     functionName: 'revealedPlayers',
@@ -20,7 +20,7 @@ export const useRevealedPlayersQuery = ({ enabled }: Params) => {
   });
 
   return {
-    revealedPlayers: castQueryData<Array<[`0x${string}`, [globalThis.Card, globalThis.Card]]>>(data),
+    revealedPlayers: data,
     isFetching,
     refetch,
     error,
