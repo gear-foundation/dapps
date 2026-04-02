@@ -1,7 +1,6 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useProgramQuery } from '@gear-js/react-hooks';
 
 import { usePokerProgram } from '@/app/utils';
-import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 type Params = {
   enabled?: boolean;
@@ -11,7 +10,7 @@ export const useTableCardsToDecryptQuery = ({ enabled }: Params) => {
   const program = usePokerProgram();
   const { account } = useAccount();
 
-  const { data, refetch, isFetching, error } = useTypedProgramQuery({
+  const { data, refetch, isFetching, error } = useProgramQuery({
     program,
     serviceName: 'poker',
     functionName: 'tableCardsToDecrypt',

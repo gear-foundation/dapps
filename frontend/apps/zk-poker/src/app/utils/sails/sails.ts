@@ -1,8 +1,7 @@
-import { useProgram as useGearJsProgram } from '@gear-js/react-hooks';
+import { useProgram as useGearJsProgram, useProgramQuery } from '@gear-js/react-hooks';
 import { useLocation } from 'react-router-dom';
 
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
-import { useTypedProgramQuery } from '@/features/game/sails/query-utils';
 
 import { Program as PokerProgram } from './poker';
 import { Program as PokerFactoryProgram } from './poker-factory';
@@ -31,7 +30,7 @@ const usePokerProgram = () => {
 const usePtsProgram = () => {
   const pokerFactoryProgram = usePokerFactoryProgram();
 
-  const { data: ptsProgramId } = useTypedProgramQuery({
+  const { data: ptsProgramId } = useProgramQuery({
     program: pokerFactoryProgram,
     serviceName: 'pokerFactory',
     functionName: 'ptsActorId',
