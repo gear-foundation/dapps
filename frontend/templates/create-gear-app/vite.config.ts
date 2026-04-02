@@ -12,6 +12,7 @@ export default defineConfig({
     svgr(),
     checker({
       typescript: true,
+      eslint: { lintCommand: 'node ./scripts/eslint-checker.cjs', dev: { logLevel: ['error'] } },
     }),
   ],
 
