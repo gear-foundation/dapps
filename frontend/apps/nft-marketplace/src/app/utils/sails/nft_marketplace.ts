@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -69,8 +69,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', admin_id],
-      '(String, [u8;32])',
+      null,
+      'New',
+      admin_id,
+      '[u8;32]',
       'String',
       code,
     );
@@ -84,8 +86,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', admin_id],
-      '(String, [u8;32])',
+      null,
+      'New',
+      admin_id,
+      '[u8;32]',
       'String',
       codeId,
     );
@@ -109,8 +113,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AcceptOffer', nft_contract_id, ft_contract_id, token_id, price],
-      '(String, String, [u8;32], Option<[u8;32]>, U256, u128)',
+      'NftMarketplace',
+      'AcceptOffer',
+      [nft_contract_id, ft_contract_id, token_id, price],
+      '([u8;32], Option<[u8;32]>, U256, u128)',
       'Null',
       this._program.programId,
     );
@@ -126,8 +132,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AddBid', nft_contract_id, token_id, price],
-      '(String, String, [u8;32], U256, u128)',
+      'NftMarketplace',
+      'AddBid',
+      [nft_contract_id, token_id, price],
+      '([u8;32], U256, u128)',
       'Null',
       this._program.programId,
     );
@@ -139,8 +147,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AddFtContract', ft_contract_id],
-      '(String, String, [u8;32])',
+      'NftMarketplace',
+      'AddFtContract',
+      ft_contract_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -157,8 +167,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AddMarketData', nft_contract_id, ft_contract_id, token_id, price],
-      '(String, String, [u8;32], Option<[u8;32]>, U256, Option<u128>)',
+      'NftMarketplace',
+      'AddMarketData',
+      [nft_contract_id, ft_contract_id, token_id, price],
+      '([u8;32], Option<[u8;32]>, U256, Option<u128>)',
       'Null',
       this._program.programId,
     );
@@ -170,8 +182,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AddNftContract', nft_contract_id],
-      '(String, String, [u8;32])',
+      'NftMarketplace',
+      'AddNftContract',
+      nft_contract_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -188,8 +202,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'AddOffer', nft_contract_id, ft_contract_id, token_id, price],
-      '(String, String, [u8;32], Option<[u8;32]>, U256, u128)',
+      'NftMarketplace',
+      'AddOffer',
+      [nft_contract_id, ft_contract_id, token_id, price],
+      '([u8;32], Option<[u8;32]>, U256, u128)',
       'Null',
       this._program.programId,
     );
@@ -201,8 +217,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'BuyItem', nft_contract_id, token_id],
-      '(String, String, [u8;32], U256)',
+      'NftMarketplace',
+      'BuyItem',
+      [nft_contract_id, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -220,8 +238,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'CreateAuction', nft_contract_id, ft_contract_id, token_id, min_price, duration],
-      '(String, String, [u8;32], Option<[u8;32]>, U256, u128, u64)',
+      'NftMarketplace',
+      'CreateAuction',
+      [nft_contract_id, ft_contract_id, token_id, min_price, duration],
+      '([u8;32], Option<[u8;32]>, U256, u128, u64)',
       'Null',
       this._program.programId,
     );
@@ -233,8 +253,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'RemoveMarketData', nft_contract_id, token_id],
-      '(String, String, [u8;32], U256)',
+      'NftMarketplace',
+      'RemoveMarketData',
+      [nft_contract_id, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -246,8 +268,10 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'SettleAuction', nft_contract_id, token_id],
-      '(String, String, [u8;32], U256)',
+      'NftMarketplace',
+      'SettleAuction',
+      [nft_contract_id, token_id],
+      '([u8;32], U256)',
       'Null',
       this._program.programId,
     );
@@ -264,30 +288,27 @@ export class NftMarketplace {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['NftMarketplace', 'Withdraw', nft_contract_id, ft_contract_id, token_id, price],
-      '(String, String, [u8;32], Option<[u8;32]>, U256, u128)',
+      'NftMarketplace',
+      'Withdraw',
+      [nft_contract_id, ft_contract_id, token_id, price],
+      '([u8;32], Option<[u8;32]>, U256, u128)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async getMarket(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<MarketState> {
-    const payload = this._program.registry.createType('(String, String)', ['NftMarketplace', 'GetMarket']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, MarketState)', reply.payload);
-    return result[2].toJSON() as unknown as MarketState;
+  public getMarket(): QueryBuilder<MarketState> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<MarketState>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'NftMarketplace',
+      'GetMarket',
+      null,
+      null,
+      'MarketState',
+    );
   }
 
   public subscribeToNftContractAddedEvent(callback: (data: ActorId) => void | Promise<void>): Promise<() => void> {

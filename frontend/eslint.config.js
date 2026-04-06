@@ -71,6 +71,17 @@ export default tseslint.config(
           pathGroupsExcludedImportTypes: ['builtin', 'object'], // override default for internal
         },
       ],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@dapps-frontend/*/'],
+              message: 'Do not import workspace packages with a trailing slash. Use the package root path.',
+            },
+          ],
+        },
+      ],
 
       // dx
       '@typescript-eslint/no-unused-vars': [

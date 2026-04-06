@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 export type ActorId = string;
 
@@ -227,8 +227,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', builtin_bls381, verification_key_for_start, verification_key_for_move, config],
-      '(String, [u8;32], VerifyingKeyBytes, VerifyingKeyBytes, Configuration)',
+      null,
+      'New',
+      [builtin_bls381, verification_key_for_start, verification_key_for_move, config],
+      '([u8;32], VerifyingKeyBytes, VerifyingKeyBytes, Configuration)',
       'String',
       code,
     );
@@ -248,8 +250,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', builtin_bls381, verification_key_for_start, verification_key_for_move, config],
-      '(String, [u8;32], VerifyingKeyBytes, VerifyingKeyBytes, Configuration)',
+      null,
+      'New',
+      [builtin_bls381, verification_key_for_start, verification_key_for_move, config],
+      '([u8;32], VerifyingKeyBytes, VerifyingKeyBytes, Configuration)',
       'String',
       codeId,
     );
@@ -268,8 +272,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'ChangeAdmin', new_admin],
-      '(String, String, [u8;32])',
+      'Admin',
+      'ChangeAdmin',
+      new_admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -281,8 +287,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'ChangeBuiltinAddress', new_builtin_address],
-      '(String, String, [u8;32])',
+      'Admin',
+      'ChangeBuiltinAddress',
+      new_builtin_address,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -294,8 +302,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'ChangeConfiguration', configuration],
-      '(String, String, Configuration)',
+      'Admin',
+      'ChangeConfiguration',
+      configuration,
+      'Configuration',
       'Null',
       this._program.programId,
     );
@@ -310,8 +320,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'ChangeVerificationKey', new_vk_for_start, new_vk_for_move],
-      '(String, String, Option<VerifyingKeyBytes>, Option<VerifyingKeyBytes>)',
+      'Admin',
+      'ChangeVerificationKey',
+      [new_vk_for_start, new_vk_for_move],
+      '(Option<VerifyingKeyBytes>, Option<VerifyingKeyBytes>)',
       'Null',
       this._program.programId,
     );
@@ -323,8 +335,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'DeleteMultipleGame', game_id],
-      '(String, String, [u8;32])',
+      'Admin',
+      'DeleteMultipleGame',
+      game_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -336,8 +350,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'DeleteMultipleGamesByTime', time],
-      '(String, String, u64)',
+      'Admin',
+      'DeleteMultipleGamesByTime',
+      time,
+      'u64',
       'Null',
       this._program.programId,
     );
@@ -349,8 +365,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'DeleteMultipleGamesInBatches', divider],
-      '(String, String, u64)',
+      'Admin',
+      'DeleteMultipleGamesInBatches',
+      divider,
+      'u64',
       'Null',
       this._program.programId,
     );
@@ -362,8 +380,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'DeleteSingleGame', player_address],
-      '(String, String, [u8;32])',
+      'Admin',
+      'DeleteSingleGame',
+      player_address,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -375,8 +395,10 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'DeleteSingleGames', time],
-      '(String, String, u64)',
+      'Admin',
+      'DeleteSingleGames',
+      time,
+      'u64',
       'Null',
       this._program.programId,
     );
@@ -388,90 +410,69 @@ export class Admin {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Admin', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'Admin',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admin(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Admin', 'Admin']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
-  }
-
-  public async builtin(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['Admin', 'Builtin']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
-  }
-
-  public async configuration(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Configuration> {
-    const payload = this._program.registry.createType('(String, String)', ['Admin', 'Configuration']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Configuration)', reply.payload);
-    return result[2].toJSON() as unknown as Configuration;
-  }
-
-  public async verificationKey(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<[VerifyingKeyBytes, VerifyingKeyBytes]> {
-    const payload = this._program.registry.createType('(String, String)', ['Admin', 'VerificationKey']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType(
-      '(String, String, (VerifyingKeyBytes, VerifyingKeyBytes))',
-      reply.payload,
+  public admin(): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Admin',
+      'Admin',
+      null,
+      null,
+      '[u8;32]',
     );
-    return result[2].toJSON() as unknown as [VerifyingKeyBytes, VerifyingKeyBytes];
+  }
+
+  public builtin(): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Admin',
+      'Builtin',
+      null,
+      null,
+      '[u8;32]',
+    );
+  }
+
+  public configuration(): QueryBuilder<Configuration> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Configuration>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Admin',
+      'Configuration',
+      null,
+      null,
+      'Configuration',
+    );
+  }
+
+  public verificationKey(): QueryBuilder<[VerifyingKeyBytes, VerifyingKeyBytes]> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<[VerifyingKeyBytes, VerifyingKeyBytes]>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Admin',
+      'VerificationKey',
+      null,
+      null,
+      '(VerifyingKeyBytes, VerifyingKeyBytes)',
+    );
   }
 
   public subscribeToGameDeletedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
@@ -579,8 +580,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'CancelGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Multiple',
+      'CancelGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -592,8 +595,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'CheckOutTiming', game_id, check_time],
-      '(String, String, [u8;32], u64)',
+      'Multiple',
+      'CheckOutTiming',
+      [game_id, check_time],
+      '([u8;32], u64)',
       'Null',
       this._program.programId,
     );
@@ -605,8 +610,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'CreateGame', name, session_for_account],
-      '(String, String, String, Option<[u8;32]>)',
+      'Multiple',
+      'CreateGame',
+      [name, session_for_account],
+      '(String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -618,8 +625,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'DeleteGame', game_id, create_time],
-      '(String, String, [u8;32], u64)',
+      'Multiple',
+      'DeleteGame',
+      [game_id, create_time],
+      '([u8;32], u64)',
       'Null',
       this._program.programId,
     );
@@ -631,8 +640,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'DeletePlayer', removable_player, session_for_account],
-      '(String, String, [u8;32], Option<[u8;32]>)',
+      'Multiple',
+      'DeletePlayer',
+      [removable_player, session_for_account],
+      '([u8;32], Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -644,8 +655,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'JoinGame', game_id, name, session_for_account],
-      '(String, String, [u8;32], String, Option<[u8;32]>)',
+      'Multiple',
+      'JoinGame',
+      [game_id, name, session_for_account],
+      '([u8;32], String, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -657,8 +670,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'LeaveGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'Multiple',
+      'LeaveGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -675,8 +690,10 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'MakeMove', game_id, verify_variables, step, session_for_account],
-      '(String, String, [u8;32], Option<VerificationVariables>, Option<u8>, Option<[u8;32]>)',
+      'Multiple',
+      'MakeMove',
+      [game_id, verify_variables, step, session_for_account],
+      '([u8;32], Option<VerificationVariables>, Option<u8>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -693,96 +710,69 @@ export class Multiple {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'VerifyPlacement', proof, public_input, session_for_account, game_id],
-      '(String, String, ProofBytes, PublicStartInput, Option<[u8;32]>, [u8;32])',
+      'Multiple',
+      'VerifyPlacement',
+      [proof, public_input, session_for_account, game_id],
+      '(ProofBytes, PublicStartInput, Option<[u8;32]>, [u8;32])',
       'Null',
       this._program.programId,
     );
   }
 
-  public async game(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<MultipleGameState | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Multiple', 'Game', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<MultipleGameState>)', reply.payload);
-    return result[2].toJSON() as unknown as MultipleGameState | null;
-  }
-
-  public async games(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, MultipleGameState]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Multiple', 'Games']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType(
-      '(String, String, Vec<([u8;32], MultipleGameState)>)',
-      reply.payload,
+  public game(player_id: ActorId): QueryBuilder<MultipleGameState | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<MultipleGameState | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Multiple',
+      'Game',
+      player_id,
+      '[u8;32]',
+      'Option<MultipleGameState>',
     );
-    return result[2].toJSON() as unknown as Array<[ActorId, MultipleGameState]>;
   }
 
-  public async gamesPairs(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, ActorId]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Multiple', 'GamesPairs']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], [u8;32])>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, ActorId]>;
+  public games(): QueryBuilder<Array<[ActorId, MultipleGameState]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, MultipleGameState]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Multiple',
+      'Games',
+      null,
+      null,
+      'Vec<([u8;32], MultipleGameState)>',
+    );
   }
 
-  public async getRemainingTime(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<number | string | bigint | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Multiple', 'GetRemainingTime', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
-    return result[2].toJSON() as unknown as number | string | bigint | null;
+  public gamesPairs(): QueryBuilder<Array<[ActorId, ActorId]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, ActorId]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Multiple',
+      'GamesPairs',
+      null,
+      null,
+      'Vec<([u8;32], [u8;32])>',
+    );
+  }
+
+  public getRemainingTime(player_id: ActorId): QueryBuilder<number | string | bigint | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<number | string | bigint | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Multiple',
+      'GetRemainingTime',
+      player_id,
+      '[u8;32]',
+      'Option<u64>',
+    );
   }
 
   public subscribeToGameCreatedEvent(
@@ -992,8 +982,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', signature_data, signature],
-      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Session',
+      'CreateSession',
+      [signature_data, signature],
+      '(SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -1005,8 +997,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromAccount'],
-      '(String, String)',
+      'Session',
+      'DeleteSessionFromAccount',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -1018,52 +1012,41 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromProgram', session_for_account],
-      '(String, String, [u8;32])',
+      'Session',
+      'DeleteSessionFromProgram',
+      session_for_account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async sessionForTheAccount(
-    account: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Session | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<Session>)', reply.payload);
-    return result[2].toJSON() as unknown as Session | null;
+  public sessionForTheAccount(account: ActorId): QueryBuilder<Session | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Session | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'SessionForTheAccount',
+      account,
+      '[u8;32]',
+      'Option<Session>',
+    );
   }
 
-  public async sessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, Session]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], Session)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, Session]>;
+  public sessions(): QueryBuilder<Array<[ActorId, Session]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, Session]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'Sessions',
+      null,
+      null,
+      'Vec<([u8;32], Session)>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
@@ -1102,8 +1085,10 @@ export class Single {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Single', 'CheckOutTiming', actor_id, check_time],
-      '(String, String, [u8;32], u64)',
+      'Single',
+      'CheckOutTiming',
+      [actor_id, check_time],
+      '([u8;32], u64)',
       'Null',
       this._program.programId,
     );
@@ -1115,8 +1100,10 @@ export class Single {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Single', 'DeleteGame', player, start_time],
-      '(String, String, [u8;32], u64)',
+      'Single',
+      'DeleteGame',
+      [player, start_time],
+      '([u8;32], u64)',
       'Null',
       this._program.programId,
     );
@@ -1132,8 +1119,10 @@ export class Single {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Single', 'MakeMove', step, verify_variables, session_for_account],
-      '(String, String, Option<u8>, Option<VerificationVariables>, Option<[u8;32]>)',
+      'Single',
+      'MakeMove',
+      [step, verify_variables, session_for_account],
+      '(Option<u8>, Option<VerificationVariables>, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -1149,121 +1138,83 @@ export class Single {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Single', 'StartSingleGame', proof, public_input, session_for_account],
-      '(String, String, ProofBytes, PublicStartInput, Option<[u8;32]>)',
+      'Single',
+      'StartSingleGame',
+      [proof, public_input, session_for_account],
+      '(ProofBytes, PublicStartInput, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async game(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SingleGame | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Single', 'Game', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<SingleGame>)', reply.payload);
-    return result[2].toJSON() as unknown as SingleGame | null;
-  }
-
-  public async games(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SingleGameState]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Single', 'Games']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType(
-      '(String, String, Vec<([u8;32], SingleGameState)>)',
-      reply.payload,
+  public game(player_id: ActorId): QueryBuilder<SingleGame | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<SingleGame | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Single',
+      'Game',
+      player_id,
+      '[u8;32]',
+      'Option<SingleGame>',
     );
-    return result[2].toJSON() as unknown as Array<[ActorId, SingleGameState]>;
   }
 
-  public async getRemainingTime(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<number | string | bigint | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Single', 'GetRemainingTime', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
-    return result[2].toJSON() as unknown as number | string | bigint | null;
+  public games(): QueryBuilder<Array<[ActorId, SingleGameState]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, SingleGameState]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Single',
+      'Games',
+      null,
+      null,
+      'Vec<([u8;32], SingleGameState)>',
+    );
   }
 
-  public async startTime(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<number | string | bigint | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Single', 'StartTime', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
-    return result[2].toJSON() as unknown as number | string | bigint | null;
+  public getRemainingTime(player_id: ActorId): QueryBuilder<number | string | bigint | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<number | string | bigint | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Single',
+      'GetRemainingTime',
+      player_id,
+      '[u8;32]',
+      'Option<u64>',
+    );
   }
 
-  public async totalShots(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<number | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Single', 'TotalShots', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<u8>)', reply.payload);
-    return result[2].toJSON() as unknown as number | null;
+  public startTime(player_id: ActorId): QueryBuilder<number | string | bigint | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<number | string | bigint | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Single',
+      'StartTime',
+      player_id,
+      '[u8;32]',
+      'Option<u64>',
+    );
+  }
+
+  public totalShots(player_id: ActorId): QueryBuilder<number | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<number | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Single',
+      'TotalShots',
+      player_id,
+      '[u8;32]',
+      'Option<u8>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {

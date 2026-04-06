@@ -12,5 +12,10 @@ export const useWaitingParticipantsQuery = () => {
     args: [],
   });
 
-  return { waitingParticipants: data, isFetching, refetch, error };
+  return {
+    waitingParticipants: data,
+    isFetching,
+    refetch,
+    error,
+  };
 };

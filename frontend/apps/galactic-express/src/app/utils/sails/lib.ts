@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-floating-promises, @typescript-eslint/ban-ts-comment */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -107,8 +107,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', dns_id_and_name],
-      '(String, Option<([u8;32], String)>)',
+      null,
+      'New',
+      dns_id_and_name,
+      'Option<([u8;32], String)>',
       'String',
       code,
     );
@@ -122,8 +124,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', dns_id_and_name],
-      '(String, Option<([u8;32], String)>)',
+      null,
+      'New',
+      dns_id_and_name,
+      'Option<([u8;32], String)>',
       'String',
       codeId,
     );
@@ -142,8 +146,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'CancelGame'],
-      '(String, String)',
+      'GalacticExpress',
+      'CancelGame',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -155,8 +161,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'CancelRegister'],
-      '(String, String)',
+      'GalacticExpress',
+      'CancelRegister',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -168,8 +176,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'ChangeAdmin', new_admin],
-      '(String, String, [u8;32])',
+      'GalacticExpress',
+      'ChangeAdmin',
+      new_admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -181,8 +191,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'CreateNewSession', name],
-      '(String, String, String)',
+      'GalacticExpress',
+      'CreateNewSession',
+      name,
+      'String',
       'Null',
       this._program.programId,
     );
@@ -194,8 +206,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'DeletePlayer', player_id],
-      '(String, String, [u8;32])',
+      'GalacticExpress',
+      'DeletePlayer',
+      player_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -207,8 +221,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'GalacticExpress',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -220,8 +236,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'LeaveGame'],
-      '(String, String)',
+      'GalacticExpress',
+      'LeaveGame',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -233,8 +251,10 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'Register', creator, participant],
-      '(String, String, [u8;32], Participant)',
+      'GalacticExpress',
+      'Register',
+      [creator, participant],
+      '([u8;32], Participant)',
       'Null',
       this._program.programId,
     );
@@ -246,86 +266,69 @@ export class GalacticExpress {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['GalacticExpress', 'StartGame', fuel_amount, payload_amount],
-      '(String, String, u8, u8)',
+      'GalacticExpress',
+      'StartGame',
+      [fuel_amount, payload_amount],
+      '(u8, u8)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admin(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ActorId> {
-    const payload = this._program.registry.createType('(String, String)', ['GalacticExpress', 'Admin']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as ActorId;
+  public admin(): QueryBuilder<ActorId> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ActorId>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'GalacticExpress',
+      'Admin',
+      null,
+      null,
+      '[u8;32]',
+    );
   }
 
-  public async all(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<State> {
-    const payload = this._program.registry.createType('(String, String)', ['GalacticExpress', 'All']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, State)', reply.payload);
-    return result[2].toJSON() as unknown as State;
+  public all(): QueryBuilder<State> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<State>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'GalacticExpress',
+      'All',
+      null,
+      null,
+      'State',
+    );
   }
 
-  public async dnsInfo(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<[ActorId, string] | null> {
-    const payload = this._program.registry.createType('(String, String)', ['GalacticExpress', 'DnsInfo']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<([u8;32], String)>)', reply.payload);
-    return result[2].toJSON() as unknown as [ActorId, string] | null;
+  public dnsInfo(): QueryBuilder<[ActorId, string] | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<[ActorId, string] | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'GalacticExpress',
+      'DnsInfo',
+      null,
+      null,
+      'Option<([u8;32], String)>',
+    );
   }
 
-  public async getGame(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<GameState | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['GalacticExpress', 'GetGame', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<GameState>)', reply.payload);
-    return result[2].toJSON() as unknown as GameState | null;
+  public getGame(player_id: ActorId): QueryBuilder<GameState | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<GameState | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'GalacticExpress',
+      'GetGame',
+      player_id,
+      '[u8;32]',
+      'Option<GameState>',
+    );
   }
 
   public subscribeToGameFinishedEvent(callback: (data: Results) => void | Promise<void>): Promise<() => void> {

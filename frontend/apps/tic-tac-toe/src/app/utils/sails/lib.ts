@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-floating-promises */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = string;
 export interface Config {
@@ -92,8 +92,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', config],
-      '(String, Config)',
+      null,
+      'New',
+      config,
+      'Config',
       'String',
       code,
     );
@@ -107,8 +109,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', config],
-      '(String, Config)',
+      null,
+      'New',
+      config,
+      'Config',
       'String',
       codeId,
     );
@@ -127,8 +131,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', signature_data, signature],
-      '(String, String, SignatureData, Option<Vec<u8>>)',
+      'Session',
+      'CreateSession',
+      [signature_data, signature],
+      '(SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
@@ -140,8 +146,10 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromAccount'],
-      '(String, String)',
+      'Session',
+      'DeleteSessionFromAccount',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -153,52 +161,41 @@ export class Session {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSessionFromProgram', session_for_account],
-      '(String, String, [u8;32])',
+      'Session',
+      'DeleteSessionFromProgram',
+      session_for_account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async sessionForTheAccount(
-    account: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SessionData | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Session', 'SessionForTheAccount', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<SessionData>)', reply.payload);
-    return result[2].toJSON() as unknown as SessionData | null;
+  public sessionForTheAccount(account: ActorId): QueryBuilder<SessionData | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<SessionData | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'SessionForTheAccount',
+      account,
+      '[u8;32]',
+      'Option<SessionData>',
+    );
   }
 
-  public async sessions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SessionData]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Session', 'Sessions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SessionData)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, SessionData]>;
+  public sessions(): QueryBuilder<Array<[ActorId, SessionData]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, SessionData]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Session',
+      'Sessions',
+      null,
+      null,
+      'Vec<([u8;32], SessionData)>',
+    );
   }
 
   public subscribeToSessionCreatedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
@@ -237,8 +234,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'AddAdmin', admin],
-      '(String, String, [u8;32])',
+      'TicTacToe',
+      'AddAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -250,8 +249,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'AllowMessages', messages_allowed],
-      '(String, String, bool)',
+      'TicTacToe',
+      'AllowMessages',
+      messages_allowed,
+      'bool',
       'Null',
       this._program.programId,
     );
@@ -263,8 +264,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'RemoveAdmin', admin],
-      '(String, String, [u8;32])',
+      'TicTacToe',
+      'RemoveAdmin',
+      admin,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -276,8 +279,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'RemoveGameInstance', account],
-      '(String, String, [u8;32])',
+      'TicTacToe',
+      'RemoveGameInstance',
+      account,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -289,8 +294,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'RemoveGameInstances', accounts],
-      '(String, String, Option<Vec<[u8;32]>>)',
+      'TicTacToe',
+      'RemoveGameInstances',
+      accounts,
+      'Option<Vec<[u8;32]>>',
       'Null',
       this._program.programId,
     );
@@ -302,8 +309,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'Skip', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'TicTacToe',
+      'Skip',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -315,8 +324,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'StartGame', session_for_account],
-      '(String, String, Option<[u8;32]>)',
+      'TicTacToe',
+      'StartGame',
+      session_for_account,
+      'Option<[u8;32]>',
       'Null',
       this._program.programId,
     );
@@ -328,8 +339,10 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['TicTacToe', 'Turn', step, session_for_account],
-      '(String, String, u8, Option<[u8;32]>)',
+      'TicTacToe',
+      'Turn',
+      [step, session_for_account],
+      '(u8, Option<[u8;32]>)',
       'Null',
       this._program.programId,
     );
@@ -347,117 +360,83 @@ export class TicTacToe {
       this._program.api,
       this._program.registry,
       'send_message',
-      [
-        'TicTacToe',
-        'UpdateConfig',
-        s_per_block,
-        gas_to_remove_game,
-        time_interval,
-        turn_deadline_ms,
-        gas_to_delete_session,
-      ],
-      '(String, String, Option<u64>, Option<u64>, Option<u32>, Option<u64>, Option<u64>)',
+      'TicTacToe',
+      'UpdateConfig',
+      [s_per_block, gas_to_remove_game, time_interval, turn_deadline_ms, gas_to_delete_session],
+      '(Option<u64>, Option<u64>, Option<u32>, Option<u64>, Option<u64>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['TicTacToe', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
+  public admins(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'TicTacToe',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
+    );
   }
 
-  public async allGames(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, GameInstance]>> {
-    const payload = this._program.registry.createType('(String, String)', ['TicTacToe', 'AllGames']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], GameInstance)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, GameInstance]>;
+  public allGames(): QueryBuilder<Array<[ActorId, GameInstance]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, GameInstance]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'TicTacToe',
+      'AllGames',
+      null,
+      null,
+      'Vec<([u8;32], GameInstance)>',
+    );
   }
 
-  public async config(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Config> {
-    const payload = this._program.registry.createType('(String, String)', ['TicTacToe', 'Config']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+  public config(): QueryBuilder<Config> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Config>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'TicTacToe',
+      'Config',
+      null,
+      null,
+      'Config',
+    );
   }
 
-  public async game(
-    player_id: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<GameInstance | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['TicTacToe', 'Game', player_id])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<GameInstance>)', reply.payload);
-    return result[2].toJSON() as unknown as GameInstance | null;
+  public game(player_id: ActorId): QueryBuilder<GameInstance | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<GameInstance | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'TicTacToe',
+      'Game',
+      player_id,
+      '[u8;32]',
+      'Option<GameInstance>',
+    );
   }
 
-  public async messagesAllowed(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<boolean> {
-    const payload = this._program.registry.createType('(String, String)', ['TicTacToe', 'MessagesAllowed']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, bool)', reply.payload);
-    return result[2].toJSON() as unknown as boolean;
+  public messagesAllowed(): QueryBuilder<boolean> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<boolean>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'TicTacToe',
+      'MessagesAllowed',
+      null,
+      null,
+      'bool',
+    );
   }
 
   public subscribeToGameFinishedEvent(

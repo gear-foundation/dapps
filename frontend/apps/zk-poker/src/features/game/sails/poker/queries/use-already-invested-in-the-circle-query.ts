@@ -12,5 +12,10 @@ export const useAlreadyInvestedInTheCircleQuery = () => {
     args: [],
   });
 
-  return { alreadyInvestedInTheCircle: data, isFetching, refetch, error };
+  return {
+    alreadyInvestedInTheCircle: data,
+    isFetching,
+    refetch,
+    error,
+  };
 };

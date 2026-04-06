@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, decodeAddress } from '@gear-js/api';
+import { GearApi } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = string;
 
@@ -83,8 +83,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       code,
     );
@@ -98,8 +100,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', config, dns_id_and_name],
-      '(String, Config, Option<([u8;32], String)>)',
+      null,
+      'New',
+      [config, dns_id_and_name],
+      '(Config, Option<([u8;32], String)>)',
       'String',
       codeId,
     );
@@ -118,8 +122,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'AddTokenData', token_id, price],
-      '(String, String, [u8;32], u128)',
+      'Varatube',
+      'AddTokenData',
+      [token_id, price],
+      '([u8;32], u128)',
       'Null',
       this._program.programId,
     );
@@ -131,8 +137,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'CancelSubscription'],
-      '(String, String)',
+      'Varatube',
+      'CancelSubscription',
+      null,
+      null,
       'Null',
       this._program.programId,
     );
@@ -144,8 +152,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'Varatube',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -157,8 +167,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'ManagePendingSubscription', enable],
-      '(String, String, bool)',
+      'Varatube',
+      'ManagePendingSubscription',
+      enable,
+      'bool',
       'Null',
       this._program.programId,
     );
@@ -170,8 +182,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'RegisterSubscription', period, currency_id, with_renewal],
-      '(String, String, Period, [u8;32], bool)',
+      'Varatube',
+      'RegisterSubscription',
+      [period, currency_id, with_renewal],
+      '(Period, [u8;32], bool)',
       'Null',
       this._program.programId,
     );
@@ -187,8 +201,10 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'UpdateConfig', gas_for_token_transfer, gas_to_start_subscription_update, block_duration],
-      '(String, String, Option<u64>, Option<u64>, Option<u32>)',
+      'Varatube',
+      'UpdateConfig',
+      [gas_for_token_transfer, gas_to_start_subscription_update, block_duration],
+      '(Option<u64>, Option<u64>, Option<u32>)',
       'Null',
       this._program.programId,
     );
@@ -200,131 +216,97 @@ export class Varatube {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Varatube', 'UpdateSubscription', subscriber],
-      '(String, String, [u8;32])',
+      'Varatube',
+      'UpdateSubscription',
+      subscriber,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async admins(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<ActorId>> {
-    const payload = this._program.registry.createType('(String, String)', ['Varatube', 'Admins']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<[u8;32]>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<ActorId>;
-  }
-
-  public async allSubscriptions(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SubscriberDataState]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Varatube', 'AllSubscriptions']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType(
-      '(String, String, Vec<([u8;32], SubscriberDataState)>)',
-      reply.payload,
+  public admins(): QueryBuilder<Array<ActorId>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<ActorId>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'Admins',
+      null,
+      null,
+      'Vec<[u8;32]>',
     );
-    return result[2].toJSON() as unknown as Array<[ActorId, SubscriberDataState]>;
   }
 
-  public async config(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Config> {
-    const payload = this._program.registry.createType('(String, String)', ['Varatube', 'Config']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Config)', reply.payload);
-    return result[2].toJSON() as unknown as Config;
+  public allSubscriptions(): QueryBuilder<Array<[ActorId, SubscriberDataState]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, SubscriberDataState]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'AllSubscriptions',
+      null,
+      null,
+      'Vec<([u8;32], SubscriberDataState)>',
+    );
   }
 
-  public async currencies(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, number | string | bigint]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Varatube', 'Currencies']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], u128)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, number | string | bigint]>;
+  public config(): QueryBuilder<Config> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Config>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'Config',
+      null,
+      null,
+      'Config',
+    );
   }
 
-  public async getSubscriber(
-    account: ActorId,
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<SubscriberData | null> {
-    const payload = this._program.registry
-      .createType('(String, String, [u8;32])', ['Varatube', 'GetSubscriber', account])
-      .toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Option<SubscriberData>)', reply.payload);
-    return result[2].toJSON() as unknown as SubscriberData | null;
+  public currencies(): QueryBuilder<Array<[ActorId, number | string | bigint]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, number | string | bigint]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'Currencies',
+      null,
+      null,
+      'Vec<([u8;32], u128)>',
+    );
   }
 
-  public async subscribers(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<Array<[ActorId, SubscriberData]>> {
-    const payload = this._program.registry.createType('(String, String)', ['Varatube', 'Subscribers']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, Vec<([u8;32], SubscriberData)>)', reply.payload);
-    return result[2].toJSON() as unknown as Array<[ActorId, SubscriberData]>;
+  public getSubscriber(account: ActorId): QueryBuilder<SubscriberData | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<SubscriberData | null>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'GetSubscriber',
+      account,
+      '[u8;32]',
+      'Option<SubscriberData>',
+    );
+  }
+
+  public subscribers(): QueryBuilder<Array<[ActorId, SubscriberData]>> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<Array<[ActorId, SubscriberData]>>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'Varatube',
+      'Subscribers',
+      null,
+      null,
+      'Vec<([u8;32], SubscriberData)>',
+    );
   }
 
   public subscribeToSubscriptionRegisteredEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {

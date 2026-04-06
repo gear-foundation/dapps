@@ -12,5 +12,10 @@ export const useEarnedPointsQuery = () => {
     args: [],
   });
 
-  return { earnedPoints: data, isFetching, refetch, error };
+  return {
+    earnedPoints: data,
+    isFetching,
+    refetch,
+    error,
+  };
 };

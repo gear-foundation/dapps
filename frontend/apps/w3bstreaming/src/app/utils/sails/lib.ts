@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { GearApi, HexString, decodeAddress } from '@gear-js/api';
+import { GearApi, HexString } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, QueryBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 
 type ActorId = HexString;
 
@@ -84,8 +84,10 @@ export class Program {
       this.api,
       this.registry,
       'upload_program',
-      ['New', dns_id_and_name],
-      '(String, Option<([u8;32], String)>)',
+      null,
+      'New',
+      dns_id_and_name,
+      'Option<([u8;32], String)>',
       'String',
       code,
     );
@@ -99,8 +101,10 @@ export class Program {
       this.api,
       this.registry,
       'create_program',
-      ['New', dns_id_and_name],
-      '(String, Option<([u8;32], String)>)',
+      null,
+      'New',
+      dns_id_and_name,
+      'Option<([u8;32], String)>',
       'String',
       codeId,
     );
@@ -119,8 +123,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'AddAdmin', new_admin_id],
-      '(String, String, [u8;32])',
+      'W3Bstreaming',
+      'AddAdmin',
+      new_admin_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -132,8 +138,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'DeleteStream', stream_id],
-      '(String, String, String)',
+      'W3Bstreaming',
+      'DeleteStream',
+      stream_id,
+      'String',
       'Null',
       this._program.programId,
     );
@@ -150,8 +158,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'EditProfile', name, surname, img_link, time_zone],
-      '(String, String, Option<String>, Option<String>, Option<String>, Option<String>)',
+      'W3Bstreaming',
+      'EditProfile',
+      [name, surname, img_link, time_zone],
+      '(Option<String>, Option<String>, Option<String>, Option<String>)',
       'Null',
       this._program.programId,
     );
@@ -170,8 +180,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'EditStream', stream_id, start_time, end_time, title, img_link, description],
-      '(String, String, String, Option<u64>, Option<u64>, Option<String>, Option<String>, Option<String>)',
+      'W3Bstreaming',
+      'EditStream',
+      [stream_id, start_time, end_time, title, img_link, description],
+      '(String, Option<u64>, Option<u64>, Option<String>, Option<String>, Option<String>)',
       'Null',
       this._program.programId,
     );
@@ -183,8 +195,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'Kill', inheritor],
-      '(String, String, [u8;32])',
+      'W3Bstreaming',
+      'Kill',
+      inheritor,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -202,8 +216,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'NewStream', title, description, start_time, end_time, img_link],
-      '(String, String, String, Option<String>, u64, u64, String)',
+      'W3Bstreaming',
+      'NewStream',
+      [title, description, start_time, end_time, img_link],
+      '(String, Option<String>, u64, u64, String)',
       'Null',
       this._program.programId,
     );
@@ -215,8 +231,10 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'Subscribe', account_id],
-      '(String, String, [u8;32])',
+      'W3Bstreaming',
+      'Subscribe',
+      account_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
@@ -228,30 +246,27 @@ export class W3Bstreaming {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['W3Bstreaming', 'Unsubscribe', account_id],
-      '(String, String, [u8;32])',
+      'W3Bstreaming',
+      'Unsubscribe',
+      account_id,
+      '[u8;32]',
       'Null',
       this._program.programId,
     );
   }
 
-  public async getState(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<ProgramState> {
-    const payload = this._program.registry.createType('(String, String)', ['W3Bstreaming', 'GetState']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, ProgramState)', reply.payload);
-    return result[2].toJSON() as unknown as ProgramState;
+  public getState(): QueryBuilder<ProgramState> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new QueryBuilder<ProgramState>(
+      this._program.api,
+      this._program.registry,
+      this._program.programId,
+      'W3Bstreaming',
+      'GetState',
+      null,
+      null,
+      'ProgramState',
+    );
   }
 
   public subscribeToStreamIsScheduledEvent(

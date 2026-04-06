@@ -18,5 +18,10 @@ export const useRevealedPlayersQuery = ({ enabled }: Params) => {
     query: { enabled: !!account && enabled },
   });
 
-  return { revealedPlayers: data, isFetching, refetch, error };
+  return {
+    revealedPlayers: data,
+    isFetching,
+    refetch,
+    error,
+  };
 };

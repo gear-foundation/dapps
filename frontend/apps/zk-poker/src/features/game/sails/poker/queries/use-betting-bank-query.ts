@@ -12,5 +12,10 @@ export const useBettingBankQuery = () => {
     args: [],
   });
 
-  return { bettingBank: data, isFetching, refetch, error };
+  return {
+    bettingBank: data,
+    isFetching,
+    refetch,
+    error,
+  };
 };
