@@ -355,6 +355,81 @@ async fn gtest_delete_player() {
 }
 
 #[tokio::test]
+async fn gtest_blinds_are_derived_from_starting_bank() {
+    let (env, _) = TestEnvironment::setup(TestDataProfile::Basic).await;
+
+    let (small_blind, big_blind) = env.poker.blinds().await.unwrap();
+    assert_eq!((small_blind, big_blind), (5, 10));
+}
+
+#[tokio::test]
+async fn gtest_start_delay_does_not_consume_lobby_time_limit() {
+    let mut config = TestEnvironment::default_config();
+    config.lobby_time_limit_ms = Some(300_000);
+    config.time_until_start_ms = Some(60_000);
+
+    let (mut env, test_data) =
+        TestEnvironment::setup_with_config(TestDataProfile::Basic, config).await;
+
+    env.register_players(&test_data).await;
+
+    let created_at = env.poker.lobby_game_start_time().await.unwrap();
+
+    assert!(
+        env.poker.start_game(None).await.is_err(),
+        "game must not start before time_until_start_ms passes"
+    );
+
+    env.advance_to(created_at + 60_000).await;
+    env.poker.start_game(None).await.unwrap();
+
+    let first_start_at = env.poker.lobby_game_start_time().await.unwrap();
+    assert!(
+        first_start_at >= created_at + 60_000,
+        "lobby_game_start_time must switch from creation time to first actual start time"
+    );
+
+    env.restart_game().await;
+    env.advance_to(created_at + 300_001).await;
+    env.poker.start_game(None).await.unwrap();
+    env.check_status(Status::WaitingShuffleVerification).await;
+
+    env.restart_game().await;
+    env.advance_to(first_start_at + 300_001).await;
+    env.poker.start_game(None).await.unwrap();
+    env.check_status(Status::LobbyTimeFinished).await;
+}
+
+#[tokio::test]
+async fn gtest_revival_false_retired_player_cannot_rejoin() {
+    let (mut env, test_data) = TestEnvironment::setup(TestDataProfile::Basic).await;
+
+    env.register_players(&test_data).await;
+    env.poker.start_game(None).await.unwrap();
+    env.check_status(Status::WaitingShuffleVerification).await;
+
+    env.delete_player(USERS[1]).await;
+
+    let retired_players = env.poker.retired_players().await.unwrap().unwrap();
+    assert!(retired_players.contains(&USERS[1].into()));
+
+    env.pts
+        .get_accural()
+        .with_actor_id(USERS[1].into())
+        .await
+        .unwrap();
+
+    assert!(
+        env.poker
+            .register("Player".to_string(), test_data.pks[1].1.clone(), None)
+            .with_actor_id(USERS[1].into())
+            .await
+            .is_err(),
+        "retired player must not rejoin when revival is false"
+    );
+}
+
+#[tokio::test]
 async fn gtest_check_cancel_registration_and_turn() {
     let (mut env, test_data) = TestEnvironment::setup(TestDataProfile::Basic).await;
 
@@ -571,7 +646,24 @@ impl TestEnvironment {
         self.env.system()
     }
 
+    fn default_config() -> Config {
+        Config {
+            admin_id: USERS[0].into(),
+            admin_name: "Player_1".to_string(),
+            lobby_name: "Lobby name".to_string(),
+            starting_bank: 1000,
+            time_per_move_ms: 30_000,
+            revival: false,
+            lobby_time_limit_ms: None,
+            time_until_start_ms: None,
+        }
+    }
+
     async fn setup(profile: TestDataProfile) -> (Self, TestData) {
+        Self::setup_with_config(profile, Self::default_config()).await
+    }
+
+    async fn setup_with_config(profile: TestDataProfile, config: Config) -> (Self, TestData) {
         let system = System::new();
         system.init_logger();
 
@@ -597,7 +689,7 @@ impl TestEnvironment {
         let pts_id = pts_program.id();
 
         // Deploy Poker (+ zk_verification)
-        let poker_program = Self::deploy_poker(&env, pts_id, &test_data.pks[0].1).await;
+        let poker_program = Self::deploy_poker(&env, pts_id, &test_data.pks[0].1, config).await;
         let poker_id = poker_program.id();
 
         // Service handles
@@ -636,6 +728,7 @@ impl TestEnvironment {
         env: &GtestEnv,
         pts_id: ActorId,
         admin_pk: &ZkPublicKey,
+        config: Config,
     ) -> Actor<poker_client::PokerProgram, GtestEnv> {
         let shuffle_vkey_bytes =
             ZkLoaderData::load_verifying_key("tests/test_data/shuffle_vkey.json");
@@ -656,15 +749,7 @@ impl TestEnvironment {
 
         env.deploy::<poker_client::PokerProgram>(poker_code_id, b"salt-poker".to_vec())
             .new(
-                Config {
-                    admin_id: USERS[0].into(),
-                    admin_name: "Player_1".to_string(),
-                    lobby_name: "Lobby name".to_string(),
-                    small_blind: 5,
-                    big_blind: 10,
-                    starting_bank: 1000,
-                    time_per_move_ms: 30_000,
-                },
+                config,
                 SessionConfig {
                     gas_to_delete_session: 10_000_000_000,
                     minimum_session_duration_ms: 180_000,
@@ -767,6 +852,12 @@ impl TestEnvironment {
 
     async fn delete_player(&mut self, id: u64) {
         self.poker.delete_player(id.into(), None).await.unwrap();
+    }
+
+    async fn advance_to(&mut self, timestamp_ms: u64) {
+        while self.poker.current_time().await.unwrap() < timestamp_ms {
+            self.system().run_next_block();
+        }
     }
 
     async fn register(&mut self, id: u64, pk: ZkPublicKey) {

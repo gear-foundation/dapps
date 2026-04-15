@@ -110,9 +110,10 @@ pub async fn init(
         admin_id: api.get_actor_id(),
         admin_name: "Name".to_string(),
         lobby_name: "Lobby".to_string(),
-        small_blind: 5,
-        big_blind: 10,
         starting_bank: 1000,
+        revival: false,
+        lobby_time_limit_ms: None,
+        time_until_start_ms: None,
     };
     let session_config = SessionConfig {
         gas_to_delete_session: 10_000_000_000,

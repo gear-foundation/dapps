@@ -22,6 +22,9 @@ use zk_verification_client::zk_verification::io as zk_io;
 
 use zk_verification_client::VerificationVariables;
 
+const MAX_PLAYERS: usize = 8;
+const MIN_LOBBY_TIME_LIMIT_MS: u64 = 5 * 60 * 1000;
+
 #[derive(Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq, Hash)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
@@ -55,9 +58,13 @@ struct Storage {
     round: u64,
     betting: Option<BettingStage>,
     betting_bank: HashMap<ActorId, u128>,
+    earned_points: HashMap<ActorId, u128>,
     all_in_players: Vec<ActorId>,
+    retired_players: HashSet<ActorId>,
     already_invested_in_the_circle: HashMap<ActorId, u128>, // The mapa is needed to keep track of how much a person has put on the table,
     // which can change after each player's turn
+    lobby_created_at: u64,
+    lobby_game_start_time: Option<u64>,
     pts_actor_id: ActorId,
     factory_actor_id: ActorId,
 }
@@ -74,6 +81,7 @@ pub enum Status {
     WaitingForCardsToBeDisclosed,
     WaitingForAllTableCardsToBeDisclosed,
     Finished { pots: Vec<(u128, Vec<ActorId>)> },
+    LobbyTimeFinished,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone, PartialEq, Eq)]
@@ -94,10 +102,11 @@ pub struct Config {
     pub admin_id: ActorId,
     admin_name: String,
     lobby_name: String,
-    small_blind: u128,
-    big_blind: u128,
     starting_bank: u128,
     time_per_move_ms: u64,
+    revival: bool,
+    lobby_time_limit_ms: Option<u64>,
+    time_until_start_ms: Option<u64>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
@@ -174,6 +183,7 @@ pub enum Event {
         old_admin: ActorId,
         new_admin: ActorId,
     },
+    LobbyTimeFinished,
 }
 
 pub struct PokerService<'a> {
@@ -190,6 +200,12 @@ impl<'a> PokerService<'a> {
         pk: ZkPublicKey,
         zk_verification_id: ActorId,
     ) {
+        if let Some(lobby_time_limit_ms) = config.lobby_time_limit_ms
+            && lobby_time_limit_ms < MIN_LOBBY_TIME_LIMIT_MS
+        {
+            panic!("Lobby time limit is less than 5 minutes");
+        }
+
         let participants = vec![(
             config.admin_id,
             Participant {
@@ -213,7 +229,9 @@ impl<'a> PokerService<'a> {
                 round: 0,
                 betting: None,
                 betting_bank: HashMap::new(),
+                earned_points: HashMap::new(),
                 all_in_players: Vec::new(),
+                retired_players: HashSet::new(),
                 already_invested_in_the_circle: HashMap::new(),
                 encrypted_deck: None,
                 deck_position: 0,
@@ -223,6 +241,8 @@ impl<'a> PokerService<'a> {
                 revealed_table_cards: Vec::new(),
                 original_card_map,
                 original_deck,
+                lobby_created_at: exec::block_timestamp(),
+                lobby_game_start_time: None,
                 pts_actor_id,
                 factory_actor_id: msg::source(),
                 agg_pub_key: pk,
@@ -282,7 +302,7 @@ async fn remove_participant_if_registered(
 ) -> Option<u128> {
     if let Some((_, participant)) = storage.participants.iter().find(|(id, _)| *id == player_id) {
         match storage.status {
-            Status::Registration | Status::Finished { .. } => {
+            Status::Registration | Status::Finished { .. } | Status::LobbyTimeFinished => {
                 let balance = participant.balance;
 
                 storage.participants.retain(|(id, _)| *id != player_id);
@@ -314,6 +334,63 @@ async fn remove_participant_if_registered(
 }
 
 impl Storage {
+    fn big_blind(&self) -> u128 {
+        (self.config.starting_bank / 100).max(1)
+    }
+
+    fn small_blind(&self) -> u128 {
+        (self.big_blind() / 2).max(1)
+    }
+
+    fn lobby_start_deadline(&self) -> u64 {
+        self.lobby_created_at + self.config.time_until_start_ms.unwrap_or(0)
+    }
+
+    fn can_start_game(&self, now: u64) -> bool {
+        now >= self.lobby_start_deadline()
+    }
+
+    fn lobby_time_limit_expired(&self, now: u64) -> bool {
+        let Some(limit) = self.config.lobby_time_limit_ms else {
+            return false;
+        };
+        let Some(start_time) = self.lobby_game_start_time else {
+            return false;
+        };
+
+        now >= start_time + limit
+    }
+
+    fn retire_player_if_needed(&mut self, player_id: ActorId) {
+        if !self.config.revival && self.round > 0 {
+            self.retired_players.insert(player_id);
+        }
+    }
+
+    fn award_prize(&mut self, winner: ActorId, prize: u128) {
+        let (_, participant) = self
+            .participants
+            .iter_mut()
+            .find(|(id, _)| *id == winner)
+            .expect("There is no such participant");
+
+        participant.balance += prize;
+        *self.earned_points.entry(winner).or_default() += prize;
+    }
+
+    fn finish_round_status(&mut self, pots: Vec<(u128, Vec<ActorId>)>) -> bool {
+        let lobby_time_finished = self.lobby_time_limit_expired(exec::block_timestamp());
+
+        self.status = if lobby_time_finished {
+            Status::LobbyTimeFinished
+        } else {
+            Status::Finished { pots }
+        };
+
+        self.betting = None;
+        lobby_time_finished
+    }
+
     fn reset_for_new_game(&mut self) {
         self.encrypted_deck = None;
         self.deck_position = 0;
@@ -366,7 +443,11 @@ impl PokerService<'_> {
             panic!("Already registered");
         }
 
-        if storage.participants.len() == 8 {
+        if !storage.config.revival && storage.retired_players.contains(&player_id) {
+            panic!("Have already been eliminated.");
+        }
+
+        if storage.participants.len() == MAX_PLAYERS {
             panic!("Alerady max amount of players");
         }
 
@@ -396,6 +477,9 @@ impl PokerService<'_> {
                 })
                 .expect("Event Invocation Error");
             }
+            Status::LobbyTimeFinished => {
+                panic!("Lobby time finished");
+            }
             _ => {
                 storage.waiting_participants.push((player_id, participant));
 
@@ -421,12 +505,19 @@ impl PokerService<'_> {
             .participants
             .iter()
             .find(|(id, _)| *id == player_id)
+            .or_else(|| {
+                storage
+                    .waiting_participants
+                    .iter()
+                    .find(|(id, _)| *id == player_id)
+            })
             .map(|(_, participant)| participant.pk.clone());
 
         if let Some(balance) = remove_participant_if_registered(storage, player_id).await {
             if let Some(pk) = participant_pk {
                 storage.agg_pub_key = substract_agg_pub_key(&storage.agg_pub_key, &pk);
             }
+            storage.retire_player_if_needed(player_id);
             pts_transfer(storage.pts_actor_id, exec::program_id(), player_id, balance).await;
             self.emit_event(Event::RegistrationCanceled { player_id })
                 .expect("Event Error");
@@ -446,6 +537,15 @@ impl PokerService<'_> {
         if player_id != storage.config.admin_id {
             panic!("Access denied");
         }
+        if storage.status == Status::LobbyTimeFinished {
+            panic!("Lobby time finished");
+        }
+        if storage.lobby_time_limit_expired(exec::block_timestamp()) {
+            storage.status = Status::LobbyTimeFinished;
+            self.emit_event(Event::LobbyTimeFinished)
+                .expect("Event Error");
+            return;
+        }
         if !matches!(storage.status, Status::Finished { .. }) {
             storage.refund_bets_to_players();
         }
@@ -454,6 +554,9 @@ impl PokerService<'_> {
 
         storage.participants.retain(|(id, info)| {
             if info.balance == 0 {
+                if !storage.config.revival {
+                    storage.retired_players.insert(*id);
+                }
                 storage.agg_pub_key = substract_agg_pub_key(&storage.agg_pub_key, &info.pk);
                 self.emit_event(Event::RegistrationCanceled { player_id: *id })
                     .expect("Event Error");
@@ -520,7 +623,8 @@ impl PokerService<'_> {
             Status::Registration
             | Status::WaitingShuffleVerification
             | Status::Finished { .. }
-            | Status::WaitingStart => {}
+            | Status::WaitingStart
+            | Status::LobbyTimeFinished => {}
             _ => {
                 panic!("Wrong status");
             }
@@ -529,6 +633,10 @@ impl PokerService<'_> {
         let mut points = Vec::new();
 
         for (id, participant) in storage.participants.iter() {
+            ids.push(*id);
+            points.push(participant.balance + storage.betting_bank.get(id).copied().unwrap_or(0));
+        }
+        for (id, participant) in storage.waiting_participants.iter() {
             ids.push(*id);
             points.push(participant.balance);
         }
@@ -567,7 +675,7 @@ impl PokerService<'_> {
             panic!("Access denied");
         }
         match storage.status {
-            Status::Registration | Status::Finished { .. } => {
+            Status::Registration | Status::Finished { .. } | Status::LobbyTimeFinished => {
                 panic!("Wrong status");
             }
             _ => {
@@ -636,6 +744,7 @@ impl PokerService<'_> {
             storage
                 .active_participants
                 .remove_and_update_first_index(&player_id);
+            storage.retire_player_if_needed(player_id);
             storage.status = Status::Registration;
         } else {
             panic!("There is no such player");
@@ -703,6 +812,19 @@ impl PokerService<'_> {
         if storage.status != Status::Registration {
             panic!("Wrong status");
         }
+        let current_time = exec::block_timestamp();
+        if !storage.can_start_game(current_time) {
+            panic!("Game start is delayed");
+        }
+        if storage.lobby_time_limit_expired(current_time) {
+            storage.status = Status::LobbyTimeFinished;
+            self.emit_event(Event::LobbyTimeFinished)
+                .expect("Event Error");
+            return;
+        }
+        if storage.lobby_game_start_time.is_none() {
+            storage.lobby_game_start_time = Some(current_time);
+        }
 
         storage.active_participants.set_first_index();
 
@@ -710,21 +832,22 @@ impl PokerService<'_> {
             .active_participants
             .next()
             .expect("No small blind player");
-        process_blind(storage, sb_player, storage.config.small_blind);
+        process_blind(storage, sb_player, storage.small_blind());
 
         let bb_player = storage
             .active_participants
             .next()
             .expect("No big blind player");
-        process_blind(storage, bb_player, storage.config.big_blind);
+        process_blind(storage, bb_player, storage.big_blind());
 
+        let big_blind = storage.big_blind();
         storage.betting = Some(BettingStage {
             turn: storage
                 .active_participants
                 .next()
                 .expect("The player must exist"),
             last_active_time: None,
-            current_bet: storage.config.big_blind,
+            current_bet: big_blind,
             acted_players: vec![],
         });
 
@@ -985,23 +1108,17 @@ impl PokerService<'_> {
                 if active_left == 0 && all_in_left == 0 {
                     if let Some(winner) = next_after_skips {
                         let prize: u128 = storage.betting_bank.values().copied().sum();
+                        let pots = vec![(prize, vec![winner])];
 
-                        let (_, win_participant) = storage
-                            .participants
-                            .iter_mut()
-                            .find(|(id, _)| *id == winner)
-                            .expect("winner must be a participant");
-                        win_participant.balance += prize;
+                        storage.award_prize(winner, prize);
+                        let lobby_time_finished = storage.finish_round_status(pots.clone());
 
-                        storage.status = Status::Finished {
-                            pots: vec![(prize, vec![winner])],
-                        };
-                        storage.betting = None;
-
-                        self.emit_event(Event::Finished {
-                            pots: vec![(prize, vec![winner])],
-                        })
-                        .expect("Event Error");
+                        self.emit_event(Event::Finished { pots })
+                            .expect("Event Error");
+                        if lobby_time_finished {
+                            self.emit_event(Event::LobbyTimeFinished)
+                                .expect("Event Error");
+                        }
                         return;
                     } else {
                         panic!("No players left to win the pot");
@@ -1015,23 +1132,17 @@ impl PokerService<'_> {
                         *storage.all_in_players.first().expect("winner must exist")
                     };
                     let prize: u128 = storage.betting_bank.values().copied().sum();
+                    let pots = vec![(prize, vec![winner])];
 
-                    let (_, win_participant) = storage
-                        .participants
-                        .iter_mut()
-                        .find(|(id, _)| *id == winner)
-                        .expect("winner must be a participant");
-                    win_participant.balance += prize;
+                    storage.award_prize(winner, prize);
+                    let lobby_time_finished = storage.finish_round_status(pots.clone());
 
-                    storage.status = Status::Finished {
-                        pots: vec![(prize, vec![winner])],
-                    };
-                    storage.betting = None;
-
-                    self.emit_event(Event::Finished {
-                        pots: vec![(prize, vec![winner])],
-                    })
-                    .expect("Event Error");
+                    self.emit_event(Event::Finished { pots })
+                        .expect("Event Error");
+                    if lobby_time_finished {
+                        self.emit_event(Event::LobbyTimeFinished)
+                            .expect("Event Error");
+                    }
                     return;
                 }
 
@@ -1224,22 +1335,17 @@ impl PokerService<'_> {
             };
 
             let prize: u128 = storage.betting_bank.values().copied().sum();
-            let (_, participant) = storage
-                .participants
-                .iter_mut()
-                .find(|(id, _)| *id == winner)
-                .expect("There is no such participant");
+            let pots = vec![(prize, vec![winner])];
 
-            participant.balance += prize;
-            storage.status = Status::Finished {
-                pots: vec![(prize, vec![winner])],
-            };
-            storage.betting = None;
+            storage.award_prize(winner, prize);
+            let lobby_time_finished = storage.finish_round_status(pots.clone());
 
-            self.emit_event(Event::Finished {
-                pots: vec![(prize, vec![winner])],
-            })
-            .expect("Event Error");
+            self.emit_event(Event::Finished { pots })
+                .expect("Event Error");
+            if lobby_time_finished {
+                self.emit_event(Event::LobbyTimeFinished)
+                    .expect("Event Error");
+            }
             return;
         }
 
@@ -1401,17 +1507,16 @@ impl PokerService<'_> {
             }
 
             for (winner, prize) in &prizes_by_player {
-                let (_, participant) = storage
-                    .participants
-                    .iter_mut()
-                    .find(|(id, _)| id == winner)
-                    .expect("There is no such participant");
-                participant.balance += *prize;
+                storage.award_prize(*winner, *prize);
             }
 
-            storage.status = Status::Finished { pots: pots.clone() };
+            let lobby_time_finished = storage.finish_round_status(pots.clone());
             self.emit_event(Event::Finished { pots })
                 .expect("Event Error");
+            if lobby_time_finished {
+                self.emit_event(Event::LobbyTimeFinished)
+                    .expect("Event Error");
+            }
         }
 
         self.emit_event(Event::CardsDisclosed).expect("Event Error");
@@ -1515,6 +1620,33 @@ impl PokerService<'_> {
     #[export]
     pub fn betting_bank(&self) -> Vec<(ActorId, u128)> {
         self.get().betting_bank.clone().into_iter().collect()
+    }
+    #[export]
+    pub fn blinds(&self) -> (u128, u128) {
+        let storage = self.get();
+        (storage.small_blind(), storage.big_blind())
+    }
+    #[export]
+    pub fn earned_points(&self) -> Vec<(ActorId, u128)> {
+        self.get().earned_points.clone().into_iter().collect()
+    }
+    #[export]
+    pub fn lobby_game_start_time(&self) -> u64 {
+        let storage = self.get();
+        storage
+            .lobby_game_start_time
+            .unwrap_or(storage.lobby_created_at)
+    }
+    #[export]
+    pub fn retired_players(&self) -> Option<Vec<ActorId>> {
+        let retired_players = self
+            .get()
+            .retired_players
+            .clone()
+            .into_iter()
+            .collect::<Vec<_>>();
+
+        (!retired_players.is_empty()).then_some(retired_players)
     }
     #[export]
     pub fn all_in_players(&self) -> &'static Vec<ActorId> {

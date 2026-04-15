@@ -35,10 +35,11 @@ pub struct LobbyConfig {
     admin_id: ActorId,
     admin_name: String,
     lobby_name: String,
-    small_blind: u128,
-    big_blind: u128,
     starting_bank: u128,
     time_per_move_ms: u64,
+    revival: bool,
+    lobby_time_limit_ms: Option<u64>,
+    time_until_start_ms: Option<u64>,
 }
 
 static mut STORAGE: Option<Storage> = None;
@@ -126,6 +127,11 @@ impl PokerFactoryService {
 
         if init_lobby.time_per_move_ms < 15_000 {
             panic!("Timer less than 15s");
+        }
+        if let Some(lobby_time_limit_ms) = init_lobby.lobby_time_limit_ms
+            && lobby_time_limit_ms < 5 * 60 * 1000
+        {
+            panic!("Lobby time limit is less than 5 minutes");
         }
 
         let request = pts_io::GetBalance::encode_params_with_prefix("Pts", msg_src);
