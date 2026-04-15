@@ -6,6 +6,11 @@ type CountdownState = {
   remainingMs: number | null;
   isRunning: boolean;
   isExpired: boolean;
+  hasLobbyStartedOnce: boolean;
+};
+
+type CountdownOptions = {
+  hasLobbyStartedOnce?: boolean;
 };
 
 const toNumber = (value: number | string | bigint | null | undefined): number | null => {
@@ -14,13 +19,23 @@ const toNumber = (value: number | string | bigint | null | undefined): number | 
   return Number.isFinite(n) ? n : null;
 };
 
-export function useCountdown(timeLimitMs?: number | string | bigint | null): CountdownState {
-  const { lobbyGameStartTime } = useLobbyGameStartTimeQuery();
+export function useCountdown(
+  timeLimitMs?: number | string | bigint | null,
+  options?: CountdownOptions,
+): CountdownState {
+  const { lobbyGameStartTime, refetch } = useLobbyGameStartTimeQuery();
 
   const startTime = useMemo(() => toNumber(lobbyGameStartTime), [lobbyGameStartTime]);
   const limitMs = useMemo(() => toNumber(timeLimitMs), [timeLimitMs]);
+  const hasLobbyStartedOnce = options?.hasLobbyStartedOnce ?? true;
 
   const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!hasLobbyStartedOnce) return;
+
+    void refetch();
+  }, [hasLobbyStartedOnce, refetch]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -34,8 +49,8 @@ export function useCountdown(timeLimitMs?: number | string | bigint | null): Cou
     };
   }, []);
 
-  if (!limitMs || !startTime) {
-    return { remainingMs: null, isRunning: false, isExpired: false };
+  if (!hasLobbyStartedOnce || !limitMs || !startTime) {
+    return { remainingMs: null, isRunning: false, isExpired: false, hasLobbyStartedOnce };
   }
 
   const endTime = startTime + limitMs;
@@ -45,5 +60,6 @@ export function useCountdown(timeLimitMs?: number | string | bigint | null): Cou
     remainingMs,
     isRunning: remainingMs > 0,
     isExpired: remainingMs === 0,
+    hasLobbyStartedOnce,
   };
 }

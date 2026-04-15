@@ -1,6 +1,6 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
 import { BackIcon, Exit } from '@/assets/images';
@@ -23,6 +23,7 @@ import {
   type GameEndData,
 } from '@/features/game/components';
 import { usePlayerCards, useGameStatus, usePlayerSlots, useTurn, useCountdown } from '@/features/game/hooks';
+import { LobbyStatus, useGetLobbyStatusByIdQuery } from '@/features/game/queries';
 import {
   useParticipantsQuery,
   useEventRegisteredSubscription,
@@ -71,6 +72,7 @@ import { getRankFromValue } from '@/features/zk/utils';
 import styles from './game.module.scss';
 
 function GamePage() {
+  const { gameId } = useParams();
   const navigate = useNavigate();
   const alert = useAlert();
   const { account } = useAccount();
@@ -156,7 +158,12 @@ function GamePage() {
     },
   });
 
-  useEventDeckShuffleCompleteSubscription({ onData: () => void refetchStatus() });
+  useEventDeckShuffleCompleteSubscription({
+    onData: () => {
+      void refetchStatus();
+      void refetchLobbyStatus();
+    },
+  });
   useEventGameStartedSubscription({
     onData: () => {
       void refetchStatus();
@@ -257,6 +264,7 @@ function GamePage() {
   });
 
   const { config, refetch: refetchConfig } = useConfigQuery();
+  const { data: lobbyStatusData, refetch: refetchLobbyStatus } = useGetLobbyStatusByIdQuery(gameId);
   useEventAdminChangedSubscription({ onData: () => void refetchConfig() });
   useEventLobbyTimeFinishedSubscription({ onData: () => void refetchStatus() });
 
@@ -292,7 +300,11 @@ function GamePage() {
   const { onTimeEnd, currentTurn, autoFoldPlayers, timeToTurnEndSec, dillerAddress, isTurnTimeExpired } =
     useTurn(isActiveGame);
 
-  const { remainingMs: lobbyTimeRemainingMs } = useCountdown(config?.lobby_time_limit_ms);
+  const lobbyStatus = lobbyStatusData?.lobbyById?.status as LobbyStatus;
+  const hasLobbyStartedOnce = Boolean(lobbyStatus && lobbyStatus !== LobbyStatus.CREATED);
+  const { remainingMs: lobbyTimeRemainingMs } = useCountdown(config?.lobby_time_limit_ms, {
+    hasLobbyStartedOnce,
+  });
 
   const playerSlots = usePlayerSlots(currentTurn || null, autoFoldPlayers, playerCards, dillerAddress);
 
@@ -379,7 +391,7 @@ function GamePage() {
               timePerMoveSec={timeToTurnEndSec}
               onTimeEnd={onTimeEnd}
             />
-            {lobbyTimeRemainingMs && <LobbyTimer remainingMs={lobbyTimeRemainingMs} />}
+            {hasLobbyStartedOnce && lobbyTimeRemainingMs && <LobbyTimer remainingMs={lobbyTimeRemainingMs} />}
           </>
         )}
         {isMyTurn && !isTurnTimeExpired && (

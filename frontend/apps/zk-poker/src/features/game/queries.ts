@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { graphqlClient } from '@/app/utils';
 
@@ -22,6 +22,14 @@ export type PlayerStats = {
   games: number;
 };
 
+type LobbyById = {
+  status: string;
+};
+
+type LobbyStatusByIdResponse = {
+  lobbyById: LobbyById | null;
+};
+
 const GET_LOBBIES_QUERY = `
   query GetLobbies {
     lobbies(where: { status_not_eq: "killed" }) {
@@ -41,6 +49,14 @@ const GET_PLAYER_BY_ID_QUERY = `
       gamesToday
       wins
       games
+    }
+  }
+`;
+
+const GET_LOBBY_STATUS_BY_ID_QUERY = `
+  query GetLobbyStatusById($id: String!) {
+    lobbyById(id: $id) {
+      status
     }
   }
 `;
@@ -71,6 +87,23 @@ export const useGetPlayerByIdQuery = (id?: string) => {
       } catch (error) {
         console.error('Error fetching player stats:', error);
         return { playerById: { gamesToday: 0, wins: 0, games: 0 } };
+      }
+    },
+    enabled: !!id,
+  });
+};
+
+export const useGetLobbyStatusByIdQuery = (id?: string): UseQueryResult<LobbyStatusByIdResponse, Error> => {
+  return useQuery<LobbyStatusByIdResponse, Error>({
+    queryKey: ['lobby-status', id],
+    queryFn: async (): Promise<LobbyStatusByIdResponse> => {
+      if (!id) throw new Error('Lobby ID is required');
+      try {
+        const data = await graphqlClient.request<{ lobbyById: LobbyById | null }>(GET_LOBBY_STATUS_BY_ID_QUERY, { id });
+        return data;
+      } catch (error) {
+        console.error('Error fetching lobby status:', error);
+        return { lobbyById: null };
       }
     },
     enabled: !!id,
