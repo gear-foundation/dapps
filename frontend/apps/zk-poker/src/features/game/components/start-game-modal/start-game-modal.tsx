@@ -21,13 +21,21 @@ type Props = {
   isDefaultExpanded: boolean;
   timeUntilStartMs?: number | string | bigint | null;
   isRetired?: boolean;
+  hasLobbyStartedOnce: boolean;
 };
 
 const DRAG_THRESHOLD = 30;
 const MAX_HEIGHT = 350;
 const seats = Array.from({ length: MAX_PLAYERS }, (_, index) => index);
 
-const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilStartMs, isRetired }: Props) => {
+const StartGameModal = ({
+  participants,
+  isAdmin,
+  isDefaultExpanded,
+  timeUntilStartMs,
+  isRetired,
+  hasLobbyStartedOnce,
+}: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
   const { account } = useAccount();
@@ -42,7 +50,7 @@ const StartGameModal = ({ participants, isAdmin, isDefaultExpanded, timeUntilSta
   const { killMessage, isPending: isKillPending } = useKillMessage();
   const { cancelRegistrationMessage, isPending: isCancelPending } = useCancelRegistrationMessage();
   const { registerMessage, isPending: isRegisterPending } = useRegisterMessage();
-  const { remainingMs, isRunning } = useCountdown(timeUntilStartMs);
+  const { remainingMs, isRunning } = useCountdown(timeUntilStartMs, { hasLobbyStartedOnce, isTimeUntilStart: true });
 
   const players = participants.map(([address, { name, balance }]) => ({
     address,

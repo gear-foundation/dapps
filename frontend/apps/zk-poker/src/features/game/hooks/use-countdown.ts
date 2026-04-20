@@ -11,6 +11,7 @@ type CountdownState = {
 
 type CountdownOptions = {
   hasLobbyStartedOnce?: boolean;
+  isTimeUntilStart?: boolean;
 };
 
 const toNumber = (value: number | string | bigint | null | undefined): number | null => {
@@ -28,6 +29,8 @@ export function useCountdown(
   const startTime = useMemo(() => toNumber(lobbyGameStartTime), [lobbyGameStartTime]);
   const limitMs = useMemo(() => toNumber(timeLimitMs), [timeLimitMs]);
   const hasLobbyStartedOnce = options?.hasLobbyStartedOnce ?? true;
+  const isTimeUntilStart = options?.isTimeUntilStart ?? false;
+  const shouldRunCountdown = isTimeUntilStart ? !hasLobbyStartedOnce : hasLobbyStartedOnce;
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -49,7 +52,7 @@ export function useCountdown(
     };
   }, []);
 
-  if (!hasLobbyStartedOnce || !limitMs || !startTime) {
+  if (!limitMs || !startTime || !shouldRunCountdown) {
     return { remainingMs: null, isRunning: false, isExpired: false, hasLobbyStartedOnce };
   }
 

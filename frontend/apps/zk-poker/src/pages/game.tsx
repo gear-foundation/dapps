@@ -412,6 +412,7 @@ function GamePage() {
           isDefaultExpanded={!gameEndData || isAdmin}
           timeUntilStartMs={config.time_until_start_ms}
           isRetired={isRetired}
+          hasLobbyStartedOnce={hasLobbyStartedOnce}
         />
       )}
 
@@ -420,7 +421,7 @@ function GamePage() {
       )}
 
       {isLobbyTimeFinished && (
-        <LobbyTimeFinishedModal isAdmin={isAdmin} isLoading={isKillPending} onCloseLobby={() => cancelGameMessage()} />
+        <LobbyTimeFinishedModal isAdmin={isAdmin} isLoading={isKillPending} onCloseLobby={() => killMessage()} />
       )}
 
       {isWaitingZk &&
