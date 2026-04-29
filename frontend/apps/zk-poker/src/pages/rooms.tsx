@@ -27,12 +27,14 @@ export default function Rooms() {
     },
     {} as Record<string, Lobby>,
   );
+  const sortedLobbies = lobbies
+    ?.filter(([address]) => Boolean(lobbiesMap?.[address]))
+    .sort((a, b) => {
+      const createdAtA = lobbiesMap?.[a[0]]?.createdAt ? new Date(lobbiesMap[a[0]].createdAt).getTime() : 0;
+      const createdAtB = lobbiesMap?.[b[0]]?.createdAt ? new Date(lobbiesMap[b[0]].createdAt).getTime() : 0;
 
-  const sortedLobbies = lobbies?.sort((a, b) => {
-    const nameA = a[1].lobby_name;
-    const nameB = b[1].lobby_name;
-    return nameA.localeCompare(nameB);
-  });
+      return createdAtB - createdAtA;
+    });
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

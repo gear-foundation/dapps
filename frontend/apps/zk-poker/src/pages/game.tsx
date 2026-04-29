@@ -1,5 +1,5 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ROUTES } from '@/app/consts';
@@ -54,6 +54,7 @@ import {
   useEventRegisteredToTheNextRoundSubscription,
   useEventWaitingForCardsToBeDisclosedSubscription,
   useEventFinishedSubscription,
+  useStartGameMessage,
   useEventAdminChangedSubscription,
   useAllInPlayersQuery,
   useEventWaitingForAllTableCardsToBeDisclosedSubscription,
@@ -105,6 +106,8 @@ function GamePage() {
   const isRetired = retiredPlayers?.some((address) => address === account?.decodedAddress);
 
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
+  const isRestartTriggeredRef = useRef(false);
+  const isStartTriggeredRef = useRef(false);
 
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
   const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
@@ -116,6 +119,7 @@ function GamePage() {
   const { current_bet } = betting || {};
 
   const { restartGameMessage, isPending: isRestartGamePending } = useRestartGameMessage();
+  const { startGameMessage, isPending: isStartGamePending } = useStartGameMessage();
   const { tableCards, refetch: refetchRevealedTableCards } = useRevealedTableCardsQuery({ enabled: isGameStarted });
 
   const { playerCards, myCardsC0, refetchPlayerCards } = usePlayerCards(isGameStarted) || {};
@@ -124,7 +128,9 @@ function GamePage() {
   });
   const { waitingParticipants, refetch: refetchWaitingParticipants } = useWaitingParticipantsQuery();
   const isSpectator = !participants?.some(([address]) => address === account?.decodedAddress);
+  const isWaitingParticipant = waitingParticipants?.some(([address]) => address === account?.decodedAddress) ?? false;
   const startGameParticipants = participants && waitingParticipants ? [...participants, ...waitingParticipants] : [];
+  const hasEnoughPlayersToStart = startGameParticipants.length >= 2;
 
   const onPlayersChanged = () => {
     void refetchStatus();
@@ -167,8 +173,6 @@ function GamePage() {
   useEventGameStartedSubscription({
     onData: () => {
       void refetchStatus();
-      setGameEndData(null);
-      setIsGameEndModalOpen(false);
     },
   });
   useEventNextStageSubscription({
@@ -191,6 +195,8 @@ function GamePage() {
       void refetchBetting();
       void refetchBettingBank();
       void refetchAlreadyInvestedInTheCircle();
+      setIsGameEndModalOpen(false);
+      setGameEndData(null);
     },
   });
 
@@ -342,14 +348,44 @@ function GamePage() {
   }, [isFinished, revealedPlayers]);
 
   useEffect(() => {
-    if (!isFinished) return;
+    if (!isFinished) {
+      isRestartTriggeredRef.current = false;
+      return;
+    }
 
-    if (isAdmin && !isRestartGamePending) {
-      setTimeout(() => {
-        void restartGameMessage();
-      }, 2000);
+    if (isAdmin && !isRestartGamePending && !isRestartTriggeredRef.current) {
+      isRestartTriggeredRef.current = true;
+      void restartGameMessage();
     }
   }, [isFinished, restartGameMessage, isAdmin, isRestartGamePending]);
+
+  useEffect(() => {
+    if (isGameStarted) {
+      isStartTriggeredRef.current = false;
+      return;
+    }
+
+    const shouldStartNextRound =
+      isAdmin &&
+      hasLobbyStartedOnce &&
+      hasEnoughPlayersToStart &&
+      Boolean(participants && config) &&
+      !isStartGamePending;
+
+    if (shouldStartNextRound && !isStartTriggeredRef.current) {
+      isStartTriggeredRef.current = true;
+      void startGameMessage();
+    }
+  }, [
+    isAdmin,
+    hasLobbyStartedOnce,
+    hasEnoughPlayersToStart,
+    isGameStarted,
+    participants,
+    config,
+    isStartGamePending,
+    startGameMessage,
+  ]);
 
   return (
     <>
@@ -369,8 +405,16 @@ function GamePage() {
             color="contrast"
             rounded
             size="medium"
-            onClick={() => (isSpectator ? navigate(ROUTES.HOME) : cancelRegistrationMessage())}
-            disabled={isCancelRegistrationPending}
+            onClick={() => {
+              if (isWaitingParticipant) return;
+              if (isSpectator) {
+                navigate(ROUTES.HOME);
+                return;
+              }
+
+              void cancelRegistrationMessage();
+            }}
+            disabled={isCancelRegistrationPending || isWaitingParticipant}
             className={styles.backButton}>
             {isSpectator ? <BackIcon /> : <Exit />}
           </Button>
@@ -405,16 +449,20 @@ function GamePage() {
         {isMyTurn && timeToTurnEndSec && <YourTurn timePerMoveSec={timeToTurnEndSec} onTimeEnd={onTimeEnd} />}
       </div>
 
-      {!isGameStarted && !isGameEndModalOpen && participants && config && (
-        <StartGameModal
-          isAdmin={isAdmin}
-          participants={startGameParticipants}
-          isDefaultExpanded={!gameEndData || isAdmin}
-          timeUntilStartMs={config.time_until_start_ms}
-          isRetired={isRetired}
-          hasLobbyStartedOnce={hasLobbyStartedOnce}
-        />
-      )}
+      {(isSpectator || ((!hasLobbyStartedOnce || !hasEnoughPlayersToStart) && !isGameStarted)) &&
+        !isGameEndModalOpen &&
+        participants &&
+        config && (
+          <StartGameModal
+            isAdmin={isAdmin}
+            participants={startGameParticipants}
+            isDefaultExpanded={true}
+            timeUntilStartMs={config.time_until_start_ms}
+            isRetired={isRetired}
+            hasLobbyStartedOnce={hasLobbyStartedOnce}
+            isWaitingParticipant={isWaitingParticipant}
+          />
+        )}
 
       {gameEndData && isGameEndModalOpen && (
         <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} isSpectator={isSpectator} />
@@ -437,7 +485,8 @@ function GamePage() {
               .name,
           };
 
-          const showInLoader = isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards;
+          const showInLoader =
+            !gameEndData && (isWaitingShuffleVerification || isWaitingPartialDecryptionsForPlayersCards);
 
           return showInLoader ? (
             <CardsLoader>

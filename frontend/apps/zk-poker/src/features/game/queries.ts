@@ -13,7 +13,10 @@ export type Lobby = {
   address: string;
   status: string;
   createdAt: string;
+  lastUpdatedAt: string;
   currentPlayers: { address: string }[];
+  timeUntilStartMs?: number | string | null;
+  lobbyTimeLimitMs?: number | string | null;
 };
 
 export type PlayerStats = {
@@ -31,17 +34,51 @@ type LobbyStatusByIdResponse = {
 };
 
 const GET_LOBBIES_QUERY = `
-  query GetLobbies {
-    lobbies(where: { status_not_eq: "killed" }) {
+  query GetLobbies($createdAtGte: DateTime!) {
+    lobbies(where: { status_not_eq: "killed", createdAt_gte: $createdAtGte }) {
       address
       status
       createdAt
+      lastUpdatedAt
+      timeUntilStartMs
+      lobbyTimeLimitMs
       currentPlayers {
         address
       }
     }
   }
 `;
+
+const DEFAULT_LOBBY_TTL_MS = 24 * 60 * 60 * 1000;
+
+const toNumberOrNull = (value: number | string | null | undefined) => {
+  if (value === null || value === undefined) return null;
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const getLobbyTtlMs = (lobby: Lobby) => {
+  const timeUntilStartMs = toNumberOrNull(lobby.timeUntilStartMs);
+  const lobbyTimeLimitRawMs = toNumberOrNull(lobby.lobbyTimeLimitMs);
+  const lobbyTimeLimitMs = lobbyTimeLimitRawMs === 0 ? DEFAULT_LOBBY_TTL_MS : lobbyTimeLimitRawMs;
+
+  if (timeUntilStartMs !== null && lobbyTimeLimitMs !== null) {
+    return timeUntilStartMs + lobbyTimeLimitMs;
+  }
+  if (lobbyTimeLimitMs !== null) {
+    return lobbyTimeLimitMs;
+  }
+
+  return DEFAULT_LOBBY_TTL_MS;
+};
+
+const isLobbyAlive = (lobby: Lobby, nowMs: number) => {
+  const createdAtMs = new Date(lobby.createdAt).getTime();
+  if (Number.isNaN(createdAtMs)) return false;
+
+  return nowMs - createdAtMs <= getLobbyTtlMs(lobby);
+};
 
 const GET_PLAYER_BY_ID_QUERY = `
   query GetPlayerById($id: String!) {
@@ -66,8 +103,12 @@ export const useGetLobbiesQuery = () => {
     queryKey: ['lobbies'],
     queryFn: async (): Promise<{ lobbies: Lobby[] }> => {
       try {
-        const data = await graphqlClient.request<{ lobbies: Lobby[] }>(GET_LOBBIES_QUERY);
-        return data;
+        const createdAtGte = new Date(Date.now() - DEFAULT_LOBBY_TTL_MS).toISOString();
+        const data = await graphqlClient.request<{ lobbies: Lobby[] }>(GET_LOBBIES_QUERY, { createdAtGte });
+        const nowMs = Date.now();
+        const aliveLobbies = data.lobbies.filter((lobby) => isLobbyAlive(lobby, nowMs));
+
+        return { lobbies: aliveLobbies };
       } catch (error) {
         console.error('Error fetching lobbies:', error);
         return { lobbies: [] };

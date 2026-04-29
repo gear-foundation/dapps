@@ -22,6 +22,7 @@ type Props = {
   timeUntilStartMs?: number | string | bigint | null;
   isRetired?: boolean;
   hasLobbyStartedOnce: boolean;
+  isWaitingParticipant?: boolean;
 };
 
 const DRAG_THRESHOLD = 30;
@@ -35,6 +36,7 @@ const StartGameModal = ({
   timeUntilStartMs,
   isRetired,
   hasLobbyStartedOnce,
+  isWaitingParticipant,
 }: Props) => {
   const alert = useAlert();
   const { gameId } = useParams();
@@ -223,7 +225,7 @@ const StartGameModal = ({
           </>
         )}
 
-        {!isSpectator && !isAdmin && (
+        {!isSpectator && !isAdmin && !isRetired && !isWaitingParticipant && (
           <div className={styles.buttons}>
             <Button
               color="contrast"

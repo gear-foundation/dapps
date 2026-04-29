@@ -10,16 +10,18 @@ type Props = {
 
 export const LobbyTimer = ({ remainingMs, isBeforeStart, className }: Props) => {
   const totalSeconds = Math.floor(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
+  const formattedTime = hours
+    ? `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    : `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   if (isBeforeStart) {
     return (
       <div className={clsx(styles.beforeStartWrapper, className)}>
         <span className={styles.label}>Game starts in</span>
-        <span className={styles.time}>
-          {minutes}:{seconds.toString().padStart(2, '0')}
-        </span>
+        <span className={styles.time}>{formattedTime}</span>
       </div>
     );
   }
@@ -27,9 +29,7 @@ export const LobbyTimer = ({ remainingMs, isBeforeStart, className }: Props) => 
   return (
     <div className={clsx(styles.wrapper, className)}>
       <span className={styles.label}>Lobby time left</span>
-      <span className={styles.time}>
-        {minutes}:{seconds.toString().padStart(2, '0')}
-      </span>
+      <span className={styles.time}>{formattedTime}</span>
     </div>
   );
 };

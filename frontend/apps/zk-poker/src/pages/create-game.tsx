@@ -54,7 +54,7 @@ const LOBBY_TIME_LIMIT_OPTIONS = [
   { value: ONE_HOUR_MS / 2, label: '30 min' },
   { value: ONE_HOUR_MS, label: '1 hour' },
   { value: 2 * ONE_HOUR_MS, label: '2 hours' },
-  { value: 0, label: 'No limit' },
+  { value: 24 * ONE_HOUR_MS, label: '24 hours' },
 ];
 
 function CreateGame() {

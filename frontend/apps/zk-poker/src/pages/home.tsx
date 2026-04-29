@@ -7,7 +7,7 @@ import { ROUTES } from '@/app/consts';
 import { CreateGameIllustration, EditIcon, JoinGameIllustration, PointsIcon } from '@/assets/images';
 import { Avatar, Banner, EditProfileModal, Footer, Header, MenuButton, Stats, Balance } from '@/components';
 import { useUserName } from '@/features/game/hooks';
-import { useGetPlayerByIdQuery } from '@/features/game/queries';
+import { Lobby, useGetLobbiesQuery, useGetPlayerByIdQuery } from '@/features/game/queries';
 import {
   useEventLobbyCreatedSubscription,
   useEventLobbyDeletedSubscription,
@@ -31,15 +31,25 @@ export default function Home() {
   };
 
   const { lobbies, refetch: refetchLobbies } = useLobbiesQuery();
+  const { data: lobbiesData, refetch: refetchIndexedLobbies } = useGetLobbiesQuery();
+
+  const lobbiesMap = lobbiesData?.lobbies.reduce(
+    (acc, lobby) => {
+      acc[lobby.address] = lobby;
+      return acc;
+    },
+    {} as Record<string, Lobby>,
+  );
 
   const onLobbyChanged = () => {
     void refetchLobbies();
+    void refetchIndexedLobbies();
   };
 
   useEventLobbyCreatedSubscription({ onData: onLobbyChanged });
   useEventLobbyDeletedSubscription({ onData: onLobbyChanged });
 
-  const lobbiesCount = lobbies?.length || 0;
+  const lobbiesCount = lobbies?.filter(([address]) => Boolean(lobbiesMap?.[address])).length || 0;
 
   const { data: playerData } = useGetPlayerByIdQuery(account?.decodedAddress);
   const { gamesToday, wins, games } = playerData?.playerById || { gamesToday: 0, wins: 0, games: 0 };
