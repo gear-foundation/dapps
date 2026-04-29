@@ -108,6 +108,7 @@ function GamePage() {
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
   const isRestartTriggeredRef = useRef(false);
   const isStartTriggeredRef = useRef(false);
+  const isGameCanceledRef = useRef(false);
 
   const { participants, refetch: refetchParticipants } = useParticipantsQuery();
   const { refetch: refetchAlreadyInvestedInTheCircle } = useAlreadyInvestedInTheCircleQuery();
@@ -258,6 +259,7 @@ function GamePage() {
   useEventGameRestartedSubscription({ onData: onGameRestarted });
   useEventGameCanceledSubscription({
     onData: () => {
+      isGameCanceledRef.current = true;
       alert.info('Game canceled');
       onGameRestarted();
     },
@@ -362,6 +364,7 @@ function GamePage() {
   useEffect(() => {
     if (isGameStarted) {
       isStartTriggeredRef.current = false;
+      isGameCanceledRef.current = false;
       return;
     }
 
@@ -370,6 +373,7 @@ function GamePage() {
       hasLobbyStartedOnce &&
       hasEnoughPlayersToStart &&
       Boolean(participants && config) &&
+      !isGameCanceledRef.current &&
       !isStartGamePending;
 
     if (shouldStartNextRound && !isStartTriggeredRef.current) {
@@ -386,6 +390,9 @@ function GamePage() {
     isStartGamePending,
     startGameMessage,
   ]);
+
+  const shouldShowStartGameModal =
+    isGameCanceledRef.current || isSpectator || ((!hasLobbyStartedOnce || !hasEnoughPlayersToStart) && !isGameStarted);
 
   return (
     <>
@@ -449,20 +456,17 @@ function GamePage() {
         {isMyTurn && timeToTurnEndSec && <YourTurn timePerMoveSec={timeToTurnEndSec} onTimeEnd={onTimeEnd} />}
       </div>
 
-      {(isSpectator || ((!hasLobbyStartedOnce || !hasEnoughPlayersToStart) && !isGameStarted)) &&
-        !isGameEndModalOpen &&
-        participants &&
-        config && (
-          <StartGameModal
-            isAdmin={isAdmin}
-            participants={startGameParticipants}
-            isDefaultExpanded={true}
-            timeUntilStartMs={config.time_until_start_ms}
-            isRetired={isRetired}
-            hasLobbyStartedOnce={hasLobbyStartedOnce}
-            isWaitingParticipant={isWaitingParticipant}
-          />
-        )}
+      {shouldShowStartGameModal && !isGameEndModalOpen && participants && config && (
+        <StartGameModal
+          isAdmin={isAdmin}
+          participants={startGameParticipants}
+          isDefaultExpanded={true}
+          timeUntilStartMs={config.time_until_start_ms}
+          isRetired={isRetired}
+          hasLobbyStartedOnce={hasLobbyStartedOnce}
+          isWaitingParticipant={isWaitingParticipant}
+        />
+      )}
 
       {gameEndData && isGameEndModalOpen && (
         <GameEndModal {...gameEndData} onClose={() => setIsGameEndModalOpen(false)} isSpectator={isSpectator} />
