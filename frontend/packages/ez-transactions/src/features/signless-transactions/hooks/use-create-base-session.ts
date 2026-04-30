@@ -24,6 +24,7 @@ type CreeateSessionOptions = {
   pair?: KeyringPair;
   voucherId?: `0x${string}`;
   shouldIssueVoucher: boolean;
+  revokeExpiredVouchersForAddress?: string;
 };
 
 type UseCreateSessionReturn = {
@@ -93,8 +94,21 @@ function useCreateBaseSession(programId: HexString) {
     voucherValue: number,
     options: Options,
     shouldIssueVoucher?: boolean,
+    revokeExpiredVouchersForAddress?: string,
   ) => {
     const txs = [messageExtrinsic];
+
+    if (revokeExpiredVouchersForAddress) {
+      if (!isApiReady) throw new Error('API is not initialized');
+      if (!account) throw new Error('Account not found');
+      const { block } = await api.rpc.chain.getBlock();
+      const currentBlockNumber = block.header.number.toNumber();
+      const vouchers = await api.voucher.getAllForAccount(revokeExpiredVouchersForAddress);
+      const revokeExtrinsics = Object.entries(vouchers)
+        .filter(([, voucher]) => currentBlockNumber > voucher.expiry && voucher.owner === account.decodedAddress)
+        .map(([id]) => api.voucher.revoke(revokeExpiredVouchersForAddress, id));
+      txs.push(...revokeExtrinsics);
+    }
 
     if (shouldIssueVoucher) {
       txs.push(await getVoucherExtrinsic(session, voucherValue));

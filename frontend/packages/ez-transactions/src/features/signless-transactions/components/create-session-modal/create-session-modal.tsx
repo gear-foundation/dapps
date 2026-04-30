@@ -67,6 +67,7 @@ function CreateSessionModal({
     voucherReissueThreshold,
     allowIncreaseVoucherValue,
   } = useSignlessTransactions();
+  const isExpiredSession = Boolean(storagePair && !session && modalType === 'create');
 
   const DEFAULT_VALUES = useMemo(() => {
     let durationValue = DURATIONS[0].value;
@@ -92,7 +93,7 @@ function CreateSessionModal({
   const { errors } = formState;
   const customVoucherAmount = watch('voucherAmount');
 
-  const pair = useRandomPairOr(storagePair);
+  const pair = useRandomPairOr(isExpiredSession ? undefined : storagePair);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -110,12 +111,19 @@ function CreateSessionModal({
     const valueToIssueVoucher = minValue > _valueToIssueVoucher ? minValue : _valueToIssueVoucher;
 
     const isOwner = storageVoucher?.owner === account.decodedAddress;
-    if (!isOwner) return valueToStart;
+    if (!isOwner || isExpiredSession) return valueToStart;
     const storageVoucherBalanceBigInt = BigInt(storageVoucherBalance);
 
     return storageVoucherBalanceBigInt < valueToIssueVoucher ? valueToStart - storageVoucherBalanceBigInt : 0n;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, storageVoucherBalance, shouldIssueVoucher, customVoucherAmount, allowIncreaseVoucherValue]);
+  }, [
+    api,
+    storageVoucherBalance,
+    shouldIssueVoucher,
+    customVoucherAmount,
+    allowIncreaseVoucherValue,
+    isExpiredSession,
+  ]);
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
@@ -133,7 +141,7 @@ function CreateSessionModal({
     setIsLoading(true);
 
     try {
-      pairToSave = storagePair ? getUnlockedPair(storagePair, password) : (pair as KeyringPair);
+      pairToSave = storagePair && !isExpiredSession ? getUnlockedPair(storagePair, password) : (pair as KeyringPair);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
 
@@ -194,6 +202,7 @@ function CreateSessionModal({
 
     await createSession({ duration, key, allowedActions }, Number(issueVoucherValue), {
       shouldIssueVoucher,
+      revokeExpiredVouchersForAddress: isExpiredSession && storagePair ? storagePair.address : undefined,
       onSuccess,
       onFinally,
     });
@@ -201,7 +210,6 @@ function CreateSessionModal({
 
   const getModalHeading = () => {
     if (modalType === 'topup-balance') return 'Top Up Voucher Balance';
-    if (storagePair) return 'Resume Signless Session';
     return 'Create Signless Session';
   };
 
@@ -211,7 +219,7 @@ function CreateSessionModal({
         <SignlessParams
           params={[
             {
-              heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
+              heading: storagePair && !isExpiredSession ? 'Account from the storage:' : 'Randomly generated account:',
               value: pair ? <AccountPair pair={pair} /> : <span />,
             },
             {
