@@ -29,7 +29,13 @@ function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
   const createSession = async (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
+    {
+      shouldIssueVoucher,
+      voucherId,
+      pair,
+      revokeExpiredVouchersForAddress,
+      ...options
+    }: Options & CreeateSessionOptions,
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
@@ -68,7 +74,14 @@ function useCreateSailsSession(programId: HexString, program?: BaseProgram) {
     });
     const messageExtrinsic = transaction.extrinsic;
 
-    await signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
+    await signAndSendCreateSession(
+      messageExtrinsic,
+      session,
+      voucherValue,
+      options,
+      shouldIssueVoucher,
+      revokeExpiredVouchersForAddress,
+    );
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
