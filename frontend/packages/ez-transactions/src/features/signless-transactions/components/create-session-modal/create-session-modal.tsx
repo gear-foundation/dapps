@@ -111,12 +111,19 @@ function CreateSessionModal({
     const valueToIssueVoucher = minValue > _valueToIssueVoucher ? minValue : _valueToIssueVoucher;
 
     const isOwner = storageVoucher?.owner === account.decodedAddress;
-    if (!isOwner) return valueToStart;
+    if (!isOwner || isExpiredSession) return valueToStart;
     const storageVoucherBalanceBigInt = BigInt(storageVoucherBalance);
 
     return storageVoucherBalanceBigInt < valueToIssueVoucher ? valueToStart - storageVoucherBalanceBigInt : 0n;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, storageVoucherBalance, shouldIssueVoucher, customVoucherAmount, allowIncreaseVoucherValue]);
+  }, [
+    api,
+    storageVoucherBalance,
+    shouldIssueVoucher,
+    customVoucherAmount,
+    allowIncreaseVoucherValue,
+    isExpiredSession,
+  ]);
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
