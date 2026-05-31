@@ -82,6 +82,7 @@ pub async fn create_new_battle(
         dodge,
         player_id,
         msg_value,
+        msg_src,
     )
     .await;
     if reply.is_err() {
@@ -101,6 +102,7 @@ async fn create(
     dodge: u16,
     player_id: ActorId,
     msg_value: u128,
+    msg_src: ActorId,
 ) -> Result<Event, BattleError> {
     let time_creation = exec::block_timestamp();
     check_player_settings(attack, defence, dodge, &storage.config)?;
@@ -150,6 +152,8 @@ async fn create(
     Ok(Event::NewBattleCreated {
         battle_id: player_id,
         bid: msg_value,
+        user_id: msg_src,
+        user_name,
     })
 }
 
@@ -178,7 +182,7 @@ pub async fn battle_registration(
 
     let reply = register(
         storage, admin_id, warrior_id, appearance, user_name, attack, defence, dodge, player_id,
-        msg_value,
+        msg_value, msg_src
     )
     .await;
     if reply.is_err() {
@@ -198,6 +202,7 @@ async fn register(
     dodge: u16,
     player_id: ActorId,
     msg_value: u128,
+    msg_src: ActorId,
 ) -> Result<Event, BattleError> {
     check_player_settings(attack, defence, dodge, &storage.config)?;
 
@@ -221,7 +226,7 @@ async fn register(
     if battle.state != State::Registration {
         return Err(BattleError::WrongState);
     }
-    if battle.participants.len() >= storage.config.max_participants.into() {
+    if battle.participants.len() >= storage.config.max_participants as usize {
         return Err(BattleError::BattleFull);
     }
     if battle.bid != msg_value {
@@ -257,6 +262,7 @@ async fn register(
     Ok(Event::PlayerRegistered {
         admin_id,
         user_name,
+        user_id: msg_src,
         bid: msg_value,
     })
 }
