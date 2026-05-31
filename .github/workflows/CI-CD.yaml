@@ -1,0 +1,59 @@
+name: Build and Deploy DApps
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '.github/**'
+      - '**.md'
+    tags: ["*-v*"]
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: Target environment
+        required: false
+        options:
+          - dev
+          - stg
+          - prod
+      deploy_poker_dapp:
+        type: boolean
+        description: Deploy zk-poker dapp
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+  actions: read
+  id-token: write
+
+jobs:
+  deploy_poker_dapp:
+    uses: gear-ops/actions/.github/workflows/build-deploy.yaml@main
+    with:
+      argocd_server: ${{ vars.ARGOCD_SERVER }}
+      vault_server: ${{ vars.VAULT_SERVER }}
+      app: poker
+      component: dapp
+      env: ${{ inputs.env }}
+      dockerfile: frontend/apps/zk-poker/Dockerfile
+      context: .
+      paths_filter: |
+        frontend/apps/zk-poker/**
+        frontend/packages/**
+        frontend/package.json
+        frontend/yarn.lock
+        frontend/.yarnrc.yml
+        frontend/.yarn/releases/**
+        frontend/vite.apps.config.ts
+        frontend/tsconfig.json
+        frontend/tsconfig.node.json
+      # cleanup_enabled: true
+    secrets:
+      WORKLOADS_REPO_TOKEN: ${{ secrets.WORKLOADS_REPO_TOKEN }}
+      ARGOCD_TOKEN:         ${{ secrets.ARGOCD_TOKEN }}
