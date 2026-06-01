@@ -41,7 +41,7 @@ const dnsNames = { pokerFactoryProgramId: ENV.DNS_NAME };
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={dnsNames} dnsApiUrl={ENV.DNS_API_URL}>
+    <SharedDnsProvider names={dnsNames} dnsContractAddress={ENV.DNS_CONTRACT_ADDRESS}>
       {children}
     </SharedDnsProvider>
   );
@@ -84,8 +84,8 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
 
 const providers = [
   BrowserRouter,
-  DnsProvider,
   ApiProvider,
+  DnsProvider,
   QueryProvider,
   AccountProvider,
   AlertProvider,

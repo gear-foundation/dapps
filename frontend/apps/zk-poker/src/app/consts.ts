@@ -6,7 +6,7 @@ export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
   ZK_POKER_BACKEND: import.meta.env.VITE_ZK_POKER_BACKEND_ADDRESS as string,
-  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_CONTRACT_ADDRESS: import.meta.env.VITE_DNS_CONTRACT_ADDRESS as `0x${string}`,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
   EXPLORER_URL: import.meta.env.VITE_EXPLORER_URL as string,
   FORCED_POKER_FACTORY_PROGRAM_ID: import.meta.env.VITE_POKER_FACTORY_PROGRAM_ID as HexString,

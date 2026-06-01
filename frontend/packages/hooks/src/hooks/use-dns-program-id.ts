@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useContext } from 'react';
 
-import { DnsContext, DefaultDnsValueName } from '../providers/dns-provider';
+import { DnsContext, DefaultDnsValueName } from '../providers/dns/dns-provider';
 
 function useDnsProgramIds<T extends string = DefaultDnsValueName>() {
   const context = useContext(DnsContext);

@@ -73,7 +73,7 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_IPFS_GATEWAY_ADDRESS=${{ secrets.VITE_IPFS_GATEWAY_ADDRESS }}
             VITE_IPFS_ADDRESS=${{ secrets.VITE_IPFS_ADDRESS }}
-            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
+            VITE_DNS_CONTRACT_ADDRESS=${{ secrets.VITE_DNS_CONTRACT_ADDRESS }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_NFT }}
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_NFT }}
             VITE_NFT_EXPLORER_URL=${{ secrets.VITE_NFT_EXPLORER_URL }}

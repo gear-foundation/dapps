@@ -5,7 +5,7 @@ export const ACCOUNT_ID_LOCAL_STORAGE_KEY = 'account';
 export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS as string,
-  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_CONTRACT_ADDRESS: import.meta.env.VITE_DNS_CONTRACT_ADDRESS as `0x${string}`,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_TTT as string,
   VOUCHER_LIMIT: import.meta.env.VITE_VOUCHER_LIMIT as string,

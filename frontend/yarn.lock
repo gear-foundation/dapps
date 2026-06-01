@@ -462,6 +462,9 @@ __metadata:
 "@dapps-frontend/hooks@workspace:*, @dapps-frontend/hooks@workspace:packages/hooks":
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
+  dependencies:
+    sails-js: "npm:0.5.1"
+    sails-js-cli: "npm:0.5.1"
   peerDependencies:
     "@gear-js/api": 0.44.2
     "@gear-js/react-hooks": 0.19.1
@@ -8368,6 +8371,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "gear-dapp@workspace:templates/create-gear-app"
   dependencies:
+    "@eslint/js": "npm:9.19.0"
     "@gear-js/api": "npm:0.44.2"
     "@gear-js/react-hooks": "npm:0.19.1"
     "@gear-js/ui": "npm:0.7.0"
@@ -8390,6 +8394,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.4"
     eslint-plugin-react-hooks: "npm:5.1.0"
     eslint-plugin-react-refresh: "npm:0.4.18"
+    globals: "npm:15.14.0"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-router-dom: "npm:6.28.2"
@@ -12416,6 +12421,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sails-js-cli@npm:0.5.1":
+  version: 0.5.1
+  resolution: "sails-js-cli@npm:0.5.1"
+  bin:
+    sails-js: build/app.js
+  checksum: 10c0/31555802f3332651be1b6092c6048b53b4c0b860439e792dcc96829fe83721b6ffdb3dc04af964f25562ea3fd2c6874c873c03dc33d4b84f02446624c01e6595
+  languageName: node
+  linkType: hard
+
 "sails-js-parser@npm:0.5.1":
   version: 0.5.1
   resolution: "sails-js-parser@npm:0.5.1"
@@ -14050,6 +14064,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vara-dapp@workspace:templates/create-vara-app"
   dependencies:
+    "@eslint/js": "npm:9.19.0"
     "@gear-js/api": "npm:0.44.2"
     "@gear-js/react-hooks": "npm:0.19.1"
     "@gear-js/vara-ui": "npm:0.3.1"
@@ -14072,6 +14087,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.4"
     eslint-plugin-react-hooks: "npm:5.1.0"
     eslint-plugin-react-refresh: "npm:0.4.18"
+    globals: "npm:15.14.0"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-router-dom: "npm:6.28.2"
