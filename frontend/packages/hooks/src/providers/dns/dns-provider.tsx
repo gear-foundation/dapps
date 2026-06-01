@@ -1,6 +1,8 @@
 import { HexString } from '@gear-js/api';
-import { useAlert } from '@gear-js/react-hooks';
+import { useAlert, useApi } from '@gear-js/react-hooks';
 import { createContext, useEffect, useState, ReactNode, PropsWithChildren } from 'react';
+
+import { SailsProgram } from './lib';
 
 export type DnsContextValue = Record<string, HexString>;
 
@@ -8,17 +10,8 @@ export type DefaultDnsValueName = 'programId';
 
 export type DnsProviderProps<T extends string = DefaultDnsValueName> = {
   names: Record<T, string>;
-  dnsApiUrl: string;
+  dnsContractAddress: `0x${string}`;
   fallback?: ReactNode;
-};
-
-export type DnsResponse = {
-  id: string;
-  name: string;
-  address: HexString;
-  createdBy: HexString;
-  createdAt: string;
-  updatedAt: string;
 };
 
 const DnsContext = createContext<DnsContextValue>({});
@@ -26,22 +19,32 @@ const DnsContext = createContext<DnsContextValue>({});
 function DnsProvider<T extends string = DefaultDnsValueName>({
   children,
   names,
-  dnsApiUrl,
+  dnsContractAddress,
   fallback,
 }: PropsWithChildren<DnsProviderProps<T>>) {
   const [programIds, setProgramIds] = useState<DnsContextValue>({});
+  const { api, isApiReady } = useApi();
   const alert = useAlert();
 
   useEffect(() => {
     const init = async () => {
-      if (!dnsApiUrl || !names) {
-        throw new Error('dnsApiUrl or names is undefined');
+      if (!isApiReady || !api) return;
+
+      if (!dnsContractAddress || !names) {
+        throw new Error('dnsContractAddress or names is undefined');
       }
+
       try {
+        const program = new SailsProgram(api, dnsContractAddress);
+
         const promises = Object.entries<string>(names).map(async ([key, name]) => {
-          const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
-          const dns = (await response.json()) as DnsResponse;
-          return { [key]: dns.address };
+          const info = await program.dns.getContractInfoByName(name).call();
+
+          if (!info) {
+            throw new Error(`DNS name not found: ${name}`);
+          }
+
+          return { [key]: info.program_id };
         });
 
         const results = await Promise.all(promises);
@@ -57,7 +60,7 @@ function DnsProvider<T extends string = DefaultDnsValueName>({
 
     void init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [names, dnsApiUrl]);
+  }, [names, dnsContractAddress, api, isApiReady]);
 
   return (
     <DnsContext.Provider value={programIds}>{Object.keys(programIds).length ? children : fallback}</DnsContext.Provider>

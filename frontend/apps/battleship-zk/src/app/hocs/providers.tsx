@@ -34,7 +34,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
+    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsContractAddress={ENV.DNS_CONTRACT_ADDRESS}>
       {children}
     </SharedDnsProvider>
   );

@@ -9,6 +9,12 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "npx vite preview"
   },
+  "dependencies": {
+    "sails-js": "0.5.1"
+  },
+  "devDependencies": {
+    "sails-js-cli": "0.5.1"
+  },
   "peerDependencies": {
     "@gear-js/api": "0.44.2",
     "@gear-js/react-hooks": "0.19.1",

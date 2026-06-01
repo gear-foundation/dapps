@@ -36,7 +36,7 @@ import { PlayerType } from '@/types';
 
 const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
-  DNS_API_URL: import.meta.env.VITE_DNS_API_URL as string,
+  DNS_CONTRACT_ADDRESS: import.meta.env.VITE_DNS_CONTRACT_ADDRESS as `0x${string}`,
   DNS_NAME: import.meta.env.VITE_DNS_NAME as string,
 };
 

@@ -17,6 +17,6 @@ export default {
   port: process.env.PORT || 3001,
   wsAddress: getEnv("VITE_NODE_ADDRESS", "wss://testnet.vara-network.io"),
   programId: getEnv("PROGRAM_ID") as HexString,
-  dnsApiUrl: getEnv("VITE_DNS_API_URL"),
+  dnsContractAddress: getEnv("VITE_DNS_CONTRACT_ADDRESS"),
   dnsName: getEnv("VITE_DNS_NAME"),
 };

@@ -70,7 +70,7 @@ jobs:
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            VITE_DNS_API_URL=${{ secrets.VITE_DNS_API_URL }}
+            VITE_DNS_CONTRACT_ADDRESS=${{ secrets.VITE_DNS_CONTRACT_ADDRESS }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_RACING }}
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
