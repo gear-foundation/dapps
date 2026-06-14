@@ -38,6 +38,7 @@ jobs:
     with:
       argocd_server: ${{ vars.ARGOCD_SERVER }}
       vault_server: ${{ vars.VAULT_SERVER }}
+      prefix_tag: true
       app: poker
       component: dapp
       env: ${{ inputs.env }}
@@ -53,7 +54,6 @@ jobs:
         frontend/vite.apps.config.ts
         frontend/tsconfig.json
         frontend/tsconfig.node.json
-      # cleanup_enabled: true
     secrets:
       WORKLOADS_REPO_TOKEN: ${{ secrets.WORKLOADS_REPO_TOKEN }}
       ARGOCD_TOKEN:         ${{ secrets.ARGOCD_TOKEN }}
