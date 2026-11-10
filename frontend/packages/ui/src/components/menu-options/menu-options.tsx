@@ -42,14 +42,16 @@ export function MenuOptions({ customItems, className, onClose, showDisconnect = 
         </div>
       ))}
       {customItems?.length && <hr />}
-      <a
-        href={`https://vara.subscan.io/account/${account?.address}`}
-        target="_blank"
-        rel="noreferrer"
-        className={clsx(styles.item, className?.item)}>
-        <UserSVG className={clsx(styles.userSvg, styles.svg, className?.nativeIcon)} />
-        <span>View in Blockchain Explorer</span>
-      </a>
+      {account && (
+        <a
+          href={`https://explorer.vara.network/account/${account.address}`}
+          target="_blank"
+          rel="noreferrer"
+          className={clsx(styles.item, className?.item)}>
+          <UserSVG className={clsx(styles.userSvg, styles.svg, className?.nativeIcon)} />
+          <span>View in Blockchain Explorer</span>
+        </a>
+      )}
       <a
         href="https://vara.network/ecosystem"
         target="_blank"
