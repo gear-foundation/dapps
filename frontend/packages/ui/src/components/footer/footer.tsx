@@ -37,7 +37,7 @@ function Footer({ vara, isAlwaysMobile, className }: Props) {
 
       {account && (
         <a
-          href={`https://vara.subscan.io/account/${account.address}`}
+          href={`https://explorer.vara.network/account/${account.address}`}
           target="_blank"
           rel="noreferrer"
           className={cx(styles.explorerLink, vara && styles.vara)}>
